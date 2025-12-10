@@ -7,6 +7,7 @@ import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
@@ -15,7 +16,10 @@ import { SiTelegram, SiWhatsapp } from "react-icons/si";
 
 const contactSchema = z.object({
   name: z.string().min(2, "Имя должно содержать минимум 2 символа"),
+  phone: z.string().min(10, "Введите корректный номер телефона"),
   email: z.string().email("Введите корректный email"),
+  projectType: z.string().min(1, "Выберите тип проекта"),
+  budget: z.string().optional(),
   message: z.string().min(10, "Сообщение должно содержать минимум 10 символов"),
 });
 
@@ -25,6 +29,22 @@ const contactInfo = [
   { icon: Mail, label: "Email", value: "hello@webstudio.ru" },
   { icon: Phone, label: "Телефон", value: "+7 (999) 123-45-67" },
   { icon: MapPin, label: "Адрес", value: "Москва, Россия" },
+];
+
+const projectTypes = [
+  { value: "landing", label: "Лендинг" },
+  { value: "corporate", label: "Корпоративный сайт" },
+  { value: "shop", label: "Интернет-магазин" },
+  { value: "webapp", label: "Веб-приложение" },
+  { value: "other", label: "Другое" },
+];
+
+const budgetRanges = [
+  { value: "15-30", label: "15 000 - 30 000 ₽" },
+  { value: "30-60", label: "30 000 - 60 000 ₽" },
+  { value: "60-100", label: "60 000 - 100 000 ₽" },
+  { value: "100+", label: "Более 100 000 ₽" },
+  { value: "unknown", label: "Пока не определился" },
 ];
 
 export function ContactSection() {
@@ -37,7 +57,10 @@ export function ContactSection() {
     resolver: zodResolver(contactSchema),
     defaultValues: {
       name: "",
+      phone: "",
       email: "",
+      projectType: "",
+      budget: "",
       message: "",
     },
   });
@@ -127,33 +150,55 @@ export function ContactSection() {
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(onSubmit)}
-                  className="space-y-6 p-8 rounded-md bg-card/50 border border-border backdrop-blur-sm"
+                  className="space-y-5 p-8 rounded-md bg-card/50 border border-border backdrop-blur-sm"
                 >
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Ваше имя</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Иван Иванов"
-                            {...field}
-                            className="bg-background/50"
-                            data-testid="input-name"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div className="grid sm:grid-cols-2 gap-5">
+                    <FormField
+                      control={form.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Ваше имя *</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Иван Иванов"
+                              {...field}
+                              className="bg-background/50"
+                              data-testid="input-name"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="phone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Телефон *</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="tel"
+                              placeholder="+7 (999) 123-45-67"
+                              {...field}
+                              className="bg-background/50"
+                              data-testid="input-phone"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
                   <FormField
                     control={form.control}
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Email</FormLabel>
+                        <FormLabel>Email *</FormLabel>
                         <FormControl>
                           <Input
                             type="email"
@@ -168,16 +213,68 @@ export function ContactSection() {
                     )}
                   />
 
+                  <div className="grid sm:grid-cols-2 gap-5">
+                    <FormField
+                      control={form.control}
+                      name="projectType"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Тип проекта *</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger className="bg-background/50" data-testid="select-project-type">
+                                <SelectValue placeholder="Выберите тип" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {projectTypes.map((type) => (
+                                <SelectItem key={type.value} value={type.value} data-testid={`select-item-project-${type.value}`}>
+                                  {type.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="budget"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Бюджет</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger className="bg-background/50" data-testid="select-budget">
+                                <SelectValue placeholder="Примерный бюджет" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {budgetRanges.map((range) => (
+                                <SelectItem key={range.value} value={range.value} data-testid={`select-item-budget-${range.value}`}>
+                                  {range.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
                   <FormField
                     control={form.control}
                     name="message"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Сообщение</FormLabel>
+                        <FormLabel>Описание проекта *</FormLabel>
                         <FormControl>
                           <Textarea
-                            placeholder="Расскажите о вашем проекте..."
-                            rows={5}
+                            placeholder="Расскажите о вашем проекте, целях и задачах..."
+                            rows={4}
                             {...field}
                             className="bg-background/50 resize-none"
                             data-testid="input-message"

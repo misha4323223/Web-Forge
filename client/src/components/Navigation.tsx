@@ -7,6 +7,7 @@ const navItems = [
   { label: "О студии", href: "#about" },
   { label: "Портфолио", href: "#portfolio" },
   { label: "Услуги", href: "#services" },
+  { label: "Калькулятор", href: "#calculator" },
   { label: "Процесс", href: "#process" },
   { label: "Контакты", href: "#contact" },
 ];

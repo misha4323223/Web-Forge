@@ -3,10 +3,10 @@ import { useInView } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
 
 const stats = [
-  { value: 150, suffix: "+", label: "Проектов" },
-  { value: 50, suffix: "+", label: "Клиентов" },
-  { value: 7, suffix: "", label: "Лет опыта" },
-  { value: 99, suffix: "%", label: "Довольных клиентов" },
+  { value: 10, suffix: "+", label: "Проектов" },
+  { value: 8, suffix: "+", label: "Клиентов" },
+  { value: 2, suffix: "", label: "Года опыта" },
+  { value: 100, suffix: "%", label: "Качество" },
 ];
 
 function AnimatedCounter({ value, suffix }: { value: number; suffix: string }) {
@@ -78,7 +78,7 @@ export function AboutSection() {
             </p>
 
             <div className="flex flex-wrap gap-3">
-              {["React", "Node.js", "TypeScript", "Next.js", "Tailwind"].map((tech) => (
+              {["React", "Node.js", "TypeScript", "Яндекс Cloud", "ЮКасса"].map((tech) => (
                 <span
                   key={tech}
                   className="px-3 py-1.5 rounded-md bg-card border border-border text-sm font-mono text-muted-foreground"

@@ -1,6 +1,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
-import { SiReact, SiNextdotjs, SiVuedotjs, SiTypescript, SiNodedotjs, SiPython, SiPostgresql, SiMongodb, SiTailwindcss, SiFigma, SiDocker, SiAmazonwebservices } from "react-icons/si";
+import { SiReact, SiNextdotjs, SiVuedotjs, SiTypescript, SiNodedotjs, SiPython, SiPostgresql, SiMongodb, SiTailwindcss, SiFigma, SiDocker } from "react-icons/si";
+import { Cloud, CreditCard, Server } from "lucide-react";
 
 const technologies = [
   { name: "React", icon: SiReact, color: "#61DAFB" },
@@ -14,7 +15,9 @@ const technologies = [
   { name: "Tailwind", icon: SiTailwindcss, color: "#06B6D4" },
   { name: "Figma", icon: SiFigma, color: "#F24E1E" },
   { name: "Docker", icon: SiDocker, color: "#2496ED" },
-  { name: "AWS", icon: SiAmazonwebservices, color: "#FF9900" },
+  { name: "Яндекс Cloud", icon: Cloud, color: "#FC3F1D" },
+  { name: "ЮКасса", icon: CreditCard, color: "#00BFFF" },
+  { name: "VK Cloud", icon: Server, color: "#0077FF" },
 ];
 
 export function TechnologiesSection() {
@@ -43,7 +46,7 @@ export function TechnologiesSection() {
             </span>
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Работаем с проверенными технологиями для создания надёжных и масштабируемых решений
+            Работаем с проверенными технологиями и российскими сервисами для надёжных решений
           </p>
         </motion.div>
 
@@ -69,7 +72,7 @@ export function TechnologiesSection() {
                   e.currentTarget.style.boxShadow = `0 0 0 0 ${tech.color}20`;
                   e.currentTarget.style.borderColor = "";
                 }}
-                data-testid={`tech-${tech.name.toLowerCase()}`}
+                data-testid={`tech-${tech.name.toLowerCase().replace(/\s+/g, "-")}`}
               >
                 <tech.icon
                   className="w-5 h-5 transition-colors duration-300"
