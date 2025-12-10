@@ -16,20 +16,22 @@ interface Feature {
 }
 
 const projectTypes: { value: ProjectType; label: string; basePrice: number; description: string }[] = [
-  { value: "landing", label: "Лендинг", basePrice: 15000, description: "Одностраничный сайт" },
-  { value: "corporate", label: "Корпоративный сайт", basePrice: 35000, description: "Многостраничный сайт компании" },
-  { value: "shop", label: "Интернет-магазин", basePrice: 60000, description: "Каталог, корзина, оплата" },
-  { value: "webapp", label: "Веб-приложение", basePrice: 100000, description: "SaaS, CRM, личный кабинет" },
+  { value: "landing", label: "Лендинг", basePrice: 25000, description: "Одностраничный продающий сайт" },
+  { value: "corporate", label: "Корпоративный сайт", basePrice: 60000, description: "Многостраничный сайт компании" },
+  { value: "shop", label: "Интернет-магазин", basePrice: 120000, description: "Каталог, корзина, оплата" },
+  { value: "webapp", label: "Веб-приложение", basePrice: 180000, description: "SaaS, CRM, личный кабинет" },
 ];
 
 const features: Feature[] = [
-  { id: "design", label: "Уникальный дизайн", price: 15000 },
-  { id: "adaptive", label: "Адаптивная вёрстка", price: 10000 },
-  { id: "cms", label: "Админ-панель", price: 20000 },
-  { id: "seo", label: "SEO-оптимизация", price: 10000 },
+  { id: "design", label: "Уникальный дизайн", price: 20000 },
+  { id: "adaptive", label: "Адаптивная вёрстка", price: 15000 },
+  { id: "cms", label: "Админ-панель", price: 30000 },
+  { id: "seo", label: "SEO-оптимизация", price: 15000 },
   { id: "analytics", label: "Аналитика (Яндекс.Метрика)", price: 5000 },
-  { id: "payment", label: "Интеграция оплаты (ЮКасса)", price: 15000 },
-  { id: "hosting", label: "Настройка хостинга (Яндекс Cloud)", price: 10000 },
+  { id: "payment", label: "Интеграция оплаты (ЮКасса)", price: 20000 },
+  { id: "hosting", label: "Настройка хостинга (Яндекс Cloud)", price: 15000 },
+  { id: "crm", label: "Интеграция с CRM", price: 25000 },
+  { id: "1c", label: "Интеграция с 1С", price: 35000 },
 ];
 
 export function CalculatorSection() {
