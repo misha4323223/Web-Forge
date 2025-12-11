@@ -1,9 +1,9 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { SiReact, SiNextdotjs, SiVuedotjs, SiTypescript, SiNodedotjs, SiPython, SiPostgresql, SiTailwindcss, SiTelegram, SiVk } from "react-icons/si";
-import { Cloud, CreditCard, Server, Database, MessageSquare, Truck, Building2, BarChart3, MapPin } from "lucide-react";
+import { Cloud, CreditCard, Server, Database, MessageSquare, Truck, Building2, BarChart3, MapPin, Code, Layers } from "lucide-react";
 
-const technologies = [
+const programmingTech = [
   { name: "React", icon: SiReact, color: "#61DAFB" },
   { name: "Next.js", icon: SiNextdotjs, color: "#ffffff" },
   { name: "Vue.js", icon: SiVuedotjs, color: "#4FC08D" },
@@ -12,6 +12,9 @@ const technologies = [
   { name: "Python", icon: SiPython, color: "#3776AB" },
   { name: "PostgreSQL", icon: SiPostgresql, color: "#4169E1" },
   { name: "Tailwind", icon: SiTailwindcss, color: "#06B6D4" },
+];
+
+const russianServices = [
   { name: "Яндекс Cloud", icon: Cloud, color: "#FC3F1D" },
   { name: "VK Cloud", icon: Server, color: "#0077FF" },
   { name: "ЮКасса", icon: CreditCard, color: "#00BFFF" },
@@ -24,6 +27,45 @@ const technologies = [
   { name: "Telegram Bot", icon: SiTelegram, color: "#26A5E4" },
   { name: "VK API", icon: SiVk, color: "#0077FF" },
 ];
+
+interface TechItem {
+  name: string;
+  icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
+  color: string;
+}
+
+function TechPill({ tech, index, isInView }: { tech: TechItem; index: number; isInView: boolean }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={isInView ? { opacity: 1, scale: 1 } : {}}
+      transition={{ duration: 0.5, delay: 0.05 * index }}
+      className="group"
+    >
+      <div
+        className="flex items-center gap-3 px-5 py-3 rounded-full bg-card/50 border border-border backdrop-blur-sm hover-elevate cursor-default transition-all duration-300"
+        style={{
+          boxShadow: `0 0 0 0 ${tech.color}20`,
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.boxShadow = `0 0 20px 0 ${tech.color}30`;
+          e.currentTarget.style.borderColor = `${tech.color}50`;
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.boxShadow = `0 0 0 0 ${tech.color}20`;
+          e.currentTarget.style.borderColor = "";
+        }}
+        data-testid={`tech-${tech.name.toLowerCase().replace(/\s+/g, "-")}`}
+      >
+        <tech.icon
+          className="w-5 h-5 transition-colors duration-300"
+          style={{ color: tech.color }}
+        />
+        <span className="text-sm font-medium text-foreground">{tech.name}</span>
+      </div>
+    </motion.div>
+  );
+}
 
 export function TechnologiesSection() {
   const ref = useRef(null);
@@ -55,38 +97,38 @@ export function TechnologiesSection() {
           </p>
         </motion.div>
 
-        <div className="flex flex-wrap justify-center gap-4 md:gap-6">
-          {technologies.map((tech, index) => (
-            <motion.div
-              key={tech.name}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={isInView ? { opacity: 1, scale: 1 } : {}}
-              transition={{ duration: 0.5, delay: 0.05 * index }}
-              className="group"
-            >
-              <div
-                className="flex items-center gap-3 px-5 py-3 rounded-full bg-card/50 border border-border backdrop-blur-sm hover-elevate cursor-default transition-all duration-300"
-                style={{
-                  boxShadow: `0 0 0 0 ${tech.color}20`,
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow = `0 0 20px 0 ${tech.color}30`;
-                  e.currentTarget.style.borderColor = `${tech.color}50`;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow = `0 0 0 0 ${tech.color}20`;
-                  e.currentTarget.style.borderColor = "";
-                }}
-                data-testid={`tech-${tech.name.toLowerCase().replace(/\s+/g, "-")}`}
-              >
-                <tech.icon
-                  className="w-5 h-5 transition-colors duration-300"
-                  style={{ color: tech.color }}
-                />
-                <span className="text-sm font-medium text-foreground">{tech.name}</span>
-              </div>
-            </motion.div>
-          ))}
+        <div className="space-y-12">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <div className="flex items-center justify-center gap-3 mb-6">
+              <Code className="w-5 h-5 text-cyan-400" />
+              <h3 className="text-lg font-semibold text-foreground">Технологии разработки</h3>
+            </div>
+            <div className="flex flex-wrap justify-center gap-4 md:gap-5">
+              {programmingTech.map((tech, index) => (
+                <TechPill key={tech.name} tech={tech} index={index} isInView={isInView} />
+              ))}
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
+            <div className="flex items-center justify-center gap-3 mb-6">
+              <Layers className="w-5 h-5 text-purple-400" />
+              <h3 className="text-lg font-semibold text-foreground">Российские сервисы и интеграции</h3>
+            </div>
+            <div className="flex flex-wrap justify-center gap-4 md:gap-5">
+              {russianServices.map((tech, index) => (
+                <TechPill key={tech.name} tech={tech} index={index + programmingTech.length} isInView={isInView} />
+              ))}
+            </div>
+          </motion.div>
         </div>
       </div>
     </section>
