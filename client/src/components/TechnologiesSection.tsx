@@ -1,7 +1,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
-import { SiReact, SiNextdotjs, SiVuedotjs, SiTypescript, SiNodedotjs, SiPython, SiPostgresql, SiMongodb, SiTailwindcss, SiFigma, SiDocker } from "react-icons/si";
-import { Cloud, CreditCard, Server } from "lucide-react";
+import { SiReact, SiNextdotjs, SiVuedotjs, SiTypescript, SiNodedotjs, SiPython, SiPostgresql, SiTailwindcss, SiTelegram, SiVk } from "react-icons/si";
+import { Cloud, CreditCard, Server, Database, MessageSquare, Truck, Building2, BarChart3, MapPin } from "lucide-react";
 
 const technologies = [
   { name: "React", icon: SiReact, color: "#61DAFB" },
@@ -11,13 +11,18 @@ const technologies = [
   { name: "Node.js", icon: SiNodedotjs, color: "#339933" },
   { name: "Python", icon: SiPython, color: "#3776AB" },
   { name: "PostgreSQL", icon: SiPostgresql, color: "#4169E1" },
-  { name: "MongoDB", icon: SiMongodb, color: "#47A248" },
   { name: "Tailwind", icon: SiTailwindcss, color: "#06B6D4" },
-  { name: "Figma", icon: SiFigma, color: "#F24E1E" },
-  { name: "Docker", icon: SiDocker, color: "#2496ED" },
   { name: "Яндекс Cloud", icon: Cloud, color: "#FC3F1D" },
-  { name: "ЮКасса", icon: CreditCard, color: "#00BFFF" },
   { name: "VK Cloud", icon: Server, color: "#0077FF" },
+  { name: "ЮКасса", icon: CreditCard, color: "#00BFFF" },
+  { name: "Яндекс.Метрика", icon: BarChart3, color: "#FC3F1D" },
+  { name: "1С", icon: Database, color: "#FFD700" },
+  { name: "Битрикс24", icon: Building2, color: "#2FC7F7" },
+  { name: "amoCRM", icon: MessageSquare, color: "#339DC0" },
+  { name: "СДЭК", icon: Truck, color: "#00B33C" },
+  { name: "DaData", icon: MapPin, color: "#FF6B35" },
+  { name: "Telegram Bot", icon: SiTelegram, color: "#26A5E4" },
+  { name: "VK API", icon: SiVk, color: "#0077FF" },
 ];
 
 export function TechnologiesSection() {

@@ -1,4 +1,4 @@
-import { SiTelegram, SiGithub } from "react-icons/si";
+import { SiTelegram, SiVk } from "react-icons/si";
 import { Button } from "@/components/ui/button";
 
 const footerLinks = [
@@ -56,9 +56,9 @@ export function Footer() {
             <Button
               variant="ghost"
               size="icon"
-              data-testid="button-footer-github"
+              data-testid="button-footer-vk"
             >
-              <SiGithub className="w-5 h-5" />
+              <SiVk className="w-5 h-5" />
             </Button>
           </div>
         </div>

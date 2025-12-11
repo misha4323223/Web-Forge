@@ -78,7 +78,7 @@ export function AboutSection() {
             </p>
 
             <div className="flex flex-wrap gap-3">
-              {["React", "Node.js", "TypeScript", "Яндекс Cloud", "ЮКасса"].map((tech) => (
+              {["React", "Node.js", "Яндекс Cloud", "ЮКасса", "1С", "Битрикс24"].map((tech) => (
                 <span
                   key={tech}
                   className="px-3 py-1.5 rounded-md bg-card border border-border text-sm font-mono text-muted-foreground"
