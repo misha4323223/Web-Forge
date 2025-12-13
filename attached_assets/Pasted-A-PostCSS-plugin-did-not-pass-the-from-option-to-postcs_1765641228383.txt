@@ -1,0 +1,37 @@
+A PostCSS plugin did not pass the `from` option to `postcss.parse`. This may cause imported assets to be incorrectly transformed. If you've recently added a PostCSS plugin that raised this warning, please contact the package author to fix the issue.
+✓ 2107 modules transformed.
+../dist/public/index.html                                              2.51 kB │ gzip:   1.06 kB
+../dist/public/assets/face_moisturizer_cre_59e07cda-aeRWUS0C.jpg     133.53 kB
+../dist/public/assets/vitamin_c_serum_drop_c449b45e-CwRTnwOW.jpg     140.86 kB
+../dist/public/assets/night_cream_luxury_s_7bf4c694-C_70lvTO.jpg     141.79 kB
+../dist/public/assets/toner_bottle_skincar_632250d7-Dsp6YdFi.jpg     149.27 kB
+../dist/public/assets/micellar_water_clean_dda3e93a-_HzNeKXS.jpg     192.46 kB
+../dist/public/assets/face_mask_cosmetic_s_4961cbaf-BSfoqQBP.jpg     209.92 kB
+../dist/public/assets/cosmetics_skincare_p_2775c0e7-DaRgZpxA.jpg     435.77 kB
+../dist/public/assets/black_t-shirt_product_photo-b1Ay_AV4.png       512.88 kB
+../dist/public/assets/black_oversized_hoodie_product-D1iHXrE-.png    589.89 kB
+../dist/public/assets/black_cargo_pants_product-3l5bxOTr.png         856.07 kB
+../dist/public/assets/athletic_running_socks-Bb2IgC9f.png            886.75 kB
+../dist/public/assets/gift_box_socks_set-3goinjwP.png                888.15 kB
+../dist/public/assets/black_bomber_jacket_product-CEpuJeb6.png       895.23 kB
+../dist/public/assets/black_beanie_hat_product-Cty5fEQU.png          920.79 kB
+../dist/public/assets/black_crossbody_bag_product-B8OzTAer.png       955.39 kB
+../dist/public/assets/business_socks_gift_box-BZGbcJck.png           969.36 kB
+../dist/public/assets/novelty_socks_with_text-2ZuQ7zXz.png         1,040.90 kB
+../dist/public/assets/image_1765623150824-CVXE4n9K.png             1,044.78 kB
+../dist/public/assets/socks_collection_hero_image-B_HmbFSH.png     1,086.81 kB
+../dist/public/assets/colorful_patterned_socks_set-DOnhM2Wn.png    1,324.52 kB
+../dist/public/assets/streetwear_hero_banner_dark-bjYkGCo1.png     1,703.29 kB
+../dist/public/assets/index-DwHvnWu9.css                             101.08 kB │ gzip:  15.60 kB
+../dist/public/assets/index-TkAigDR7.js                              681.17 kB │ gzip: 211.06 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 16.95s
+building server...
+
+  dist\index.cjs  928.1kb
+
+Done in 4319ms
