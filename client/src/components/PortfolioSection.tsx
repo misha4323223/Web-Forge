@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { ExternalLink } from "lucide-react";
 
 import sweetDelightsImg from "@assets/image_1765623150824.png";
-import obzor71Img from "@assets/image_1765623349735.png";
+import obzor71Img from "@assets/image_1765623445583.png";
 
 const projects = [
   {
