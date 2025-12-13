@@ -18,6 +18,7 @@ const russianServices = [
   { name: "Яндекс Cloud", icon: Cloud, color: "#FC3F1D" },
   { name: "VK Cloud", icon: Server, color: "#0077FF" },
   { name: "ЮКасса", icon: CreditCard, color: "#00BFFF" },
+  { name: "Робокасса", icon: CreditCard, color: "#F7931A" },
   { name: "Яндекс.Метрика", icon: BarChart3, color: "#FC3F1D" },
   { name: "1С", icon: Database, color: "#FFD700" },
   { name: "Битрикс24", icon: Building2, color: "#2FC7F7" },
@@ -120,7 +121,7 @@ export function TechnologiesSection() {
           >
             <div className="flex items-center justify-center gap-3 mb-6">
               <Layers className="w-5 h-5 text-purple-400" />
-              <h3 className="text-lg font-semibold text-foreground">Российские сервисы и интеграции</h3>
+              <h3 className="text-lg font-semibold text-foreground">Сервисы и интеграции</h3>
             </div>
             <div className="flex flex-wrap justify-center gap-4 md:gap-5">
               {russianServices.map((tech, index) => (
