@@ -57,6 +57,15 @@ const concepts = [
     demoUrl: "/demo/cosmetics",
     isConcept: true,
   },
+  {
+    id: 6,
+    title: "STREETWEAR",
+    description: "Концепт магазина российского стритвира. Тёмная тема, категории, бренды, корзина.",
+    tags: ["React", "E-commerce", "Dark Theme"],
+    image: "https://images.unsplash.com/photo-1523398002811-999ca8dec234?w=600&h=400&fit=crop",
+    demoUrl: "/demo/streetwear",
+    isConcept: true,
+  },
 ];
 
 export function PortfolioSection() {

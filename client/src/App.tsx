@@ -8,6 +8,7 @@ import Home from "@/pages/Home";
 import FoodDelivery from "@/pages/demo/FoodDelivery";
 import FitnessStudio from "@/pages/demo/FitnessStudio";
 import CosmeticsShop from "@/pages/demo/CosmeticsShop";
+import StreetWearShop from "@/pages/demo/StreetWearShop";
 
 function Router() {
   return (
@@ -16,6 +17,7 @@ function Router() {
       <Route path="/demo/food-delivery" component={FoodDelivery} />
       <Route path="/demo/fitness" component={FitnessStudio} />
       <Route path="/demo/cosmetics" component={CosmeticsShop} />
+      <Route path="/demo/streetwear" component={StreetWearShop} />
       <Route component={NotFound} />
     </Switch>
   );
