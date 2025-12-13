@@ -1,0 +1,12 @@
+{
+  "name": "webstudio-function",
+  "version": "1.0.0",
+  "description": "Yandex Cloud Function для обработки форм WebStudio",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Test passed\""
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
