@@ -1,7 +1,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { SiReact, SiNextdotjs, SiVuedotjs, SiTypescript, SiNodedotjs, SiPython, SiPostgresql, SiTailwindcss, SiTelegram, SiVk } from "react-icons/si";
-import { Cloud, CreditCard, Server, Database, MessageSquare, Truck, Building2, BarChart3, MapPin, Code, Layers } from "lucide-react";
+import { Cloud, CreditCard, Server, Database, Truck, Building2, BarChart3, MapPin, Code, Layers } from "lucide-react";
 
 const programmingTech = [
   { name: "React", icon: SiReact, color: "#61DAFB" },
@@ -21,7 +21,6 @@ const russianServices = [
   { name: "Яндекс.Метрика", icon: BarChart3, color: "#FC3F1D" },
   { name: "1С", icon: Database, color: "#FFD700" },
   { name: "Битрикс24", icon: Building2, color: "#2FC7F7" },
-  { name: "amoCRM", icon: MessageSquare, color: "#339DC0" },
   { name: "СДЭК", icon: Truck, color: "#00B33C" },
   { name: "DaData", icon: MapPin, color: "#FF6B35" },
   { name: "Telegram Bot", icon: SiTelegram, color: "#26A5E4" },

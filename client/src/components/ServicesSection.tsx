@@ -1,7 +1,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { Card } from "@/components/ui/card";
-import { Globe, Smartphone, ShoppingCart, Gauge, Palette, Code } from "lucide-react";
+import { Globe, ShoppingCart, Gauge, Palette, Code } from "lucide-react";
 
 const services = [
   {
@@ -15,12 +15,6 @@ const services = [
     title: "Интернет-магазины",
     description: "Разрабатываем e-commerce решения с удобным каталогом, корзиной и интеграцией платёжных систем.",
     color: "from-purple-500 to-pink-500",
-  },
-  {
-    icon: Smartphone,
-    title: "Веб-приложения",
-    description: "Создаём сложные SaaS-платформы, CRM-системы и внутренние корпоративные инструменты.",
-    color: "from-green-500 to-teal-500",
   },
   {
     icon: Palette,

@@ -7,7 +7,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Calculator, ArrowRight } from "lucide-react";
 
-type ProjectType = "landing" | "corporate" | "shop" | "webapp";
+type ProjectType = "landing" | "corporate" | "shop";
 
 interface Feature {
   id: string;
@@ -19,7 +19,6 @@ const projectTypes: { value: ProjectType; label: string; basePrice: number; desc
   { value: "landing", label: "Лендинг", basePrice: 25000, description: "Одностраничный продающий сайт" },
   { value: "corporate", label: "Корпоративный сайт", basePrice: 60000, description: "Многостраничный сайт компании" },
   { value: "shop", label: "Интернет-магазин", basePrice: 120000, description: "Каталог, корзина, оплата" },
-  { value: "webapp", label: "Веб-приложение", basePrice: 180000, description: "SaaS, CRM, личный кабинет" },
 ];
 
 const features: Feature[] = [
@@ -30,7 +29,6 @@ const features: Feature[] = [
   { id: "analytics", label: "Аналитика (Яндекс.Метрика)", price: 5000 },
   { id: "payment", label: "Интеграция оплаты (ЮКасса)", price: 20000 },
   { id: "hosting", label: "Настройка хостинга (Яндекс Cloud)", price: 15000 },
-  { id: "crm", label: "Интеграция с CRM", price: 25000 },
   { id: "1c", label: "Интеграция с 1С", price: 35000 },
 ];
 

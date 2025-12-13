@@ -35,7 +35,6 @@ const projectTypes = [
   { value: "landing", label: "Лендинг" },
   { value: "corporate", label: "Корпоративный сайт" },
   { value: "shop", label: "Интернет-магазин" },
-  { value: "webapp", label: "Веб-приложение" },
   { value: "other", label: "Другое" },
 ];
 
