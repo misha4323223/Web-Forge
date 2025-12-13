@@ -8,15 +8,15 @@ const projects = [
   {
     id: 1,
     title: "Sweet Delights",
-    description: "Интернет-магазин сладостей и подарков с доставкой по России. Каталог товаров, корзина, интеграция с Яндекс Cloud и ЮКасса.",
-    tags: ["React", "Node.js", "PostgreSQL", "Яндекс Cloud", "ЮКасса"],
+    description: "Интернет-магазин сладостей с каталогом, корзиной, оплатой через Robokassa и хранением в Яндекс Cloud.",
+    tags: ["React", "Node.js", "PostgreSQL", "Robokassa", "Яндекс Cloud"],
     color: "from-pink-500 to-orange-400",
     url: "https://sweetdelights.store/",
   },
   {
     id: 2,
     title: "Obzor71",
-    description: "Сайт домофонной службы в Тульской области. Форма заявок, интеграция с Telegram-ботом для уведомлений.",
+    description: "Сайт домофонной службы с формой заявок, отзывами и уведомлениями в Telegram.",
     tags: ["React", "TypeScript", "Tailwind", "Telegram Bot"],
     color: "from-blue-500 to-cyan-500",
     url: "https://www.obzor71.ru/",
