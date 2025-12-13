@@ -1,7 +1,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { SiReact, SiNextdotjs, SiVuedotjs, SiTypescript, SiNodedotjs, SiPython, SiPostgresql, SiTailwindcss, SiTelegram, SiVk } from "react-icons/si";
-import { Cloud, CreditCard, Server, Database, Truck, Building2, BarChart3, MapPin, Code, Layers, MoreHorizontal } from "lucide-react";
+import { Cloud, CreditCard, Server, Database, Truck, Building2, BarChart3, MapPin, Code, Layers } from "lucide-react";
 
 const programmingTech = [
   { name: "React", icon: SiReact, color: "#61DAFB" },
@@ -26,7 +26,6 @@ const russianServices = [
   { name: "DaData", icon: MapPin, color: "#FF6B35" },
   { name: "Telegram Bot", icon: SiTelegram, color: "#26A5E4" },
   { name: "VK API", icon: SiVk, color: "#0077FF" },
-  { name: "и другие...", icon: MoreHorizontal, color: "#888888" },
 ];
 
 interface TechItem {
