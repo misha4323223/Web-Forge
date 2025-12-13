@@ -21,22 +21,6 @@ const projects = [
     color: "from-blue-500 to-cyan-500",
     url: "https://www.obzor71.ru/",
   },
-  {
-    id: 3,
-    title: "Строительная компания",
-    description: "Корпоративный сайт с портфолио объектов, калькулятором стоимости и формой заявки",
-    tags: ["React", "TypeScript", "Tailwind", "Telegram Bot"],
-    color: "from-purple-500 to-pink-500",
-    url: null,
-  },
-  {
-    id: 4,
-    title: "Юридическая фирма",
-    description: "Многостраничный корпоративный сайт с описанием услуг, блогом и онлайн-консультацией",
-    tags: ["React", "Node.js", "PostgreSQL", "Яндекс.Метрика"],
-    color: "from-green-500 to-teal-500",
-    url: null,
-  },
 ];
 
 export function PortfolioSection() {
