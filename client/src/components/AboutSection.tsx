@@ -28,7 +28,7 @@ export function AboutSection() {
               для вашего бизнеса
             </h2>
             <p className="text-muted-foreground text-lg mb-6">
-              WebStudio — команда профессионалов, которая объединяет креативный дизайн и
+              MP.WebStudio — команда профессионалов, которая объединяет креативный дизайн и
               передовые технологии для создания веб-продуктов, которые приносят результат.
             </p>
             <p className="text-muted-foreground text-lg mb-8">

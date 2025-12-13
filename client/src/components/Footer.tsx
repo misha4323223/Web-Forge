@@ -26,9 +26,9 @@ export function Footer() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="flex items-center gap-2">
             <div className="w-10 h-10 rounded-md bg-gradient-to-br from-cyan-400 to-purple-500 flex items-center justify-center">
-              <span className="text-lg font-bold text-white">W</span>
+              <span className="text-sm font-bold text-white">MP</span>
             </div>
-            <span className="text-xl font-bold text-foreground">WebStudio</span>
+            <span className="text-xl font-bold text-foreground">MP.WebStudio</span>
           </div>
 
           <nav className="flex flex-wrap items-center justify-center gap-1">
@@ -65,7 +65,7 @@ export function Footer() {
 
         <div className="mt-8 pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
           <p data-testid="text-copyright">
-            © {new Date().getFullYear()} WebStudio. Все права защищены.
+            © {new Date().getFullYear()} MP.WebStudio. Все права защищены.
           </p>
           <p>
             Сделано с любовью в России

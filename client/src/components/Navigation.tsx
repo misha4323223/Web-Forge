@@ -54,9 +54,9 @@ export function Navigation() {
           data-testid="link-logo"
         >
           <div className="w-10 h-10 rounded-md bg-gradient-to-br from-cyan-400 to-purple-500 flex items-center justify-center">
-            <span className="text-lg font-bold text-white">W</span>
+            <span className="text-sm font-bold text-white">MP</span>
           </div>
-          <span className="text-xl font-bold text-foreground">WebStudio</span>
+          <span className="text-xl font-bold text-foreground">MP.WebStudio</span>
         </a>
 
         <div className="hidden md:flex items-center gap-1">
