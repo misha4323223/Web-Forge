@@ -2,8 +2,9 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Clock, MapPin, Phone, Star, Flame, Leaf, ChefHat, Truck, ArrowLeft } from "lucide-react";
+import { Clock, MapPin, Phone, Star, Flame, Leaf, ChefHat, Truck, ArrowLeft, ShoppingCart, Plus } from "lucide-react";
 import { Link } from "wouter";
+import { useState } from "react";
 
 const menuItems = [
   {
@@ -51,6 +52,17 @@ const features = [
 ];
 
 export default function FoodDelivery() {
+  const [cart, setCart] = useState<number[]>([]);
+
+  const addToCart = (id: number) => {
+    setCart(prev => [...prev, id]);
+  };
+
+  const cartTotal = cart.reduce((sum, id) => {
+    const item = menuItems.find(m => m.id === id);
+    return sum + (item?.price || 0);
+  }, 0);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-orange-50 to-amber-50 dark:from-neutral-950 dark:to-neutral-900">
       <Link href="/#portfolio">
@@ -63,6 +75,15 @@ export default function FoodDelivery() {
           Назад
         </Button>
       </Link>
+
+      {cart.length > 0 && (
+        <div className="fixed bottom-4 right-4 z-50">
+          <Button size="lg" className="bg-orange-500 hover:bg-orange-600 shadow-lg" data-testid="button-view-cart">
+            <ShoppingCart className="w-5 h-5 mr-2" />
+            Корзина ({cart.length}) — {cartTotal} р
+          </Button>
+        </div>
+      )}
 
       <header className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-orange-500/90 to-red-500/90" />
@@ -107,7 +128,7 @@ export default function FoodDelivery() {
               <Button size="lg" variant="secondary" data-testid="button-order">
                 Заказать сейчас
               </Button>
-              <Button size="lg" variant="outline" data-testid="button-menu">
+              <Button size="lg" variant="outline" className="text-white border-white/50 hover:bg-white/10" data-testid="button-menu">
                 Смотреть меню
               </Button>
             </div>
@@ -189,15 +210,27 @@ export default function FoodDelivery() {
                         </Badge>
                       ))}
                     </div>
+                    {cart.filter(id => id === item.id).length > 0 && (
+                      <div className="absolute top-3 right-3">
+                        <Badge className="bg-orange-500 text-white border-0">
+                          x{cart.filter(id => id === item.id).length}
+                        </Badge>
+                      </div>
+                    )}
                   </div>
                   <div className="p-4">
                     <h3 className="font-semibold text-foreground mb-1">{item.name}</h3>
                     <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{item.description}</p>
-                    <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center justify-between gap-2 mb-3">
                       <span className="text-lg font-bold text-orange-500">{item.price} р</span>
                       <span className="text-xs text-muted-foreground">{item.calories} ккал</span>
                     </div>
-                    <Button className="w-full mt-3 bg-orange-500 hover:bg-orange-600" data-testid={`button-add-${item.id}`}>
+                    <Button 
+                      className="w-full bg-orange-500 hover:bg-orange-600" 
+                      onClick={() => addToCart(item.id)}
+                      data-testid={`button-add-${item.id}`}
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
                       В корзину
                     </Button>
                   </div>

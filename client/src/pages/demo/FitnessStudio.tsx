@@ -2,9 +2,11 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Clock, MapPin, Phone, Dumbbell, Users, Calendar, Zap, Heart, Trophy, ArrowLeft } from "lucide-react";
+import { Clock, MapPin, Phone, Dumbbell, Users, Calendar, Zap, Heart, Trophy, ArrowLeft, Check } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Link } from "wouter";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 const classes = [
   { id: 1, name: "Силовая тренировка", time: "07:00", trainer: "Алексей", duration: "60 мин", spots: 8 },
@@ -28,6 +30,35 @@ const plans = [
 ];
 
 export default function FitnessStudio() {
+  const [bookedClasses, setBookedClasses] = useState<number[]>([]);
+  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+  const { toast } = useToast();
+
+  const bookClass = (id: number) => {
+    if (bookedClasses.includes(id)) {
+      setBookedClasses(prev => prev.filter(x => x !== id));
+      toast({
+        title: "Запись отменена",
+        description: "Вы отменили запись на занятие",
+      });
+    } else {
+      setBookedClasses(prev => [...prev, id]);
+      const cls = classes.find(c => c.id === id);
+      toast({
+        title: "Вы записаны!",
+        description: `${cls?.name} в ${cls?.time}`,
+      });
+    }
+  };
+
+  const selectPlan = (planName: string) => {
+    setSelectedPlan(planName);
+    toast({
+      title: "Тариф выбран",
+      description: `Вы выбрали тариф "${planName}"`,
+    });
+  };
+
   return (
     <div className="min-h-screen bg-neutral-950 text-white">
       <Link href="/#portfolio">
@@ -40,6 +71,15 @@ export default function FitnessStudio() {
           Назад
         </Button>
       </Link>
+
+      {bookedClasses.length > 0 && (
+        <div className="fixed bottom-4 right-4 z-50">
+          <Badge className="bg-violet-500 text-white border-0 px-4 py-2 text-sm">
+            <Calendar className="w-4 h-4 mr-2 inline" />
+            Записей: {bookedClasses.length}
+          </Badge>
+        </div>
+      )}
 
       <header className="relative min-h-screen flex items-center overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-violet-900/50 via-neutral-950 to-neutral-950" />
@@ -145,37 +185,52 @@ export default function FitnessStudio() {
           </motion.div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {classes.map((cls, index) => (
-              <motion.div
-                key={cls.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.05 }}
-              >
-                <Card className="p-5 bg-neutral-800/50 border-neutral-700 hover:border-violet-500/50 transition-colors" data-testid={`card-class-${cls.id}`}>
-                  <div className="flex items-start justify-between gap-4 mb-3">
-                    <div>
-                      <h3 className="font-semibold text-white">{cls.name}</h3>
-                      <p className="text-sm text-neutral-400">Тренер: {cls.trainer}</p>
+            {classes.map((cls, index) => {
+              const isBooked = bookedClasses.includes(cls.id);
+              return (
+                <motion.div
+                  key={cls.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.05 }}
+                >
+                  <Card className={`p-5 border transition-colors ${isBooked ? 'border-violet-500 bg-violet-500/10' : 'border-neutral-700 bg-neutral-800/50 hover:border-violet-500/50'}`} data-testid={`card-class-${cls.id}`}>
+                    <div className="flex items-start justify-between gap-4 mb-3">
+                      <div>
+                        <h3 className="font-semibold text-white">{cls.name}</h3>
+                        <p className="text-sm text-neutral-400">Тренер: {cls.trainer}</p>
+                      </div>
+                      {isBooked ? (
+                        <Badge className="bg-violet-500 text-white border-0">
+                          <Check className="w-3 h-3 mr-1" />
+                          Записан
+                        </Badge>
+                      ) : (
+                        <Badge variant="secondary" className="bg-violet-500/20 text-violet-300 border-0">
+                          {cls.spots} мест
+                        </Badge>
+                      )}
                     </div>
-                    <Badge variant="secondary" className="bg-violet-500/20 text-violet-300 border-0">
-                      {cls.spots} мест
-                    </Badge>
-                  </div>
-                  <div className="flex items-center gap-4 text-sm text-neutral-400 mb-4">
-                    <span className="flex items-center gap-1">
-                      <Clock className="w-4 h-4" />
-                      {cls.time}
-                    </span>
-                    <span>{cls.duration}</span>
-                  </div>
-                  <Button variant="outline" className="w-full border-neutral-600 text-neutral-200 hover:bg-violet-600 hover:border-violet-600 hover:text-white" data-testid={`button-book-${cls.id}`}>
-                    Записаться
-                  </Button>
-                </Card>
-              </motion.div>
-            ))}
+                    <div className="flex items-center gap-4 text-sm text-neutral-400 mb-4">
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-4 h-4" />
+                        {cls.time}
+                      </span>
+                      <span>{cls.duration}</span>
+                    </div>
+                    <Button 
+                      variant={isBooked ? "default" : "outline"}
+                      className={`w-full ${isBooked ? 'bg-violet-600 hover:bg-violet-700' : 'border-neutral-600 text-neutral-200 hover:bg-violet-600 hover:border-violet-600 hover:text-white'}`}
+                      onClick={() => bookClass(cls.id)}
+                      data-testid={`button-book-${cls.id}`}
+                    >
+                      {isBooked ? "Отменить запись" : "Записаться"}
+                    </Button>
+                  </Card>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -193,40 +248,50 @@ export default function FitnessStudio() {
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-6">
-            {plans.map((plan, index) => (
-              <motion.div
-                key={plan.name}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <Card className={`p-6 border ${plan.popular ? 'border-violet-500 bg-gradient-to-b from-violet-500/10 to-transparent' : 'border-neutral-700 bg-neutral-800/30'}`} data-testid={`card-plan-${plan.name.toLowerCase()}`}>
-                  {plan.popular && (
-                    <Badge className="mb-4 bg-violet-500 text-white border-0">Популярный</Badge>
-                  )}
-                  <h3 className="text-xl font-bold text-white mb-2">{plan.name}</h3>
-                  <div className="mb-6">
-                    <span className="text-4xl font-bold text-white">{plan.price}</span>
-                    <span className="text-neutral-400"> р/мес</span>
-                  </div>
-                  <ul className="space-y-3 mb-6">
-                    {plan.features.map(feature => (
-                      <li key={feature} className="flex items-center gap-2 text-neutral-300">
-                        <Heart className="w-4 h-4 text-violet-400" />
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-                  <Button
-                    className={`w-full ${plan.popular ? 'bg-violet-600 hover:bg-violet-700' : 'bg-neutral-700 hover:bg-neutral-600'}`}
-                    data-testid={`button-select-${plan.name.toLowerCase()}`}
-                  >
-                    Выбрать
-                  </Button>
-                </Card>
-              </motion.div>
-            ))}
+            {plans.map((plan, index) => {
+              const isSelected = selectedPlan === plan.name;
+              return (
+                <motion.div
+                  key={plan.name}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <Card className={`p-6 border ${plan.popular ? 'border-violet-500 bg-gradient-to-b from-violet-500/10 to-transparent' : isSelected ? 'border-violet-500' : 'border-neutral-700 bg-neutral-800/30'}`} data-testid={`card-plan-${plan.name.toLowerCase()}`}>
+                    {plan.popular && (
+                      <Badge className="mb-4 bg-violet-500 text-white border-0">Популярный</Badge>
+                    )}
+                    {isSelected && !plan.popular && (
+                      <Badge className="mb-4 bg-green-500 text-white border-0">
+                        <Check className="w-3 h-3 mr-1" />
+                        Выбран
+                      </Badge>
+                    )}
+                    <h3 className="text-xl font-bold text-white mb-2">{plan.name}</h3>
+                    <div className="mb-6">
+                      <span className="text-4xl font-bold text-white">{plan.price}</span>
+                      <span className="text-neutral-400"> р/мес</span>
+                    </div>
+                    <ul className="space-y-3 mb-6">
+                      {plan.features.map(feature => (
+                        <li key={feature} className="flex items-center gap-2 text-neutral-300">
+                          <Heart className="w-4 h-4 text-violet-400" />
+                          {feature}
+                        </li>
+                      ))}
+                    </ul>
+                    <Button
+                      className={`w-full ${isSelected ? 'bg-green-600 hover:bg-green-700' : plan.popular ? 'bg-violet-600 hover:bg-violet-700' : 'bg-neutral-700 hover:bg-neutral-600'}`}
+                      onClick={() => selectPlan(plan.name)}
+                      data-testid={`button-select-${plan.name.toLowerCase()}`}
+                    >
+                      {isSelected ? "Выбрано" : "Выбрать"}
+                    </Button>
+                  </Card>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </section>
