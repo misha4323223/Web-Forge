@@ -6,19 +6,19 @@ import { ShoppingCart, Heart, Menu, Truck, CreditCard, RefreshCw, ArrowLeft, Plu
 import { Link } from "wouter";
 import { useState } from "react";
 
-import heroImg from "@assets/stock_images/streetwear_urban_fas_6f6a8ea5.jpg";
-import hoodieImg from "@assets/stock_images/black_streetwear_hoo_4623cb0f.jpg";
-import tshirtImg from "@assets/stock_images/oversized_black_t-sh_2770d378.jpg";
-import cargoImg from "@assets/stock_images/cargo_pants_streetwe_5e8a701f.jpg";
-import bomberImg from "@assets/stock_images/bomber_jacket_urban__cf8e851a.jpg";
-import bagImg from "@assets/stock_images/crossbody_bag_street_5476aa92.jpg";
-import beanieImg from "@assets/stock_images/beanie_hat_urban_fas_d6ad40b4.jpg";
+import heroImg from "@assets/generated_images/streetwear_hero_banner_dark.png";
+import hoodieImg from "@assets/generated_images/black_oversized_hoodie_product.png";
+import tshirtImg from "@assets/generated_images/black_t-shirt_product_photo.png";
+import cargoImg from "@assets/generated_images/black_cargo_pants_product.png";
+import bomberImg from "@assets/generated_images/black_bomber_jacket_product.png";
+import bagImg from "@assets/generated_images/black_crossbody_bag_product.png";
+import beanieImg from "@assets/generated_images/black_beanie_hat_product.png";
 
 const products = [
   {
     id: 1,
-    name: "Худи DARKSIDE Oversize",
-    brand: "DARKSIDE",
+    name: "Худи SHADOW Oversize",
+    brand: "ТЕНЕВОЙ",
     price: 5990,
     oldPrice: 7490,
     image: hoodieImg,
@@ -27,8 +27,8 @@ const products = [
   },
   {
     id: 2,
-    name: "Футболка BASIC Black",
-    brand: "TRAILHEAD",
+    name: "Футболка БАЗОВАЯ Чёрная",
+    brand: "УЛИЦА",
     price: 2490,
     image: tshirtImg,
     tag: "Хит",
@@ -36,16 +36,16 @@ const products = [
   },
   {
     id: 3,
-    name: "Карго брюки URBAN",
-    brand: "34PLAY",
+    name: "Карго ТАКТИК с карманами",
+    brand: "НОРД",
     price: 6990,
     image: cargoImg,
     sizes: ["S", "M", "L"],
   },
   {
     id: 4,
-    name: "Бомбер STREET Classic",
-    brand: "TRAILHEAD",
+    name: "Бомбер ПИЛОТ Classic",
+    brand: "УЛИЦА",
     price: 9990,
     oldPrice: 12990,
     image: bomberImg,
@@ -54,8 +54,8 @@ const products = [
   },
   {
     id: 5,
-    name: "Сумка поясная TACTICAL",
-    brand: "DARKSIDE",
+    name: "Сумка ПАТРУЛЬ Tactical",
+    brand: "ТЕНЕВОЙ",
     price: 2990,
     image: bagImg,
     tag: "New",
@@ -63,8 +63,8 @@ const products = [
   },
   {
     id: 6,
-    name: "Шапка URBAN Beanie",
-    brand: "34PLAY",
+    name: "Шапка МОРОЗ Beanie",
+    brand: "НОРД",
     price: 1490,
     image: beanieImg,
     sizes: ["ONE SIZE"],
@@ -80,7 +80,7 @@ const categories = [
   { name: "Аксессуары", count: 14 },
 ];
 
-const brands = ["TRAILHEAD", "34PLAY", "DARKSIDE", "CULTURE", "HEADSHOT"];
+const brands = ["ТЕНЕВОЙ", "УЛИЦА", "НОРД", "БЕТОН", "РАЙОН"];
 
 const features = [
   { icon: Truck, title: "Доставка по всей России", desc: "Курьером до двери" },
