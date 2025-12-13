@@ -17,13 +17,18 @@ client/
 │   │   ├── AboutSection.tsx
 │   │   ├── PortfolioSection.tsx
 │   │   ├── ServicesSection.tsx
-│   │   ├── TechSection.tsx
+│   │   ├── TechnologiesSection.tsx
 │   │   ├── ProcessSection.tsx
 │   │   ├── ContactSection.tsx
-│   │   ├── FooterSection.tsx
+│   │   ├── Footer.tsx
 │   │   ├── Navigation.tsx
 │   │   └── ParticleBackground.tsx
-│   ├── pages/          # Страницы
+│   ├── pages/
+│   │   ├── Home.tsx           # Главная страница
+│   │   └── demo/              # Демо-концепты для портфолио
+│   │       ├── FoodDelivery.tsx   # Лендинг доставки еды
+│   │       ├── FitnessStudio.tsx  # Сайт фитнес-студии
+│   │       └── CosmeticsShop.tsx  # Интернет-магазин косметики
 │   └── lib/            # Утилиты
 server/
 ├── routes.ts           # API эндпоинты
