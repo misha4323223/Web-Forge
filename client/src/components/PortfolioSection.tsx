@@ -6,65 +6,52 @@ import { ExternalLink } from "lucide-react";
 import { useLocation } from "wouter";
 
 import sweetDelightsImg from "@assets/image_1765623150824.png";
-import obzor71Img from "@assets/image_1765623445583.png";
 
-const projects = [
+const portfolioItems = [
   {
     id: 1,
     title: "Sweet Delights",
     description: "Интернет-магазин сладостей с админкой, Telegram-приложением, оплатой Robokassa и хранением в Яндекс Cloud.",
     tags: ["React", "Node.js", "PostgreSQL", "Robokassa", "Telegram"],
     image: sweetDelightsImg,
-    url: "https://sweetdelights.store/",
-    isLive: true,
+    externalUrl: "https://sweetdelights.store/",
+    badgeType: "live" as const,
   },
   {
     id: 2,
-    title: "Obzor71",
-    description: "Сайт домофонной службы с формой заявок, отзывами и уведомлениями в Telegram.",
-    tags: ["React", "TypeScript", "Tailwind", "Telegram Bot"],
-    image: obzor71Img,
-    url: "https://www.obzor71.ru/",
-    isLive: true,
-  },
-];
-
-const concepts = [
-  {
-    id: 3,
     title: "ВкусДом",
     description: "Концепт лендинга для доставки азиатской еды. Яркий дизайн, анимированное меню, корзина заказа.",
     tags: ["React", "Framer Motion", "Tailwind"],
     image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&h=400&fit=crop",
     demoUrl: "/demo/food-delivery",
-    isConcept: true,
+    badgeType: "concept" as const,
   },
   {
-    id: 4,
+    id: 3,
     title: "ФОРМА",
     description: "Концепт сайта фитнес-студии. Тёмный стиль, расписание тренировок, тарифные планы.",
     tags: ["React", "Framer Motion", "Dark Theme"],
     image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&h=400&fit=crop",
     demoUrl: "/demo/fitness",
-    isConcept: true,
+    badgeType: "concept" as const,
   },
   {
-    id: 5,
+    id: 4,
     title: "NATURA",
     description: "Концепт интернет-магазина косметики. Минималистичный дизайн, каталог товаров, избранное и корзина.",
     tags: ["React", "E-commerce", "Minimalist"],
     image: "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=600&h=400&fit=crop",
     demoUrl: "/demo/cosmetics",
-    isConcept: true,
+    badgeType: "concept" as const,
   },
   {
-    id: 6,
+    id: 5,
     title: "STREETWEAR",
     description: "Концепт магазина российского стритвира. Тёмная тема, категории, бренды, корзина.",
     tags: ["React", "E-commerce", "Dark Theme"],
     image: "https://images.unsplash.com/photo-1523398002811-999ca8dec234?w=600&h=400&fit=crop",
     demoUrl: "/demo/streetwear",
-    isConcept: true,
+    badgeType: "concept" as const,
   },
 ];
 
@@ -73,14 +60,12 @@ export function PortfolioSection() {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   const [, setLocation] = useLocation();
 
-  const handleProjectClick = (url: string | null) => {
-    if (url) {
-      window.open(url, "_blank", "noopener,noreferrer");
+  const handleItemClick = (item: typeof portfolioItems[0]) => {
+    if (item.externalUrl) {
+      window.open(item.externalUrl, "_blank", "noopener,noreferrer");
+    } else if (item.demoUrl) {
+      setLocation(item.demoUrl);
     }
-  };
-
-  const handleConceptClick = (demoUrl: string) => {
-    setLocation(demoUrl);
   };
 
   return (
@@ -99,112 +84,60 @@ export function PortfolioSection() {
             Портфолио
           </span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
-            Наши{" "}
+            Проекты и{" "}
             <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
-              проекты
+              демо-концепты
             </span>
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Реализованные проекты и демонстрационные концепты — посмотрите, как мы работаем.
+            Реализованные проекты и примеры сайтов для разных ниш — кликните, чтобы посмотреть вживую.
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-6 lg:gap-8 mb-16">
-          {projects.map((project, index) => (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+          {portfolioItems.map((item, index) => (
             <motion.div
-              key={project.id}
+              key={item.id}
               initial={{ opacity: 0, y: 50 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.1 + index * 0.15 }}
+              transition={{ duration: 0.6, delay: 0.1 + index * 0.1 }}
             >
               <Card
-                className={`group relative overflow-hidden p-0 border-border bg-card/50 backdrop-blur-sm hover-elevate ${project.url ? "cursor-pointer" : "cursor-default"}`}
-                onClick={() => handleProjectClick(project.url)}
-                data-testid={`card-project-${project.id}`}
+                className="group relative overflow-hidden p-0 border-border bg-card/50 backdrop-blur-sm hover-elevate cursor-pointer h-full"
+                onClick={() => handleItemClick(item)}
+                data-testid={`card-portfolio-${item.id}`}
               >
-                <div className="h-48 md:h-56 relative overflow-hidden rounded-t-md">
+                <div className="h-48 relative overflow-hidden rounded-t-md">
                   <img 
-                    src={project.image} 
-                    alt={project.title}
+                    src={item.image} 
+                    alt={item.title}
                     className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute top-4 right-4">
-                    <Badge variant="secondary" className="bg-emerald-500/90 backdrop-blur-sm text-white border-0">
-                      Live
-                    </Badge>
-                  </div>
-                </div>
-
-                <div className="p-6">
-                  <div className="flex items-start justify-between gap-4 mb-3">
-                    <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
-                      {project.title}
-                    </h3>
-                    {project.url && (
-                      <ExternalLink className="w-5 h-5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
-                    )}
-                  </div>
-                  <p className="text-muted-foreground mb-4">{project.description}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {project.tags.map((tag) => (
-                      <Badge key={tag} variant="secondary" className="font-mono text-xs">
-                        {tag}
+                    {item.badgeType === "live" ? (
+                      <Badge variant="secondary" className="bg-emerald-500/90 backdrop-blur-sm text-white border-0">
+                        Live
                       </Badge>
-                    ))}
-                  </div>
-                </div>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          className="text-center mb-10"
-        >
-          <h3 className="text-2xl md:text-3xl font-bold mb-4">
-            Демо-концепты
-          </h3>
-          <p className="text-muted-foreground max-w-xl mx-auto">
-            Примеры сайтов для разных ниш — кликните, чтобы посмотреть вживую
-          </p>
-        </motion.div>
-
-        <div className="grid md:grid-cols-3 gap-6">
-          {concepts.map((concept, index) => (
-            <motion.div
-              key={concept.id}
-              initial={{ opacity: 0, y: 50 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.5 + index * 0.1 }}
-            >
-              <Card
-                className="group relative overflow-hidden p-0 border-border bg-card/50 backdrop-blur-sm hover-elevate cursor-pointer"
-                onClick={() => handleConceptClick(concept.demoUrl)}
-                data-testid={`card-concept-${concept.id}`}
-              >
-                <div className="h-40 md:h-48 relative overflow-hidden rounded-t-md">
-                  <img 
-                    src={concept.image} 
-                    alt={concept.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute top-4 right-4">
-                    <Badge variant="secondary" className="bg-purple-500/90 backdrop-blur-sm text-white border-0">
-                      Концепт
-                    </Badge>
+                    ) : (
+                      <Badge variant="secondary" className="bg-purple-500/90 backdrop-blur-sm text-white border-0">
+                        Концепт
+                      </Badge>
+                    )}
                   </div>
                 </div>
 
                 <div className="p-5">
-                  <h3 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors mb-2">
-                    {concept.title}
-                  </h3>
-                  <p className="text-sm text-muted-foreground mb-3">{concept.description}</p>
+                  <div className="flex items-start justify-between gap-4 mb-2">
+                    <h3 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors">
+                      {item.title}
+                    </h3>
+                    {item.externalUrl && (
+                      <ExternalLink className="w-5 h-5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+                    )}
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-3">{item.description}</p>
                   <div className="flex flex-wrap gap-2">
-                    {concept.tags.map((tag) => (
+                    {item.tags.map((tag) => (
                       <Badge key={tag} variant="secondary" className="font-mono text-xs">
                         {tag}
                       </Badge>
