@@ -7,6 +7,14 @@ import { Input } from "@/components/ui/input";
 import { Link } from "wouter";
 import { useState } from "react";
 
+import heroImg from "@assets/stock_images/cosmetics_skincare_p_2775c0e7.jpg";
+import moisturizerImg from "@assets/stock_images/face_moisturizer_cre_59e07cda.jpg";
+import serumImg from "@assets/stock_images/vitamin_c_serum_drop_c449b45e.jpg";
+import micellarImg from "@assets/stock_images/micellar_water_clean_dda3e93a.jpg";
+import maskImg from "@assets/stock_images/face_mask_cosmetic_s_4961cbaf.jpg";
+import tonerImg from "@assets/stock_images/toner_bottle_skincar_632250d7.jpg";
+import nightCreamImg from "@assets/stock_images/night_cream_luxury_s_7bf4c694.jpg";
+
 const products = [
   {
     id: 1,
@@ -14,7 +22,7 @@ const products = [
     brand: "HYDRA",
     price: 2890,
     oldPrice: 3490,
-    image: "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=400&h=400&fit=crop",
+    image: moisturizerImg,
     rating: 4.8,
     reviews: 124,
     tag: "Хит",
@@ -24,7 +32,7 @@ const products = [
     name: "Сыворотка с витамином C",
     brand: "GLOW",
     price: 3450,
-    image: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=400&h=400&fit=crop",
+    image: serumImg,
     rating: 4.9,
     reviews: 89,
     tag: "Новинка",
@@ -34,7 +42,7 @@ const products = [
     name: "Мицеллярная вода",
     brand: "PURE",
     price: 890,
-    image: "https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?w=400&h=400&fit=crop",
+    image: micellarImg,
     rating: 4.7,
     reviews: 256,
   },
@@ -43,7 +51,7 @@ const products = [
     name: "Маска для лица",
     brand: "CARE",
     price: 1290,
-    image: "https://images.unsplash.com/photo-1596755389378-c31d21fd1273?w=400&h=400&fit=crop",
+    image: maskImg,
     rating: 4.6,
     reviews: 78,
     tag: "Веган",
@@ -53,7 +61,7 @@ const products = [
     name: "Тоник с гиалуроновой кислотой",
     brand: "HYDRA",
     price: 1890,
-    image: "https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?w=400&h=400&fit=crop",
+    image: tonerImg,
     rating: 4.8,
     reviews: 145,
   },
@@ -63,7 +71,7 @@ const products = [
     brand: "RESTORE",
     price: 3290,
     oldPrice: 3990,
-    image: "https://images.unsplash.com/photo-1611930022073-b7a4ba5fcccd?w=400&h=400&fit=crop",
+    image: nightCreamImg,
     rating: 4.9,
     reviews: 67,
     tag: "Скидка",
@@ -147,28 +155,46 @@ export default function CosmeticsShop() {
 
       <section className="relative py-20 md:py-32 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-rose-100 via-stone-100 to-amber-50 dark:from-rose-950/30 dark:via-neutral-950 dark:to-amber-950/20" />
+        <img 
+          src={heroImg} 
+          alt="Косметика" 
+          className="absolute inset-0 w-full h-full object-cover opacity-30 dark:opacity-20"
+        />
         <div className="relative max-w-7xl mx-auto px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="max-w-2xl"
-          >
-            <Badge className="mb-4 bg-rose-100 text-rose-600 dark:bg-rose-900/30 dark:text-rose-300 border-0">
-              Новая коллекция
-            </Badge>
-            <h2 className="text-4xl md:text-6xl font-light text-stone-800 dark:text-white mb-6 leading-tight">
-              Естественная
-              <br />
-              <span className="font-normal italic text-rose-500">красота</span>
-            </h2>
-            <p className="text-lg text-stone-600 dark:text-neutral-400 mb-8">
-              Корейская косметика с натуральным составом для вашей ежедневной заботы о коже
-            </p>
-            <Button size="lg" className="bg-rose-500 hover:bg-rose-600 text-white rounded-full px-8" data-testid="button-shop-now">
-              Смотреть каталог
-            </Button>
-          </motion.div>
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+            >
+              <Badge className="mb-4 bg-rose-100 text-rose-600 dark:bg-rose-900/30 dark:text-rose-300 border-0">
+                Новая коллекция
+              </Badge>
+              <h2 className="text-4xl md:text-6xl font-light text-stone-800 dark:text-white mb-6 leading-tight">
+                Естественная
+                <br />
+                <span className="font-normal italic text-rose-500">красота</span>
+              </h2>
+              <p className="text-lg text-stone-600 dark:text-neutral-400 mb-8">
+                Корейская косметика с натуральным составом для вашей ежедневной заботы о коже
+              </p>
+              <Button size="lg" className="bg-rose-500 hover:bg-rose-600 text-white rounded-full px-8" data-testid="button-shop-now">
+                Смотреть каталог
+              </Button>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="hidden md:block"
+            >
+              <img 
+                src={heroImg} 
+                alt="Коллекция косметики" 
+                className="w-full h-auto rounded-2xl shadow-2xl"
+              />
+            </motion.div>
+          </div>
         </div>
       </section>
 
