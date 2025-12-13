@@ -36,3 +36,36 @@ export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type InsertContactRequest = z.infer<typeof insertContactRequestSchema>;
 export type ContactRequest = typeof contactRequests.$inferSelect;
+
+export const orders = pgTable("orders", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  clientName: text("client_name").notNull(),
+  clientEmail: text("client_email").notNull(),
+  clientPhone: text("client_phone").notNull(),
+  projectType: text("project_type").notNull(),
+  projectDescription: text("project_description").notNull(),
+  amount: text("amount").notNull(),
+  status: text("status").notNull().default("pending"),
+  contractAccepted: timestamp("contract_accepted"),
+  paidAt: timestamp("paid_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertOrderSchema = createInsertSchema(orders).pick({
+  clientName: true,
+  clientEmail: true,
+  clientPhone: true,
+  projectType: true,
+  projectDescription: true,
+  amount: true,
+}).extend({
+  clientName: z.string().min(2, "Имя должно содержать минимум 2 символа"),
+  clientEmail: z.string().email("Введите корректный email"),
+  clientPhone: z.string().min(10, "Введите корректный телефон"),
+  projectType: z.enum(["landing", "corporate", "shop"]),
+  projectDescription: z.string().min(10, "Опишите проект подробнее"),
+  amount: z.string(),
+});
+
+export type InsertOrder = z.infer<typeof insertOrderSchema>;
+export type Order = typeof orders.$inferSelect;
