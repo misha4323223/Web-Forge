@@ -55,17 +55,35 @@ shared/
 ## API
 - `POST /api/contact` - Отправка заявки с формы
 
-## Деплой — Яндекс Cloud
-**Целевая платформа:** Яндекс Cloud Run (Serverless Containers)
+## Деплой — Яндекс Cloud (АКТУАЛЬНО)
 
-Подробные инструкции: `DEPLOY.md`
+### Текущая конфигурация (декабрь 2024):
+- **Домен:** `mp-webstudio.ru` (куплен на **Reg.ru**)
+- **DNS-серверы:** `ns1.reg.ru`, `ns2.reg.ru`
+- **Хостинг:** Яндекс Object Storage (статический сайт)
+- **Бакет:** `mp-webstudio.ru`
+- **Прямая ссылка:** http://mp-webstudio.ru.website.yandexcloud.net
+- **SSL-сертификат:** Let's Encrypt через Yandex Certificate Manager (`mp-webstudio-cert`)
+- **Cloud Function:** для обработки форм (API)
 
-**Архитектура на проде:**
-- Контейнер с приложением → Cloud Run
-- Статика раздаётся из контейнера (или можно вынести в Object Storage + CDN)
-- Домен + SSL через Яндекс Cloud
+### DNS-записи в Reg.ru:
+| Тип | Имя | Значение |
+|-----|-----|----------|
+| CNAME | `_acme-challenge` | `fpqqm86h9bt1ts8clt4e.cm.yandexcloud.net` |
+| CNAME | `_acme-challenge.www` | `fpqqm86h9bt1ts8clt4e.cm.yandexcloud.net` |
+| CNAME | `www` | `mp-webstudio.ru.website.yandexcloud.net` |
 
-**Для будущих проектов клиентов:**
+### Как обновлять сайт:
+1. Скачай проект из Replit (Download as zip)
+2. На ПК: `npm install && npm run build`
+3. Загрузи файлы из `dist/public` в бакет (index.html + папка assets)
+4. **Важно:** При каждой сборке имена файлов в assets меняются — нужно загружать всё заново
+
+### Подробные инструкции:
+- `DEPLOY.md` — полные инструкции по деплою
+- `DEPLOY_SIMPLE.md` — упрощённая версия для Object Storage
+
+### Для будущих проектов клиентов:
 - Простые лендинги → Object Storage (статика)
 - Сайты с формами → Cloud Functions
 - Магазины → Cloud Run + Managed PostgreSQL
