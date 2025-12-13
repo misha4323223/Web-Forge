@@ -4,13 +4,16 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ExternalLink } from "lucide-react";
 
+import sweetDelightsImg from "@assets/image_1765623150824.png";
+import obzor71Img from "@assets/image_1765623349735.png";
+
 const projects = [
   {
     id: 1,
     title: "Sweet Delights",
     description: "Интернет-магазин сладостей с админкой, Telegram-приложением, оплатой Robokassa и хранением в Яндекс Cloud.",
     tags: ["React", "Node.js", "PostgreSQL", "Robokassa", "Telegram"],
-    color: "from-pink-500 to-orange-400",
+    image: sweetDelightsImg,
     url: "https://sweetdelights.store/",
   },
   {
@@ -18,7 +21,7 @@ const projects = [
     title: "Obzor71",
     description: "Сайт домофонной службы с формой заявок, отзывами и уведомлениями в Telegram.",
     tags: ["React", "TypeScript", "Tailwind", "Telegram Bot"],
-    color: "from-blue-500 to-cyan-500",
+    image: obzor71Img,
     url: "https://www.obzor71.ru/",
   },
 ];
@@ -68,15 +71,19 @@ export function PortfolioSection() {
               transition={{ duration: 0.6, delay: 0.1 + index * 0.15 }}
             >
               <Card
-                className={`group relative overflow-visible p-0 border-border bg-card/50 backdrop-blur-sm hover-elevate ${project.url ? "cursor-pointer" : "cursor-default"}`}
+                className={`group relative overflow-hidden p-0 border-border bg-card/50 backdrop-blur-sm hover-elevate ${project.url ? "cursor-pointer" : "cursor-default"}`}
                 onClick={() => handleProjectClick(project.url)}
                 data-testid={`card-project-${project.id}`}
               >
-                <div className={`h-48 md:h-56 rounded-t-md bg-gradient-to-br ${project.color} opacity-80 group-hover:opacity-100 transition-opacity duration-300`}>
-                  <div className="absolute inset-0 rounded-t-md bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMzLjMxNCAwIDYtMi42ODYgNi02cy0yLjY4Ni02LTYtNi02IDIuNjg2LTYgNiAyLjY4NiA2IDYgNnoiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjEpIiBzdHJva2Utd2lkdGg9IjIiLz48L2c+PC9zdmc+')] opacity-30" />
+                <div className="h-48 md:h-56 relative overflow-hidden rounded-t-md">
+                  <img 
+                    src={project.image} 
+                    alt={project.title}
+                    className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                  />
                   {project.url && (
                     <div className="absolute top-4 right-4">
-                      <Badge variant="secondary" className="bg-white/20 backdrop-blur-sm text-white border-white/30">
+                      <Badge variant="secondary" className="bg-black/50 backdrop-blur-sm text-white border-white/30">
                         Live
                       </Badge>
                     </div>
@@ -100,10 +107,6 @@ export function PortfolioSection() {
                       </Badge>
                     ))}
                   </div>
-                </div>
-
-                <div className={`absolute inset-0 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`}>
-                  <div className={`absolute inset-0 rounded-md bg-gradient-to-br ${project.color} opacity-[0.08]`} />
                 </div>
               </Card>
             </motion.div>
