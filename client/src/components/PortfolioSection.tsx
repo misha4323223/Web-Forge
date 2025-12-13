@@ -53,6 +53,15 @@ const portfolioItems = [
     demoUrl: "/demo/streetwear",
     badgeType: "concept" as const,
   },
+  {
+    id: 6,
+    title: "SOCKSTYLE",
+    description: "Концепт магазина стильных мужских носков. Подарочные наборы, носки с надписями, спортивные.",
+    tags: ["React", "E-commerce", "Light Theme"],
+    image: "https://images.unsplash.com/photo-1586350977771-b3b0abd50c82?w=600&h=400&fit=crop",
+    demoUrl: "/demo/socks",
+    badgeType: "concept" as const,
+  },
 ];
 
 export function PortfolioSection() {
