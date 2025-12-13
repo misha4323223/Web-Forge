@@ -8,8 +8,8 @@ const projects = [
   {
     id: 1,
     title: "Sweet Delights",
-    description: "Интернет-магазин сладостей с каталогом, корзиной, оплатой через Robokassa и хранением в Яндекс Cloud.",
-    tags: ["React", "Node.js", "PostgreSQL", "Robokassa", "Яндекс Cloud"],
+    description: "Интернет-магазин сладостей с админкой, Telegram-приложением, оплатой Robokassa и хранением в Яндекс Cloud.",
+    tags: ["React", "Node.js", "PostgreSQL", "Robokassa", "Telegram"],
     color: "from-pink-500 to-orange-400",
     url: "https://sweetdelights.store/",
   },
