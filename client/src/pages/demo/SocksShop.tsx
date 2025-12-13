@@ -6,6 +6,13 @@ import { ShoppingCart, Gift, Menu, Truck, CreditCard, RefreshCw, ArrowLeft, Plus
 import { Link } from "wouter";
 import { useState } from "react";
 
+import giftBoxImg from "@assets/generated_images/gift_box_socks_set.png";
+import businessImg from "@assets/generated_images/business_socks_gift_box.png";
+import noveltyImg from "@assets/generated_images/novelty_socks_with_text.png";
+import athleticImg from "@assets/generated_images/athletic_running_socks.png";
+import colorfulImg from "@assets/generated_images/colorful_patterned_socks_set.png";
+import heroImg from "@assets/generated_images/socks_collection_hero_image.png";
+
 const products = [
   {
     id: 1,
@@ -13,7 +20,7 @@ const products = [
     description: "5 пар базовых носков",
     price: 1490,
     oldPrice: 1990,
-    image: "https://images.unsplash.com/photo-1586350977771-b3b0abd50c82?w=400&h=400&fit=crop",
+    image: giftBoxImg,
     tag: "Хит",
     category: "Наборы",
   },
@@ -22,7 +29,7 @@ const products = [
     name: "Набор «Босс»",
     description: "7 пар деловых носков",
     price: 2490,
-    image: "https://images.unsplash.com/photo-1556306535-0f09a537f0a3?w=400&h=400&fit=crop",
+    image: businessImg,
     tag: "Подарок",
     category: "Наборы",
   },
@@ -31,7 +38,7 @@ const products = [
     name: "«Без фильтра»",
     description: "Носки с дерзкой надписью",
     price: 490,
-    image: "https://images.unsplash.com/photo-1582966772680-860e372bb558?w=400&h=400&fit=crop",
+    image: noveltyImg,
     tag: "New",
     category: "С надписями",
   },
@@ -41,7 +48,7 @@ const products = [
     description: "Золотая корона на чёрном",
     price: 590,
     oldPrice: 790,
-    image: "https://images.unsplash.com/photo-1617952739858-28043cecdae3?w=400&h=400&fit=crop",
+    image: noveltyImg,
     tag: "SALE",
     category: "С надписями",
   },
@@ -50,7 +57,7 @@ const products = [
     name: "Спорт PRO",
     description: "Компрессионные для бега",
     price: 790,
-    image: "https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=400&h=400&fit=crop",
+    image: athleticImg,
     category: "Спорт",
   },
   {
@@ -58,7 +65,7 @@ const products = [
     name: "Термо АКТИВ",
     description: "Для активного отдыха",
     price: 890,
-    image: "https://images.unsplash.com/photo-1571945153237-4929e783af4a?w=400&h=400&fit=crop",
+    image: athleticImg,
     tag: "Зима",
     category: "Спорт",
   },
@@ -67,7 +74,7 @@ const products = [
     name: "Набор «Яркий»",
     description: "5 пар цветных носков",
     price: 1690,
-    image: "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=400&h=400&fit=crop",
+    image: colorfulImg,
     tag: "Подарок",
     category: "Наборы",
   },
@@ -76,7 +83,7 @@ const products = [
     name: "«Лучший папа»",
     description: "Подарок для отца",
     price: 490,
-    image: "https://images.unsplash.com/photo-1622445275576-721325763afe?w=400&h=400&fit=crop",
+    image: noveltyImg,
     category: "С надписями",
   },
 ];
@@ -98,19 +105,19 @@ const heroCategories = [
   {
     title: "Подарочные наборы",
     description: "Огромный выбор ярких носков в наборах для подарка по любому поводу",
-    image: "https://images.unsplash.com/photo-1586350977771-b3b0abd50c82?w=600&h=400&fit=crop",
+    image: giftBoxImg,
     filter: "Наборы",
   },
   {
     title: "Носки с надписями",
     description: "Новая форма выражения. От простых до самых дерзких фраз",
-    image: "https://images.unsplash.com/photo-1556306535-0f09a537f0a3?w=600&h=400&fit=crop",
+    image: noveltyImg,
     filter: "С надписями",
   },
   {
     title: "Носки для спорта",
     description: "Примечательные носки для любых активностей",
-    image: "https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=600&h=400&fit=crop",
+    image: athleticImg,
     filter: "Спорт",
   },
 ];

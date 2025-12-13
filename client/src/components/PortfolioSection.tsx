@@ -6,6 +6,7 @@ import { ExternalLink } from "lucide-react";
 import { useLocation } from "wouter";
 
 import sweetDelightsImg from "@assets/image_1765623150824.png";
+import socksHeroImg from "@assets/generated_images/socks_collection_hero_image.png";
 
 const portfolioItems = [
   {
@@ -58,7 +59,7 @@ const portfolioItems = [
     title: "SOCKSTYLE",
     description: "Концепт магазина стильных мужских носков. Подарочные наборы, носки с надписями, спортивные.",
     tags: ["React", "E-commerce", "Light Theme"],
-    image: "https://images.unsplash.com/photo-1586350977771-b3b0abd50c82?w=600&h=400&fit=crop",
+    image: socksHeroImg,
     demoUrl: "/demo/socks",
     badgeType: "concept" as const,
   },
