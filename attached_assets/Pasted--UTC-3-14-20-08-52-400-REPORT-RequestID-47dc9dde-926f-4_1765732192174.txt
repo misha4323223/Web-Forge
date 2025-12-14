@@ -1,0 +1,83 @@
+Время (UTC +3)
+Сообщение
+
+14 дек. 20:08:52.400
+REPORT RequestID: 47dc9dde-926f-455e-9c10-75afb752505a Duration: 10604.480 ms Billed Duration: 10700 ms Memory Size: 256 MB Max Memory Used: 167 MB Queuing Duration: 0.066 ms Function Init Duration: 603.906 ms CPU Usage: 1.953 %
+
+14 дек. 20:08:52.400
+ERROR RequestID: 47dc9dde-926f-455e-9c10-75afb752505a Code: 504 Message: Execution timeout exceeded
+
+14 дек. 20:08:52.400
+END RequestID: 47dc9dde-926f-455e-9c10-75afb752505a
+
+14 дек. 20:08:52.400
+{"errorMessage":"execution timeout exceeded","errorType":"JobExecutionTimeoutExceeded","stackTrace":null}
+
+14 дек. 20:08:42.641
+YDB driver connected to: /ru-central1/b1gnp4ml7k5j7cquabad/etn2gipa2pvm2qj5ga83
+
+14 дек. 20:08:42.416
+}
+
+14 дек. 20:08:42.416
+received: '266d426615a56e4def2f20fc393beb35'
+
+14 дек. 20:08:42.415
+expected: '266d426615a56e4def2f20fc393beb35',
+
+14 дек. 20:08:42.415
+Signature check: {
+
+14 дек. 20:08:42.414
+}
+
+14 дек. 20:08:42.414
+shp_orderId: 'ord_mj5zawsav89nmau1j'
+
+14 дек. 20:08:42.414
+InvId: '101145',
+
+14 дек. 20:08:42.414
+OutSum: '12500',
+
+14 дек. 20:08:42.414
+Robokassa result callback: {
+
+14 дек. 20:08:42.414
+Robokassa result - full data: {"out_summ":"12500","OutSum":"12500","inv_id":"101145","InvId":"101145","crc":"266D426615A56E4DEF2F20FC393BEB35","SignatureValue":"266D426615A56E4DEF2F20FC393BEB35","PaymentMethod":"PayButton","IncSum":"12500","IncCurrLabel":"SBPPSR","IsTest":"1","EMail":"","Fee":"0.0","shp_orderId":"ord_mj5zawsav89nmau1j","action":"robokassa/result"}
+
+14 дек. 20:08:42.413
+Incoming request: { method: 'POST', action: 'robokassa/result', path: '' }
+
+14 дек. 20:08:41.793
+START RequestID: 47dc9dde-926f-455e-9c10-75afb752505a Version: d4eeffd3ttvsbu303inu
+
+14 дек. 20:08:21.149
+REPORT RequestID: 03a9e1fc-7917-46ad-9cba-55cc7cf6bd07 Duration: 437.318 ms Billed Duration: 500 ms Memory Size: 256 MB Max Memory Used: 157 MB Queuing Duration: 0.072 ms CPU Usage: 99.902 %
+
+14 дек. 20:08:21.149
+END RequestID: 03a9e1fc-7917-46ad-9cba-55cc7cf6bd07
+
+14 дек. 20:08:21.146
+Telegram not configured
+
+14 дек. 20:08:21.146
+Order created in YDB: ord_mj5zawsav89nmau1j
+
+14 дек. 20:08:20.987
+YDB driver connected to: /ru-central1/b1gnp4ml7k5j7cquabad/etn2gipa2pvm2qj5ga83
+
+14 дек. 20:08:20.713
+Incoming request: { method: 'POST', action: 'orders', path: '' }
+
+14 дек. 20:08:20.707
+START RequestID: 03a9e1fc-7917-46ad-9cba-55cc7cf6bd07 Version: d4eeffd3ttvsbu303inu
+
+14 дек. 20:08:20.618
+REPORT RequestID: 08669ca7-565a-488a-a482-4e17059b974a Duration: 984.696 ms Billed Duration: 1000 ms Memory Size: 256 MB Max Memory Used: 157 MB Queuing Duration: 0.048 ms Function Init Duration: 975.150 ms CPU Usage: 99.902 %
+
+14 дек. 20:08:20.618
+END RequestID: 08669ca7-565a-488a-a482-4e17059b974a
+
+14 дек. 20:08:19.629
+START RequestID: 08669ca7-565a-488a-a482-4e17059b974a Version: d4eeffd3ttvsbu303inu
