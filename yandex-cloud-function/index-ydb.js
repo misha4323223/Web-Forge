@@ -21,6 +21,7 @@ const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const PDFDocument = require('pdfkit');
 const { Driver, getCredentialsFromEnv, TypedValues, Types } = require('ydb-sdk');
+const { SESClient, SendRawEmailCommand } = require('@aws-sdk/client-ses');
 
 const SITE_URL = process.env.SITE_URL || 'https://www.mp-webstudio.ru';
 
@@ -729,7 +730,17 @@ async function sendContractEmail(order, pdfBuffer) {
     const postboxFromEmail = process.env.POSTBOX_FROM_EMAIL;
     
     if (postboxAccessKey && postboxSecretKey && postboxFromEmail) {
-        console.log('Using Yandex Cloud Postbox (AWS SES API), from:', postboxFromEmail);
+        console.log('Using Yandex Cloud Postbox (AWS SDK), from:', postboxFromEmail);
+        
+        // Создаём SES клиент для Yandex Cloud Postbox
+        const sesClient = new SESClient({
+            region: 'ru-central1',
+            endpoint: 'https://postbox.cloud.yandex.net',
+            credentials: {
+                accessKeyId: postboxAccessKey,
+                secretAccessKey: postboxSecretKey,
+            },
+        });
         
         // Формируем raw email с вложением
         const boundary = '----=_Part_' + Date.now().toString(36);
@@ -758,85 +769,22 @@ async function sendContractEmail(order, pdfBuffer) {
             `--${boundary}--`,
         ].join('\r\n');
         
-        // AWS SES SendRawEmail через AWS Signature V4
-        const region = 'ru-central1';
-        const service = 'ses';
-        const host = 'postbox.cloud.yandex.net';
-        const endpoint = `https://${host}`;
-        const method = 'POST';
-        const now = new Date();
-        const amzDate = now.toISOString().replace(/[:-]|\.\d{3}/g, '');
-        const dateStamp = amzDate.substring(0, 8);
+        console.log('Sending email via Yandex Postbox AWS SDK');
         
-        // Формируем тело запроса в формате AWS
-        const rawMessageB64 = Buffer.from(rawEmail).toString('base64');
-        const requestBody = `Action=SendRawEmail&RawMessage.Data=${encodeURIComponent(rawMessageB64)}`;
-        
-        // Создаём подпись AWS Signature V4
-        const algorithm = 'AWS4-HMAC-SHA256';
-        const credentialScope = `${dateStamp}/${region}/${service}/aws4_request`;
-        const signedHeaders = 'content-type;host;x-amz-date';
-        
-        const payloadHash = crypto.createHash('sha256').update(requestBody).digest('hex');
-        
-        const canonicalRequest = [
-            method,
-            '/',
-            '',
-            `content-type:application/x-www-form-urlencoded`,
-            `host:${host}`,
-            `x-amz-date:${amzDate}`,
-            '',
-            signedHeaders,
-            payloadHash
-        ].join('\n');
-        
-        const canonicalRequestHash = crypto.createHash('sha256').update(canonicalRequest).digest('hex');
-        
-        const stringToSign = [
-            algorithm,
-            amzDate,
-            credentialScope,
-            canonicalRequestHash
-        ].join('\n');
-        
-        // Создаём ключ подписи
-        const getSignatureKey = (key, dateStamp, region, service) => {
-            const kDate = crypto.createHmac('sha256', 'AWS4' + key).update(dateStamp).digest();
-            const kRegion = crypto.createHmac('sha256', kDate).update(region).digest();
-            const kService = crypto.createHmac('sha256', kRegion).update(service).digest();
-            const kSigning = crypto.createHmac('sha256', kService).update('aws4_request').digest();
-            return kSigning;
-        };
-        
-        const signingKey = getSignatureKey(postboxSecretKey, dateStamp, region, service);
-        const signature = crypto.createHmac('sha256', signingKey).update(stringToSign).digest('hex');
-        
-        const authorizationHeader = `${algorithm} Credential=${postboxAccessKey}/${credentialScope}, SignedHeaders=${signedHeaders}, Signature=${signature}`;
-        
-        console.log('Sending email via Postbox AWS SES API');
-        
-        const response = await fetch(endpoint, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Host': host,
-                'X-Amz-Date': amzDate,
-                'Authorization': authorizationHeader,
-            },
-            body: requestBody,
-        });
-        
-        const responseText = await response.text();
-        console.log('Postbox response status:', response.status);
-        console.log('Postbox response:', responseText);
-        
-        if (!response.ok) {
-            throw new Error(`Yandex Postbox error: ${response.status} - ${responseText}`);
+        try {
+            const command = new SendRawEmailCommand({
+                RawMessage: {
+                    Data: Buffer.from(rawEmail),
+                },
+            });
+            
+            const response = await sesClient.send(command);
+            console.log('Email sent via Yandex Cloud Postbox, MessageId:', response.MessageId);
+            return;
+        } catch (error) {
+            console.error('Postbox error:', error.message);
+            throw new Error(`Yandex Postbox error: ${error.message}`);
         }
-        
-        console.log('Email sent via Yandex Cloud Postbox');
-        return;
     }
     
     // Fallback на SMTP (Яндекс Почта)

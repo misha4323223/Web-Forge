@@ -19,6 +19,7 @@
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const PDFDocument = require('pdfkit');
+const { SESClient, SendRawEmailCommand } = require('@aws-sdk/client-ses');
 
 const SITE_API_URL = process.env.SITE_API_URL || 'https://mp-webstudio.ru';
 
@@ -374,13 +375,102 @@ async function generateContractPDF(order) {
 // ============ Email Sending ============
 
 async function sendContractEmail(order, pdfBuffer) {
+    const formatPrice = (price) => {
+        const num = parseFloat(price) || 0;
+        return new Intl.NumberFormat('ru-RU').format(num);
+    };
+    const amount = parseFloat(order.amount) || 0;
+    const prepayment = Math.round(amount / 2);
+    
+    const emailHtml = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #0891b2;">Спасибо за заказ!</h2>
+            <p>Здравствуйте, ${order.clientName || 'Уважаемый клиент'}!</p>
+            <p>Ваша предоплата успешно получена. Договор подписан.</p>
+            <div style="background: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <h3 style="margin-top: 0;">Детали заказа:</h3>
+                <p><strong>Тип проекта:</strong> ${getProjectTypeName(order.projectType)}</p>
+                <p><strong>Стоимость:</strong> ${formatPrice(amount)} руб.</p>
+                <p><strong>Предоплата:</strong> ${formatPrice(prepayment)} руб.</p>
+                <p><strong>ID заказа:</strong> ${order.id}</p>
+            </div>
+            <p>Договор прикреплён к письму в PDF.</p>
+            <p style="color: #6b7280; font-size: 14px; margin-top: 30px;">
+                С уважением,<br>MP.WebStudio<br>
+                <a href="https://mp-webstudio.ru">mp-webstudio.ru</a>
+            </p>
+        </div>
+    `;
+    
+    // Yandex Cloud Postbox через AWS SDK
+    const postboxAccessKey = process.env.POSTBOX_ACCESS_KEY_ID;
+    const postboxSecretKey = process.env.POSTBOX_SECRET_ACCESS_KEY;
+    const postboxFromEmail = process.env.POSTBOX_FROM_EMAIL;
+    
+    if (postboxAccessKey && postboxSecretKey && postboxFromEmail) {
+        console.log('Using Yandex Cloud Postbox (AWS SDK), from:', postboxFromEmail);
+        
+        const sesClient = new SESClient({
+            region: 'ru-central1',
+            endpoint: 'https://postbox.cloud.yandex.net',
+            credentials: {
+                accessKeyId: postboxAccessKey,
+                secretAccessKey: postboxSecretKey,
+            },
+        });
+        
+        const boundary = '----=_Part_' + Date.now().toString(36);
+        const pdfBase64 = pdfBuffer.toString('base64');
+        
+        const rawEmail = [
+            `From: MP.WebStudio <${postboxFromEmail}>`,
+            `To: ${order.clientEmail}`,
+            `Subject: =?UTF-8?B?${Buffer.from(`Договор на разработку сайта - Заказ ${order.id}`).toString('base64')}?=`,
+            'MIME-Version: 1.0',
+            `Content-Type: multipart/mixed; boundary="${boundary}"`,
+            '',
+            `--${boundary}`,
+            'Content-Type: text/html; charset=UTF-8',
+            'Content-Transfer-Encoding: base64',
+            '',
+            Buffer.from(emailHtml).toString('base64'),
+            '',
+            `--${boundary}`,
+            `Content-Type: application/pdf; name="Contract_${order.id}.pdf"`,
+            'Content-Transfer-Encoding: base64',
+            `Content-Disposition: attachment; filename="Contract_${order.id}.pdf"`,
+            '',
+            pdfBase64,
+            '',
+            `--${boundary}--`,
+        ].join('\r\n');
+        
+        console.log('Sending email via Yandex Postbox AWS SDK');
+        
+        try {
+            const command = new SendRawEmailCommand({
+                RawMessage: {
+                    Data: Buffer.from(rawEmail),
+                },
+            });
+            
+            const response = await sesClient.send(command);
+            console.log('Email sent via Yandex Cloud Postbox, MessageId:', response.MessageId);
+            return;
+        } catch (error) {
+            console.error('Postbox error:', error.message);
+            throw new Error(`Yandex Postbox error: ${error.message}`);
+        }
+    }
+    
+    // Fallback на SMTP (Яндекс Почта)
     const smtpEmail = process.env.SMTP_EMAIL;
     const smtpPassword = process.env.SMTP_PASSWORD;
 
     console.log('SMTP config:', { emailConfigured: !!smtpEmail, passwordConfigured: !!smtpPassword });
 
     if (!smtpEmail || !smtpPassword) {
-        console.log('SMTP not configured, skipping email');
+        console.log('No email service configured, skipping email');
         return;
     }
 
@@ -391,33 +481,11 @@ async function sendContractEmail(order, pdfBuffer) {
         auth: { user: smtpEmail, pass: smtpPassword },
     });
 
-    const formatPrice = (price) => new Intl.NumberFormat('ru-RU').format(price);
-    const amount = parseFloat(order.amount);
-    const prepayment = Math.round(amount / 2);
-
     const mailOptions = {
         from: `"MP.WebStudio" <${smtpEmail}>`,
         to: order.clientEmail,
         subject: `Договор на разработку сайта - Заказ ${order.id}`,
-        html: `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                <h2 style="color: #0891b2;">Спасибо за заказ!</h2>
-                <p>Здравствуйте, ${order.clientName || 'Уважаемый клиент'}!</p>
-                <p>Ваша предоплата успешно получена. Договор подписан.</p>
-                <div style="background: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                    <h3 style="margin-top: 0;">Детали заказа:</h3>
-                    <p><strong>Тип проекта:</strong> ${getProjectTypeName(order.projectType)}</p>
-                    <p><strong>Стоимость:</strong> ${formatPrice(amount)} руб.</p>
-                    <p><strong>Предоплата:</strong> ${formatPrice(prepayment)} руб.</p>
-                    <p><strong>ID заказа:</strong> ${order.id}</p>
-                </div>
-                <p>Договор прикреплён к письму в PDF.</p>
-                <p style="color: #6b7280; font-size: 14px; margin-top: 30px;">
-                    С уважением,<br>MP.WebStudio<br>
-                    <a href="https://mp-webstudio.ru">mp-webstudio.ru</a>
-                </p>
-            </div>
-        `,
+        html: emailHtml,
         attachments: [{
             filename: `Договор_${order.id}.pdf`,
             content: pdfBuffer,
@@ -425,9 +493,9 @@ async function sendContractEmail(order, pdfBuffer) {
         }],
     };
 
-    console.log('Sending email to:', order.clientEmail);
+    console.log('Sending email via SMTP to:', order.clientEmail);
     await transporter.sendMail(mailOptions);
-    console.log('Email sent successfully');
+    console.log('Email sent successfully via SMTP');
 }
 
 // ============ Helpers ============
