@@ -63,6 +63,24 @@ const portfolioItems = [
     demoUrl: "/demo/socks",
     badgeType: "concept" as const,
   },
+  {
+    id: 7,
+    title: "ДримТур",
+    description: "Концепт сайта туристического агентства. Популярные направления, горячие туры, бронирование.",
+    tags: ["React", "Travel", "Booking"],
+    image: "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=600&h=400&fit=crop",
+    demoUrl: "/demo/travel",
+    badgeType: "concept" as const,
+  },
+  {
+    id: 8,
+    title: "SHARP",
+    description: "Концепт сайта барбершопа. Услуги, мастера, онлайн-запись, галерея работ.",
+    tags: ["React", "Booking", "Dark Theme"],
+    image: "https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=600&h=400&fit=crop",
+    demoUrl: "/demo/barber",
+    badgeType: "concept" as const,
+  },
 ];
 
 export function PortfolioSection() {
