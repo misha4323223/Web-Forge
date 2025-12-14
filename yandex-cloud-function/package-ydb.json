@@ -4,6 +4,7 @@
   "description": "WebStudio Cloud Function with YDB Serverless",
   "main": "index-ydb.js",
   "dependencies": {
+    "@aws-sdk/client-ses": "^3.700.0",
     "nodemailer": "^6.9.7",
     "pdfkit": "^0.13.0",
     "ydb-sdk": "^5.0.0"
