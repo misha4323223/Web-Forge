@@ -1,0 +1,176 @@
+14 дек. 20:58:12.045
+REPORT RequestID: 85e6bb3f-d61f-4d00-ac56-2e657ac81237 Duration: 649.041 ms Billed Duration: 700 ms Memory Size: 256 MB Max Memory Used: 192 MB Queuing Duration: 0.073 ms CPU Usage: 18.848 %
+
+14 дек. 20:58:12.045
+END RequestID: 85e6bb3f-d61f-4d00-ac56-2e657ac81237
+
+14 дек. 20:58:12.044
+Order paid successfully: ord_mj611ngqrw9xt1a3i
+
+14 дек. 20:58:12.044
+Telegram not configured
+
+14 дек. 20:58:12.044
+at async module.exports.handler [as handlerFn] (/function/code/index.js:97:20)
+
+14 дек. 20:58:12.044
+at async handleRobokassaResult (/function/code/index.js:555:13)
+
+14 дек. 20:58:12.044
+at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+14 дек. 20:58:12.044
+at sendContractEmail (/function/code/index.js:786:19)
+
+14 дек. 20:58:12.044
+Deserialization error: to see the raw response, inspect the hidden field {error}.$response on this object.
+
+14 дек. 20:58:12.044
+Deserialization error: to see the raw response, inspect the hidden field {error}.$response on this object. Error: Yandex Postbox error: char 'r' is not expected.:2:1
+
+14 дек. 20:58:12.044
+Failed to send contract email: Yandex Postbox error: char 'r' is not expected.:2:1
+
+14 дек. 20:58:12.043
+Deserialization error: to see the raw response, inspect the hidden field {error}.$response on this object.
+
+14 дек. 20:58:12.043
+Postbox error: char 'r' is not expected.:2:1
+
+14 дек. 20:58:11.993
+Sending email via Yandex Postbox AWS SDK
+
+14 дек. 20:58:11.987
+Using Yandex Cloud Postbox (AWS SDK), from: info@mp-webstudio.ru
+
+14 дек. 20:58:11.987
+PDF generated, size: 20540
+
+14 дек. 20:58:11.562
+Generating PDF for order: ord_mj611ngqrw9xt1a3i
+
+14 дек. 20:58:11.562
+Order status updated in YDB: ord_mj611ngqrw9xt1a3i -> paid
+
+14 дек. 20:58:11.477
+}
+
+14 дек. 20:58:11.477
+paidAt: ''
+
+14 дек. 20:58:11.477
+createdAt: '2025-12-14T17:57:08.234Z',
+
+14 дек. 20:58:11.477
+status: 'pending',
+
+14 дек. 20:58:11.477
+amount: '25000',
+
+14 дек. 20:58:11.477
+projectDescription: 'яварваррврвы',
+
+14 дек. 20:58:11.477
+projectType: 'landing',
+
+14 дек. 20:58:11.477
+clientPhone: '89531814136',
+
+14 дек. 20:58:11.477
+clientEmail: 'pimashin2015@gmail.com',
+
+14 дек. 20:58:11.477
+clientName: 'Миша',
+
+14 дек. 20:58:11.477
+id: 'ord_mj611ngqrw9xt1a3i',
+
+14 дек. 20:58:11.477
+Order fetched from YDB: {
+
+14 дек. 20:58:11.477
+Order fetched from YDB: {"id":"ord_mj611ngqrw9xt1a3i","clientName":"Миша","clientEmail":"pimashin2015@gmail.com","clientPhone":"89531814136","projectType":"landing","projectDescription":"яварваррврвы","amount":"25000","status":"pending","createdAt":"2025-12-14T17:57:08.234Z","paidAt":""}
+
+14 дек. 20:58:11.477
+Parsed order: {"id":"ord_mj611ngqrw9xt1a3i","clientName":"Миша","clientEmail":"pimashin2015@gmail.com","clientPhone":"89531814136","projectType":"landing","projectDescription":"яварваррврвы","amount":"25000","status":"pending","createdAt":"2025-12-14T17:57:08.234Z","paidAt":""}
+
+14 дек. 20:58:11.477
+Column [9] status: {"textValue":"pending"} -> "pending"
+
+14 дек. 20:58:11.477
+Column [8] project_type: {"textValue":"landing"} -> "landing"
+
+14 дек. 20:58:11.477
+Column [7] project_description: {"textValue":"яварваррврвы"} -> "яварваррврвы"
+
+14 дек. 20:58:11.477
+Column [6] paid_at: {"nullFlagValue":"NULL_VALUE"} -> ""
+
+14 дек. 20:58:11.477
+Column [5] id: {"textValue":"ord_mj611ngqrw9xt1a3i"} -> "ord_mj611ngqrw9xt1a3i"
+
+14 дек. 20:58:11.477
+Column [4] created_at: {"textValue":"2025-12-14T17:57:08.234Z"} -> "2025-12-14T17:57:08.234Z"
+
+14 дек. 20:58:11.476
+Column [3] client_phone: {"textValue":"89531814136"} -> "89531814136"
+
+14 дек. 20:58:11.476
+Column [2] client_name: {"textValue":"Миша"} -> "Миша"
+
+14 дек. 20:58:11.476
+Column [1] client_email: {"textValue":"pimashin2015@gmail.com"} -> "pimashin2015@gmail.com"
+
+14 дек. 20:58:11.476
+Column [0] amount: {"textValue":"25000"} -> "25000"
+
+14 дек. 20:58:11.476
+Column mapping: {"amount":0,"client_email":1,"client_name":2,"client_phone":3,"created_at":4,"id":5,"paid_at":6,"project_description":7,"project_type":8,"status":9}
+
+14 дек. 20:58:11.476
+}
+
+14 дек. 20:58:11.476
+]
+
+14 дек. 20:58:11.476
+}
+
+14 дек. 20:58:11.476
+"textValue": "pending"
+
+14 дек. 20:58:11.476
+{
+
+14 дек. 20:58:11.476
+},
+
+14 дек. 20:58:11.476
+"textValue": "landing"
+
+14 дек. 20:58:11.476
+{
+
+14 дек. 20:58:11.476
+},
+
+14 дек. 20:58:11.476
+"textValue": "яварваррврвы"
+
+14 дек. 20:58:11.476
+{
+
+14 дек. 20:58:11.476
+},
+
+14 дек. 20:58:11.476
+"nullFlagValue": "NULL_VALUE"
+
+14 дек. 20:58:11.476
+{
+
+14 дек. 20:58:11.476
+},
+
+14 дек. 20:58:11.476
+"textValue": "ord_mj611ngqrw9xt1a3i"

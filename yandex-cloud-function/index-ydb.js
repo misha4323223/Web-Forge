@@ -21,7 +21,7 @@ const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const PDFDocument = require('pdfkit');
 const { Driver, getCredentialsFromEnv, TypedValues, Types } = require('ydb-sdk');
-const { SESClient, SendRawEmailCommand } = require('@aws-sdk/client-ses');
+const { SESv2Client, SendEmailCommand } = require('@aws-sdk/client-sesv2');
 
 const SITE_URL = process.env.SITE_URL || 'https://www.mp-webstudio.ru';
 
@@ -730,10 +730,10 @@ async function sendContractEmail(order, pdfBuffer) {
     const postboxFromEmail = process.env.POSTBOX_FROM_EMAIL;
     
     if (postboxAccessKey && postboxSecretKey && postboxFromEmail) {
-        console.log('Using Yandex Cloud Postbox (AWS SDK), from:', postboxFromEmail);
+        console.log('Using Yandex Cloud Postbox (AWS SESv2), from:', postboxFromEmail);
         
-        // Создаём SES клиент для Yandex Cloud Postbox
-        const sesClient = new SESClient({
+        // Создаём SESv2 клиент для Yandex Cloud Postbox
+        const sesClient = new SESv2Client({
             region: 'ru-central1',
             endpoint: 'https://postbox.cloud.yandex.net',
             credentials: {
@@ -769,12 +769,18 @@ async function sendContractEmail(order, pdfBuffer) {
             `--${boundary}--`,
         ].join('\r\n');
         
-        console.log('Sending email via Yandex Postbox AWS SDK');
+        console.log('Sending email via Yandex Postbox AWS SESv2');
         
         try {
-            const command = new SendRawEmailCommand({
-                RawMessage: {
-                    Data: Buffer.from(rawEmail),
+            const command = new SendEmailCommand({
+                FromEmailAddress: postboxFromEmail,
+                Destination: {
+                    ToAddresses: [order.clientEmail],
+                },
+                Content: {
+                    Raw: {
+                        Data: Buffer.from(rawEmail),
+                    },
                 },
             });
             
@@ -783,6 +789,7 @@ async function sendContractEmail(order, pdfBuffer) {
             return;
         } catch (error) {
             console.error('Postbox error:', error.message);
+            console.error('Postbox error details:', JSON.stringify(error, null, 2));
             throw new Error(`Yandex Postbox error: ${error.message}`);
         }
     }
