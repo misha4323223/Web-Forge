@@ -1,0 +1,725 @@
+Время (UTC +3)
+Сообщение
+
+14 дек. 19:45:38.063
+REPORT RequestID: 4677bd93-1c40-4429-978e-cd2454344fde Duration: 2122.216 ms Billed Duration: 2200 ms Memory Size: 256 MB Max Memory Used: 166 MB Queuing Duration: 0.064 ms Function Init Duration: 656.036 ms CPU Usage: 50.488 %
+
+14 дек. 19:45:38.063
+END RequestID: 4677bd93-1c40-4429-978e-cd2454344fde
+
+14 дек. 19:45:38.060
+Order paid successfully: ord_mj5yhami15dwp0c6h
+
+14 дек. 19:45:38.060
+Telegram not configured
+
+14 дек. 19:45:38.059
+at async module.exports.handler [as handlerFn] (/function/code/index.js:96:20)
+
+14 дек. 19:45:38.059
+at async handleRobokassaResult (/function/code/index.js:554:13)
+
+14 дек. 19:45:38.059
+at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+14 дек. 19:45:38.059
+at sendContractEmail (/function/code/index.js:779:19)
+
+14 дек. 19:45:38.059
+Error: Yandex Postbox error: 403 - Forbidden
+
+14 дек. 19:45:38.059
+Failed to send contract email: Yandex Postbox error: 403 - Forbidden
+
+14 дек. 19:45:38.059
+Postbox response: Forbidden
+
+14 дек. 19:45:38.059
+Postbox response status: 403
+
+14 дек. 19:45:37.967
+Using Yandex Cloud Postbox, from: info@mp-webstudio.ru
+
+14 дек. 19:45:37.967
+PDF generated, size: 20441
+
+14 дек. 19:45:37.621
+Generating PDF for order: ord_mj5yhami15dwp0c6h
+
+14 дек. 19:45:37.621
+Order status updated in YDB: ord_mj5yhami15dwp0c6h -> paid
+
+14 дек. 19:45:37.516
+}
+
+14 дек. 19:45:37.516
+paidAt: ''
+
+14 дек. 19:45:37.516
+createdAt: '2025-12-14T16:45:19.242Z',
+
+14 дек. 19:45:37.516
+status: 'pending',
+
+14 дек. 19:45:37.516
+amount: '25000',
+
+14 дек. 19:45:37.516
+projectDescription: 'dgnxgfgfxxggxghgsh',
+
+14 дек. 19:45:37.516
+projectType: 'landing',
+
+14 дек. 19:45:37.516
+clientPhone: '89531814136',
+
+14 дек. 19:45:37.516
+clientEmail: 'pimashin2015@gmail.com',
+
+14 дек. 19:45:37.516
+clientName: 'Миша',
+
+14 дек. 19:45:37.516
+id: 'ord_mj5yhami15dwp0c6h',
+
+14 дек. 19:45:37.516
+Order fetched from YDB: {
+
+14 дек. 19:45:37.515
+Order fetched from YDB: {"id":"ord_mj5yhami15dwp0c6h","clientName":"Миша","clientEmail":"pimashin2015@gmail.com","clientPhone":"89531814136","projectType":"landing","projectDescription":"dgnxgfgfxxggxghgsh","amount":"25000","status":"pending","createdAt":"2025-12-14T16:45:19.242Z","paidAt":""}
+
+14 дек. 19:45:37.515
+Parsed order: {"id":"ord_mj5yhami15dwp0c6h","clientName":"Миша","clientEmail":"pimashin2015@gmail.com","clientPhone":"89531814136","projectType":"landing","projectDescription":"dgnxgfgfxxggxghgsh","amount":"25000","status":"pending","createdAt":"2025-12-14T16:45:19.242Z","paidAt":""}
+
+14 дек. 19:45:37.515
+Column [9] status: {"textValue":"pending"} -> "pending"
+
+14 дек. 19:45:37.515
+Column [8] project_type: {"textValue":"landing"} -> "landing"
+
+14 дек. 19:45:37.515
+Column [7] project_description: {"textValue":"dgnxgfgfxxggxghgsh"} -> "dgnxgfgfxxggxghgsh"
+
+14 дек. 19:45:37.515
+Column [6] paid_at: {"nullFlagValue":"NULL_VALUE"} -> ""
+
+14 дек. 19:45:37.515
+Column [5] id: {"textValue":"ord_mj5yhami15dwp0c6h"} -> "ord_mj5yhami15dwp0c6h"
+
+14 дек. 19:45:37.515
+Column [4] created_at: {"textValue":"2025-12-14T16:45:19.242Z"} -> "2025-12-14T16:45:19.242Z"
+
+14 дек. 19:45:37.515
+Column [3] client_phone: {"textValue":"89531814136"} -> "89531814136"
+
+14 дек. 19:45:37.515
+Column [2] client_name: {"textValue":"Миша"} -> "Миша"
+
+14 дек. 19:45:37.515
+Column [1] client_email: {"textValue":"pimashin2015@gmail.com"} -> "pimashin2015@gmail.com"
+
+14 дек. 19:45:37.515
+Column [0] amount: {"textValue":"25000"} -> "25000"
+
+14 дек. 19:45:37.515
+Column mapping: {"amount":0,"client_email":1,"client_name":2,"client_phone":3,"created_at":4,"id":5,"paid_at":6,"project_description":7,"project_type":8,"status":9}
+
+14 дек. 19:45:37.514
+}
+
+14 дек. 19:45:37.514
+]
+
+14 дек. 19:45:37.514
+}
+
+14 дек. 19:45:37.514
+"textValue": "pending"
+
+14 дек. 19:45:37.514
+{
+
+14 дек. 19:45:37.514
+},
+
+14 дек. 19:45:37.514
+"textValue": "landing"
+
+14 дек. 19:45:37.514
+{
+
+14 дек. 19:45:37.514
+},
+
+14 дек. 19:45:37.514
+"textValue": "dgnxgfgfxxggxghgsh"
+
+14 дек. 19:45:37.514
+{
+
+14 дек. 19:45:37.514
+},
+
+14 дек. 19:45:37.514
+"nullFlagValue": "NULL_VALUE"
+
+14 дек. 19:45:37.514
+{
+
+14 дек. 19:45:37.514
+},
+
+14 дек. 19:45:37.514
+"textValue": "ord_mj5yhami15dwp0c6h"
+
+14 дек. 19:45:37.514
+{
+
+14 дек. 19:45:37.514
+},
+
+14 дек. 19:45:37.514
+"textValue": "2025-12-14T16:45:19.242Z"
+
+14 дек. 19:45:37.514
+{
+
+14 дек. 19:45:37.514
+},
+
+14 дек. 19:45:37.514
+"textValue": "89531814136"
+
+14 дек. 19:45:37.514
+{
+
+14 дек. 19:45:37.514
+},
+
+14 дек. 19:45:37.514
+"textValue": "Миша"
+
+14 дек. 19:45:37.514
+{
+
+14 дек. 19:45:37.514
+},
+
+14 дек. 19:45:37.514
+"textValue": "pimashin2015@gmail.com"
+
+14 дек. 19:45:37.514
+{
+
+14 дек. 19:45:37.514
+},
+
+14 дек. 19:45:37.514
+"textValue": "25000"
+
+14 дек. 19:45:37.514
+{
+
+14 дек. 19:45:37.514
+"items": [
+
+14 дек. 19:45:37.514
+YDB row structure: {
+
+14 дек. 19:45:37.514
+YDB columns: ["amount","client_email","client_name","client_phone","created_at","id","paid_at","project_description","project_type","status"]
+
+14 дек. 19:45:37.514
+YDB rows count: 1
+
+14 дек. 19:45:37.514
+}
+
+14 дек. 19:45:37.514
+"txMeta": {}
+
+14 дек. 19:45:37.514
+],
+
+14 дек. 19:45:37.514
+}
+
+14 дек. 19:45:37.513
+]
+
+14 дек. 19:45:37.513
+}
+
+14 дек. 19:45:37.513
+]
+
+14 дек. 19:45:37.513
+}
+
+14 дек. 19:45:37.513
+"textValue": "pending"
+
+14 дек. 19:45:37.513
+{
+
+14 дек. 19:45:37.513
+},
+
+14 дек. 19:45:37.513
+"textValue": "landing"
+
+14 дек. 19:45:37.513
+{
+
+14 дек. 19:45:37.513
+},
+
+14 дек. 19:45:37.513
+"textValue": "dgnxgfgfxxggxghgsh"
+
+14 дек. 19:45:37.513
+{
+
+14 дек. 19:45:37.513
+},
+
+14 дек. 19:45:37.513
+"nullFlagValue": "NULL_VALUE"
+
+14 дек. 19:45:37.513
+{
+
+14 дек. 19:45:37.513
+},
+
+14 дек. 19:45:37.513
+"textValue": "ord_mj5yhami15dwp0c6h"
+
+14 дек. 19:45:37.513
+{
+
+14 дек. 19:45:37.513
+},
+
+14 дек. 19:45:37.513
+"textValue": "2025-12-14T16:45:19.242Z"
+
+14 дек. 19:45:37.513
+{
+
+14 дек. 19:45:37.513
+},
+
+14 дек. 19:45:37.513
+"textValue": "89531814136"
+
+14 дек. 19:45:37.513
+{
+
+14 дек. 19:45:37.513
+},
+
+14 дек. 19:45:37.513
+"textValue": "Миша"
+
+14 дек. 19:45:37.513
+{
+
+14 дек. 19:45:37.513
+},
+
+14 дек. 19:45:37.513
+"textValue": "pimashin2015@gmail.com"
+
+14 дек. 19:45:37.513
+{
+
+14 дек. 19:45:37.513
+},
+
+14 дек. 19:45:37.513
+"textValue": "25000"
+
+14 дек. 19:45:37.513
+{
+
+14 дек. 19:45:37.513
+"items": [
+
+14 дек. 19:45:37.513
+{
+
+14 дек. 19:45:37.513
+"rows": [
+
+14 дек. 19:45:37.513
+],
+
+14 дек. 19:45:37.513
+}
+
+14 дек. 19:45:37.513
+}
+
+14 дек. 19:45:37.513
+}
+
+14 дек. 19:45:37.513
+}
+
+14 дек. 19:45:37.513
+"typeId": "UTF8"
+
+14 дек. 19:45:37.513
+"item": {
+
+14 дек. 19:45:37.513
+"optionalType": {
+
+14 дек. 19:45:37.513
+"type": {
+
+14 дек. 19:45:37.513
+"name": "status",
+
+14 дек. 19:45:37.513
+{
+
+14 дек. 19:45:37.513
+},
+
+14 дек. 19:45:37.513
+}
+
+14 дек. 19:45:37.513
+}
+
+14 дек. 19:45:37.513
+}
+
+14 дек. 19:45:37.513
+"typeId": "UTF8"
+
+14 дек. 19:45:37.513
+"item": {
+
+14 дек. 19:45:37.513
+"optionalType": {
+
+14 дек. 19:45:37.513
+"type": {
+
+14 дек. 19:45:37.513
+"name": "project_type",
+
+14 дек. 19:45:37.513
+{
+
+14 дек. 19:45:37.513
+},
+
+14 дек. 19:45:37.513
+}
+
+14 дек. 19:45:37.513
+}
+
+14 дек. 19:45:37.513
+}
+
+14 дек. 19:45:37.513
+"typeId": "UTF8"
+
+14 дек. 19:45:37.513
+"item": {
+
+14 дек. 19:45:37.513
+"optionalType": {
+
+14 дек. 19:45:37.513
+"type": {
+
+14 дек. 19:45:37.513
+"name": "project_description",
+
+14 дек. 19:45:37.513
+{
+
+14 дек. 19:45:37.513
+},
+
+14 дек. 19:45:37.513
+}
+
+14 дек. 19:45:37.513
+}
+
+14 дек. 19:45:37.513
+}
+
+14 дек. 19:45:37.513
+"typeId": "UTF8"
+
+14 дек. 19:45:37.512
+"item": {
+
+14 дек. 19:45:37.512
+"optionalType": {
+
+14 дек. 19:45:37.512
+"type": {
+
+14 дек. 19:45:37.512
+"name": "paid_at",
+
+14 дек. 19:45:37.512
+{
+
+14 дек. 19:45:37.512
+},
+
+14 дек. 19:45:37.512
+}
+
+14 дек. 19:45:37.512
+"typeId": "UTF8"
+
+14 дек. 19:45:37.512
+"type": {
+
+14 дек. 19:45:37.512
+"name": "id",
+
+14 дек. 19:45:37.512
+{
+
+14 дек. 19:45:37.512
+},
+
+14 дек. 19:45:37.512
+}
+
+14 дек. 19:45:37.512
+}
+
+14 дек. 19:45:37.512
+}
+
+14 дек. 19:45:37.512
+"typeId": "UTF8"
+
+14 дек. 19:45:37.512
+"item": {
+
+14 дек. 19:45:37.512
+"optionalType": {
+
+14 дек. 19:45:37.512
+"type": {
+
+14 дек. 19:45:37.512
+"name": "created_at",
+
+14 дек. 19:45:37.512
+{
+
+14 дек. 19:45:37.512
+},
+
+14 дек. 19:45:37.512
+}
+
+14 дек. 19:45:37.512
+}
+
+14 дек. 19:45:37.512
+}
+
+14 дек. 19:45:37.512
+"typeId": "UTF8"
+
+14 дек. 19:45:37.512
+"item": {
+
+14 дек. 19:45:37.512
+"optionalType": {
+
+14 дек. 19:45:37.512
+"type": {
+
+14 дек. 19:45:37.512
+"name": "client_phone",
+
+14 дек. 19:45:37.512
+{
+
+14 дек. 19:45:37.512
+},
+
+14 дек. 19:45:37.512
+}
+
+14 дек. 19:45:37.512
+}
+
+14 дек. 19:45:37.512
+}
+
+14 дек. 19:45:37.512
+"typeId": "UTF8"
+
+14 дек. 19:45:37.512
+"item": {
+
+14 дек. 19:45:37.512
+"optionalType": {
+
+14 дек. 19:45:37.512
+"type": {
+
+14 дек. 19:45:37.512
+"name": "client_name",
+
+14 дек. 19:45:37.512
+{
+
+14 дек. 19:45:37.512
+},
+
+14 дек. 19:45:37.512
+}
+
+14 дек. 19:45:37.512
+}
+
+14 дек. 19:45:37.512
+}
+
+14 дек. 19:45:37.512
+"typeId": "UTF8"
+
+14 дек. 19:45:37.512
+"item": {
+
+14 дек. 19:45:37.512
+"optionalType": {
+
+14 дек. 19:45:37.512
+"type": {
+
+14 дек. 19:45:37.512
+"name": "client_email",
+
+14 дек. 19:45:37.512
+{
+
+14 дек. 19:45:37.512
+},
+
+14 дек. 19:45:37.512
+}
+
+14 дек. 19:45:37.512
+}
+
+14 дек. 19:45:37.512
+}
+
+14 дек. 19:45:37.512
+"typeId": "UTF8"
+
+14 дек. 19:45:37.512
+"item": {
+
+14 дек. 19:45:37.512
+"optionalType": {
+
+14 дек. 19:45:37.512
+"type": {
+
+14 дек. 19:45:37.512
+"name": "amount",
+
+14 дек. 19:45:37.512
+{
+
+14 дек. 19:45:37.512
+"columns": [
+
+14 дек. 19:45:37.512
+{
+
+14 дек. 19:45:37.512
+"resultSets": [
+
+14 дек. 19:45:37.512
+YDB raw result: {
+
+14 дек. 19:45:36.905
+YDB driver connected to: /ru-central1/b1gnp4ml7k5j7cquabad/etn2gipa2pvm2qj5ga83
+
+14 дек. 19:45:36.609
+}
+
+14 дек. 19:45:36.609
+received: 'e474588217d3d27a3377e22bda317b1d'
+
+14 дек. 19:45:36.609
+expected: 'e474588217d3d27a3377e22bda317b1d',
+
+14 дек. 19:45:36.609
+Signature check: {
+
+14 дек. 19:45:36.607
+}
+
+14 дек. 19:45:36.607
+shp_orderId: 'ord_mj5yhami15dwp0c6h'
+
+14 дек. 19:45:36.607
+InvId: '719469',
+
+14 дек. 19:45:36.607
+OutSum: '12500',
+
+14 дек. 19:45:36.607
+Robokassa result callback: {
+
+14 дек. 19:45:36.607
+Robokassa result - full data: {"out_summ":"12500","OutSum":"12500","inv_id":"719469","InvId":"719469","crc":"E474588217D3D27A3377E22BDA317B1D","SignatureValue":"E474588217D3D27A3377E22BDA317B1D","PaymentMethod":"BankCard","IncSum":"12500","IncCurrLabel":"BankCardForeignPSR","IsTest":"1","EMail":"","Fee":"0.0","shp_orderId":"ord_mj5yhami15dwp0c6h","action":"robokassa/result"}
+
+14 дек. 19:45:36.607
+Incoming request: { method: 'POST', action: 'robokassa/result', path: '' }
+
+14 дек. 19:45:35.938
+START RequestID: 4677bd93-1c40-4429-978e-cd2454344fde Version: d4ev70ounv80nj46ip7c
+
+14 дек. 19:45:19.472
+REPORT RequestID: 19d8f3f4-85f5-492c-966e-63cd270f9062 Duration: 466.142 ms Billed Duration: 500 ms Memory Size: 256 MB Max Memory Used: 153 MB Queuing Duration: 0.071 ms CPU Usage: 11.914 %
+
+14 дек. 19:45:19.472
+END RequestID: 19d8f3f4-85f5-492c-966e-63cd270f9062
+
+14 дек. 19:45:19.469
+Telegram not configured
+
+14 дек. 19:45:19.469
+Order created in YDB: ord_mj5yhami15dwp0c6h
+
+14 дек. 19:45:19.242
+YDB driver connected to: /ru-central1/b1gnp4ml7k5j7cquabad/etn2gipa2pvm2qj5ga83
+
+14 дек. 19:45:19.007
+Incoming request: { method: 'POST', action: 'orders', path: '' }
+
+14 дек. 19:45:19.003
+START RequestID: 19d8f3f4-85f5-492c-966e-63cd270f9062 Version: d4ev70ounv80nj46ip7c
+
+14 дек. 19:45:18.953
+REPORT RequestID: f4a0d84f-74c1-497c-a31b-77428413140e Duration: 631.644 ms Billed Duration: 700 ms Memory Size: 256 MB Max Memory Used: 153 MB Queuing Duration: 0.065 ms Function Init Duration: 619.600 ms CPU Usage: 11.914 %
+
+14 дек. 19:45:18.953
+END RequestID: f4a0d84f-74c1-497c-a31b-77428413140e
+
+14 дек. 19:45:18.318
+START RequestID: f4a0d84f-74c1-497c-a31b-77428413140e Version: d4ev70ounv80nj46ip7c
