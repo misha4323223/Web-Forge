@@ -118,6 +118,7 @@ const features: Feature[] = [
   { id: "admin", label: "Админ-панель", price: 45000, description: "Управление товарами", availableFor: ["shop"] },
   { id: "telegram_shop", label: "Telegram-магазин", price: 40000, description: "Мини-приложение", availableFor: ["shop"] },
   { id: "delivery", label: "Интеграция доставки", price: 25000, description: "СДЭК, Boxberry", availableFor: ["shop"] },
+  { id: "custom", label: "Другое / Индивидуальная функция", price: 0, description: "Обсудим отдельно", availableFor: ["landing", "corporate", "shop"] },
 ];
 
 const orderSchema = z.object({
