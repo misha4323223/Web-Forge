@@ -83,10 +83,48 @@ shared/
 - `DEPLOY.md` — полные инструкции по деплою
 - `DEPLOY_SIMPLE.md` — упрощённая версия для Object Storage
 
+### Email-уведомления (Yandex Cloud Postbox):
+- **Сервис:** Yandex Cloud Postbox (совместим с AWS SES API)
+- **Домен:** mp-webstudio.ru (DKIM настроен)
+- **Email отправителя:** info@mp-webstudio.ru
+- **SDK:** @aws-sdk/client-sesv2
+- **Функция:** sendContractEmail в index-ydb.js
+
+**DNS записи для доставляемости (добавить в Reg.ru):**
+| Тип | Имя | Значение |
+|-----|-----|----------|
+| TXT | `@` | `v=spf1 include:_spf.yandex.net ~all` |
+| TXT | `_dmarc` | `v=DMARC1; p=none; rua=mailto:info@mp-webstudio.ru` |
+| TXT | `mail._domainkey` | (DKIM - уже добавлен) |
+
 ### Для будущих проектов клиентов:
 - Простые лендинги → Object Storage (статика)
 - Сайты с формами → Cloud Functions
 - Магазины → Cloud Run + Managed PostgreSQL
+
+## Последние изменения (декабрь 2024)
+
+### Email с договором после оплаты:
+1. Настроен Yandex Cloud Postbox для отправки email
+2. Добавлена функция `sendContractEmail` в `yandex-cloud-function/index-ydb.js`
+3. Исправлены ошибки:
+   - "SESClient is not defined" → используется SESv2Client из @aws-sdk/client-sesv2
+   - "message contains too long lines" → добавлена функция wrapBase64
+4. DKIM подпись настроена (запись mail._domainkey.mp-webstudio.ru)
+5. Email успешно отправляется после оплаты Robokassa
+
+### Зависимости для Cloud Function (package.json):
+```json
+{
+  "dependencies": {
+    "@aws-sdk/client-sesv2": "^3.700.0",
+    "@yandex-cloud/nodejs-sdk": "^2.7.0",
+    "nodemailer": "^6.9.0",
+    "pdfkit": "^0.15.0",
+    "ydb-sdk": "^5.0.0"
+  }
+}
+```
 
 ## Команды
 ```bash
