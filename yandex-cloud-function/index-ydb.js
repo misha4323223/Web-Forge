@@ -696,13 +696,77 @@ async function generateContractPDF(order) {
 // ============ Email Sending ============
 
 async function sendContractEmail(order, pdfBuffer) {
+    const resendApiKey = process.env.RESEND_API_KEY;
+    const resendFromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
+    
+    const formatPrice = (price) => {
+        const num = parseFloat(price) || 0;
+        return new Intl.NumberFormat('ru-RU').format(num);
+    };
+    const amount = parseFloat(order.amount) || 0;
+    const prepayment = Math.round(amount / 2);
+    
+    const emailHtml = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #0891b2;">Спасибо за заказ!</h2>
+            <p>Здравствуйте, ${order.clientName || 'Уважаемый клиент'}!</p>
+            <p>Ваша предоплата успешно получена. Договор подписан.</p>
+            <div style="background: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <h3 style="margin-top: 0;">Детали заказа:</h3>
+                <p><strong>Тип проекта:</strong> ${getProjectTypeName(order.projectType)}</p>
+                <p><strong>Стоимость:</strong> ${formatPrice(amount)} руб.</p>
+                <p><strong>Предоплата:</strong> ${formatPrice(prepayment)} руб.</p>
+                <p><strong>ID заказа:</strong> ${order.id}</p>
+            </div>
+            <p>Договор прикреплён к письму в PDF.</p>
+            <p style="color: #6b7280; font-size: 14px; margin-top: 30px;">
+                С уважением,<br>MP.WebStudio<br>
+                <a href="https://mp-webstudio.ru">mp-webstudio.ru</a>
+            </p>
+        </div>
+    `;
+    
+    // Пробуем Resend (приоритет)
+    if (resendApiKey) {
+        console.log('Using Resend API, from:', resendFromEmail);
+        
+        const response = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${resendApiKey}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                from: resendFromEmail,
+                to: order.clientEmail,
+                subject: `Договор на разработку сайта - Заказ ${order.id}`,
+                html: emailHtml,
+                attachments: [{
+                    filename: `Договор_${order.id}.pdf`,
+                    content: pdfBuffer.toString('base64'),
+                }],
+            }),
+        });
+        
+        const result = await response.json();
+        
+        if (!response.ok) {
+            console.error('Resend error:', result);
+            throw new Error(`Resend API error: ${JSON.stringify(result)}`);
+        }
+        
+        console.log('Email sent via Resend:', result.id);
+        return;
+    }
+    
+    // Fallback на SMTP (Яндекс)
     const smtpEmail = process.env.SMTP_EMAIL;
     const smtpPassword = process.env.SMTP_PASSWORD;
 
     console.log('SMTP config:', { emailConfigured: !!smtpEmail, passwordConfigured: !!smtpPassword });
 
     if (!smtpEmail || !smtpPassword) {
-        console.log('SMTP not configured, skipping email');
+        console.log('No email service configured (RESEND_API_KEY or SMTP), skipping email');
         return;
     }
 
@@ -713,36 +777,11 @@ async function sendContractEmail(order, pdfBuffer) {
         auth: { user: smtpEmail, pass: smtpPassword },
     });
 
-    const formatPrice = (price) => {
-        const num = parseFloat(price) || 0;
-        return new Intl.NumberFormat('ru-RU').format(num);
-    };
-    const amount = parseFloat(order.amount) || 0;
-    const prepayment = Math.round(amount / 2);
-
     const mailOptions = {
         from: `"MP.WebStudio" <${smtpEmail}>`,
         to: order.clientEmail,
         subject: `Договор на разработку сайта - Заказ ${order.id}`,
-        html: `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                <h2 style="color: #0891b2;">Спасибо за заказ!</h2>
-                <p>Здравствуйте, ${order.clientName || 'Уважаемый клиент'}!</p>
-                <p>Ваша предоплата успешно получена. Договор подписан.</p>
-                <div style="background: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                    <h3 style="margin-top: 0;">Детали заказа:</h3>
-                    <p><strong>Тип проекта:</strong> ${getProjectTypeName(order.projectType)}</p>
-                    <p><strong>Стоимость:</strong> ${formatPrice(amount)} руб.</p>
-                    <p><strong>Предоплата:</strong> ${formatPrice(prepayment)} руб.</p>
-                    <p><strong>ID заказа:</strong> ${order.id}</p>
-                </div>
-                <p>Договор прикреплён к письму в PDF.</p>
-                <p style="color: #6b7280; font-size: 14px; margin-top: 30px;">
-                    С уважением,<br>MP.WebStudio<br>
-                    <a href="https://mp-webstudio.ru">mp-webstudio.ru</a>
-                </p>
-            </div>
-        `,
+        html: emailHtml,
         attachments: [{
             filename: `Договор_${order.id}.pdf`,
             content: pdfBuffer,
@@ -750,9 +789,9 @@ async function sendContractEmail(order, pdfBuffer) {
         }],
     };
 
-    console.log('Sending email to:', order.clientEmail);
+    console.log('Sending email via SMTP to:', order.clientEmail);
     await transporter.sendMail(mailOptions);
-    console.log('Email sent successfully');
+    console.log('Email sent successfully via SMTP');
 }
 
 // ============ Helpers ============
