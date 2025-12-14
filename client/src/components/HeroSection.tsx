@@ -4,13 +4,6 @@ import { ParticleBackground } from "./ParticleBackground";
 import { ChevronDown } from "lucide-react";
 
 export function HeroSection() {
-  const scrollToContact = () => {
-    const element = document.querySelector("#contact");
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
   const scrollToPortfolio = () => {
     const element = document.querySelector("#portfolio");
     if (element) {
@@ -78,14 +71,15 @@ export function HeroSection() {
           transition={{ duration: 0.8, delay: 0.8 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
-          <Button
-            size="lg"
-            onClick={scrollToContact}
-            className="bg-gradient-to-r from-cyan-500 to-purple-500 text-white border-0 shadow-lg shadow-cyan-500/25"
-            data-testid="button-hero-cta"
-          >
-            Обсудить проект
-          </Button>
+          <a href="/order">
+            <Button
+              size="lg"
+              className="bg-gradient-to-r from-cyan-500 to-purple-500 text-white border-0 shadow-lg shadow-cyan-500/25"
+              data-testid="button-hero-cta"
+            >
+              Заказать сайт
+            </Button>
+          </a>
           <Button
             size="lg"
             variant="outline"

@@ -53,13 +53,6 @@ export function CalculatorSection() {
     );
   };
 
-  const scrollToContact = () => {
-    const element = document.querySelector("#contact");
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("ru-RU").format(price);
   };
@@ -196,14 +189,15 @@ export function CalculatorSection() {
                 * Окончательная стоимость определяется после обсуждения деталей проекта
               </p>
 
-              <Button
-                onClick={scrollToContact}
-                className="w-full bg-gradient-to-r from-cyan-500 to-purple-500 text-white border-0"
-                data-testid="button-calculator-cta"
-              >
-                Обсудить проект
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
+              <a href="/order">
+                <Button
+                  className="w-full bg-gradient-to-r from-cyan-500 to-purple-500 text-white border-0"
+                  data-testid="button-calculator-cta"
+                >
+                  Заказать сайт
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </a>
             </Card>
           </motion.div>
         </div>

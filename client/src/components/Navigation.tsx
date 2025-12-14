@@ -12,6 +12,8 @@ const navItems = [
   { label: "Контакты", href: "#contact" },
 ];
 
+const orderPagePath = "/order";
+
 export function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -74,13 +76,14 @@ export function Navigation() {
         </div>
 
         <div className="hidden md:block">
-          <Button
-            onClick={() => scrollToSection("#contact")}
-            className="bg-gradient-to-r from-cyan-500 to-purple-500 text-white border-0"
-            data-testid="button-nav-cta"
-          >
-            Обсудить проект
-          </Button>
+          <a href={orderPagePath}>
+            <Button
+              className="bg-gradient-to-r from-cyan-500 to-purple-500 text-white border-0"
+              data-testid="button-nav-cta"
+            >
+              Заказать сайт
+            </Button>
+          </a>
         </div>
 
         <Button
@@ -114,13 +117,14 @@ export function Navigation() {
                   {item.label}
                 </Button>
               ))}
-              <Button
-                onClick={() => scrollToSection("#contact")}
-                className="mt-2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white border-0"
-                data-testid="button-mobile-cta"
-              >
-                Обсудить проект
-              </Button>
+              <a href={orderPagePath}>
+                <Button
+                  className="mt-2 w-full bg-gradient-to-r from-cyan-500 to-purple-500 text-white border-0"
+                  data-testid="button-mobile-cta"
+                >
+                  Заказать сайт
+                </Button>
+              </a>
             </div>
           </motion.div>
         )}

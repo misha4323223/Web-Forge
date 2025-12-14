@@ -1,37 +1,44 @@
 /**
- * Yandex Cloud Function для обработки форм WebStudio
+ * Yandex Cloud Function для WebStudio
  * 
  * Обрабатывает:
  * - POST /contact - заявки с формы контактов
- * - POST /order - создание заказов
+ * - POST /order - создание заказов с оплатой через Robokassa
+ * - POST /robokassa/result - callback от Robokassa
+ * - GET /robokassa/success - успешная оплата
+ * - GET /robokassa/fail - неуспешная оплата
  * 
- * Для работы нужны переменные окружения:
+ * Переменные окружения:
+ * - ROBOKASSA_MERCHANT_LOGIN - логин магазина в Robokassa
+ * - ROBOKASSA_PASSWORD1 - пароль #1 для формирования подписи
+ * - ROBOKASSA_PASSWORD2 - пароль #2 для проверки подписи
+ * - ROBOKASSA_TEST_MODE - "true" для тестового режима
  * - TELEGRAM_BOT_TOKEN - токен бота Telegram (опционально)
  * - TELEGRAM_CHAT_ID - ID чата для уведомлений (опционально)
+ * - SITE_URL - URL сайта для редиректов (например: https://www.mp-webstudio.ru)
  */
+
+const crypto = require('crypto');
+
+const orders = new Map();
+let orderCounter = 1;
 
 module.exports.handler = async function (event, context) {
     const headers = {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type',
     };
 
-    // Обработка preflight запросов (CORS)
     if (event.httpMethod === 'OPTIONS') {
-        return {
-            statusCode: 200,
-            headers,
-            body: '',
-        };
+        return { statusCode: 200, headers, body: '' };
     }
 
-    // Определяем путь
     const path = event.path || event.url || '';
+    const method = event.httpMethod;
     
     try {
-        // Парсим тело запроса
         let body = {};
         if (event.body) {
             try {
@@ -40,25 +47,44 @@ module.exports.handler = async function (event, context) {
                     : event.body
                 );
             } catch (e) {
-                body = {};
+                if (typeof event.body === 'string') {
+                    const params = new URLSearchParams(event.body);
+                    body = Object.fromEntries(params);
+                }
             }
         }
 
-        // Маршрутизация
-        if (path.includes('/contact') && event.httpMethod === 'POST') {
+        const query = event.queryStringParameters || {};
+
+        if (path.includes('/contact') && method === 'POST') {
             return await handleContact(body, headers);
         }
         
-        if (path.includes('/order') && event.httpMethod === 'POST') {
+        if (path.includes('/order') && method === 'POST') {
             return await handleOrder(body, headers);
         }
 
-        // Тестовый эндпоинт
-        if (path.includes('/health') || event.httpMethod === 'GET') {
+        if (path.includes('/robokassa/result') && method === 'POST') {
+            return await handleRobokassaResult({ ...body, ...query }, headers);
+        }
+
+        if (path.includes('/robokassa/success')) {
+            return handleRobokassaSuccess(query);
+        }
+
+        if (path.includes('/robokassa/fail')) {
+            return handleRobokassaFail(query);
+        }
+
+        if (path.includes('/health') || method === 'GET') {
             return {
                 statusCode: 200,
                 headers,
-                body: JSON.stringify({ status: 'ok', timestamp: new Date().toISOString() }),
+                body: JSON.stringify({ 
+                    status: 'ok', 
+                    timestamp: new Date().toISOString(),
+                    robokassa: process.env.ROBOKASSA_MERCHANT_LOGIN ? 'configured' : 'not configured'
+                }),
             };
         }
 
@@ -79,7 +105,6 @@ module.exports.handler = async function (event, context) {
 };
 
 async function handleContact(data, headers) {
-    // Валидация
     const errors = [];
     
     if (!data.name || data.name.length < 2) {
@@ -100,7 +125,6 @@ async function handleContact(data, headers) {
         };
     }
 
-    // Логируем заявку
     console.log('New contact request:', {
         name: data.name,
         email: data.email,
@@ -111,7 +135,6 @@ async function handleContact(data, headers) {
         timestamp: new Date().toISOString(),
     });
 
-    // Отправляем в Telegram (если настроено)
     await sendTelegramNotification(formatContactMessage(data));
 
     return {
@@ -126,7 +149,6 @@ async function handleContact(data, headers) {
 }
 
 async function handleOrder(data, headers) {
-    // Валидация
     const errors = [];
     
     if (!data.clientName || data.clientName.length < 2) {
@@ -151,18 +173,51 @@ async function handleOrder(data, headers) {
     }
 
     const orderId = generateId();
-
-    // Логируем заказ
-    console.log('New order:', {
+    const invId = orderCounter++;
+    
+    const order = {
         id: orderId,
+        invId,
         clientName: data.clientName,
+        clientEmail: data.clientEmail,
+        clientPhone: data.clientPhone,
         projectType: data.projectType,
-        amount: data.amount,
-        timestamp: new Date().toISOString(),
-    });
+        projectDescription: data.projectDescription || '',
+        amount: data.amount || '60000',
+        status: 'pending',
+        createdAt: new Date().toISOString(),
+    };
 
-    // Отправляем в Telegram
-    await sendTelegramNotification(formatOrderMessage(data, orderId));
+    orders.set(orderId, order);
+
+    console.log('New order created:', order);
+
+    await sendTelegramNotification(formatOrderMessage(order));
+
+    const MERCHANT_LOGIN = process.env.ROBOKASSA_MERCHANT_LOGIN;
+    const PASSWORD1 = process.env.ROBOKASSA_PASSWORD1;
+    const IS_TEST = process.env.ROBOKASSA_TEST_MODE === 'true';
+
+    if (!MERCHANT_LOGIN || !PASSWORD1) {
+        return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({
+                success: true,
+                message: 'Заказ создан (оплата не настроена)',
+                orderId,
+            }),
+        };
+    }
+
+    const sum = parseFloat(order.amount).toFixed(2);
+    const description = encodeURIComponent(`Заказ сайта: ${getProjectTypeName(order.projectType)}`);
+    
+    const signatureString = `${MERCHANT_LOGIN}:${sum}:${invId}:${PASSWORD1}:shp_orderId=${orderId}`;
+    const signature = crypto.createHash('md5').update(signatureString).digest('hex');
+
+    const baseUrl = 'https://auth.robokassa.ru/Merchant/Index.aspx';
+    const paymentUrl = `${baseUrl}?MerchantLogin=${MERCHANT_LOGIN}&OutSum=${sum}&InvId=${invId}&Description=${description}&SignatureValue=${signature}&IsTest=${IS_TEST ? 1 : 0}&shp_orderId=${orderId}`;
 
     return {
         statusCode: 200,
@@ -171,8 +226,92 @@ async function handleOrder(data, headers) {
             success: true,
             message: 'Заказ создан',
             orderId,
+            paymentUrl,
         }),
     };
+}
+
+async function handleRobokassaResult(data, headers) {
+    const OutSum = data.OutSum;
+    const InvId = data.InvId;
+    const SignatureValue = data.SignatureValue;
+    const shp_orderId = data.shp_orderId;
+
+    console.log('Robokassa result callback:', { OutSum, InvId, shp_orderId });
+
+    const PASSWORD2 = process.env.ROBOKASSA_PASSWORD2;
+    
+    if (!PASSWORD2) {
+        console.error('ROBOKASSA_PASSWORD2 not configured');
+        return { statusCode: 500, headers, body: 'config error' };
+    }
+
+    const signatureString = `${OutSum}:${InvId}:${PASSWORD2}:shp_orderId=${shp_orderId}`;
+    const calculatedSignature = crypto.createHash('md5').update(signatureString).digest('hex');
+
+    if (calculatedSignature.toLowerCase() !== SignatureValue.toLowerCase()) {
+        console.error('Invalid Robokassa signature');
+        return { statusCode: 400, headers, body: 'bad sign' };
+    }
+
+    const order = orders.get(shp_orderId);
+    if (order) {
+        order.status = 'paid';
+        order.paidAt = new Date().toISOString();
+        orders.set(shp_orderId, order);
+        
+        await sendTelegramNotification(`
+Оплата получена!
+
+Заказ: ${shp_orderId}
+Сумма: ${OutSum} руб.
+Клиент: ${order.clientName}
+Email: ${order.clientEmail}
+        `);
+    }
+
+    console.log('Order paid successfully:', shp_orderId);
+
+    return {
+        statusCode: 200,
+        headers: { 'Content-Type': 'text/plain' },
+        body: `OK${InvId}`,
+    };
+}
+
+function handleRobokassaSuccess(query) {
+    const siteUrl = process.env.SITE_URL || 'https://www.mp-webstudio.ru';
+    const orderId = query.shp_orderId || '';
+    
+    return {
+        statusCode: 302,
+        headers: {
+            'Location': `${siteUrl}/payment-success?orderId=${orderId}`,
+        },
+        body: '',
+    };
+}
+
+function handleRobokassaFail(query) {
+    const siteUrl = process.env.SITE_URL || 'https://www.mp-webstudio.ru';
+    const orderId = query.shp_orderId || '';
+    
+    return {
+        statusCode: 302,
+        headers: {
+            'Location': `${siteUrl}/payment-fail?orderId=${orderId}`,
+        },
+        body: '',
+    };
+}
+
+function getProjectTypeName(type) {
+    const types = {
+        landing: 'Лендинг',
+        corporate: 'Корпоративный сайт',
+        shop: 'Интернет-магазин',
+    };
+    return types[type] || type;
 }
 
 function isValidEmail(email) {
@@ -184,39 +323,34 @@ function generateId() {
 }
 
 function formatContactMessage(data) {
-    return `🔔 *Новая заявка с сайта*
+    return `Новая заявка с сайта
 
-👤 *Имя:* ${escapeMarkdown(data.name)}
-📧 *Email:* ${escapeMarkdown(data.email)}
-📱 *Телефон:* ${escapeMarkdown(data.phone || 'не указан')}
-📋 *Тип проекта:* ${escapeMarkdown(data.projectType || 'не указан')}
-💰 *Бюджет:* ${escapeMarkdown(data.budget || 'не указан')}
+Имя: ${data.name}
+Email: ${data.email}
+Телефон: ${data.phone || 'не указан'}
+Тип проекта: ${data.projectType || 'не указан'}
+Бюджет: ${data.budget || 'не указан'}
 
-📝 *Сообщение:*
-${escapeMarkdown(data.message)}
+Сообщение:
+${data.message}
 
-🕐 ${new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' })}`;
+${new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' })}`;
 }
 
-function formatOrderMessage(data, orderId) {
-    return `💳 *Новый заказ*
+function formatOrderMessage(order) {
+    return `Новый заказ!
 
-🆔 *ID:* \`${orderId}\`
-👤 *Клиент:* ${escapeMarkdown(data.clientName)}
-📧 *Email:* ${escapeMarkdown(data.clientEmail)}
-📱 *Телефон:* ${escapeMarkdown(data.clientPhone)}
-📋 *Тип проекта:* ${escapeMarkdown(data.projectType)}
-💰 *Сумма:* ${escapeMarkdown(data.amount)} ₽
+ID: ${order.id}
+Клиент: ${order.clientName}
+Email: ${order.clientEmail}
+Телефон: ${order.clientPhone}
+Тип: ${getProjectTypeName(order.projectType)}
+Сумма: ${order.amount} руб.
 
-📝 *Описание:*
-${escapeMarkdown(data.projectDescription || '')}
+Описание:
+${order.projectDescription || 'не указано'}
 
-🕐 ${new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' })}`;
-}
-
-function escapeMarkdown(text) {
-    if (!text) return '';
-    return String(text).replace(/[_*[\]()~`>#+\-=|{}.!]/g, '\\$&');
+${new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' })}`;
 }
 
 async function sendTelegramNotification(message) {
@@ -235,7 +369,6 @@ async function sendTelegramNotification(message) {
             body: JSON.stringify({
                 chat_id: chatId,
                 text: message,
-                parse_mode: 'MarkdownV2',
             }),
         });
 
