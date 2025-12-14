@@ -13,6 +13,8 @@ import { Loader2, CreditCard, ArrowLeft, CheckCircle, AlertCircle } from "lucide
 
 const formatPrice = (price: number) => new Intl.NumberFormat("ru-RU").format(price);
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || "https://functions.yandexcloud.net/d4ed08qj9rekklj8b100";
+
 export default function PayRemaining() {
   const [, setLocation] = useLocation();
   const searchParams = new URLSearchParams(window.location.search);
@@ -24,7 +26,9 @@ export default function PayRemaining() {
   const { data: orderData, isLoading: isLoadingOrder, error: orderError } = useQuery({
     queryKey: ['/api/orders', orderId],
     queryFn: async () => {
-      const response = await fetch(`/api/orders/${orderId}`);
+      // Используем Yandex Cloud Function API для получения заказа из YDB
+      const apiUrl = `${API_BASE_URL}?action=orders/${orderId}`;
+      const response = await fetch(apiUrl);
       if (!response.ok) {
         throw new Error("Заказ не найден");
       }

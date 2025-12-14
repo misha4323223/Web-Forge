@@ -114,6 +114,12 @@ module.exports.handler = async function (event, context) {
         if (orderMatch && method === 'GET') {
             return await handleGetOrder(orderMatch[1], headers);
         }
+        
+        // Также поддерживаем action=orders/orderId для совместимости с фронтендом
+        const actionOrderMatch = action.match(/^orders\/([a-zA-Z0-9_-]+)$/);
+        if (actionOrderMatch && method === 'GET') {
+            return await handleGetOrder(actionOrderMatch[1], headers);
+        }
 
         if (action === 'health' || path.includes('/health') || method === 'GET') {
             return {
