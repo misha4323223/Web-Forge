@@ -730,45 +730,35 @@ async function sendContractEmail(order, pdfBuffer) {
     if (postboxApiKey && postboxFromEmail) {
         console.log('Using Yandex Cloud Postbox, from:', postboxFromEmail);
         
-        // Формируем multipart/mixed для вложений
-        const boundary = '----=_Part_' + Date.now().toString(36);
         const pdfBase64 = pdfBuffer.toString('base64');
         
-        const rawEmail = [
-            `From: MP.WebStudio <${postboxFromEmail}>`,
-            `To: ${order.clientEmail}`,
-            `Subject: =?UTF-8?B?${Buffer.from(`Договор на разработку сайта - Заказ ${order.id}`).toString('base64')}?=`,
-            'MIME-Version: 1.0',
-            `Content-Type: multipart/mixed; boundary="${boundary}"`,
-            '',
-            `--${boundary}`,
-            'Content-Type: text/html; charset=UTF-8',
-            'Content-Transfer-Encoding: base64',
-            '',
-            Buffer.from(emailHtml).toString('base64'),
-            '',
-            `--${boundary}`,
-            `Content-Type: application/pdf; name="Договор_${order.id}.pdf"`,
-            'Content-Transfer-Encoding: base64',
-            `Content-Disposition: attachment; filename="=?UTF-8?B?${Buffer.from(`Договор_${order.id}.pdf`).toString('base64')}?="`,
-            '',
-            pdfBase64,
-            '',
-            `--${boundary}--`,
-        ].join('\r\n');
+        // Формат Postbox API v1
+        const postboxPayload = {
+            from: postboxFromEmail,
+            to: order.clientEmail,
+            subject: `Договор на разработку сайта - Заказ ${order.id}`,
+            html: emailHtml,
+            attachments: [
+                {
+                    name: `Договор_${order.id}.pdf`,
+                    content: pdfBase64,
+                    contentType: 'application/pdf',
+                }
+            ]
+        };
         
-        const response = await fetch('https://postbox.cloud.yandex.net/v2/email/outbound/raw', {
+        console.log('Postbox payload (without attachment content):', JSON.stringify({
+            ...postboxPayload,
+            attachments: postboxPayload.attachments.map(a => ({ name: a.name, contentType: a.contentType }))
+        }));
+        
+        const response = await fetch('https://postbox.cloud.yandex.net/v1/email/outbound/raw', {
             method: 'POST',
             headers: {
                 'Authorization': `Api-Key ${postboxApiKey}`,
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                FromEmailAddress: postboxFromEmail,
-                RawMessage: {
-                    Data: Buffer.from(rawEmail).toString('base64'),
-                },
-            }),
+            body: JSON.stringify(postboxPayload),
         });
         
         const responseText = await response.text();
