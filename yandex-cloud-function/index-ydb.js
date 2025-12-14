@@ -742,9 +742,13 @@ async function sendContractEmail(order, pdfBuffer) {
             },
         });
         
+        // Функция для разбиения base64 на строки по 76 символов (RFC 2045)
+        const wrapBase64 = (base64) => base64.match(/.{1,76}/g).join('\r\n');
+        
         // Формируем raw email с вложением
         const boundary = '----=_Part_' + Date.now().toString(36);
-        const pdfBase64 = pdfBuffer.toString('base64');
+        const pdfBase64 = wrapBase64(pdfBuffer.toString('base64'));
+        const htmlBase64 = wrapBase64(Buffer.from(emailHtml).toString('base64'));
         
         const rawEmail = [
             `From: MP.WebStudio <${postboxFromEmail}>`,
@@ -757,7 +761,7 @@ async function sendContractEmail(order, pdfBuffer) {
             'Content-Type: text/html; charset=UTF-8',
             'Content-Transfer-Encoding: base64',
             '',
-            Buffer.from(emailHtml).toString('base64'),
+            htmlBase64,
             '',
             `--${boundary}`,
             `Content-Type: application/pdf; name="Contract_${order.id}.pdf"`,

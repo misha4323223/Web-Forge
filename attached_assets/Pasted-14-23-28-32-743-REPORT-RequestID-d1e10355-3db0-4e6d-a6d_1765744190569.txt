@@ -1,0 +1,380 @@
+14 дек. 23:28:32.743
+REPORT RequestID: d1e10355-3db0-4e6d-a6df-122184b0d4f7 Duration: 680.182 ms Billed Duration: 700 ms Memory Size: 256 MB Max Memory Used: 194 MB Queuing Duration: 0.076 ms CPU Usage: 25.488 %
+
+14 дек. 23:28:32.743
+END RequestID: d1e10355-3db0-4e6d-a6df-122184b0d4f7
+
+14 дек. 23:28:32.741
+Order paid successfully: ord_mj66g3tfnexle42yx
+
+14 дек. 23:28:32.741
+Telegram not configured
+
+14 дек. 23:28:32.741
+at async module.exports.handler [as handlerFn] (/function/code/index.js:97:20)
+
+14 дек. 23:28:32.741
+at async handleRobokassaResult (/function/code/index.js:555:13)
+
+14 дек. 23:28:32.741
+at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+14 дек. 23:28:32.741
+at sendContractEmail (/function/code/index.js:793:19)
+
+14 дек. 23:28:32.741
+RequestID: f9e0aab8-8a04-4500-b76d-3c9d9b6a17ef
+
+14 дек. 23:28:32.741
+RequestID: f9e0aab8-8a04-4500-b76d-3c9d9b6a17ef Error: Yandex Postbox error: message contains too long lines (more than 998 chars)
+
+14 дек. 23:28:32.741
+Failed to send contract email: Yandex Postbox error: message contains too long lines (more than 998 chars)
+
+14 дек. 23:28:32.741
+}
+
+14 дек. 23:28:32.741
+"Code": "BadRequestException"
+
+14 дек. 23:28:32.741
+"message": "message contains too long lines (more than 998 chars)\nRequestID: f9e0aab8-8a04-4500-b76d-3c9d9b6a17ef",
+
+14 дек. 23:28:32.741
+"name": "BadRequestException",
+
+14 дек. 23:28:32.741
+},
+
+14 дек. 23:28:32.741
+"totalRetryDelay": 0
+
+14 дек. 23:28:32.741
+"attempts": 1,
+
+14 дек. 23:28:32.741
+"httpStatusCode": 400,
+
+14 дек. 23:28:32.741
+"$metadata": {
+
+14 дек. 23:28:32.741
+"$fault": "client",
+
+14 дек. 23:28:32.741
+Postbox error details: {
+
+14 дек. 23:28:32.741
+RequestID: f9e0aab8-8a04-4500-b76d-3c9d9b6a17ef
+
+14 дек. 23:28:32.741
+Postbox error: message contains too long lines (more than 998 chars)
+
+14 дек. 23:28:32.605
+Sending email via Yandex Postbox AWS SESv2
+
+14 дек. 23:28:32.598
+Using Yandex Cloud Postbox (AWS SESv2), from: info@mp-webstudio.ru
+
+14 дек. 23:28:32.597
+PDF generated, size: 20657
+
+14 дек. 23:28:32.201
+Generating PDF for order: ord_mj66g3tfnexle42yx
+
+14 дек. 23:28:32.201
+Order status updated in YDB: ord_mj66g3tfnexle42yx -> paid
+
+14 дек. 23:28:32.130
+}
+
+14 дек. 23:28:32.130
+paidAt: ''
+
+14 дек. 23:28:32.130
+createdAt: '2025-12-14T20:28:20.691Z',
+
+14 дек. 23:28:32.130
+status: 'pending',
+
+14 дек. 23:28:32.130
+amount: '60000',
+
+14 дек. 23:28:32.130
+projectDescription: 'ввааавваававав',
+
+14 дек. 23:28:32.130
+projectType: 'corporate',
+
+14 дек. 23:28:32.130
+clientPhone: '89531814136',
+
+14 дек. 23:28:32.130
+clientEmail: 'pimashin2015@gmail.com',
+
+14 дек. 23:28:32.130
+clientName: 'Миша',
+
+14 дек. 23:28:32.130
+id: 'ord_mj66g3tfnexle42yx',
+
+14 дек. 23:28:32.130
+Order fetched from YDB: {
+
+14 дек. 23:28:32.129
+Order fetched from YDB: {"id":"ord_mj66g3tfnexle42yx","clientName":"Миша","clientEmail":"pimashin2015@gmail.com","clientPhone":"89531814136","projectType":"corporate","projectDescription":"ввааавваававав","amount":"60000","status":"pending","createdAt":"2025-12-14T20:28:20.691Z","paidAt":""}
+
+14 дек. 23:28:32.129
+Parsed order: {"id":"ord_mj66g3tfnexle42yx","clientName":"Миша","clientEmail":"pimashin2015@gmail.com","clientPhone":"89531814136","projectType":"corporate","projectDescription":"ввааавваававав","amount":"60000","status":"pending","createdAt":"2025-12-14T20:28:20.691Z","paidAt":""}
+
+14 дек. 23:28:32.129
+Column [9] status: {"textValue":"pending"} -> "pending"
+
+14 дек. 23:28:32.129
+Column [8] project_type: {"textValue":"corporate"} -> "corporate"
+
+14 дек. 23:28:32.129
+Column [7] project_description: {"textValue":"ввааавваававав"} -> "ввааавваававав"
+
+14 дек. 23:28:32.129
+Column [6] paid_at: {"nullFlagValue":"NULL_VALUE"} -> ""
+
+14 дек. 23:28:32.129
+Column [5] id: {"textValue":"ord_mj66g3tfnexle42yx"} -> "ord_mj66g3tfnexle42yx"
+
+14 дек. 23:28:32.129
+Column [4] created_at: {"textValue":"2025-12-14T20:28:20.691Z"} -> "2025-12-14T20:28:20.691Z"
+
+14 дек. 23:28:32.129
+Column [3] client_phone: {"textValue":"89531814136"} -> "89531814136"
+
+14 дек. 23:28:32.129
+Column [2] client_name: {"textValue":"Миша"} -> "Миша"
+
+14 дек. 23:28:32.129
+Column [1] client_email: {"textValue":"pimashin2015@gmail.com"} -> "pimashin2015@gmail.com"
+
+14 дек. 23:28:32.129
+Column [0] amount: {"textValue":"60000"} -> "60000"
+
+14 дек. 23:28:32.129
+Column mapping: {"amount":0,"client_email":1,"client_name":2,"client_phone":3,"created_at":4,"id":5,"paid_at":6,"project_description":7,"project_type":8,"status":9}
+
+14 дек. 23:28:32.129
+}
+
+14 дек. 23:28:32.129
+]
+
+14 дек. 23:28:32.129
+}
+
+14 дек. 23:28:32.129
+"textValue": "pending"
+
+14 дек. 23:28:32.129
+{
+
+14 дек. 23:28:32.129
+},
+
+14 дек. 23:28:32.129
+"textValue": "corporate"
+
+14 дек. 23:28:32.128
+{
+
+14 дек. 23:28:32.128
+},
+
+14 дек. 23:28:32.128
+"textValue": "ввааавваававав"
+
+14 дек. 23:28:32.128
+{
+
+14 дек. 23:28:32.128
+},
+
+14 дек. 23:28:32.128
+"nullFlagValue": "NULL_VALUE"
+
+14 дек. 23:28:32.128
+{
+
+14 дек. 23:28:32.128
+},
+
+14 дек. 23:28:32.128
+"textValue": "ord_mj66g3tfnexle42yx"
+
+14 дек. 23:28:32.128
+{
+
+14 дек. 23:28:32.128
+},
+
+14 дек. 23:28:32.128
+"textValue": "2025-12-14T20:28:20.691Z"
+
+14 дек. 23:28:32.128
+{
+
+14 дек. 23:28:32.128
+},
+
+14 дек. 23:28:32.128
+"textValue": "89531814136"
+
+14 дек. 23:28:32.128
+{
+
+14 дек. 23:28:32.128
+},
+
+14 дек. 23:28:32.128
+"textValue": "Миша"
+
+14 дек. 23:28:32.128
+{
+
+14 дек. 23:28:32.128
+},
+
+14 дек. 23:28:32.128
+"textValue": "pimashin2015@gmail.com"
+
+14 дек. 23:28:32.128
+{
+
+14 дек. 23:28:32.128
+},
+
+14 дек. 23:28:32.128
+"textValue": "60000"
+
+14 дек. 23:28:32.128
+{
+
+14 дек. 23:28:32.128
+"items": [
+
+14 дек. 23:28:32.128
+YDB row structure: {
+
+14 дек. 23:28:32.128
+YDB columns: ["amount","client_email","client_name","client_phone","created_at","id","paid_at","project_description","project_type","status"]
+
+14 дек. 23:28:32.128
+YDB rows count: 1
+
+14 дек. 23:28:32.128
+}
+
+14 дек. 23:28:32.128
+"txMeta": {}
+
+14 дек. 23:28:32.128
+],
+
+14 дек. 23:28:32.128
+}
+
+14 дек. 23:28:32.128
+]
+
+14 дек. 23:28:32.128
+}
+
+14 дек. 23:28:32.128
+]
+
+14 дек. 23:28:32.128
+}
+
+14 дек. 23:28:32.128
+"textValue": "pending"
+
+14 дек. 23:28:32.128
+{
+
+14 дек. 23:28:32.128
+},
+
+14 дек. 23:28:32.128
+"textValue": "corporate"
+
+14 дек. 23:28:32.128
+{
+
+14 дек. 23:28:32.128
+},
+
+14 дек. 23:28:32.128
+"textValue": "ввааавваававав"
+
+14 дек. 23:28:32.128
+{
+
+14 дек. 23:28:32.128
+},
+
+14 дек. 23:28:32.128
+"nullFlagValue": "NULL_VALUE"
+
+14 дек. 23:28:32.128
+{
+
+14 дек. 23:28:32.127
+},
+
+14 дек. 23:28:32.127
+"textValue": "ord_mj66g3tfnexle42yx"
+
+14 дек. 23:28:32.127
+{
+
+14 дек. 23:28:32.127
+},
+
+14 дек. 23:28:32.127
+"textValue": "2025-12-14T20:28:20.691Z"
+
+14 дек. 23:28:32.127
+{
+
+14 дек. 23:28:32.127
+},
+
+14 дек. 23:28:32.127
+"textValue": "89531814136"
+
+14 дек. 23:28:32.127
+{
+
+14 дек. 23:28:32.127
+},
+
+14 дек. 23:28:32.127
+"textValue": "Миша"
+
+14 дек. 23:28:32.127
+{
+
+14 дек. 23:28:32.127
+},
+
+14 дек. 23:28:32.127
+"textValue": "pimashin2015@gmail.com"
+
+14 дек. 23:28:32.127
+{
+
+14 дек. 23:28:32.127
+},
+
+14 дек. 23:28:32.127
+"textValue": "60000"
+
+14 дек. 23:28:32.127
+{
