@@ -1,0 +1,11 @@
+{
+  "name": "webstudio-cloud-function-ydb",
+  "version": "1.0.0",
+  "description": "WebStudio Cloud Function with YDB Serverless",
+  "main": "index-ydb.js",
+  "dependencies": {
+    "nodemailer": "^6.9.7",
+    "pdfkit": "^0.13.0",
+    "ydb-sdk": "^5.0.0"
+  }
+}
