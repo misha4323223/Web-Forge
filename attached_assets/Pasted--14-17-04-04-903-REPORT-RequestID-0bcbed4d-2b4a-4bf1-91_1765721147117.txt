@@ -1,0 +1,76 @@
+
+
+14 дек. 17:04:04.903
+REPORT RequestID: 0bcbed4d-2b4a-4bf1-9101-7a86d7307ea1 Duration: 2.911 ms Billed Duration: 100 ms Memory Size: 256 MB Max Memory Used: 164 MB Queuing Duration: 0.056 ms
+
+14 дек. 17:04:04.903
+END RequestID: 0bcbed4d-2b4a-4bf1-9101-7a86d7307ea1
+
+14 дек. 17:04:04.902
+at async descriptor.value (/function/code/node_modules/ydb-sdk/build/cjs/src/retries_obsoleted.js:137:20)
+
+14 дек. 17:04:04.902
+at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+14 дек. 17:04:04.902
+at RetryStrategy.retry (/function/code/node_modules/ydb-sdk/build/cjs/src/retries_obsoleted.js:90:49)
+
+14 дек. 17:04:04.902
+at TransportError.convertToYdbError (/function/code/node_modules/ydb-sdk/build/cjs/src/errors.js:334:20)
+
+14 дек. 17:04:04.902
+Error creating order: Unexpected transport error code 5! Error itself: {"code":5,"details":"Database not found","metadata":{"content-type":["application/grpc"],"grpc-status-details-bin":[{"type":"Buffer","data":[8,5,18,18,68,97,116,97,98,97,115,101,32,110,111,116,32,102,111,117,110,100,26,84,10,42,116,121,112,101,46,103,111,111,103,108,101,97,112,105,115,46,99,111,109,47,103,111,111,103,108,101,46,114,112,99,46,82,101,113,117,101,115,116,73,110,102,111,18,38,10,36,51,49,97,56,100,49,50,53,45,98,57,53,57,45,52,56,57,55,45,98,98,51,53,45,54,52,54,56,52,50,57,51,98,97,97,97]}],"x-request-id":["31a8d125-b959-4897-bb35-64684293baaa"]}} Error: Unexpected transport error code 5! Error itself: {"code":5,"details":"Database not found","metadata":{"content-type":["application/grpc"],"grpc-status-details-bin":[{"type":"Buffer","data":[8,5,18,18,68,97,116,97,98,97,115,101,32,110,111,116,32,102,111,117,110,100,26,84,10,42,116,121,112,101,46,103,111,111,103,108,101,97,112,105,115,46,99,111,109,47,103,111,111,103,108,101,46,114,112,99,46,82,101,113,117,101,115,116,73,110,102,111,18,38,10,36,51,49,97,56,100,49,50,53,45,98,57,53,57,45,52,56,57,55,45,98,98,51,53,45,54,52,54,56,52,50,57,51,98,97,97,97]}],"x-request-id":["31a8d125-b959-4897-bb35-64684293baaa"]}}
+
+14 дек. 17:04:04.901
+Incoming request: { method: 'POST', action: 'orders', path: '' }
+
+14 дек. 17:04:04.897
+START RequestID: 0bcbed4d-2b4a-4bf1-9101-7a86d7307ea1 Version: d4em0usuqbcf932jeqlg
+
+14 дек. 17:04:04.875
+REPORT RequestID: 34b63073-9b46-4a72-ae1f-b1acc797b44f Duration: 5.345 ms Billed Duration: 100 ms Memory Size: 256 MB Max Memory Used: 164 MB Queuing Duration: 0.067 ms
+
+14 дек. 17:04:04.875
+END RequestID: 34b63073-9b46-4a72-ae1f-b1acc797b44f
+
+14 дек. 17:04:04.867
+START RequestID: 34b63073-9b46-4a72-ae1f-b1acc797b44f Version: d4em0usuqbcf932jeqlg
+
+14 дек. 17:03:50.726
+Uncaught Error: Unexpected transport error code 5! Error itself: {"code":5,"details":"Database not found","metadata":{"content-type":["application/grpc"],"grpc-status-details-bin":[{"type":"Buffer","data":[8,5,18,18,68,97,116,97,98,97,115,101,32,110,111,116,32,102,111,117,110,100,26,84,10,42,116,121,112,101,46,103,111,111,103,108,101,97,112,105,115,46,99,111,109,47,103,111,111,103,108,101,46,114,112,99,46,82,101,113,117,101,115,116,73,110,102,111,18,38,10,36,51,49,97,56,100,49,50,53,45,98,57,53,57,45,52,56,57,55,45,98,98,51,53,45,54,52,54,56,52,50,57,51,98,97,97,97]}],"x-request-id":["31a8d125-b959-4897-bb35-64684293baaa"]}} Stack: at TransportError.convertToYdbError (/function/code/node_modules/ydb-sdk/build/cjs/src/errors.js:334:20) at RetryStrategy.retry (/function/code/node_modules/ydb-sdk/build/cjs/src/retries_obsoleted.js:90:49) at process.processTicksAndRejections (node:internal/process/task_queues:105:5) at async descriptor.value (/function/code/node_modules/ydb-sdk/build/cjs/src/retries_obsoleted.js:137:20)
+
+14 дек. 17:03:50.725
+REPORT RequestID: 52ad555d-4f94-4a55-8125-de1a3b766106 Duration: 237.866 ms Billed Duration: 300 ms Memory Size: 256 MB Max Memory Used: 151 MB Queuing Duration: 0.103 ms CPU Usage: 99.805 %
+
+14 дек. 17:03:50.725
+END RequestID: 52ad555d-4f94-4a55-8125-de1a3b766106
+
+14 дек. 17:03:50.724
+at async descriptor.value (/function/code/node_modules/ydb-sdk/build/cjs/src/retries_obsoleted.js:137:20)
+
+14 дек. 17:03:50.724
+at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+14 дек. 17:03:50.724
+at RetryStrategy.retry (/function/code/node_modules/ydb-sdk/build/cjs/src/retries_obsoleted.js:90:49)
+
+14 дек. 17:03:50.724
+at TransportError.convertToYdbError (/function/code/node_modules/ydb-sdk/build/cjs/src/errors.js:334:20)
+
+14 дек. 17:03:50.724
+Error creating order: Unexpected transport error code 5! Error itself: {"code":5,"details":"Database not found","metadata":{"content-type":["application/grpc"],"grpc-status-details-bin":[{"type":"Buffer","data":[8,5,18,18,68,97,116,97,98,97,115,101,32,110,111,116,32,102,111,117,110,100,26,84,10,42,116,121,112,101,46,103,111,111,103,108,101,97,112,105,115,46,99,111,109,47,103,111,111,103,108,101,46,114,112,99,46,82,101,113,117,101,115,116,73,110,102,111,18,38,10,36,51,49,97,56,100,49,50,53,45,98,57,53,57,45,52,56,57,55,45,98,98,51,53,45,54,52,54,56,52,50,57,51,98,97,97,97]}],"x-request-id":["31a8d125-b959-4897-bb35-64684293baaa"]}} Error: Unexpected transport error code 5! Error itself: {"code":5,"details":"Database not found","metadata":{"content-type":["application/grpc"],"grpc-status-details-bin":[{"type":"Buffer","data":[8,5,18,18,68,97,116,97,98,97,115,101,32,110,111,116,32,102,111,117,110,100,26,84,10,42,116,121,112,101,46,103,111,111,103,108,101,97,112,105,115,46,99,111,109,47,103,111,111,103,108,101,46,114,112,99,46,82,101,113,117,101,115,116,73,110,102,111,18,38,10,36,51,49,97,56,100,49,50,53,45,98,57,53,57,45,52,56,57,55,45,98,98,51,53,45,54,52,54,56,52,50,57,51,98,97,97,97]}],"x-request-id":["31a8d125-b959-4897-bb35-64684293baaa"]}}
+
+14 дек. 17:03:50.489
+Incoming request: { method: 'POST', action: 'orders', path: '' }
+
+14 дек. 17:03:50.484
+START RequestID: 52ad555d-4f94-4a55-8125-de1a3b766106 Version: d4em0usuqbcf932jeqlg
+
+14 дек. 17:03:50.464
+REPORT RequestID: 074443d4-310e-44c3-88d9-a24fe5c71b83 Duration: 668.754 ms Billed Duration: 700 ms Memory Size: 256 MB Max Memory Used: 151 MB Queuing Duration: 0.051 ms Function Init Duration: 650.958 ms CPU Usage: 99.805 %
+
+14 дек. 17:03:50.464
+END RequestID: 074443d4-310e-44c3-88d9-a24fe5c71b83
+
+14 дек. 17:03:49.717
+START RequestID: 074443d4-310e-44c3-88d9-a24fe5c71b83 Version: d4em0usuqbcf932jeqlg
