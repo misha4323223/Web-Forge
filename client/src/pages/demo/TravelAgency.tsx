@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Link } from "wouter";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import travelHeroImg from "@assets/generated_images/tropical_beach_travel_destination.png";
 
 const destinations = [
   { 
@@ -135,7 +136,7 @@ export default function TravelAgency() {
 
       <header className="relative min-h-[90vh] flex items-center overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-sky-400 via-sky-500 to-teal-500" />
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920')] bg-cover bg-center mix-blend-overlay opacity-40" />
+        <div className="absolute inset-0 bg-cover bg-center mix-blend-overlay opacity-40" style={{ backgroundImage: `url(${travelHeroImg})` }} />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
         
         <nav className="absolute top-0 left-0 right-0 z-10 max-w-7xl mx-auto px-6 py-6 flex items-center justify-between gap-4">

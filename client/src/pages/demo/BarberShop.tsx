@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Link } from "wouter";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import barberHeroImg from "@assets/generated_images/stylish_barbershop_interior.png";
 
 const services = [
   { id: 1, name: "Мужская стрижка", duration: "45 мин", price: 1500, icon: Scissors },
@@ -123,7 +124,7 @@ export default function BarberShop() {
 
       <header className="relative min-h-screen flex items-center overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-amber-900/40 via-neutral-950 to-neutral-950" />
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=1920')] bg-cover bg-center opacity-30" />
+        <div className="absolute inset-0 bg-cover bg-center opacity-30" style={{ backgroundImage: `url(${barberHeroImg})` }} />
         <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-transparent to-transparent" />
         
         <nav className="absolute top-0 left-0 right-0 z-10 max-w-7xl mx-auto px-6 py-6 flex items-center justify-between gap-4">

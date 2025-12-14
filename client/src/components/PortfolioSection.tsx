@@ -7,6 +7,8 @@ import { useLocation } from "wouter";
 
 import sweetDelightsImg from "@assets/image_1765623150824.png";
 import socksHeroImg from "@assets/generated_images/socks_collection_hero_image.png";
+import travelHeroImg from "@assets/generated_images/tropical_beach_travel_destination.png";
+import barberHeroImg from "@assets/generated_images/stylish_barbershop_interior.png";
 
 const portfolioItems = [
   {
@@ -68,7 +70,7 @@ const portfolioItems = [
     title: "ДримТур",
     description: "Концепт сайта туристического агентства. Популярные направления, горячие туры, бронирование.",
     tags: ["React", "Travel", "Booking"],
-    image: "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=600&h=400&fit=crop",
+    image: travelHeroImg,
     demoUrl: "/demo/travel",
     badgeType: "concept" as const,
   },
@@ -77,7 +79,7 @@ const portfolioItems = [
     title: "SHARP",
     description: "Концепт сайта барбершопа. Услуги, мастера, онлайн-запись, галерея работ.",
     tags: ["React", "Booking", "Dark Theme"],
-    image: "https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=600&h=400&fit=crop",
+    image: barberHeroImg,
     demoUrl: "/demo/barber",
     badgeType: "concept" as const,
   },
