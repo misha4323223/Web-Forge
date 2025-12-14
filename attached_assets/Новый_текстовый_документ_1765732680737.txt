@@ -1,0 +1,719 @@
+14 дек. 20:16:18.316
+REPORT RequestID: c85ccbce-44b5-4b58-b2f7-fc7d6fa2a75a Duration: 606.955 ms Billed Duration: 700 ms Memory Size: 256 MB Max Memory Used: 167 MB Queuing Duration: 0.074 ms
+
+14 дек. 20:16:18.316
+END RequestID: c85ccbce-44b5-4b58-b2f7-fc7d6fa2a75a
+
+14 дек. 20:16:18.314
+Order paid successfully: ord_mj5zkp5ivef55xe0r
+
+14 дек. 20:16:18.314
+Telegram not configured
+
+14 дек. 20:16:18.314
+at async module.exports.handler [as handlerFn] (/function/code/index.js:96:20)
+
+14 дек. 20:16:18.314
+at async handleRobokassaResult (/function/code/index.js:554:13)
+
+14 дек. 20:16:18.314
+at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+14 дек. 20:16:18.314
+at sendContractEmail (/function/code/index.js:779:19)
+
+14 дек. 20:16:18.314
+Error: Yandex Postbox error: 403 - Forbidden
+
+14 дек. 20:16:18.314
+Failed to send contract email: Yandex Postbox error: 403 - Forbidden
+
+14 дек. 20:16:18.314
+Postbox response: Forbidden
+
+14 дек. 20:16:18.314
+Postbox response status: 403
+
+14 дек. 20:16:18.252
+Using Yandex Cloud Postbox, from: info@mp-webstudio.ru
+
+14 дек. 20:16:18.252
+PDF generated, size: 20776
+
+14 дек. 20:16:17.880
+Generating PDF for order: ord_mj5zkp5ivef55xe0r
+
+14 дек. 20:16:17.880
+Order status updated in YDB: ord_mj5zkp5ivef55xe0r -> paid
+
+14 дек. 20:16:17.780
+}
+
+14 дек. 20:16:17.780
+paidAt: ''
+
+14 дек. 20:16:17.779
+createdAt: '2025-12-14T17:15:57.654Z',
+
+14 дек. 20:16:17.779
+status: 'pending',
+
+14 дек. 20:16:17.779
+amount: '25000',
+
+14 дек. 20:16:17.779
+projectDescription: 'Gvvbbbxgghhb',
+
+14 дек. 20:16:17.779
+projectType: 'landing',
+
+14 дек. 20:16:17.779
+clientPhone: '89531814136',
+
+14 дек. 20:16:17.779
+clientEmail: 'pimashin2016@gmail.com',
+
+14 дек. 20:16:17.779
+clientName: 'Misha',
+
+14 дек. 20:16:17.779
+id: 'ord_mj5zkp5ivef55xe0r',
+
+14 дек. 20:16:17.779
+Order fetched from YDB: {
+
+14 дек. 20:16:17.779
+Order fetched from YDB: {"id":"ord_mj5zkp5ivef55xe0r","clientName":"Misha","clientEmail":"pimashin2016@gmail.com","clientPhone":"89531814136","projectType":"landing","projectDescription":"Gvvbbbxgghhb","amount":"25000","status":"pending","createdAt":"2025-12-14T17:15:57.654Z","paidAt":""}
+
+14 дек. 20:16:17.779
+Parsed order: {"id":"ord_mj5zkp5ivef55xe0r","clientName":"Misha","clientEmail":"pimashin2016@gmail.com","clientPhone":"89531814136","projectType":"landing","projectDescription":"Gvvbbbxgghhb","amount":"25000","status":"pending","createdAt":"2025-12-14T17:15:57.654Z","paidAt":""}
+
+14 дек. 20:16:17.779
+Column [9] status: {"textValue":"pending"} -> "pending"
+
+14 дек. 20:16:17.779
+Column [8] project_type: {"textValue":"landing"} -> "landing"
+
+14 дек. 20:16:17.779
+Column [7] project_description: {"textValue":"Gvvbbbxgghhb"} -> "Gvvbbbxgghhb"
+
+14 дек. 20:16:17.779
+Column [6] paid_at: {"nullFlagValue":"NULL_VALUE"} -> ""
+
+14 дек. 20:16:17.779
+Column [5] id: {"textValue":"ord_mj5zkp5ivef55xe0r"} -> "ord_mj5zkp5ivef55xe0r"
+
+14 дек. 20:16:17.779
+Column [4] created_at: {"textValue":"2025-12-14T17:15:57.654Z"} -> "2025-12-14T17:15:57.654Z"
+
+14 дек. 20:16:17.779
+Column [3] client_phone: {"textValue":"89531814136"} -> "89531814136"
+
+14 дек. 20:16:17.779
+Column [2] client_name: {"textValue":"Misha"} -> "Misha"
+
+14 дек. 20:16:17.779
+Column [1] client_email: {"textValue":"pimashin2016@gmail.com"} -> "pimashin2016@gmail.com"
+
+14 дек. 20:16:17.779
+Column [0] amount: {"textValue":"25000"} -> "25000"
+
+14 дек. 20:16:17.778
+Column mapping: {"amount":0,"client_email":1,"client_name":2,"client_phone":3,"created_at":4,"id":5,"paid_at":6,"project_description":7,"project_type":8,"status":9}
+
+14 дек. 20:16:17.778
+}
+
+14 дек. 20:16:17.778
+]
+
+14 дек. 20:16:17.778
+}
+
+14 дек. 20:16:17.778
+"textValue": "pending"
+
+14 дек. 20:16:17.778
+{
+
+14 дек. 20:16:17.778
+},
+
+14 дек. 20:16:17.778
+"textValue": "landing"
+
+14 дек. 20:16:17.778
+{
+
+14 дек. 20:16:17.778
+},
+
+14 дек. 20:16:17.778
+"textValue": "Gvvbbbxgghhb"
+
+14 дек. 20:16:17.778
+{
+
+14 дек. 20:16:17.778
+},
+
+14 дек. 20:16:17.778
+"nullFlagValue": "NULL_VALUE"
+
+14 дек. 20:16:17.778
+{
+
+14 дек. 20:16:17.778
+},
+
+14 дек. 20:16:17.778
+"textValue": "ord_mj5zkp5ivef55xe0r"
+
+14 дек. 20:16:17.778
+{
+
+14 дек. 20:16:17.778
+},
+
+14 дек. 20:16:17.778
+"textValue": "2025-12-14T17:15:57.654Z"
+
+14 дек. 20:16:17.778
+{
+
+14 дек. 20:16:17.778
+},
+
+14 дек. 20:16:17.778
+"textValue": "89531814136"
+
+14 дек. 20:16:17.778
+{
+
+14 дек. 20:16:17.778
+},
+
+14 дек. 20:16:17.778
+"textValue": "Misha"
+
+14 дек. 20:16:17.778
+{
+
+14 дек. 20:16:17.778
+},
+
+14 дек. 20:16:17.778
+"textValue": "pimashin2016@gmail.com"
+
+14 дек. 20:16:17.778
+{
+
+14 дек. 20:16:17.778
+},
+
+14 дек. 20:16:17.778
+"textValue": "25000"
+
+14 дек. 20:16:17.778
+{
+
+14 дек. 20:16:17.778
+"items": [
+
+14 дек. 20:16:17.778
+YDB row structure: {
+
+14 дек. 20:16:17.778
+YDB columns: ["amount","client_email","client_name","client_phone","created_at","id","paid_at","project_description","project_type","status"]
+
+14 дек. 20:16:17.778
+YDB rows count: 1
+
+14 дек. 20:16:17.777
+}
+
+14 дек. 20:16:17.777
+"txMeta": {}
+
+14 дек. 20:16:17.777
+],
+
+14 дек. 20:16:17.777
+}
+
+14 дек. 20:16:17.777
+]
+
+14 дек. 20:16:17.777
+}
+
+14 дек. 20:16:17.777
+]
+
+14 дек. 20:16:17.777
+}
+
+14 дек. 20:16:17.777
+"textValue": "pending"
+
+14 дек. 20:16:17.777
+{
+
+14 дек. 20:16:17.777
+},
+
+14 дек. 20:16:17.777
+"textValue": "landing"
+
+14 дек. 20:16:17.777
+{
+
+14 дек. 20:16:17.777
+},
+
+14 дек. 20:16:17.777
+"textValue": "Gvvbbbxgghhb"
+
+14 дек. 20:16:17.777
+{
+
+14 дек. 20:16:17.777
+},
+
+14 дек. 20:16:17.777
+"nullFlagValue": "NULL_VALUE"
+
+14 дек. 20:16:17.777
+{
+
+14 дек. 20:16:17.777
+},
+
+14 дек. 20:16:17.777
+"textValue": "ord_mj5zkp5ivef55xe0r"
+
+14 дек. 20:16:17.777
+{
+
+14 дек. 20:16:17.777
+},
+
+14 дек. 20:16:17.777
+"textValue": "2025-12-14T17:15:57.654Z"
+
+14 дек. 20:16:17.777
+{
+
+14 дек. 20:16:17.777
+},
+
+14 дек. 20:16:17.777
+"textValue": "89531814136"
+
+14 дек. 20:16:17.777
+{
+
+14 дек. 20:16:17.777
+},
+
+14 дек. 20:16:17.777
+"textValue": "Misha"
+
+14 дек. 20:16:17.777
+{
+
+14 дек. 20:16:17.777
+},
+
+14 дек. 20:16:17.777
+"textValue": "pimashin2016@gmail.com"
+
+14 дек. 20:16:17.777
+{
+
+14 дек. 20:16:17.777
+},
+
+14 дек. 20:16:17.777
+"textValue": "25000"
+
+14 дек. 20:16:17.777
+{
+
+14 дек. 20:16:17.777
+"items": [
+
+14 дек. 20:16:17.777
+{
+
+14 дек. 20:16:17.777
+"rows": [
+
+14 дек. 20:16:17.777
+],
+
+14 дек. 20:16:17.777
+}
+
+14 дек. 20:16:17.777
+}
+
+14 дек. 20:16:17.777
+}
+
+14 дек. 20:16:17.777
+}
+
+14 дек. 20:16:17.777
+"typeId": "UTF8"
+
+14 дек. 20:16:17.777
+"item": {
+
+14 дек. 20:16:17.777
+"optionalType": {
+
+14 дек. 20:16:17.777
+"type": {
+
+14 дек. 20:16:17.777
+"name": "status",
+
+14 дек. 20:16:17.777
+{
+
+14 дек. 20:16:17.777
+},
+
+14 дек. 20:16:17.777
+}
+
+14 дек. 20:16:17.777
+}
+
+14 дек. 20:16:17.777
+}
+
+14 дек. 20:16:17.777
+"typeId": "UTF8"
+
+14 дек. 20:16:17.777
+"item": {
+
+14 дек. 20:16:17.777
+"optionalType": {
+
+14 дек. 20:16:17.777
+"type": {
+
+14 дек. 20:16:17.777
+"name": "project_type",
+
+14 дек. 20:16:17.777
+{
+
+14 дек. 20:16:17.777
+},
+
+14 дек. 20:16:17.777
+}
+
+14 дек. 20:16:17.777
+}
+
+14 дек. 20:16:17.777
+}
+
+14 дек. 20:16:17.776
+"typeId": "UTF8"
+
+14 дек. 20:16:17.776
+"item": {
+
+14 дек. 20:16:17.776
+"optionalType": {
+
+14 дек. 20:16:17.776
+"type": {
+
+14 дек. 20:16:17.776
+"name": "project_description",
+
+14 дек. 20:16:17.776
+{
+
+14 дек. 20:16:17.776
+},
+
+14 дек. 20:16:17.776
+}
+
+14 дек. 20:16:17.776
+}
+
+14 дек. 20:16:17.776
+}
+
+14 дек. 20:16:17.776
+"typeId": "UTF8"
+
+14 дек. 20:16:17.776
+"item": {
+
+14 дек. 20:16:17.776
+"optionalType": {
+
+14 дек. 20:16:17.776
+"type": {
+
+14 дек. 20:16:17.776
+"name": "paid_at",
+
+14 дек. 20:16:17.776
+{
+
+14 дек. 20:16:17.776
+},
+
+14 дек. 20:16:17.776
+}
+
+14 дек. 20:16:17.776
+"typeId": "UTF8"
+
+14 дек. 20:16:17.776
+"type": {
+
+14 дек. 20:16:17.776
+"name": "id",
+
+14 дек. 20:16:17.776
+{
+
+14 дек. 20:16:17.776
+},
+
+14 дек. 20:16:17.776
+}
+
+14 дек. 20:16:17.776
+}
+
+14 дек. 20:16:17.776
+}
+
+14 дек. 20:16:17.776
+"typeId": "UTF8"
+
+14 дек. 20:16:17.776
+"item": {
+
+14 дек. 20:16:17.776
+"optionalType": {
+
+14 дек. 20:16:17.776
+"type": {
+
+14 дек. 20:16:17.776
+"name": "created_at",
+
+14 дек. 20:16:17.776
+{
+
+14 дек. 20:16:17.776
+},
+
+14 дек. 20:16:17.776
+}
+
+14 дек. 20:16:17.776
+}
+
+14 дек. 20:16:17.776
+}
+
+14 дек. 20:16:17.776
+"typeId": "UTF8"
+
+14 дек. 20:16:17.776
+"item": {
+
+14 дек. 20:16:17.776
+"optionalType": {
+
+14 дек. 20:16:17.776
+"type": {
+
+14 дек. 20:16:17.776
+"name": "client_phone",
+
+14 дек. 20:16:17.776
+{
+
+14 дек. 20:16:17.776
+},
+
+14 дек. 20:16:17.776
+}
+
+14 дек. 20:16:17.776
+}
+
+14 дек. 20:16:17.776
+}
+
+14 дек. 20:16:17.776
+"typeId": "UTF8"
+
+14 дек. 20:16:17.776
+"item": {
+
+14 дек. 20:16:17.776
+"optionalType": {
+
+14 дек. 20:16:17.776
+"type": {
+
+14 дек. 20:16:17.776
+"name": "client_name",
+
+14 дек. 20:16:17.776
+{
+
+14 дек. 20:16:17.776
+},
+
+14 дек. 20:16:17.776
+}
+
+14 дек. 20:16:17.776
+}
+
+14 дек. 20:16:17.776
+}
+
+14 дек. 20:16:17.776
+"typeId": "UTF8"
+
+14 дек. 20:16:17.776
+"item": {
+
+14 дек. 20:16:17.776
+"optionalType": {
+
+14 дек. 20:16:17.776
+"type": {
+
+14 дек. 20:16:17.776
+"name": "client_email",
+
+14 дек. 20:16:17.776
+{
+
+14 дек. 20:16:17.776
+},
+
+14 дек. 20:16:17.776
+}
+
+14 дек. 20:16:17.776
+}
+
+14 дек. 20:16:17.776
+}
+
+14 дек. 20:16:17.775
+"typeId": "UTF8"
+
+14 дек. 20:16:17.775
+"item": {
+
+14 дек. 20:16:17.775
+"optionalType": {
+
+14 дек. 20:16:17.775
+"type": {
+
+14 дек. 20:16:17.775
+"name": "amount",
+
+14 дек. 20:16:17.775
+{
+
+14 дек. 20:16:17.775
+"columns": [
+
+14 дек. 20:16:17.775
+{
+
+14 дек. 20:16:17.775
+"resultSets": [
+
+14 дек. 20:16:17.775
+YDB raw result: {
+
+14 дек. 20:16:17.713
+}
+
+14 дек. 20:16:17.713
+received: 'aa7f93e564b14008725127078d21daa0'
+
+14 дек. 20:16:17.713
+expected: 'aa7f93e564b14008725127078d21daa0',
+
+14 дек. 20:16:17.713
+Signature check: {
+
+14 дек. 20:16:17.712
+}
+
+14 дек. 20:16:17.712
+shp_orderId: 'ord_mj5zkp5ivef55xe0r'
+
+14 дек. 20:16:17.712
+InvId: '557823',
+
+14 дек. 20:16:17.712
+OutSum: '12500',
+
+14 дек. 20:16:17.712
+Robokassa result callback: {
+
+14 дек. 20:16:17.712
+Robokassa result - full data: {"out_summ":"12500","OutSum":"12500","inv_id":"557823","InvId":"557823","crc":"AA7F93E564B14008725127078D21DAA0","SignatureValue":"AA7F93E564B14008725127078D21DAA0","PaymentMethod":"PayButton","IncSum":"12500","IncCurrLabel":"SBPPSR","IsTest":"1","EMail":"","Fee":"0.0","shp_orderId":"ord_mj5zkp5ivef55xe0r","action":"robokassa/result"}
+
+14 дек. 20:16:17.712
+Incoming request: { method: 'POST', action: 'robokassa/result', path: '' }
+
+14 дек. 20:16:17.706
+START RequestID: c85ccbce-44b5-4b58-b2f7-fc7d6fa2a75a Version: d4em4vhf2t7hrg512nus
+
+14 дек. 20:15:57.825
+REPORT RequestID: 7c783047-9ce3-4c1a-9186-7fc2b4837d1b Duration: 411.153 ms Billed Duration: 500 ms Memory Size: 256 MB Max Memory Used: 156 MB Queuing Duration: 0.080 ms CPU Usage: 97.852 %
+
+14 дек. 20:15:57.825
+END RequestID: 7c783047-9ce3-4c1a-9186-7fc2b4837d1b
+
+14 дек. 20:15:57.823
+Telegram not configured
+
+14 дек. 20:15:57.823
+Order created in YDB: ord_mj5zkp5ivef55xe0r
+
+14 дек. 20:15:57.654
+YDB driver connected to: /ru-central1/b1gnp4ml7k5j7cquabad/etn2gipa2pvm2qj5ga83
+
+14 дек. 20:15:57.416
+Incoming request: { method: 'POST', action: 'orders', path: '' }
+
+14 дек. 20:15:57.408
+START RequestID: 7c783047-9ce3-4c1a-9186-7fc2b4837d1b Version: d4em4vhf2t7hrg512nus
+
+14 дек. 20:15:57.346
+REPORT RequestID: bda5ec4f-87ca-4f6d-bd93-aa540344f767 Duration: 565.124 ms Billed Duration: 600 ms Memory Size: 256 MB Max Memory Used: 156 MB Queuing Duration: 0.055 ms Function Init Duration: 554.911 ms CPU Usage: 97.852 %
+
+14 дек. 20:15:57.346
+END RequestID: bda5ec4f-87ca-4f6d-bd93-aa540344f767
+
+14 дек. 20:15:56.712
+START RequestID: bda5ec4f-87ca-4f6d-bd93-aa540344f767 Version: d4em4vhf2t7hrg512nus
