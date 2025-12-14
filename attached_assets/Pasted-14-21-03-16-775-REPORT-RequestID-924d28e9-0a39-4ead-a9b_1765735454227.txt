@@ -1,0 +1,92 @@
+14 дек. 21:03:16.775
+REPORT RequestID: 924d28e9-0a39-4ead-a9be-4ac150111997 Duration: 1669.161 ms Billed Duration: 1700 ms Memory Size: 256 MB Max Memory Used: 172 MB Queuing Duration: 0.078 ms Function Init Duration: 766.701 ms CPU Usage: 78.711 %
+
+14 дек. 21:03:16.775
+END RequestID: 924d28e9-0a39-4ead-a9be-4ac150111997
+
+14 дек. 21:03:16.313
+Column [9] status: {"textValue":"pending"} -> "pending"
+
+14 дек. 21:03:16.313
+Column [8] project_type: {"textValue":"landing"} -> "landing"
+
+14 дек. 21:03:16.312
+Column [7] project_description: {"textValue":"выымвыввывыавыаавы"} -> "выымвыввывыавыаавы"
+
+14 дек. 21:03:16.312
+Column [6] paid_at: {"nullFlagValue":"NULL_VALUE"} -> ""
+
+14 дек. 21:03:16.312
+Column [5] id: {"textValue":"ord_mj6196ibpkprzu5bp"} -> "ord_mj6196ibpkprzu5bp"
+
+14 дек. 21:03:16.312
+Column [4] created_at: {"textValue":"2025-12-14T18:02:59.507Z"} -> "2025-12-14T18:02:59.507Z"
+
+14 дек. 21:03:16.312
+Column [3] client_phone: {"textValue":"89531814136"} -> "89531814136"
+
+14 дек. 21:03:16.312
+Column [2] client_name: {"textValue":"Миша"} -> "Миша"
+
+14 дек. 21:03:16.312
+Column [1] client_email: {"textValue":"pimashin2015@gmail.com"} -> "pimashin2015@gmail.com"
+
+14 дек. 21:03:16.312
+Column [0] amount: {"textValue":"25000"} -> "25000"
+
+14 дек. 21:03:16.312
+Column mapping: {"amount":0,"client_email":1,"client_name":2,"client_phone":3,"created_at":4,"id":5,"paid_at":6,"project_description":7,"project_type":8,"status":9}
+
+14 дек. 21:03:16.312
+}
+
+14 дек. 21:03:16.312
+]
+
+14 дек. 21:03:16.312
+}
+
+14 дек. 21:03:16.312
+"textValue": "pending"
+
+14 дек. 21:03:16.312
+{
+
+14 дек. 21:03:16.312
+},
+
+14 дек. 21:03:16.312
+"textValue": "landing"
+
+14 дек. 21:03:16.312
+{
+
+14 дек. 21:03:16.312
+},
+
+14 дек. 21:03:16.312
+"textValue": "выымвыввывыавыаавы"
+
+14 дек. 21:03:16.312
+{
+
+14 дек. 21:03:16.312
+},
+
+14 дек. 21:03:16.312
+"nullFlagValue": "NULL_VALUE"
+
+14 дек. 21:03:16.312
+{
+
+14 дек. 21:03:16.312
+},
+
+14 дек. 21:03:16.312
+"textValue": "ord_mj6196ibpkprzu5bp"
+
+14 дек. 21:03:16.311
+{
+
+14 дек. 21:03:16.311
+},
