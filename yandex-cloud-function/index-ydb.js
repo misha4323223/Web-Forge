@@ -259,31 +259,47 @@ async function getOrderFromYdb(orderId) {
 function getStringValue(field) {
     if (!field) return '';
     if (typeof field === 'string') return field;
+    if (typeof field === 'number') return String(field);
     
-    // YDB возвращает данные в формате { value: { textValue: '...' } }
-    if (field.value) {
+    // YDB возвращает данные в разных форматах:
+    // { textValue: "value" } или { nullFlagValue: "NULL_VALUE" }
+    
+    // Проверяем null значение
+    if (field.nullFlagValue !== undefined) return '';
+    
+    // Прямое textValue (основной формат YDB)
+    if (field.textValue !== undefined) return field.textValue;
+    
+    // Вложенный value
+    if (field.value !== undefined && field.value !== null) {
         return getStringValue(field.value);
     }
     
-    // Прямые значения
-    if (field.textValue !== undefined) return field.textValue;
+    // bytesValue
     if (field.bytesValue !== undefined) {
         if (Buffer.isBuffer(field.bytesValue)) {
             return field.bytesValue.toString('utf-8');
         }
+        if (field.bytesValue.type === 'Buffer' && field.bytesValue.data) {
+            return Buffer.from(field.bytesValue.data).toString('utf-8');
+        }
         return String(field.bytesValue);
     }
+    
+    // text
     if (field.text !== undefined) return field.text;
     
-    // Если это Buffer
+    // Если это Buffer напрямую
     if (Buffer.isBuffer(field)) return field.toString('utf-8');
     
-    // Если это объект с data (бывает при сериализации Buffer)
+    // Если это объект с data (сериализованный Buffer)
     if (field.type === 'Buffer' && field.data) {
         return Buffer.from(field.data).toString('utf-8');
     }
     
-    return String(field);
+    // Для отладки - вернём JSON если ничего не подошло
+    console.log('Unknown field format:', JSON.stringify(field));
+    return '';
 }
 
 async function updateOrderStatusInYdb(orderId, status) {
