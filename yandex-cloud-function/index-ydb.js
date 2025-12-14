@@ -209,33 +209,54 @@ async function getOrderFromYdb(orderId) {
         if (result.resultSets && result.resultSets.length > 0) {
             const resultSet = result.resultSets[0];
             const rows = resultSet.rows || [];
+            const columns = resultSet.columns || [];
             
             console.log('YDB rows count:', rows.length);
+            console.log('YDB columns:', JSON.stringify(columns.map(c => c.name)));
             
             if (rows.length > 0) {
                 const row = rows[0];
                 console.log('YDB row structure:', JSON.stringify(row, null, 2));
                 
-                // YDB SDK может возвращать данные как массив items или как объект
+                // Строим маппинг имени колонки -> индекс
+                const columnMap = {};
+                columns.forEach((col, idx) => {
+                    columnMap[col.name] = idx;
+                });
+                console.log('Column mapping:', JSON.stringify(columnMap));
+                
+                // YDB SDK возвращает данные как массив items
                 if (row.items && Array.isArray(row.items)) {
-                    // YDB возвращает колонки в алфавитном порядке:
-                    // 0: amount, 1: client_email, 2: client_name, 3: client_phone, 
-                    // 4: created_at, 5: id, 6: paid_at, 7: project_description, 
-                    // 8: project_type, 9: status
+                    // Логируем каждый элемент для отладки
+                    row.items.forEach((item, idx) => {
+                        const colName = columns[idx] ? columns[idx].name : `unknown_${idx}`;
+                        const value = getStringValue(item);
+                        console.log(`  Column [${idx}] ${colName}: ${JSON.stringify(item)} -> "${value}"`);
+                    });
+                    
+                    // Извлекаем значения по имени колонки
+                    const getValue = (colName) => {
+                        const idx = columnMap[colName];
+                        if (idx !== undefined && row.items[idx]) {
+                            return getStringValue(row.items[idx]);
+                        }
+                        return '';
+                    };
+                    
                     order = {
-                        amount: getStringValue(row.items[0]),
-                        clientEmail: getStringValue(row.items[1]),
-                        clientName: getStringValue(row.items[2]),
-                        clientPhone: getStringValue(row.items[3]),
-                        createdAt: getStringValue(row.items[4]),
-                        id: getStringValue(row.items[5]),
-                        paidAt: getStringValue(row.items[6]),
-                        projectDescription: getStringValue(row.items[7]),
-                        projectType: getStringValue(row.items[8]),
-                        status: getStringValue(row.items[9]),
+                        id: getValue('id'),
+                        clientName: getValue('client_name'),
+                        clientEmail: getValue('client_email'),
+                        clientPhone: getValue('client_phone'),
+                        projectType: getValue('project_type'),
+                        projectDescription: getValue('project_description'),
+                        amount: getValue('amount'),
+                        status: getValue('status'),
+                        createdAt: getValue('created_at'),
+                        paidAt: getValue('paid_at'),
                     };
                 } else {
-                    // Формат с именованными полями
+                    // Формат с именованными полями (на всякий случай)
                     order = {
                         id: getStringValue(row.id),
                         clientName: getStringValue(row.client_name),
@@ -246,8 +267,11 @@ async function getOrderFromYdb(orderId) {
                         amount: getStringValue(row.amount),
                         status: getStringValue(row.status),
                         createdAt: getStringValue(row.created_at),
+                        paidAt: getStringValue(row.paid_at),
                     };
                 }
+                
+                console.log('Parsed order:', JSON.stringify(order));
             }
         }
     });
@@ -257,20 +281,41 @@ async function getOrderFromYdb(orderId) {
 }
 
 function getStringValue(field) {
-    if (!field) return '';
+    if (field === null || field === undefined) return '';
     if (typeof field === 'string') return field;
     if (typeof field === 'number') return String(field);
+    if (typeof field === 'boolean') return String(field);
     
-    // YDB возвращает данные в разных форматах:
-    // { textValue: "value" } или { nullFlagValue: "NULL_VALUE" }
+    // YDB возвращает данные в разных форматах
     
     // Проверяем null значение
     if (field.nullFlagValue !== undefined) return '';
     
-    // Прямое textValue (основной формат YDB)
-    if (field.textValue !== undefined) return field.textValue;
+    // Прямое textValue (основной формат YDB для UTF8)
+    if (field.textValue !== undefined && field.textValue !== null) {
+        return String(field.textValue);
+    }
     
-    // Вложенный value
+    // UTF8 значение
+    if (field.utf8Value !== undefined && field.utf8Value !== null) {
+        return String(field.utf8Value);
+    }
+    
+    // stringValue
+    if (field.stringValue !== undefined && field.stringValue !== null) {
+        return String(field.stringValue);
+    }
+    
+    // int32Value / int64Value / uint64Value
+    if (field.int32Value !== undefined) return String(field.int32Value);
+    if (field.int64Value !== undefined) return String(field.int64Value);
+    if (field.uint64Value !== undefined) return String(field.uint64Value);
+    
+    // doubleValue / floatValue
+    if (field.doubleValue !== undefined) return String(field.doubleValue);
+    if (field.floatValue !== undefined) return String(field.floatValue);
+    
+    // Вложенный value (для опциональных типов)
     if (field.value !== undefined && field.value !== null) {
         return getStringValue(field.value);
     }
@@ -280,6 +325,14 @@ function getStringValue(field) {
         if (Buffer.isBuffer(field.bytesValue)) {
             return field.bytesValue.toString('utf-8');
         }
+        if (typeof field.bytesValue === 'string') {
+            // Base64 encoded
+            try {
+                return Buffer.from(field.bytesValue, 'base64').toString('utf-8');
+            } catch (e) {
+                return field.bytesValue;
+            }
+        }
         if (field.bytesValue.type === 'Buffer' && field.bytesValue.data) {
             return Buffer.from(field.bytesValue.data).toString('utf-8');
         }
@@ -287,7 +340,7 @@ function getStringValue(field) {
     }
     
     // text
-    if (field.text !== undefined) return field.text;
+    if (field.text !== undefined) return String(field.text);
     
     // Если это Buffer напрямую
     if (Buffer.isBuffer(field)) return field.toString('utf-8');
@@ -297,8 +350,16 @@ function getStringValue(field) {
         return Buffer.from(field.data).toString('utf-8');
     }
     
+    // Попробуем взять первый не-null ключ со значением
+    const keys = Object.keys(field);
+    for (const key of keys) {
+        if (key.endsWith('Value') && field[key] !== undefined && field[key] !== null) {
+            return String(field[key]);
+        }
+    }
+    
     // Для отладки - вернём JSON если ничего не подошло
-    console.log('Unknown field format:', JSON.stringify(field));
+    console.log('Unknown field format, keys:', keys, 'value:', JSON.stringify(field));
     return '';
 }
 
