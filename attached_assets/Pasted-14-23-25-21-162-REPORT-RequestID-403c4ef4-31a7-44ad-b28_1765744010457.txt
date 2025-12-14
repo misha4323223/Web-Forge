@@ -1,0 +1,170 @@
+14 дек. 23:25:21.162
+REPORT RequestID: 403c4ef4-31a7-44ad-b284-a35fc7e20365 Duration: 8.642 ms Billed Duration: 100 ms Memory Size: 256 MB Max Memory Used: 164 MB Queuing Duration: 0.076 ms
+
+14 дек. 23:25:21.162
+END RequestID: 403c4ef4-31a7-44ad-b284-a35fc7e20365
+
+14 дек. 23:25:21.161
+at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+14 дек. 23:25:21.161
+at /function/code/node_modules/ydb-sdk/build/cjs/src/credentials/metadata-auth-service.js:39:94
+
+14 дек. 23:25:21.161
+at require (node:internal/modules/helpers:135:16)
+
+14 дек. 23:25:21.161
+at Module.require (node:internal/modules/cjs/loader:1487:12)
+
+14 дек. 23:25:21.161
+at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+
+14 дек. 23:25:21.161
+at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+
+14 дек. 23:25:21.161
+at Function._load (node:internal/modules/cjs/loader:1211:37)
+
+14 дек. 23:25:21.161
+at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1062:22)
+
+14 дек. 23:25:21.161
+at defaultResolveImpl (node:internal/modules/cjs/loader:1057:19)
+
+14 дек. 23:25:21.161
+at Function._resolveFilename (node:internal/modules/cjs/loader:1401:15)
+
+14 дек. 23:25:21.161
+- /function/code/index.js
+
+14 дек. 23:25:21.161
+- /function/code/node_modules/ydb-sdk/build/cjs/src/index.js
+
+14 дек. 23:25:21.161
+- /function/code/node_modules/ydb-sdk/build/cjs/src/utils/parse-env-vars.js
+
+14 дек. 23:25:21.161
+- /function/code/node_modules/ydb-sdk/build/cjs/src/credentials/metadata-auth-service.js
+
+14 дек. 23:25:21.161
+Require stack:
+
+14 дек. 23:25:21.161
+- /function/code/index.js Error: Cannot find module '@yandex-cloud/nodejs-sdk/dist/token-service/metadata-token-service'
+
+14 дек. 23:25:21.161
+- /function/code/node_modules/ydb-sdk/build/cjs/src/index.js
+
+14 дек. 23:25:21.160
+- /function/code/node_modules/ydb-sdk/build/cjs/src/utils/parse-env-vars.js
+
+14 дек. 23:25:21.160
+- /function/code/node_modules/ydb-sdk/build/cjs/src/credentials/metadata-auth-service.js
+
+14 дек. 23:25:21.160
+Require stack:
+
+14 дек. 23:25:21.160
+Error creating order: Cannot find module '@yandex-cloud/nodejs-sdk/dist/token-service/metadata-token-service'
+
+14 дек. 23:25:21.155
+Incoming request: { method: 'POST', action: 'orders', path: '' }
+
+14 дек. 23:25:21.151
+START RequestID: 403c4ef4-31a7-44ad-b284-a35fc7e20365 Version: d4e8uron1l0fj7ahl88c
+
+14 дек. 23:25:21.107
+REPORT RequestID: 209a63f9-7490-43bd-a3e1-d38c19a8aebb Duration: 3.618 ms Billed Duration: 100 ms Memory Size: 256 MB Max Memory Used: 164 MB Queuing Duration: 0.069 ms
+
+14 дек. 23:25:21.107
+END RequestID: 209a63f9-7490-43bd-a3e1-d38c19a8aebb
+
+14 дек. 23:25:21.100
+START RequestID: 209a63f9-7490-43bd-a3e1-d38c19a8aebb Version: d4e8uron1l0fj7ahl88c
+
+14 дек. 23:25:14.626
+REPORT RequestID: f1212cc7-d363-444d-a080-a0cd12ebd4de Duration: 71.103 ms Billed Duration: 100 ms Memory Size: 256 MB Max Memory Used: 154 MB Queuing Duration: 0.098 ms CPU Usage: 99.805 %
+
+14 дек. 23:25:14.626
+END RequestID: f1212cc7-d363-444d-a080-a0cd12ebd4de
+
+14 дек. 23:25:14.626
+Uncaught Error: Cannot find module '@yandex-cloud/nodejs-sdk/dist/token-service/metadata-token-service' Require stack: - /function/code/node_modules/ydb-sdk/build/cjs/src/credentials/metadata-auth-service.js - /function/code/node_modules/ydb-sdk/build/cjs/src/utils/parse-env-vars.js - /function/code/node_modules/ydb-sdk/build/cjs/src/index.js - /function/code/index.js Stack: Require stack: - /function/code/node_modules/ydb-sdk/build/cjs/src/credentials/metadata-auth-service.js - /function/code/node_modules/ydb-sdk/build/cjs/src/utils/parse-env-vars.js - /function/code/node_modules/ydb-sdk/build/cjs/src/index.js - /function/code/index.js at Function._resolveFilename (node:internal/modules/cjs/loader:1401:15) at defaultResolveImpl (node:internal/modules/cjs/loader:1057:19) at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1062:22) at Function._load (node:internal/modules/cjs/loader:1211:37) at TracingChannel.traceSync (node:diagnostics_channel:322:14) at wrapModuleLoad (node:internal/modules/cjs/loader:235:24) at Module.require (node:internal/modules/cjs/loader:1487:12) at require (node:internal/modules/helpers:135:16) at /function/code/node_modules/ydb-sdk/build/cjs/src/credentials/metadata-auth-service.js:39:94 at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+14 дек. 23:25:14.625
+at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+14 дек. 23:25:14.625
+at /function/code/node_modules/ydb-sdk/build/cjs/src/credentials/metadata-auth-service.js:39:94
+
+14 дек. 23:25:14.625
+at require (node:internal/modules/helpers:135:16)
+
+14 дек. 23:25:14.625
+at Module.require (node:internal/modules/cjs/loader:1487:12)
+
+14 дек. 23:25:14.625
+at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+
+14 дек. 23:25:14.625
+at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+
+14 дек. 23:25:14.625
+at Function._load (node:internal/modules/cjs/loader:1211:37)
+
+14 дек. 23:25:14.625
+at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1062:22)
+
+14 дек. 23:25:14.625
+at defaultResolveImpl (node:internal/modules/cjs/loader:1057:19)
+
+14 дек. 23:25:14.624
+at Function._resolveFilename (node:internal/modules/cjs/loader:1401:15)
+
+14 дек. 23:25:14.624
+- /function/code/index.js
+
+14 дек. 23:25:14.624
+- /function/code/node_modules/ydb-sdk/build/cjs/src/index.js
+
+14 дек. 23:25:14.624
+- /function/code/node_modules/ydb-sdk/build/cjs/src/utils/parse-env-vars.js
+
+14 дек. 23:25:14.624
+- /function/code/node_modules/ydb-sdk/build/cjs/src/credentials/metadata-auth-service.js
+
+14 дек. 23:25:14.624
+Require stack:
+
+14 дек. 23:25:14.624
+- /function/code/index.js Error: Cannot find module '@yandex-cloud/nodejs-sdk/dist/token-service/metadata-token-service'
+
+14 дек. 23:25:14.624
+- /function/code/node_modules/ydb-sdk/build/cjs/src/index.js
+
+14 дек. 23:25:14.624
+- /function/code/node_modules/ydb-sdk/build/cjs/src/utils/parse-env-vars.js
+
+14 дек. 23:25:14.624
+- /function/code/node_modules/ydb-sdk/build/cjs/src/credentials/metadata-auth-service.js
+
+14 дек. 23:25:14.624
+Require stack:
+
+14 дек. 23:25:14.624
+Error creating order: Cannot find module '@yandex-cloud/nodejs-sdk/dist/token-service/metadata-token-service'
+
+14 дек. 23:25:14.556
+Incoming request: { method: 'POST', action: 'orders', path: '' }
+
+14 дек. 23:25:14.552
+START RequestID: f1212cc7-d363-444d-a080-a0cd12ebd4de Version: d4e8uron1l0fj7ahl88c
+
+14 дек. 23:25:14.522
+REPORT RequestID: 72924b90-b9dc-43c1-84aa-9d8fe96280b0 Duration: 760.410 ms Billed Duration: 800 ms Memory Size: 256 MB Max Memory Used: 154 MB Queuing Duration: 0.090 ms Function Init Duration: 741.354 ms CPU Usage: 99.805 %
+
+14 дек. 23:25:14.522
+END RequestID: 72924b90-b9dc-43c1-84aa-9d8fe96280b0
+
+14 дек. 23:25:13.759
+START RequestID: 72924b90-b9dc-43c1-84aa-9d8fe96280b0 Version: d4e8uron1l0fj7ahl88c
