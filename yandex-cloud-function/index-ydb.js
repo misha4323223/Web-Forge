@@ -696,9 +696,6 @@ async function generateContractPDF(order) {
 // ============ Email Sending ============
 
 async function sendContractEmail(order, pdfBuffer) {
-    const resendApiKey = process.env.RESEND_API_KEY;
-    const resendFromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
-    
     const formatPrice = (price) => {
         const num = parseFloat(price) || 0;
         return new Intl.NumberFormat('ru-RU').format(num);
@@ -726,47 +723,74 @@ async function sendContractEmail(order, pdfBuffer) {
         </div>
     `;
     
-    // Пробуем Resend (приоритет)
-    if (resendApiKey) {
-        console.log('Using Resend API, from:', resendFromEmail);
+    // Yandex Cloud Postbox (приоритет)
+    const postboxApiKey = process.env.POSTBOX_API_KEY;
+    const postboxFromEmail = process.env.POSTBOX_FROM_EMAIL;
+    
+    if (postboxApiKey && postboxFromEmail) {
+        console.log('Using Yandex Cloud Postbox, from:', postboxFromEmail);
         
-        const response = await fetch('https://api.resend.com/emails', {
+        // Формируем multipart/mixed для вложений
+        const boundary = '----=_Part_' + Date.now().toString(36);
+        const pdfBase64 = pdfBuffer.toString('base64');
+        
+        const rawEmail = [
+            `From: MP.WebStudio <${postboxFromEmail}>`,
+            `To: ${order.clientEmail}`,
+            `Subject: =?UTF-8?B?${Buffer.from(`Договор на разработку сайта - Заказ ${order.id}`).toString('base64')}?=`,
+            'MIME-Version: 1.0',
+            `Content-Type: multipart/mixed; boundary="${boundary}"`,
+            '',
+            `--${boundary}`,
+            'Content-Type: text/html; charset=UTF-8',
+            'Content-Transfer-Encoding: base64',
+            '',
+            Buffer.from(emailHtml).toString('base64'),
+            '',
+            `--${boundary}`,
+            `Content-Type: application/pdf; name="Договор_${order.id}.pdf"`,
+            'Content-Transfer-Encoding: base64',
+            `Content-Disposition: attachment; filename="=?UTF-8?B?${Buffer.from(`Договор_${order.id}.pdf`).toString('base64')}?="`,
+            '',
+            pdfBase64,
+            '',
+            `--${boundary}--`,
+        ].join('\r\n');
+        
+        const response = await fetch('https://postbox.cloud.yandex.net/v2/email/outbound/raw', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${resendApiKey}`,
+                'Authorization': `Api-Key ${postboxApiKey}`,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                from: resendFromEmail,
-                to: order.clientEmail,
-                subject: `Договор на разработку сайта - Заказ ${order.id}`,
-                html: emailHtml,
-                attachments: [{
-                    filename: `Договор_${order.id}.pdf`,
-                    content: pdfBuffer.toString('base64'),
-                }],
+                FromEmailAddress: postboxFromEmail,
+                RawMessage: {
+                    Data: Buffer.from(rawEmail).toString('base64'),
+                },
             }),
         });
         
-        const result = await response.json();
+        const responseText = await response.text();
+        console.log('Postbox response status:', response.status);
+        console.log('Postbox response:', responseText);
         
         if (!response.ok) {
-            console.error('Resend error:', result);
-            throw new Error(`Resend API error: ${JSON.stringify(result)}`);
+            throw new Error(`Yandex Postbox error: ${response.status} - ${responseText}`);
         }
         
-        console.log('Email sent via Resend:', result.id);
+        console.log('Email sent via Yandex Cloud Postbox');
         return;
     }
     
-    // Fallback на SMTP (Яндекс)
+    // Fallback на SMTP (Яндекс Почта)
     const smtpEmail = process.env.SMTP_EMAIL;
     const smtpPassword = process.env.SMTP_PASSWORD;
 
     console.log('SMTP config:', { emailConfigured: !!smtpEmail, passwordConfigured: !!smtpPassword });
 
     if (!smtpEmail || !smtpPassword) {
-        console.log('No email service configured (RESEND_API_KEY or SMTP), skipping email');
+        console.log('No email service configured (POSTBOX_API_KEY or SMTP), skipping email');
         return;
     }
 
