@@ -167,9 +167,13 @@ export async function registerRoutes(
         return res.status(404).send("order not found");
       }
 
-      await storage.updateOrderStatus(shp_orderId, "paid", new Date());
-      
-      console.log("Order paid successfully:", shp_orderId);
+      if (order.status === "paid") {
+        await storage.updateOrderStatus(shp_orderId, "completed", new Date());
+        console.log("Order fully paid (remaining):", shp_orderId);
+      } else {
+        await storage.updateOrderStatus(shp_orderId, "paid", new Date());
+        console.log("Order prepaid successfully:", shp_orderId);
+      }
       
       res.send(`OK${InvId}`);
     } catch (error) {
@@ -186,6 +190,71 @@ export async function registerRoutes(
   app.get("/api/robokassa/fail", async (req, res) => {
     const { shp_orderId } = req.query;
     res.redirect(`/payment-fail?orderId=${shp_orderId}`);
+  });
+
+  app.post("/api/orders/pay-remaining", async (req, res) => {
+    try {
+      const { orderId } = req.body;
+      
+      if (!orderId) {
+        return res.status(400).json({
+          success: false,
+          message: "Не указан номер заказа",
+        });
+      }
+
+      const order = await storage.getOrder(orderId);
+      if (!order) {
+        return res.status(404).json({
+          success: false,
+          message: "Заказ не найден",
+        });
+      }
+
+      if (order.status === "completed") {
+        return res.status(400).json({
+          success: false,
+          message: "Заказ уже полностью оплачен",
+        });
+      }
+
+      if (order.status !== "paid") {
+        return res.status(400).json({
+          success: false,
+          message: "Предоплата по заказу не подтверждена",
+        });
+      }
+
+      const invId = getNextInvId();
+      const remainingAmount = parseFloat(order.amount).toFixed(2);
+      const description = `Оплата остатка: ${order.projectType}`;
+      
+      const signatureValue = generateRobokassaSignature(
+        ROBOKASSA_MERCHANT_LOGIN,
+        remainingAmount,
+        invId,
+        ROBOKASSA_PASSWORD1,
+        order.id
+      );
+
+      const baseUrl = "https://auth.robokassa.ru/Merchant/Index.aspx";
+      
+      const paymentUrl = `${baseUrl}?MerchantLogin=${ROBOKASSA_MERCHANT_LOGIN}&OutSum=${remainingAmount}&InvId=${invId}&Description=${encodeURIComponent(description)}&SignatureValue=${signatureValue}&IsTest=${IS_TEST_MODE ? 1 : 0}&shp_orderId=${order.id}`;
+
+      res.json({
+        success: true,
+        message: "Ссылка на оплату сформирована",
+        orderId: order.id,
+        amount: remainingAmount,
+        paymentUrl,
+      });
+    } catch (error) {
+      console.error("Error creating remaining payment:", error);
+      res.status(500).json({
+        success: false,
+        message: "Внутренняя ошибка сервера",
+      });
+    }
   });
 
   return httpServer;

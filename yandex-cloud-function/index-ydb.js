@@ -105,6 +105,10 @@ module.exports.handler = async function (event, context) {
             return handleRobokassaFail(query);
         }
 
+        if ((action === 'pay-remaining' || path.includes('/pay-remaining')) && method === 'POST') {
+            return await handlePayRemaining(body, headers);
+        }
+
         if (action === 'health' || path.includes('/health') || method === 'GET') {
             return {
                 statusCode: 200,
@@ -539,7 +543,13 @@ async function handleRobokassaResult(data, headers) {
         console.log('Order fetched from YDB:', order);
         
         if (order) {
-            await updateOrderStatusInYdb(shp_orderId, 'paid');
+            if (order.status === 'paid') {
+                await updateOrderStatusInYdb(shp_orderId, 'completed');
+                console.log('Order fully paid (remaining):', shp_orderId);
+            } else {
+                await updateOrderStatusInYdb(shp_orderId, 'paid');
+                console.log('Order prepaid:', shp_orderId);
+            }
         }
     } catch (error) {
         console.error('Error fetching/updating order from YDB:', error.message, error.stack);
@@ -608,6 +618,107 @@ function handleRobokassaFail(query) {
         headers: { 'Location': `${SITE_URL}/payment-fail?orderId=${orderId}` },
         body: '',
     };
+}
+
+async function handlePayRemaining(data, headers) {
+    const { orderId } = data;
+    
+    if (!orderId) {
+        return {
+            statusCode: 400,
+            headers,
+            body: JSON.stringify({ success: false, message: 'Не указан номер заказа' }),
+        };
+    }
+
+    let order = null;
+    try {
+        order = await getOrderFromYdb(orderId);
+    } catch (error) {
+        console.error('Error fetching order from YDB:', error.message);
+    }
+
+    if (!order) {
+        return {
+            statusCode: 404,
+            headers,
+            body: JSON.stringify({ success: false, message: 'Заказ не найден' }),
+        };
+    }
+
+    if (order.status === 'completed') {
+        return {
+            statusCode: 400,
+            headers,
+            body: JSON.stringify({ success: false, message: 'Заказ уже полностью оплачен' }),
+        };
+    }
+
+    if (order.status !== 'paid') {
+        return {
+            statusCode: 400,
+            headers,
+            body: JSON.stringify({ success: false, message: 'Предоплата по заказу не подтверждена' }),
+        };
+    }
+
+    const paymentUrl = generateRemainingPaymentUrl(orderId, order.amount);
+    
+    if (!paymentUrl) {
+        return {
+            statusCode: 500,
+            headers,
+            body: JSON.stringify({ success: false, message: 'Ошибка формирования ссылки на оплату' }),
+        };
+    }
+
+    return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({
+            success: true,
+            message: 'Ссылка на оплату сформирована',
+            orderId: order.id,
+            amount: order.amount,
+            paymentUrl,
+        }),
+    };
+}
+
+function generateRemainingPaymentUrl(orderId, amount) {
+    const merchantLogin = process.env.ROBOKASSA_MERCHANT_LOGIN;
+    const password1 = process.env.ROBOKASSA_PASSWORD1;
+    const isTestMode = process.env.ROBOKASSA_TEST_MODE === 'true';
+    
+    if (!merchantLogin || !password1) {
+        console.error('Robokassa not configured');
+        return null;
+    }
+    
+    const numericAmount = parseFloat(amount) || 0;
+    if (numericAmount <= 0) {
+        console.error('Invalid amount:', amount);
+        return null;
+    }
+    
+    const invId = Date.now() % 1000000;
+    
+    const signatureString = `${merchantLogin}:${numericAmount}:${invId}:${password1}:shp_orderId=${orderId}`;
+    const signature = crypto.createHash('md5').update(signatureString).digest('hex');
+    
+    const baseUrl = 'https://auth.robokassa.ru/Merchant/Index.aspx';
+    
+    const params = new URLSearchParams({
+        MerchantLogin: merchantLogin,
+        OutSum: numericAmount.toString(),
+        InvId: invId.toString(),
+        Description: 'Оплата остатка за разработку сайта',
+        SignatureValue: signature,
+        shp_orderId: orderId,
+        IsTest: isTestMode ? '1' : '0',
+    });
+    
+    return `${baseUrl}?${params.toString()}`;
 }
 
 // ============ PDF Generation ============

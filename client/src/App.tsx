@@ -8,6 +8,7 @@ import Home from "@/pages/Home";
 import Order from "@/pages/Order";
 import PaymentSuccess from "@/pages/PaymentSuccess";
 import PaymentFail from "@/pages/PaymentFail";
+import PayRemaining from "@/pages/PayRemaining";
 import FoodDelivery from "@/pages/demo/FoodDelivery";
 import FitnessStudio from "@/pages/demo/FitnessStudio";
 import CosmeticsShop from "@/pages/demo/CosmeticsShop";
@@ -21,6 +22,7 @@ function Router() {
       <Route path="/order" component={Order} />
       <Route path="/payment-success" component={PaymentSuccess} />
       <Route path="/payment-fail" component={PaymentFail} />
+      <Route path="/pay-remaining" component={PayRemaining} />
       <Route path="/demo/food-delivery" component={FoodDelivery} />
       <Route path="/demo/fitness" component={FitnessStudio} />
       <Route path="/demo/cosmetics" component={CosmeticsShop} />
