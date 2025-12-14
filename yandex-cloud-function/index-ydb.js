@@ -105,7 +105,7 @@ module.exports.handler = async function (event, context) {
             return handleRobokassaFail(query);
         }
 
-        if ((action === 'pay-remaining' || path.includes('/pay-remaining')) && method === 'POST') {
+        if ((action === 'pay-remaining' || action === 'orders/pay-remaining' || path.includes('/pay-remaining')) && method === 'POST') {
             return await handlePayRemaining(body, headers);
         }
 
