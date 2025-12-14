@@ -10,6 +10,32 @@ const ROBOKASSA_PASSWORD1 = process.env.ROBOKASSA_PASSWORD1 || "";
 const ROBOKASSA_PASSWORD2 = process.env.ROBOKASSA_PASSWORD2 || "";
 const IS_TEST_MODE = true;
 
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || "";
+const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID || "";
+const SITE_URL = process.env.SITE_URL || "https://mp-webstudio.ru";
+
+async function sendTelegramMessage(message: string): Promise<void> {
+  if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
+    console.log("Telegram not configured, skipping notification");
+    return;
+  }
+  
+  try {
+    const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+    await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: TELEGRAM_CHAT_ID,
+        text: message,
+        parse_mode: "HTML",
+      }),
+    });
+  } catch (error) {
+    console.error("Failed to send Telegram message:", error);
+  }
+}
+
 let orderCounter = 1;
 
 function getNextInvId(): number {
@@ -41,6 +67,13 @@ export async function registerRoutes(
         email: contactRequest.email,
         message: contactRequest.message.substring(0, 50) + "...",
       });
+
+      await sendTelegramMessage(
+        `📩 <b>Новая заявка с сайта!</b>\n\n` +
+        `👤 Имя: ${contactRequest.name}\n` +
+        `📧 Email: ${contactRequest.email}\n` +
+        `💬 Сообщение:\n${contactRequest.message}`
+      );
 
       res.status(201).json({
         success: true,
@@ -167,12 +200,38 @@ export async function registerRoutes(
         return res.status(404).send("order not found");
       }
 
+      const projectTypeLabel = order.projectType === "landing" ? "Лендинг" : 
+                              order.projectType === "corporate" ? "Корпоративный сайт" : "Интернет-магазин";
+      
       if (order.status === "paid") {
         await storage.updateOrderStatus(shp_orderId, "completed", new Date());
         console.log("Order fully paid (remaining):", shp_orderId);
+        
+        await sendTelegramMessage(
+          `✅ <b>Заказ полностью оплачен!</b>\n\n` +
+          `👤 Клиент: ${order.clientName}\n` +
+          `📧 Email: ${order.clientEmail}\n` +
+          `📱 Телефон: ${order.clientPhone}\n` +
+          `🌐 Тип: ${projectTypeLabel}\n` +
+          `💰 Сумма: ${OutSum} ₽ (остаток)\n` +
+          `📋 Заказ: ${shp_orderId.substring(0, 8).toUpperCase()}`
+        );
       } else {
         await storage.updateOrderStatus(shp_orderId, "paid", new Date());
         console.log("Order prepaid successfully:", shp_orderId);
+        
+        const payRemainingLink = `${SITE_URL}/pay-remaining?orderId=${shp_orderId}`;
+        
+        await sendTelegramMessage(
+          `💳 <b>Получена предоплата!</b>\n\n` +
+          `👤 Клиент: ${order.clientName}\n` +
+          `📧 Email: ${order.clientEmail}\n` +
+          `📱 Телефон: ${order.clientPhone}\n` +
+          `🌐 Тип: ${projectTypeLabel}\n` +
+          `💰 Сумма: ${OutSum} ₽ (50%)\n` +
+          `📋 Заказ: ${shp_orderId.substring(0, 8).toUpperCase()}\n\n` +
+          `🔗 Ссылка для оплаты остатка:\n${payRemainingLink}`
+        );
       }
       
       res.send(`OK${InvId}`);
