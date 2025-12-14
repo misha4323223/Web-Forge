@@ -193,7 +193,7 @@ async function getOrderFromYdb(orderId) {
     await driver.tableClient.withSession(async (session) => {
         const queryText = `
             DECLARE $id AS Utf8;
-            SELECT id, client_name, client_email, client_phone, project_type, project_description, amount, status, created_at
+            SELECT *
             FROM orders
             WHERE id = $id;
         `;
@@ -218,17 +218,21 @@ async function getOrderFromYdb(orderId) {
                 
                 // YDB SDK может возвращать данные как массив items или как объект
                 if (row.items && Array.isArray(row.items)) {
-                    // Формат: row.items[0], row.items[1], ...
+                    // YDB возвращает колонки в алфавитном порядке:
+                    // 0: amount, 1: client_email, 2: client_name, 3: client_phone, 
+                    // 4: created_at, 5: id, 6: paid_at, 7: project_description, 
+                    // 8: project_type, 9: status
                     order = {
-                        id: getStringValue(row.items[0]),
-                        clientName: getStringValue(row.items[1]),
-                        clientEmail: getStringValue(row.items[2]),
+                        amount: getStringValue(row.items[0]),
+                        clientEmail: getStringValue(row.items[1]),
+                        clientName: getStringValue(row.items[2]),
                         clientPhone: getStringValue(row.items[3]),
-                        projectType: getStringValue(row.items[4]),
-                        projectDescription: getStringValue(row.items[5]),
-                        amount: getStringValue(row.items[6]),
-                        status: getStringValue(row.items[7]),
-                        createdAt: getStringValue(row.items[8]),
+                        createdAt: getStringValue(row.items[4]),
+                        id: getStringValue(row.items[5]),
+                        paidAt: getStringValue(row.items[6]),
+                        projectDescription: getStringValue(row.items[7]),
+                        projectType: getStringValue(row.items[8]),
+                        status: getStringValue(row.items[9]),
                     };
                 } else {
                     // Формат с именованными полями
