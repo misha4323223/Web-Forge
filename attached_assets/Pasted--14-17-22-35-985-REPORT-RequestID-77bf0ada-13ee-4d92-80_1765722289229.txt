@@ -1,0 +1,118 @@
+
+
+14 дек. 17:22:35.985
+REPORT RequestID: 77bf0ada-13ee-4d92-8065-148d028b683e Duration: 192.160 ms Billed Duration: 200 ms Memory Size: 256 MB Max Memory Used: 166 MB Queuing Duration: 0.021 ms
+
+14 дек. 17:22:35.985
+END RequestID: 77bf0ada-13ee-4d92-8065-148d028b683e
+
+14 дек. 17:22:35.984
+Order paid successfully: ord_mj5tdab32d6qtpa6g
+
+14 дек. 17:22:35.984
+Telegram not configured
+
+14 дек. 17:22:35.984
+Order status updated in YDB: ord_mj5tdab32d6qtpa6g -> paid
+
+14 дек. 17:22:35.879
+}
+
+14 дек. 17:22:35.879
+createdAt: ''
+
+14 дек. 17:22:35.879
+status: '',
+
+14 дек. 17:22:35.879
+amount: '',
+
+14 дек. 17:22:35.879
+projectDescription: '',
+
+14 дек. 17:22:35.879
+projectType: '',
+
+14 дек. 17:22:35.879
+clientPhone: '',
+
+14 дек. 17:22:35.879
+clientEmail: '',
+
+14 дек. 17:22:35.879
+clientName: '',
+
+14 дек. 17:22:35.879
+id: '',
+
+14 дек. 17:22:35.879
+Order fetched from YDB: {
+
+14 дек. 17:22:35.878
+Order fetched from YDB:
+
+14 дек. 17:22:35.796
+}
+
+14 дек. 17:22:35.796
+received: '7464baeaac00af7a8e678d7582057c59'
+
+14 дек. 17:22:35.796
+expected: '7464baeaac00af7a8e678d7582057c59',
+
+14 дек. 17:22:35.796
+Signature check: {
+
+14 дек. 17:22:35.796
+}
+
+14 дек. 17:22:35.796
+shp_orderId: 'ord_mj5tdab32d6qtpa6g'
+
+14 дек. 17:22:35.796
+InvId: '134380',
+
+14 дек. 17:22:35.796
+OutSum: '12500',
+
+14 дек. 17:22:35.796
+Robokassa result callback: {
+
+14 дек. 17:22:35.796
+Robokassa result - full data: {"out_summ":"12500","OutSum":"12500","inv_id":"134380","InvId":"134380","crc":"7464BAEAAC00AF7A8E678D7582057C59","SignatureValue":"7464BAEAAC00AF7A8E678D7582057C59","PaymentMethod":"BankCard","IncSum":"12500","IncCurrLabel":"BankCardForeignPSR","IsTest":"1","EMail":"","Fee":"0.0","shp_orderId":"ord_mj5tdab32d6qtpa6g","action":"robokassa/result"}
+
+14 дек. 17:22:35.795
+Incoming request: { method: 'POST', action: 'robokassa/result', path: '' }
+
+14 дек. 17:22:35.790
+START RequestID: 77bf0ada-13ee-4d92-8065-148d028b683e Version: d4egnslm9ql13ag95c1f
+
+14 дек. 17:22:14.383
+REPORT RequestID: ac650b61-1df6-4884-85f2-4de701edba99 Duration: 476.384 ms Billed Duration: 500 ms Memory Size: 256 MB Max Memory Used: 158 MB Queuing Duration: 0.037 ms CPU Usage: 12.695 %
+
+14 дек. 17:22:14.383
+END RequestID: ac650b61-1df6-4884-85f2-4de701edba99
+
+14 дек. 17:22:14.381
+Telegram not configured
+
+14 дек. 17:22:14.380
+Order created in YDB: ord_mj5tdab32d6qtpa6g
+
+14 дек. 17:22:14.127
+YDB driver connected to: /ru-central1/b1gnp4ml7k5j7cquabad/etn2gipa2pvm2qj5ga83
+
+14 дек. 17:22:13.907
+Incoming request: { method: 'POST', action: 'orders', path: '' }
+
+14 дек. 17:22:13.903
+START RequestID: ac650b61-1df6-4884-85f2-4de701edba99 Version: d4egnslm9ql13ag95c1f
+
+14 дек. 17:22:13.879
+REPORT RequestID: 0b3acf4e-b5f9-4f70-b80e-2def3a4b2931 Duration: 482.797 ms Billed Duration: 500 ms Memory Size: 256 MB Max Memory Used: 111 MB Queuing Duration: 0.042 ms Function Init Duration: 476.040 ms CPU Usage: 12.695 %
+
+14 дек. 17:22:13.878
+END RequestID: 0b3acf4e-b5f9-4f70-b80e-2def3a4b2931
+
+14 дек. 17:22:13.355
+START RequestID: 0b3acf4e-b5f9-4f70-b80e-2def3a4b2931 Version: d4egnslm9ql13ag95c1f

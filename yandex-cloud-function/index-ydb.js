@@ -204,37 +204,64 @@ async function getOrderFromYdb(orderId) {
             '$id': TypedValues.utf8(orderId),
         });
         
+        console.log('YDB raw result:', JSON.stringify(result, null, 2));
+        
         if (result.resultSets && result.resultSets.length > 0) {
             const resultSet = result.resultSets[0];
             const rows = resultSet.rows || [];
             
+            console.log('YDB rows count:', rows.length);
+            
             if (rows.length > 0) {
                 const row = rows[0];
-                // YDB SDK возвращает объекты с именованными полями
-                order = {
-                    id: getStringValue(row.id),
-                    clientName: getStringValue(row.client_name),
-                    clientEmail: getStringValue(row.client_email),
-                    clientPhone: getStringValue(row.client_phone),
-                    projectType: getStringValue(row.project_type),
-                    projectDescription: getStringValue(row.project_description),
-                    amount: getStringValue(row.amount),
-                    status: getStringValue(row.status),
-                    createdAt: getStringValue(row.created_at),
-                };
+                console.log('YDB row structure:', JSON.stringify(row, null, 2));
+                
+                // YDB SDK может возвращать данные как массив items или как объект
+                if (row.items && Array.isArray(row.items)) {
+                    // Формат: row.items[0], row.items[1], ...
+                    order = {
+                        id: getStringValue(row.items[0]),
+                        clientName: getStringValue(row.items[1]),
+                        clientEmail: getStringValue(row.items[2]),
+                        clientPhone: getStringValue(row.items[3]),
+                        projectType: getStringValue(row.items[4]),
+                        projectDescription: getStringValue(row.items[5]),
+                        amount: getStringValue(row.items[6]),
+                        status: getStringValue(row.items[7]),
+                        createdAt: getStringValue(row.items[8]),
+                    };
+                } else {
+                    // Формат с именованными полями
+                    order = {
+                        id: getStringValue(row.id),
+                        clientName: getStringValue(row.client_name),
+                        clientEmail: getStringValue(row.client_email),
+                        clientPhone: getStringValue(row.client_phone),
+                        projectType: getStringValue(row.project_type),
+                        projectDescription: getStringValue(row.project_description),
+                        amount: getStringValue(row.amount),
+                        status: getStringValue(row.status),
+                        createdAt: getStringValue(row.created_at),
+                    };
+                }
             }
         }
     });
     
-    console.log('Order fetched from YDB:', order ? order.id : 'not found');
+    console.log('Order fetched from YDB:', JSON.stringify(order));
     return order;
 }
 
 function getStringValue(field) {
     if (!field) return '';
     if (typeof field === 'string') return field;
+    // YDB возвращает значения в разных форматах
     if (field.textValue !== undefined) return field.textValue;
+    if (field.bytesValue !== undefined) return field.bytesValue.toString();
+    if (field.text !== undefined) return field.text;
     if (field.value !== undefined) return String(field.value);
+    // Если это Buffer
+    if (Buffer.isBuffer(field)) return field.toString('utf-8');
     return String(field);
 }
 
