@@ -1,0 +1,278 @@
+14 дек. 23:36:05.257
+},
+
+14 дек. 23:36:05.257
+}
+
+14 дек. 23:36:05.257
+}
+
+14 дек. 23:36:05.257
+}
+
+14 дек. 23:36:05.257
+"typeId": "UTF8"
+
+14 дек. 23:36:05.257
+"item": {
+
+14 дек. 23:36:05.257
+"optionalType": {
+
+14 дек. 23:36:05.257
+"type": {
+
+14 дек. 23:36:05.257
+"name": "paid_at",
+
+14 дек. 23:36:05.257
+{
+
+14 дек. 23:36:05.257
+},
+
+14 дек. 23:36:05.257
+}
+
+14 дек. 23:36:05.257
+"typeId": "UTF8"
+
+14 дек. 23:36:05.257
+"type": {
+
+14 дек. 23:36:05.257
+"name": "id",
+
+14 дек. 23:36:05.257
+{
+
+14 дек. 23:36:05.257
+},
+
+14 дек. 23:36:05.257
+}
+
+14 дек. 23:36:05.257
+}
+
+14 дек. 23:36:05.257
+}
+
+14 дек. 23:36:05.257
+"typeId": "UTF8"
+
+14 дек. 23:36:05.257
+"item": {
+
+14 дек. 23:36:05.257
+"optionalType": {
+
+14 дек. 23:36:05.257
+"type": {
+
+14 дек. 23:36:05.257
+"name": "created_at",
+
+14 дек. 23:36:05.257
+{
+
+14 дек. 23:36:05.257
+},
+
+14 дек. 23:36:05.257
+}
+
+14 дек. 23:36:05.257
+}
+
+14 дек. 23:36:05.257
+}
+
+14 дек. 23:36:05.257
+"typeId": "UTF8"
+
+14 дек. 23:36:05.257
+"item": {
+
+14 дек. 23:36:05.257
+"optionalType": {
+
+14 дек. 23:36:05.257
+"type": {
+
+14 дек. 23:36:05.257
+"name": "client_phone",
+
+14 дек. 23:36:05.257
+{
+
+14 дек. 23:36:05.257
+},
+
+14 дек. 23:36:05.257
+}
+
+14 дек. 23:36:05.256
+}
+
+14 дек. 23:36:05.256
+}
+
+14 дек. 23:36:05.256
+"typeId": "UTF8"
+
+14 дек. 23:36:05.256
+"item": {
+
+14 дек. 23:36:05.256
+"optionalType": {
+
+14 дек. 23:36:05.256
+"type": {
+
+14 дек. 23:36:05.256
+"name": "client_name",
+
+14 дек. 23:36:05.256
+{
+
+14 дек. 23:36:05.256
+},
+
+14 дек. 23:36:05.256
+}
+
+14 дек. 23:36:05.256
+}
+
+14 дек. 23:36:05.256
+}
+
+14 дек. 23:36:05.256
+"typeId": "UTF8"
+
+14 дек. 23:36:05.256
+"item": {
+
+14 дек. 23:36:05.256
+"optionalType": {
+
+14 дек. 23:36:05.256
+"type": {
+
+14 дек. 23:36:05.256
+"name": "client_email",
+
+14 дек. 23:36:05.256
+{
+
+14 дек. 23:36:05.256
+},
+
+14 дек. 23:36:05.256
+}
+
+14 дек. 23:36:05.256
+}
+
+14 дек. 23:36:05.256
+}
+
+14 дек. 23:36:05.256
+"typeId": "UTF8"
+
+14 дек. 23:36:05.256
+"item": {
+
+14 дек. 23:36:05.256
+"optionalType": {
+
+14 дек. 23:36:05.256
+"type": {
+
+14 дек. 23:36:05.256
+"name": "amount",
+
+14 дек. 23:36:05.256
+{
+
+14 дек. 23:36:05.256
+"columns": [
+
+14 дек. 23:36:05.256
+{
+
+14 дек. 23:36:05.256
+"resultSets": [
+
+14 дек. 23:36:05.256
+YDB raw result: {
+
+14 дек. 23:36:05.114
+YDB driver connected to: /ru-central1/b1gnp4ml7k5j7cquabad/etn2gipa2pvm2qj5ga83
+
+14 дек. 23:36:04.862
+}
+
+14 дек. 23:36:04.862
+received: 'e36ffa7e5b42f9a4043b6ae0e8aec5aa'
+
+14 дек. 23:36:04.862
+expected: 'e36ffa7e5b42f9a4043b6ae0e8aec5aa',
+
+14 дек. 23:36:04.862
+Signature check: {
+
+14 дек. 23:36:04.860
+}
+
+14 дек. 23:36:04.860
+shp_orderId: 'ord_mj66puk79ip2irz9l'
+
+14 дек. 23:36:04.860
+InvId: '555431',
+
+14 дек. 23:36:04.860
+OutSum: '12500',
+
+14 дек. 23:36:04.860
+Robokassa result callback: {
+
+14 дек. 23:36:04.860
+Robokassa result - full data: {"out_summ":"12500","OutSum":"12500","inv_id":"555431","InvId":"555431","crc":"E36FFA7E5B42F9A4043B6AE0E8AEC5AA","SignatureValue":"E36FFA7E5B42F9A4043B6AE0E8AEC5AA","PaymentMethod":"BankCard","IncSum":"12500","IncCurrLabel":"BankCardForeignPSR","IsTest":"1","EMail":"","Fee":"0.0","shp_orderId":"ord_mj66puk79ip2irz9l","action":"robokassa/result"}
+
+14 дек. 23:36:04.859
+Incoming request: { method: 'POST', action: 'robokassa/result', path: '' }
+
+14 дек. 23:36:04.104
+START RequestID: d60864e9-fce1-4618-811d-fd0636359be8 Version: d4e0vegq5boh1iv527tl
+
+14 дек. 23:35:55.434
+REPORT RequestID: 451450b6-fbf8-47a1-bf30-99c4c795fa66 Duration: 447.226 ms Billed Duration: 500 ms Memory Size: 256 MB Max Memory Used: 150 MB Queuing Duration: 0.105 ms CPU Usage: 11.914 %
+
+14 дек. 23:35:55.434
+END RequestID: 451450b6-fbf8-47a1-bf30-99c4c795fa66
+
+14 дек. 23:35:55.431
+Telegram not configured
+
+14 дек. 23:35:55.431
+Order created in YDB: ord_mj66puk79ip2irz9l
+
+14 дек. 23:35:55.256
+YDB driver connected to: /ru-central1/b1gnp4ml7k5j7cquabad/etn2gipa2pvm2qj5ga83
+
+14 дек. 23:35:54.989
+Incoming request: { method: 'POST', action: 'orders', path: '' }
+
+14 дек. 23:35:54.984
+START RequestID: 451450b6-fbf8-47a1-bf30-99c4c795fa66 Version: d4e0vegq5boh1iv527tl
+
+14 дек. 23:35:54.952
+REPORT RequestID: e28c890e-7b74-4f0a-8fd8-89407ec19059 Duration: 777.412 ms Billed Duration: 800 ms Memory Size: 256 MB Max Memory Used: 150 MB Queuing Duration: 0.065 ms Function Init Duration: 767.889 ms CPU Usage: 11.914 %
+
+14 дек. 23:35:54.952
+END RequestID: e28c890e-7b74-4f0a-8fd8-89407ec19059
+
+14 дек. 23:35:54.172
+START RequestID: e28c890e-7b74-4f0a-8fd8-89407ec19059 Version: d4e0vegq5boh1iv527tl
