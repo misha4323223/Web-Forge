@@ -13,12 +13,16 @@
  * - ROBOKASSA_PASSWORD1 - пароль #1 для формирования подписи
  * - ROBOKASSA_PASSWORD2 - пароль #2 для проверки подписи
  * - ROBOKASSA_TEST_MODE - "true" для тестового режима
- * - TELEGRAM_BOT_TOKEN - токен бота Telegram (опционально)
- * - TELEGRAM_CHAT_ID - ID чата для уведомлений (опционально)
- * - SITE_URL - URL сайта для редиректов (например: https://www.mp-webstudio.ru)
+ * - TELEGRAM_BOT_TOKEN - токен бота Telegram
+ * - TELEGRAM_CHAT_ID - ID чата для уведомлений
+ * - SITE_URL - URL сайта для редиректов
+ * - SMTP_EMAIL - email для отправки писем (Яндекс)
+ * - SMTP_PASSWORD - пароль приложения Яндекс
  */
 
 const crypto = require('crypto');
+const nodemailer = require('nodemailer');
+const PDFDocument = require('pdfkit');
 
 const orders = new Map();
 let orderCounter = 1;
@@ -84,6 +88,7 @@ module.exports.handler = async function (event, context) {
                     status: 'ok', 
                     timestamp: new Date().toISOString(),
                     robokassa: process.env.ROBOKASSA_MERCHANT_LOGIN ? 'configured' : 'not configured',
+                    smtp: process.env.SMTP_EMAIL ? 'configured' : 'not configured',
                     action: action || 'none'
                 }),
             };
@@ -261,13 +266,26 @@ async function handleRobokassaResult(data, headers) {
         order.paidAt = new Date().toISOString();
         orders.set(shp_orderId, order);
         
+        // Генерируем PDF и отправляем на email
+        try {
+            const pdfBuffer = await generateContractPDF(order);
+            await sendContractEmail(order, pdfBuffer);
+            console.log('Contract email sent to:', order.clientEmail);
+        } catch (emailError) {
+            console.error('Failed to send contract email:', emailError);
+        }
+        
         await sendTelegramNotification(`
-Оплата получена!
+Оплата получена! Договор подписан!
 
 Заказ: ${shp_orderId}
 Сумма: ${OutSum} руб.
 Клиент: ${order.clientName}
 Email: ${order.clientEmail}
+Телефон: ${order.clientPhone}
+Тип: ${getProjectTypeName(order.projectType)}
+
+Договор отправлен клиенту на email.
         `);
     }
 
@@ -305,6 +323,178 @@ function handleRobokassaFail(query) {
         body: '',
     };
 }
+
+// ============ PDF Generation ============
+
+async function generateContractPDF(order) {
+    return new Promise((resolve, reject) => {
+        const chunks = [];
+        const doc = new PDFDocument({ size: 'A4', margin: 50 });
+        
+        doc.on('data', chunk => chunks.push(chunk));
+        doc.on('end', () => resolve(Buffer.concat(chunks)));
+        doc.on('error', reject);
+
+        // Register Cyrillic fonts
+        const path = require('path');
+        doc.registerFont('Roboto', path.join(__dirname, 'Roboto-Regular.ttf'));
+        doc.registerFont('Roboto-Bold', path.join(__dirname, 'Roboto-Bold.ttf'));
+
+        const formatPrice = (price) => new Intl.NumberFormat('ru-RU').format(price);
+        const amount = parseFloat(order.amount);
+        const prepayment = Math.round(amount / 2);
+        const projectTypeLabel = getProjectTypeName(order.projectType);
+        const date = new Date().toLocaleDateString('ru-RU', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        });
+
+        // Header
+        doc.fontSize(16).font('Roboto-Bold').text('ДОГОВОР ОКАЗАНИЯ УСЛУГ', { align: 'center' });
+        doc.moveDown(0.5);
+        doc.fontSize(10).font('Roboto').text(date, { align: 'center' });
+        doc.moveDown(1.5);
+
+        // Parties
+        doc.fontSize(10).font('Roboto-Bold').text('ИСПОЛНИТЕЛЬ: ', { continued: true });
+        doc.font('Roboto').text('MP.WebStudio, самозанятый, действующий на основании справки о постановке на учет в качестве плательщика НПД');
+        doc.moveDown(0.5);
+
+        doc.font('Roboto-Bold').text('ЗАКАЗЧИК: ', { continued: true });
+        doc.font('Roboto').text(order.clientName);
+        doc.text(`Телефон: ${order.clientPhone}`);
+        doc.text(`Email: ${order.clientEmail}`);
+        doc.moveDown(1);
+
+        doc.text('совместно именуемые "Стороны", заключили настоящий Договор:');
+        doc.moveDown(1);
+
+        // Section 1
+        doc.font('Roboto-Bold').text('1. ПРЕДМЕТ ДОГОВОРА');
+        doc.font('Roboto').text(`1.1. Исполнитель обязуется оказать услуги по разработке: ${projectTypeLabel}`);
+        if (order.projectDescription) {
+            doc.text(`1.2. Описание проекта: ${order.projectDescription}`);
+        }
+        doc.moveDown(1);
+
+        // Section 2
+        doc.font('Roboto-Bold').text('2. СТОИМОСТЬ И ПОРЯДОК ОПЛАТЫ');
+        doc.font('Roboto').text(`2.1. Стоимость услуг: ${formatPrice(amount)} рублей`);
+        doc.text('2.2. НДС не облагается (п. 8 ст. 2 ФЗ от 27.11.2018 N 422-ФЗ)');
+        doc.text(`2.3. Предоплата 50%: ${formatPrice(prepayment)} руб. - ОПЛАЧЕНО`);
+        doc.text(`2.4. Остаток 50%: ${formatPrice(prepayment)} руб. - после подписания Акта`);
+        doc.moveDown(1);
+
+        // Section 3
+        doc.font('Roboto-Bold').text('3. СРОКИ ВЫПОЛНЕНИЯ');
+        doc.font('Roboto').text('3.1. Срок: от 5 до 20 рабочих дней с момента получения предоплаты и материалов');
+        doc.text('3.2. Этапы: Создание первой версии -> Правки (до 3 итераций) -> Запуск');
+        doc.moveDown(1);
+
+        // Section 4
+        doc.font('Roboto-Bold').text('4. ГАРАНТИИ');
+        doc.font('Roboto').text('4.1. Гарантийный срок: 14 календарных дней');
+        doc.text('4.2. Бесплатное устранение технических ошибок в течение гарантийного срока');
+        doc.moveDown(1);
+
+        // Section 5
+        doc.font('Roboto-Bold').text('5. ИНТЕЛЛЕКТУАЛЬНАЯ СОБСТВЕННОСТЬ');
+        doc.font('Roboto').text('5.1. Все права на сайт переходят к Заказчику после полной оплаты');
+        doc.text('5.2. Исполнитель вправе использовать результат в портфолио');
+        doc.moveDown(1);
+
+        // Acceptance
+        doc.font('Roboto-Bold').text('АКЦЕПТ ОФЕРТЫ');
+        doc.font('Roboto').text('Оплата предоплаты является акцептом настоящего договора.');
+        doc.text(`Дата акцепта: ${new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' })}`);
+        doc.text(`ID заказа: ${order.id}`);
+        doc.moveDown(2);
+
+        // Footer
+        doc.fontSize(9).text('MP.WebStudio | https://mp-webstudio.ru', { align: 'center' });
+
+        doc.end();
+    });
+}
+
+// ============ Email Sending ============
+
+async function sendContractEmail(order, pdfBuffer) {
+    const smtpEmail = process.env.SMTP_EMAIL;
+    const smtpPassword = process.env.SMTP_PASSWORD;
+
+    if (!smtpEmail || !smtpPassword) {
+        console.log('SMTP not configured, skipping email');
+        return;
+    }
+
+    const transporter = nodemailer.createTransport({
+        host: 'smtp.yandex.ru',
+        port: 465,
+        secure: true,
+        auth: {
+            user: smtpEmail,
+            pass: smtpPassword,
+        },
+    });
+
+    const formatPrice = (price) => new Intl.NumberFormat('ru-RU').format(price);
+    const amount = parseFloat(order.amount);
+    const prepayment = Math.round(amount / 2);
+
+    const mailOptions = {
+        from: `"MP.WebStudio" <${smtpEmail}>`,
+        to: order.clientEmail,
+        subject: `Договор на разработку сайта - Заказ ${order.id}`,
+        html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2 style="color: #0891b2;">Спасибо за заказ!</h2>
+                
+                <p>Здравствуйте, ${order.clientName}!</p>
+                
+                <p>Ваша предоплата успешно получена. Договор на оказание услуг подписан (акцептован оплатой).</p>
+                
+                <div style="background: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                    <h3 style="margin-top: 0;">Детали заказа:</h3>
+                    <p><strong>Тип проекта:</strong> ${getProjectTypeName(order.projectType)}</p>
+                    <p><strong>Стоимость:</strong> ${formatPrice(amount)} руб.</p>
+                    <p><strong>Предоплата (оплачено):</strong> ${formatPrice(prepayment)} руб.</p>
+                    <p><strong>Остаток к оплате:</strong> ${formatPrice(prepayment)} руб.</p>
+                    <p><strong>ID заказа:</strong> ${order.id}</p>
+                </div>
+                
+                <p>Договор прикреплён к этому письму в формате PDF.</p>
+                
+                <h3>Что дальше?</h3>
+                <ol>
+                    <li>Мы свяжемся с вами в течение 24 часов для уточнения деталей</li>
+                    <li>Вы предоставите материалы (логотип, тексты, фото)</li>
+                    <li>Мы приступим к разработке</li>
+                </ol>
+                
+                <p>Если у вас есть вопросы, ответьте на это письмо.</p>
+                
+                <p style="color: #6b7280; font-size: 14px; margin-top: 30px;">
+                    С уважением,<br>
+                    MP.WebStudio<br>
+                    <a href="https://mp-webstudio.ru">mp-webstudio.ru</a>
+                </p>
+            </div>
+        `,
+        attachments: [
+            {
+                filename: `Договор_${order.id}.pdf`,
+                content: pdfBuffer,
+                contentType: 'application/pdf',
+            },
+        ],
+    };
+
+    await transporter.sendMail(mailOptions);
+}
+
+// ============ Helpers ============
 
 function getProjectTypeName(type) {
     const types = {

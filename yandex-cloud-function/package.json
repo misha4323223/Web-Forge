@@ -7,6 +7,10 @@
     "test": "echo \"Test passed\""
   },
   "engines": {
-    "node": ">=22"
+    "node": ">=18"
+  },
+  "dependencies": {
+    "nodemailer": "^6.9.0",
+    "pdfkit": "^0.15.0"
   }
 }
