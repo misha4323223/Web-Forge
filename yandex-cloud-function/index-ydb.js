@@ -255,13 +255,30 @@ async function getOrderFromYdb(orderId) {
 function getStringValue(field) {
     if (!field) return '';
     if (typeof field === 'string') return field;
-    // YDB возвращает значения в разных форматах
+    
+    // YDB возвращает данные в формате { value: { textValue: '...' } }
+    if (field.value) {
+        return getStringValue(field.value);
+    }
+    
+    // Прямые значения
     if (field.textValue !== undefined) return field.textValue;
-    if (field.bytesValue !== undefined) return field.bytesValue.toString();
+    if (field.bytesValue !== undefined) {
+        if (Buffer.isBuffer(field.bytesValue)) {
+            return field.bytesValue.toString('utf-8');
+        }
+        return String(field.bytesValue);
+    }
     if (field.text !== undefined) return field.text;
-    if (field.value !== undefined) return String(field.value);
+    
     // Если это Buffer
     if (Buffer.isBuffer(field)) return field.toString('utf-8');
+    
+    // Если это объект с data (бывает при сериализации Buffer)
+    if (field.type === 'Buffer' && field.data) {
+        return Buffer.from(field.data).toString('utf-8');
+    }
+    
     return String(field);
 }
 
