@@ -1,0 +1,37 @@
+
+
+14 дек. 17:15:17.669
+Uncaught Error: Unexpected transport error code 7! Error itself: {"code":7,"details":"PermissionDenied","metadata":{"content-type":["application/grpc"],"grpc-status-details-bin":[{"type":"Buffer","data":[8,7,18,16,80,101,114,109,105,115,115,105,111,110,68,101,110,105,101,100,26,84,10,42,116,121,112,101,46,103,111,111,103,108,101,97,112,105,115,46,99,111,109,47,103,111,111,103,108,101,46,114,112,99,46,82,101,113,117,101,115,116,73,110,102,111,18,38,10,36,55,101,101,51,53,101,102,52,45,50,55,99,49,45,52,102,99,97,45,56,101,98,97,45,97,48,56,55,53,56,52,101,56,98,100,56]}],"x-request-id":["7ee35ef4-27c1-4fca-8eba-a087584e8bd8"]}} Stack: at TransportError.convertToYdbError (/function/code/node_modules/ydb-sdk/build/cjs/src/errors.js:334:20) at RetryStrategy.retry (/function/code/node_modules/ydb-sdk/build/cjs/src/retries_obsoleted.js:90:49) at process.processTicksAndRejections (node:internal/process/task_queues:105:5) at async descriptor.value (/function/code/node_modules/ydb-sdk/build/cjs/src/retries_obsoleted.js:137:20)
+
+14 дек. 17:15:17.668
+REPORT RequestID: e2153b79-0c56-4ef8-8bae-281be11a461a Duration: 200.536 ms Billed Duration: 300 ms Memory Size: 256 MB Max Memory Used: 158 MB Queuing Duration: 0.043 ms CPU Usage: 91.895 %
+
+14 дек. 17:15:17.668
+END RequestID: e2153b79-0c56-4ef8-8bae-281be11a461a
+
+14 дек. 17:15:17.667
+at async descriptor.value (/function/code/node_modules/ydb-sdk/build/cjs/src/retries_obsoleted.js:137:20)
+
+14 дек. 17:15:17.667
+at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+14 дек. 17:15:17.667
+at RetryStrategy.retry (/function/code/node_modules/ydb-sdk/build/cjs/src/retries_obsoleted.js:90:49)
+
+14 дек. 17:15:17.667
+at TransportError.convertToYdbError (/function/code/node_modules/ydb-sdk/build/cjs/src/errors.js:334:20)
+
+14 дек. 17:15:17.667
+Error creating order: Unexpected transport error code 7! Error itself: {"code":7,"details":"PermissionDenied","metadata":{"content-type":["application/grpc"],"grpc-status-details-bin":[{"type":"Buffer","data":[8,7,18,16,80,101,114,109,105,115,115,105,111,110,68,101,110,105,101,100,26,84,10,42,116,121,112,101,46,103,111,111,103,108,101,97,112,105,115,46,99,111,109,47,103,111,111,103,108,101,46,114,112,99,46,82,101,113,117,101,115,116,73,110,102,111,18,38,10,36,55,101,101,51,53,101,102,52,45,50,55,99,49,45,52,102,99,97,45,56,101,98,97,45,97,48,56,55,53,56,52,101,56,98,100,56]}],"x-request-id":["7ee35ef4-27c1-4fca-8eba-a087584e8bd8"]}} Error: Unexpected transport error code 7! Error itself: {"code":7,"details":"PermissionDenied","metadata":{"content-type":["application/grpc"],"grpc-status-details-bin":[{"type":"Buffer","data":[8,7,18,16,80,101,114,109,105,115,115,105,111,110,68,101,110,105,101,100,26,84,10,42,116,121,112,101,46,103,111,111,103,108,101,97,112,105,115,46,99,111,109,47,103,111,111,103,108,101,46,114,112,99,46,82,101,113,117,101,115,116,73,110,102,111,18,38,10,36,55,101,101,51,53,101,102,52,45,50,55,99,49,45,52,102,99,97,45,56,101,98,97,45,97,48,56,55,53,56,52,101,56,98,100,56]}],"x-request-id":["7ee35ef4-27c1-4fca-8eba-a087584e8bd8"]}}
+
+14 дек. 17:15:17.469
+Incoming request: { method: 'POST', action: 'orders', path: '' }
+
+14 дек. 17:15:17.465
+START RequestID: e2153b79-0c56-4ef8-8bae-281be11a461a Version: d4egnslm9ql13ag95c1f
+
+14 дек. 17:15:17.435
+REPORT RequestID: 5a5f89f8-e9e6-4cbd-a555-e2c054c91ed3 Duration: 486.786 ms Billed Duration: 500 ms Memory Size: 256 MB Max Memory Used: 111 MB Queuing Duration: 0.023 ms Function Init Duration: 474.894 ms CPU Usage: 9.375 %
+
+14 дек. 17:15:17.435
+END RequestID: 5a5f89f8-e9e6-4cbd-a555-e2c054c91ed3
