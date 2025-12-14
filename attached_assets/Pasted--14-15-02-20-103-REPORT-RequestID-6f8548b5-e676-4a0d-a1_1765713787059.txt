@@ -1,0 +1,199 @@
+
+
+14 дек. 15:02:20.103
+REPORT RequestID: 6f8548b5-e676-4a0d-a119-179b7d8a886b Duration: 374.608 ms Billed Duration: 400 ms Memory Size: 256 MB Max Memory Used: 138 MB Queuing Duration: 0.064 ms
+
+14 дек. 15:02:20.103
+END RequestID: 6f8548b5-e676-4a0d-a119-179b7d8a886b
+
+14 дек. 15:02:20.101
+Order paid successfully: ws_mj5ocxluitvyhos0u
+
+14 дек. 15:02:20.101
+Telegram not configured, skipping notification
+
+14 дек. 15:02:20.101
+Contract email sent to: pimashin2015@gmail.com
+
+14 дек. 15:02:20.101
+SMTP not configured, skipping email
+
+14 дек. 15:02:19.734
+}
+
+14 дек. 15:02:19.734
+received: '3e5f737b9f2979c0b8979749203565a5'
+
+14 дек. 15:02:19.734
+expected: '3e5f737b9f2979c0b8979749203565a5',
+
+14 дек. 15:02:19.734
+Signature check: {
+
+14 дек. 15:02:19.733
+}
+
+14 дек. 15:02:19.733
+SignatureValue: 'present'
+
+14 дек. 15:02:19.733
+shp_orderId: 'ws_mj5ocxluitvyhos0u',
+
+14 дек. 15:02:19.733
+InvId: '1',
+
+14 дек. 15:02:19.733
+OutSum: '120000',
+
+14 дек. 15:02:19.733
+Robokassa result callback: {
+
+14 дек. 15:02:19.733
+Robokassa result - full data: {"out_summ":"120000","OutSum":"120000","inv_id":"1","InvId":"1","crc":"3E5F737B9F2979C0B8979749203565A5","SignatureValue":"3E5F737B9F2979C0B8979749203565A5","PaymentMethod":"BankCard","IncSum":"120000","IncCurrLabel":"BankCardForeignPSR","IsTest":"1","EMail":"","Fee":"0.0","shp_orderId":"ws_mj5ocxluitvyhos0u","action":"robokassa/result"}
+
+14 дек. 15:02:19.733
+}
+
+14 дек. 15:02:19.733
+queryKeys: [ 'action' ]
+
+14 дек. 15:02:19.733
+],
+
+14 дек. 15:02:19.733
+'shp_orderId'
+
+14 дек. 15:02:19.733
+'EMail', 'Fee',
+
+14 дек. 15:02:19.733
+'IncCurrLabel', 'IsTest',
+
+14 дек. 15:02:19.733
+'PaymentMethod', 'IncSum',
+
+14 дек. 15:02:19.733
+'crc', 'SignatureValue',
+
+14 дек. 15:02:19.732
+'inv_id', 'InvId',
+
+14 дек. 15:02:19.732
+'out_summ', 'OutSum',
+
+14 дек. 15:02:19.732
+bodyKeys: [
+
+14 дек. 15:02:19.732
+path: '',
+
+14 дек. 15:02:19.732
+action: 'robokassa/result',
+
+14 дек. 15:02:19.732
+method: 'POST',
+
+14 дек. 15:02:19.732
+Incoming request: {
+
+14 дек. 15:02:19.724
+START RequestID: 6f8548b5-e676-4a0d-a119-179b7d8a886b Version: d4e9are53m9q4deilabc
+
+14 дек. 15:01:59.630
+REPORT RequestID: 17e68028-943f-4e5e-819d-036aabb1a5f9 Duration: 46.168 ms Billed Duration: 100 ms Memory Size: 256 MB Max Memory Used: 106 MB Queuing Duration: 0.075 ms CPU Usage: 12.207 %
+
+14 дек. 15:01:59.630
+END RequestID: 17e68028-943f-4e5e-819d-036aabb1a5f9
+
+14 дек. 15:01:59.628
+Telegram not configured, skipping notification
+
+14 дек. 15:01:59.592
+}
+
+14 дек. 15:01:59.592
+createdAt: '2025-12-14T12:01:59.586Z'
+
+14 дек. 15:01:59.592
+status: 'pending',
+
+14 дек. 15:01:59.592
+amount: '120000',
+
+14 дек. 15:01:59.592
+projectDescription: 'авывппвывп',
+
+14 дек. 15:01:59.592
+projectType: 'shop',
+
+14 дек. 15:01:59.592
+clientPhone: '89531814136',
+
+14 дек. 15:01:59.592
+clientEmail: 'pimashin2015@gmail.com',
+
+14 дек. 15:01:59.592
+clientName: 'Миша',
+
+14 дек. 15:01:59.592
+invId: 1,
+
+14 дек. 15:01:59.592
+id: 'ws_mj5ocxluitvyhos0u',
+
+14 дек. 15:01:59.592
+New order created: {
+
+14 дек. 15:01:59.586
+}
+
+14 дек. 15:01:59.586
+queryKeys: [ 'action' ]
+
+14 дек. 15:01:59.586
+],
+
+14 дек. 15:01:59.586
+'amount'
+
+14 дек. 15:01:59.586
+'projectDescription',
+
+14 дек. 15:01:59.586
+'projectType',
+
+14 дек. 15:01:59.586
+'clientPhone',
+
+14 дек. 15:01:59.586
+'clientEmail',
+
+14 дек. 15:01:59.586
+'clientName',
+
+14 дек. 15:01:59.586
+bodyKeys: [
+
+14 дек. 15:01:59.586
+path: '',
+
+14 дек. 15:01:59.586
+action: 'orders',
+
+14 дек. 15:01:59.586
+method: 'POST',
+
+14 дек. 15:01:59.586
+Incoming request: {
+
+14 дек. 15:01:59.581
+START RequestID: 17e68028-943f-4e5e-819d-036aabb1a5f9 Version: d4e9are53m9q4deilabc
+
+14 дек. 15:01:59.565
+REPORT RequestID: d5d7007d-e17a-4d9a-8616-a506dc80a902 Duration: 342.982 ms Billed Duration: 400 ms Memory Size: 256 MB Max Memory Used: 106 MB Queuing Duration: 0.063 ms Function Init Duration: 340.162 ms CPU Usage: 12.207 %
+
+14 дек. 15:01:59.565
+END RequestID: d5d7007d-e17a-4d9a-8616-a506dc80a902
+
+14 дек. 15:01:59.219
+START RequestID: d5d7007d-e17a-4d9a-8616-a506dc80a902 Version: d4e9are53m9q4deilabc
