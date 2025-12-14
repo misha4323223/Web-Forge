@@ -1,0 +1,329 @@
+14 дек. 20:46:10.067
+REPORT RequestID: dab76b15-4e0e-4411-a397-37f408aafec4 Duration: 1632.655 ms Billed Duration: 1700 ms Memory Size: 256 MB Max Memory Used: 177 MB Queuing Duration: 0.025 ms Function Init Duration: 643.787 ms CPU Usage: 76.367 %
+
+14 дек. 20:46:10.067
+END RequestID: dab76b15-4e0e-4411-a397-37f408aafec4
+
+14 дек. 20:46:10.063
+Order paid successfully: ord_mj60n3od3uffzkvnk
+
+14 дек. 20:46:10.063
+Telegram not configured
+
+14 дек. 20:46:10.063
+at async module.exports.handler [as handlerFn] (/function/code/index.js:96:20)
+
+14 дек. 20:46:10.063
+at async handleRobokassaResult (/function/code/index.js:554:13)
+
+14 дек. 20:46:10.063
+at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+14 дек. 20:46:10.063
+at sendContractEmail (/function/code/index.js:835:19)
+
+14 дек. 20:46:10.063
+trace-id: -
+
+14 дек. 20:46:10.063
+request-id: e49fbe43-be91-4dde-bf74-68ffc30d440a
+
+14 дек. 20:46:10.063
+Error: Yandex Postbox error: 404 -
+
+14 дек. 20:46:10.063
+trace-id: -
+
+14 дек. 20:46:10.063
+request-id: e49fbe43-be91-4dde-bf74-68ffc30d440a
+
+14 дек. 20:46:10.063
+Failed to send contract email: Yandex Postbox error: 404 -
+
+14 дек. 20:46:10.063
+trace-id: -
+
+14 дек. 20:46:10.063
+request-id: e49fbe43-be91-4dde-bf74-68ffc30d440a
+
+14 дек. 20:46:10.063
+Postbox response:
+
+14 дек. 20:46:10.063
+Postbox response status: 404
+
+14 дек. 20:46:09.993
+Sending email via Postbox AWS SES API
+
+14 дек. 20:46:09.992
+Using Yandex Cloud Postbox (AWS SES API), from: info@mp-webstudio.ru
+
+14 дек. 20:46:09.992
+PDF generated, size: 20786
+
+14 дек. 20:46:09.651
+Generating PDF for order: ord_mj60n3od3uffzkvnk
+
+14 дек. 20:46:09.651
+Order status updated in YDB: ord_mj60n3od3uffzkvnk -> paid
+
+14 дек. 20:46:09.535
+}
+
+14 дек. 20:46:09.535
+paidAt: ''
+
+14 дек. 20:46:09.535
+createdAt: '2025-12-14T17:45:49.405Z',
+
+14 дек. 20:46:09.535
+status: 'pending',
+
+14 дек. 20:46:09.535
+amount: '25000',
+
+14 дек. 20:46:09.535
+projectDescription: 'ваавафвававававваы',
+
+14 дек. 20:46:09.535
+projectType: 'landing',
+
+14 дек. 20:46:09.535
+clientPhone: '89531814136',
+
+14 дек. 20:46:09.535
+clientEmail: 'pimashin2015@gmail.com',
+
+14 дек. 20:46:09.535
+clientName: 'Миша',
+
+14 дек. 20:46:09.535
+id: 'ord_mj60n3od3uffzkvnk',
+
+14 дек. 20:46:09.535
+Order fetched from YDB: {
+
+14 дек. 20:46:09.534
+Order fetched from YDB: {"id":"ord_mj60n3od3uffzkvnk","clientName":"Миша","clientEmail":"pimashin2015@gmail.com","clientPhone":"89531814136","projectType":"landing","projectDescription":"ваавафвававававваы","amount":"25000","status":"pending","createdAt":"2025-12-14T17:45:49.405Z","paidAt":""}
+
+14 дек. 20:46:09.534
+Parsed order: {"id":"ord_mj60n3od3uffzkvnk","clientName":"Миша","clientEmail":"pimashin2015@gmail.com","clientPhone":"89531814136","projectType":"landing","projectDescription":"ваавафвававававваы","amount":"25000","status":"pending","createdAt":"2025-12-14T17:45:49.405Z","paidAt":""}
+
+14 дек. 20:46:09.534
+Column [9] status: {"textValue":"pending"} -> "pending"
+
+14 дек. 20:46:09.534
+Column [8] project_type: {"textValue":"landing"} -> "landing"
+
+14 дек. 20:46:09.534
+Column [7] project_description: {"textValue":"ваавафвававававваы"} -> "ваавафвававававваы"
+
+14 дек. 20:46:09.534
+Column [6] paid_at: {"nullFlagValue":"NULL_VALUE"} -> ""
+
+14 дек. 20:46:09.534
+Column [5] id: {"textValue":"ord_mj60n3od3uffzkvnk"} -> "ord_mj60n3od3uffzkvnk"
+
+14 дек. 20:46:09.534
+Column [4] created_at: {"textValue":"2025-12-14T17:45:49.405Z"} -> "2025-12-14T17:45:49.405Z"
+
+14 дек. 20:46:09.534
+Column [3] client_phone: {"textValue":"89531814136"} -> "89531814136"
+
+14 дек. 20:46:09.534
+Column [2] client_name: {"textValue":"Миша"} -> "Миша"
+
+14 дек. 20:46:09.534
+Column [1] client_email: {"textValue":"pimashin2015@gmail.com"} -> "pimashin2015@gmail.com"
+
+14 дек. 20:46:09.534
+Column [0] amount: {"textValue":"25000"} -> "25000"
+
+14 дек. 20:46:09.534
+Column mapping: {"amount":0,"client_email":1,"client_name":2,"client_phone":3,"created_at":4,"id":5,"paid_at":6,"project_description":7,"project_type":8,"status":9}
+
+14 дек. 20:46:09.533
+}
+
+14 дек. 20:46:09.533
+]
+
+14 дек. 20:46:09.533
+}
+
+14 дек. 20:46:09.533
+"textValue": "pending"
+
+14 дек. 20:46:09.533
+{
+
+14 дек. 20:46:09.533
+},
+
+14 дек. 20:46:09.533
+"textValue": "landing"
+
+14 дек. 20:46:09.533
+{
+
+14 дек. 20:46:09.533
+},
+
+14 дек. 20:46:09.533
+"textValue": "ваавафвававававваы"
+
+14 дек. 20:46:09.533
+{
+
+14 дек. 20:46:09.533
+},
+
+14 дек. 20:46:09.533
+"nullFlagValue": "NULL_VALUE"
+
+14 дек. 20:46:09.533
+{
+
+14 дек. 20:46:09.533
+},
+
+14 дек. 20:46:09.533
+"textValue": "ord_mj60n3od3uffzkvnk"
+
+14 дек. 20:46:09.533
+{
+
+14 дек. 20:46:09.533
+},
+
+14 дек. 20:46:09.533
+"textValue": "2025-12-14T17:45:49.405Z"
+
+14 дек. 20:46:09.533
+{
+
+14 дек. 20:46:09.533
+},
+
+14 дек. 20:46:09.533
+"textValue": "89531814136"
+
+14 дек. 20:46:09.533
+{
+
+14 дек. 20:46:09.533
+},
+
+14 дек. 20:46:09.533
+"textValue": "Миша"
+
+14 дек. 20:46:09.533
+{
+
+14 дек. 20:46:09.533
+},
+
+14 дек. 20:46:09.533
+"textValue": "pimashin2015@gmail.com"
+
+14 дек. 20:46:09.533
+{
+
+14 дек. 20:46:09.533
+},
+
+14 дек. 20:46:09.533
+"textValue": "25000"
+
+14 дек. 20:46:09.533
+{
+
+14 дек. 20:46:09.533
+"items": [
+
+14 дек. 20:46:09.533
+YDB row structure: {
+
+14 дек. 20:46:09.533
+YDB columns: ["amount","client_email","client_name","client_phone","created_at","id","paid_at","project_description","project_type","status"]
+
+14 дек. 20:46:09.533
+YDB rows count: 1
+
+14 дек. 20:46:09.533
+}
+
+14 дек. 20:46:09.533
+"txMeta": {}
+
+14 дек. 20:46:09.533
+],
+
+14 дек. 20:46:09.533
+}
+
+14 дек. 20:46:09.533
+]
+
+14 дек. 20:46:09.533
+}
+
+14 дек. 20:46:09.533
+]
+
+14 дек. 20:46:09.533
+}
+
+14 дек. 20:46:09.533
+"textValue": "pending"
+
+14 дек. 20:46:09.533
+{
+
+14 дек. 20:46:09.533
+},
+
+14 дек. 20:46:09.533
+"textValue": "landing"
+
+14 дек. 20:46:09.533
+{
+
+14 дек. 20:46:09.533
+},
+
+14 дек. 20:46:09.532
+"textValue": "ваавафвававававваы"
+
+14 дек. 20:46:09.532
+{
+
+14 дек. 20:46:09.532
+},
+
+14 дек. 20:46:09.532
+"nullFlagValue": "NULL_VALUE"
+
+14 дек. 20:46:09.532
+{
+
+14 дек. 20:46:09.532
+},
+
+14 дек. 20:46:09.532
+"textValue": "ord_mj60n3od3uffzkvnk"
+
+14 дек. 20:46:09.532
+{
+
+14 дек. 20:46:09.532
+},
+
+14 дек. 20:46:09.532
+"textValue": "2025-12-14T17:45:49.405Z"
+
+14 дек. 20:46:09.532
+{
+
+14 дек. 20:46:09.532
+},
