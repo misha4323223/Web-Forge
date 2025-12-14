@@ -1,0 +1,160 @@
+
+
+14 дек. 14:46:07.280
+REPORT RequestID: 70e569eb-5248-4252-a05b-2866f442cc6c Duration: 45.146 ms Billed Duration: 100 ms Memory Size: 128 MB Max Memory Used: 105 MB Queuing Duration: 0.069 ms CPU Usage: 14.648 %
+
+14 дек. 14:46:07.280
+END RequestID: 70e569eb-5248-4252-a05b-2866f442cc6c
+
+14 дек. 14:46:07.278
+Telegram not configured, skipping notification
+
+14 дек. 14:46:07.242
+}
+
+14 дек. 14:46:07.242
+createdAt: '2025-12-14T11:46:07.236Z'
+
+14 дек. 14:46:07.242
+status: 'pending',
+
+14 дек. 14:46:07.242
+amount: '25000',
+
+14 дек. 14:46:07.242
+projectDescription: 'апмыапыавпывапывапыва',
+
+14 дек. 14:46:07.242
+projectType: 'landing',
+
+14 дек. 14:46:07.242
+clientPhone: '89531814136',
+
+14 дек. 14:46:07.242
+clientEmail: 'pimashin2015@gmail.com',
+
+14 дек. 14:46:07.242
+clientName: 'михаил',
+
+14 дек. 14:46:07.242
+invId: 1,
+
+14 дек. 14:46:07.242
+id: 'ws_mj5nsiroktd6z2vsm',
+
+14 дек. 14:46:07.242
+New order created: {
+
+14 дек. 14:46:07.232
+START RequestID: 70e569eb-5248-4252-a05b-2866f442cc6c Version: d4e7c0bls4ktqoglp9e2
+
+14 дек. 14:46:07.185
+REPORT RequestID: e62dff26-94e7-4a5b-bda2-4666a4808a61 Duration: 349.884 ms Billed Duration: 400 ms Memory Size: 128 MB Max Memory Used: 105 MB Queuing Duration: 0.071 ms Function Init Duration: 347.160 ms CPU Usage: 14.648 %
+
+14 дек. 14:46:07.185
+END RequestID: e62dff26-94e7-4a5b-bda2-4666a4808a61
+
+14 дек. 14:46:06.832
+START RequestID: e62dff26-94e7-4a5b-bda2-4666a4808a61 Version: d4e7c0bls4ktqoglp9e2
+
+14 дек. 14:33:50.842
+REPORT RequestID: 6df4f930-11cb-4ad2-84f6-527464ac3742 Duration: 247.945 ms Billed Duration: 300 ms Memory Size: 128 MB Max Memory Used: 106 MB Queuing Duration: 0.092 ms CPU Usage: 16.309 %
+
+14 дек. 14:33:50.842
+END RequestID: 6df4f930-11cb-4ad2-84f6-527464ac3742
+
+14 дек. 14:33:50.839
+Telegram not configured, skipping notification
+
+14 дек. 14:33:50.600
+}
+
+14 дек. 14:33:50.600
+createdAt: '2025-12-14T11:33:50.595Z'
+
+14 дек. 14:33:50.600
+status: 'pending',
+
+14 дек. 14:33:50.600
+amount: '25000',
+
+14 дек. 14:33:50.600
+projectDescription: 'fsfsdfsdfsdfsdfdsf',
+
+14 дек. 14:33:50.600
+projectType: 'landing',
+
+14 дек. 14:33:50.600
+clientPhone: '89531814136',
+
+14 дек. 14:33:50.600
+clientEmail: 'pimashin2015@gmail.com',
+
+14 дек. 14:33:50.600
+clientName: 'михаил',
+
+14 дек. 14:33:50.600
+invId: 1,
+
+14 дек. 14:33:50.600
+id: 'ws_mj5ncqdf7wu1hz4me',
+
+14 дек. 14:33:50.600
+New order created: {
+
+14 дек. 14:33:50.590
+START RequestID: 6df4f930-11cb-4ad2-84f6-527464ac3742 Version: d4ef1uuili6hukg8om1d
+
+14 дек. 14:33:50.545
+REPORT RequestID: d2de7b16-2ab0-4f21-be4e-f8652e706ca2 Duration: 36.023 ms Billed Duration: 100 ms Memory Size: 128 MB Queuing Duration: 0.040 ms Function Init Duration: 33.436 ms
+
+14 дек. 14:33:50.545
+END RequestID: d2de7b16-2ab0-4f21-be4e-f8652e706ca2
+
+14 дек. 14:33:50.434
+START RequestID: d2de7b16-2ab0-4f21-be4e-f8652e706ca2 Version: d4ef1uuili6hukg8om1d
+
+14 дек. 13:59:01.789
+REPORT RequestID: d9377e4a-8413-454d-aa6c-c6097b19bda2 Duration: 35.309 ms Billed Duration: 100 ms Memory Size: 128 MB Max Memory Used: 109 MB Queuing Duration: 0.084 ms
+
+14 дек. 13:59:01.789
+END RequestID: d9377e4a-8413-454d-aa6c-c6097b19bda2
+
+14 дек. 13:59:01.787
+Telegram not configured, skipping notification
+
+14 дек. 13:59:01.756
+}
+
+14 дек. 13:59:01.756
+createdAt: '2025-12-14T10:59:01.754Z'
+
+14 дек. 13:59:01.756
+status: 'pending',
+
+14 дек. 13:59:01.756
+amount: '25000',
+
+14 дек. 13:59:01.756
+projectDescription: 'fsgdsgdgdfgdf',
+
+14 дек. 13:59:01.756
+projectType: 'landing',
+
+14 дек. 13:59:01.756
+clientPhone: '89531814136',
+
+14 дек. 13:59:01.756
+clientEmail: 'pimashin2015@gmail.com',
+
+14 дек. 13:59:01.756
+clientName: 'михаил',
+
+14 дек. 13:59:01.756
+invId: 1,
+
+14 дек. 13:59:01.756
+id: 'ws_mj5m3ym2o8b6f6jc9',
+
+14 дек. 13:59:01.756
+New order created: {
