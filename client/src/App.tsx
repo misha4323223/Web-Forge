@@ -14,6 +14,8 @@ import FitnessStudio from "@/pages/demo/FitnessStudio";
 import CosmeticsShop from "@/pages/demo/CosmeticsShop";
 import StreetWearShop from "@/pages/demo/StreetWearShop";
 import SocksShop from "@/pages/demo/SocksShop";
+import TravelAgency from "@/pages/demo/TravelAgency";
+import BarberShop from "@/pages/demo/BarberShop";
 
 function Router() {
   return (
@@ -28,6 +30,8 @@ function Router() {
       <Route path="/demo/cosmetics" component={CosmeticsShop} />
       <Route path="/demo/streetwear" component={StreetWearShop} />
       <Route path="/demo/socks" component={SocksShop} />
+      <Route path="/demo/travel" component={TravelAgency} />
+      <Route path="/demo/barber" component={BarberShop} />
       <Route component={NotFound} />
     </Switch>
   );
