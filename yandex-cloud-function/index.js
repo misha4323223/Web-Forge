@@ -1,14 +1,10 @@
 /**
  * Yandex Cloud Function для WebStudio
  * 
- * Обрабатывает:
- * - POST /contact - заявки с формы контактов
- * - POST /order - создание заказов с оплатой через Robokassa
- * - POST /robokassa/result - callback от Robokassa
- * - GET /robokassa/success - успешная оплата
- * - GET /robokassa/fail - неуспешная оплата
+ * Работает через API сайта для хранения заказов в PostgreSQL.
  * 
  * Переменные окружения:
+ * - SITE_API_URL - URL API сайта (например https://mp-webstudio.ru)
  * - ROBOKASSA_MERCHANT_LOGIN - логин магазина в Robokassa
  * - ROBOKASSA_PASSWORD1 - пароль #1 для формирования подписи
  * - ROBOKASSA_PASSWORD2 - пароль #2 для проверки подписи
@@ -24,9 +20,7 @@ const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const PDFDocument = require('pdfkit');
 
-// Простое хранилище заказов (работает в пределах одного инстанса)
-const orders = new Map();
-let orderCounter = 1;
+const SITE_API_URL = process.env.SITE_API_URL || 'https://mp-webstudio.ru';
 
 module.exports.handler = async function (event, context) {
     const headers = {
@@ -62,13 +56,7 @@ module.exports.handler = async function (event, context) {
             }
         }
         
-        console.log('Incoming request:', { 
-            method, 
-            action, 
-            path,
-            bodyKeys: Object.keys(body),
-            queryKeys: Object.keys(query)
-        });
+        console.log('Incoming request:', { method, action, path });
 
         if ((action === 'contact' || path.includes('/contact')) && method === 'POST') {
             return await handleContact(body, headers);
@@ -97,10 +85,7 @@ module.exports.handler = async function (event, context) {
                 body: JSON.stringify({ 
                     status: 'ok', 
                     timestamp: new Date().toISOString(),
-                    robokassa: process.env.ROBOKASSA_MERCHANT_LOGIN ? 'configured' : 'not configured',
-                    smtp: process.env.SMTP_EMAIL ? 'configured' : 'not configured',
-                    telegram: process.env.TELEGRAM_BOT_TOKEN ? 'configured' : 'not configured',
-                    action: action || 'none'
+                    siteApi: SITE_API_URL,
                 }),
             };
         }
@@ -122,132 +107,71 @@ module.exports.handler = async function (event, context) {
 };
 
 async function handleContact(data, headers) {
-    const errors = [];
-    
-    if (!data.name || data.name.length < 2) {
-        errors.push('Имя должно содержать минимум 2 символа');
-    }
-    if (!data.email || !isValidEmail(data.email)) {
-        errors.push('Введите корректный email');
-    }
-    if (!data.message || data.message.length < 10) {
-        errors.push('Сообщение должно содержать минимум 10 символов');
-    }
-
-    if (errors.length > 0) {
+    // Прокси к API сайта
+    try {
+        const response = await fetch(`${SITE_API_URL}/api/contact`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
+        const result = await response.json();
+        
+        if (result.success) {
+            await sendTelegramNotification(formatContactMessage(data));
+        }
+        
         return {
-            statusCode: 400,
+            statusCode: response.status,
             headers,
-            body: JSON.stringify({ success: false, message: 'Ошибка валидации', errors }),
+            body: JSON.stringify(result),
+        };
+    } catch (error) {
+        console.error('Error proxying contact:', error);
+        return {
+            statusCode: 500,
+            headers,
+            body: JSON.stringify({ success: false, message: 'API error' }),
         };
     }
-
-    console.log('New contact request:', {
-        name: data.name,
-        email: data.email,
-        phone: data.phone || '',
-        projectType: data.projectType || '',
-        budget: data.budget || '',
-        message: data.message.substring(0, 100),
-        timestamp: new Date().toISOString(),
-    });
-
-    await sendTelegramNotification(formatContactMessage(data));
-
-    return {
-        statusCode: 200,
-        headers,
-        body: JSON.stringify({
-            success: true,
-            message: 'Заявка успешно отправлена',
-            id: generateId(),
-        }),
-    };
 }
 
 async function handleOrder(data, headers) {
-    const errors = [];
-    
-    if (!data.clientName || data.clientName.length < 2) {
-        errors.push('Имя должно содержать минимум 2 символа');
-    }
-    if (!data.clientEmail || !isValidEmail(data.clientEmail)) {
-        errors.push('Введите корректный email');
-    }
-    if (!data.clientPhone || data.clientPhone.length < 10) {
-        errors.push('Введите корректный телефон');
-    }
-    if (!data.projectType) {
-        errors.push('Выберите тип проекта');
-    }
-
-    if (errors.length > 0) {
+    // Прокси к API сайта для создания заказа
+    try {
+        const response = await fetch(`${SITE_API_URL}/api/orders`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
+        const result = await response.json();
+        
+        console.log('Order created via API:', result);
+        
+        if (result.success) {
+            await sendTelegramNotification(formatOrderMessage({
+                id: result.orderId,
+                clientName: data.clientName,
+                clientEmail: data.clientEmail,
+                clientPhone: data.clientPhone,
+                projectType: data.projectType,
+                projectDescription: data.projectDescription || '',
+                amount: data.amount,
+            }));
+        }
+        
         return {
-            statusCode: 400,
+            statusCode: response.status,
             headers,
-            body: JSON.stringify({ success: false, message: 'Ошибка валидации', errors }),
+            body: JSON.stringify(result),
+        };
+    } catch (error) {
+        console.error('Error proxying order:', error);
+        return {
+            statusCode: 500,
+            headers,
+            body: JSON.stringify({ success: false, message: 'API error' }),
         };
     }
-
-    const orderId = generateId();
-    const invId = orderCounter++;
-    
-    const order = {
-        id: orderId,
-        invId,
-        clientName: data.clientName,
-        clientEmail: data.clientEmail,
-        clientPhone: data.clientPhone,
-        projectType: data.projectType,
-        projectDescription: data.projectDescription || '',
-        amount: data.amount || '60000',
-        status: 'pending',
-        createdAt: new Date().toISOString(),
-    };
-
-    // Сохраняем заказ
-    orders.set(orderId, order);
-
-    console.log('New order created:', order);
-
-    await sendTelegramNotification(formatOrderMessage(order));
-
-    const MERCHANT_LOGIN = process.env.ROBOKASSA_MERCHANT_LOGIN;
-    const PASSWORD1 = process.env.ROBOKASSA_PASSWORD1;
-    const IS_TEST = process.env.ROBOKASSA_TEST_MODE === 'true';
-
-    if (!MERCHANT_LOGIN || !PASSWORD1) {
-        return {
-            statusCode: 200,
-            headers,
-            body: JSON.stringify({
-                success: true,
-                message: 'Заказ создан (оплата не настроена)',
-                orderId,
-            }),
-        };
-    }
-
-    const sum = parseFloat(order.amount).toFixed(2);
-    const description = encodeURIComponent(`Заказ сайта: ${getProjectTypeName(order.projectType)}`);
-    
-    // Простая подпись только с shp_orderId
-    const signatureString = `${MERCHANT_LOGIN}:${sum}:${invId}:${PASSWORD1}:shp_orderId=${orderId}`;
-    const signature = crypto.createHash('md5').update(signatureString).digest('hex');
-
-    const baseUrl = 'https://auth.robokassa.ru/Merchant/Index.aspx';
-    const paymentUrl = `${baseUrl}?MerchantLogin=${MERCHANT_LOGIN}&OutSum=${sum}&InvId=${invId}&Description=${description}&SignatureValue=${signature}&IsTest=${IS_TEST ? 1 : 0}&shp_orderId=${orderId}&Email=${encodeURIComponent(order.clientEmail)}`;
-
-    return {
-        statusCode: 200,
-        headers,
-        body: JSON.stringify({
-            success: true,
-            message: 'Заказ создан',
-            orderId,
-            paymentUrl,
-        }),
-    };
 }
 
 async function handleRobokassaResult(data, headers) {
@@ -257,19 +181,11 @@ async function handleRobokassaResult(data, headers) {
     const InvId = data.InvId;
     const SignatureValue = data.SignatureValue;
     const shp_orderId = data.shp_orderId;
-    // Email может прийти от Robokassa если клиент его ввёл
-    const clientEmail = data.EMail || '';
 
-    console.log('Robokassa result callback:', { 
-        OutSum, 
-        InvId, 
-        shp_orderId, 
-        clientEmail,
-        SignatureValue: SignatureValue ? 'present' : 'missing' 
-    });
+    console.log('Robokassa result callback:', { OutSum, InvId, shp_orderId });
 
     if (!OutSum || !InvId || !SignatureValue) {
-        console.error('Missing required Robokassa parameters:', { OutSum, InvId, SignatureValue: !!SignatureValue });
+        console.error('Missing required Robokassa parameters');
         return { statusCode: 400, headers, body: 'missing params' };
     }
 
@@ -293,33 +209,22 @@ async function handleRobokassaResult(data, headers) {
         return { statusCode: 400, headers, body: 'bad sign' };
     }
 
-    // Пробуем получить заказ из памяти
-    let order = orders.get(shp_orderId);
-    
-    // Если заказ не найден в памяти (serverless перезапустился),
-    // создаём минимальный объект заказа для отправки уведомления
-    if (!order) {
-        console.log('Order not found in memory, creating from callback data');
-        order = {
-            id: shp_orderId,
-            clientName: 'Клиент',
-            clientEmail: clientEmail || '',
-            clientPhone: '',
-            projectType: 'unknown',
-            amount: OutSum,
-            status: 'paid',
-            paidAt: new Date().toISOString()
-        };
-    } else {
-        order.status = 'paid';
-        order.paidAt = new Date().toISOString();
-        orders.set(shp_orderId, order);
+    // Получаем заказ из базы данных через API
+    let order = null;
+    try {
+        const response = await fetch(`${SITE_API_URL}/api/orders/${shp_orderId}`);
+        if (response.ok) {
+            order = await response.json();
+            console.log('Order fetched from DB:', order);
+        } else {
+            console.log('Order not found in DB, status:', response.status);
+        }
+    } catch (error) {
+        console.error('Error fetching order:', error);
     }
 
-    console.log('Order for processing:', order);
-
-    // Отправляем PDF на email если есть email
-    if (order.clientEmail) {
+    // Если заказ найден, отправляем договор на email
+    if (order && order.clientEmail) {
         try {
             console.log('Generating PDF for order:', order.id);
             const pdfBuffer = await generateContractPDF(order);
@@ -330,21 +235,29 @@ async function handleRobokassaResult(data, headers) {
         } catch (emailError) {
             console.error('Failed to send contract email:', emailError.message);
         }
-    } else {
-        console.log('No client email available, skipping contract email');
-    }
-    
-    // Отправляем уведомление в Telegram
-    await sendTelegramNotification(`
-Оплата получена!
+        
+        await sendTelegramNotification(`
+Оплата получена! Договор подписан!
 
 Заказ: ${shp_orderId}
 Сумма: ${OutSum} руб.
 Клиент: ${order.clientName}
-Email: ${order.clientEmail || 'не указан'}
-Телефон: ${order.clientPhone || 'не указан'}
+Email: ${order.clientEmail}
+Телефон: ${order.clientPhone}
 Тип: ${getProjectTypeName(order.projectType)}
-    `);
+
+Договор отправлен клиенту на email.
+        `);
+    } else {
+        await sendTelegramNotification(`
+Оплата получена!
+
+Заказ: ${shp_orderId}
+Сумма: ${OutSum} руб.
+
+(Данные клиента не найдены в базе)
+        `);
+    }
 
     console.log('Order paid successfully:', shp_orderId);
 
@@ -361,9 +274,7 @@ function handleRobokassaSuccess(query) {
     
     return {
         statusCode: 302,
-        headers: {
-            'Location': `${siteUrl}/payment-success?orderId=${orderId}`,
-        },
+        headers: { 'Location': `${siteUrl}/payment-success?orderId=${orderId}` },
         body: '',
     };
 }
@@ -374,9 +285,7 @@ function handleRobokassaFail(query) {
     
     return {
         statusCode: 302,
-        headers: {
-            'Location': `${siteUrl}/payment-fail?orderId=${orderId}`,
-        },
+        headers: { 'Location': `${siteUrl}/payment-fail?orderId=${orderId}` },
         body: '',
     };
 }
@@ -417,12 +326,8 @@ async function generateContractPDF(order) {
 
         doc.font('Roboto-Bold').text('ЗАКАЗЧИК: ', { continued: true });
         doc.font('Roboto').text(order.clientName || 'Клиент');
-        if (order.clientPhone) {
-            doc.text(`Телефон: ${order.clientPhone}`);
-        }
-        if (order.clientEmail) {
-            doc.text(`Email: ${order.clientEmail}`);
-        }
+        if (order.clientPhone) doc.text(`Телефон: ${order.clientPhone}`);
+        if (order.clientEmail) doc.text(`Email: ${order.clientEmail}`);
         doc.moveDown(1);
 
         doc.text('совместно именуемые "Стороны", заключили настоящий Договор:');
@@ -472,25 +377,18 @@ async function sendContractEmail(order, pdfBuffer) {
     const smtpEmail = process.env.SMTP_EMAIL;
     const smtpPassword = process.env.SMTP_PASSWORD;
 
-    console.log('SMTP config check:', { 
-        emailConfigured: !!smtpEmail, 
-        passwordConfigured: !!smtpPassword 
-    });
+    console.log('SMTP config:', { emailConfigured: !!smtpEmail, passwordConfigured: !!smtpPassword });
 
     if (!smtpEmail || !smtpPassword) {
         console.log('SMTP not configured, skipping email');
         return;
     }
 
-    console.log('Creating SMTP transport...');
     const transporter = nodemailer.createTransport({
         host: 'smtp.yandex.ru',
         port: 465,
         secure: true,
-        auth: {
-            user: smtpEmail,
-            pass: smtpPassword,
-        },
+        auth: { user: smtpEmail, pass: smtpPassword },
     });
 
     const formatPrice = (price) => new Intl.NumberFormat('ru-RU').format(price);
@@ -504,45 +402,27 @@ async function sendContractEmail(order, pdfBuffer) {
         html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                 <h2 style="color: #0891b2;">Спасибо за заказ!</h2>
-                
                 <p>Здравствуйте, ${order.clientName || 'Уважаемый клиент'}!</p>
-                
-                <p>Ваша предоплата успешно получена. Договор на оказание услуг подписан (акцептован оплатой).</p>
-                
+                <p>Ваша предоплата успешно получена. Договор подписан.</p>
                 <div style="background: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
                     <h3 style="margin-top: 0;">Детали заказа:</h3>
                     <p><strong>Тип проекта:</strong> ${getProjectTypeName(order.projectType)}</p>
                     <p><strong>Стоимость:</strong> ${formatPrice(amount)} руб.</p>
-                    <p><strong>Предоплата (оплачено):</strong> ${formatPrice(prepayment)} руб.</p>
-                    <p><strong>Остаток к оплате:</strong> ${formatPrice(prepayment)} руб.</p>
+                    <p><strong>Предоплата:</strong> ${formatPrice(prepayment)} руб.</p>
                     <p><strong>ID заказа:</strong> ${order.id}</p>
                 </div>
-                
-                <p>Договор прикреплён к этому письму в формате PDF.</p>
-                
-                <h3>Что дальше?</h3>
-                <ol>
-                    <li>Мы свяжемся с вами в течение 24 часов для уточнения деталей</li>
-                    <li>Вы предоставите материалы (логотип, тексты, фото)</li>
-                    <li>Мы приступим к разработке</li>
-                </ol>
-                
-                <p>Если у вас есть вопросы, ответьте на это письмо.</p>
-                
+                <p>Договор прикреплён к письму в PDF.</p>
                 <p style="color: #6b7280; font-size: 14px; margin-top: 30px;">
-                    С уважением,<br>
-                    MP.WebStudio<br>
+                    С уважением,<br>MP.WebStudio<br>
                     <a href="https://mp-webstudio.ru">mp-webstudio.ru</a>
                 </p>
             </div>
         `,
-        attachments: [
-            {
-                filename: `Договор_${order.id}.pdf`,
-                content: pdfBuffer,
-                contentType: 'application/pdf',
-            },
-        ],
+        attachments: [{
+            filename: `Договор_${order.id}.pdf`,
+            content: pdfBuffer,
+            contentType: 'application/pdf',
+        }],
     };
 
     console.log('Sending email to:', order.clientEmail);
@@ -557,48 +437,16 @@ function getProjectTypeName(type) {
         landing: 'Лендинг',
         corporate: 'Корпоративный сайт',
         shop: 'Интернет-магазин',
-        unknown: 'Веб-разработка',
     };
     return types[type] || type || 'Веб-разработка';
 }
 
-function isValidEmail(email) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
-function generateId() {
-    return 'ws_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
-}
-
 function formatContactMessage(data) {
-    return `Новая заявка с сайта
-
-Имя: ${data.name}
-Email: ${data.email}
-Телефон: ${data.phone || 'не указан'}
-Тип проекта: ${data.projectType || 'не указан'}
-Бюджет: ${data.budget || 'не указан'}
-
-Сообщение:
-${data.message}
-
-${new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' })}`;
+    return `Новая заявка с сайта\n\nИмя: ${data.name}\nEmail: ${data.email}\nТелефон: ${data.phone || 'не указан'}\n\nСообщение:\n${data.message}`;
 }
 
 function formatOrderMessage(order) {
-    return `Новый заказ!
-
-ID: ${order.id}
-Клиент: ${order.clientName}
-Email: ${order.clientEmail}
-Телефон: ${order.clientPhone}
-Тип: ${getProjectTypeName(order.projectType)}
-Сумма: ${order.amount} руб.
-
-Описание:
-${order.projectDescription || 'не указано'}
-
-${new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' })}`;
+    return `Новый заказ!\n\nID: ${order.id}\nКлиент: ${order.clientName}\nEmail: ${order.clientEmail}\nТелефон: ${order.clientPhone}\nТип: ${getProjectTypeName(order.projectType)}\nСумма: ${order.amount} руб.`;
 }
 
 async function sendTelegramNotification(message) {
@@ -606,26 +454,18 @@ async function sendTelegramNotification(message) {
     const chatId = process.env.TELEGRAM_CHAT_ID;
 
     if (!botToken || !chatId) {
-        console.log('Telegram not configured, skipping notification');
+        console.log('Telegram not configured');
         return;
     }
 
     try {
-        const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+        await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                chat_id: chatId,
-                text: message,
-            }),
+            body: JSON.stringify({ chat_id: chatId, text: message }),
         });
-
-        if (!response.ok) {
-            console.error('Telegram error:', await response.text());
-        } else {
-            console.log('Telegram notification sent');
-        }
+        console.log('Telegram notification sent');
     } catch (error) {
-        console.error('Failed to send Telegram notification:', error);
+        console.error('Telegram error:', error);
     }
 }
