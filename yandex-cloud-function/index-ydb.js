@@ -286,80 +286,78 @@ function getStringValue(field) {
     if (typeof field === 'number') return String(field);
     if (typeof field === 'boolean') return String(field);
     
-    // YDB возвращает данные в разных форматах
+    // YDB SDK возвращает специальные объекты с геттерами
+    // Нормализуем через JSON для получения обычного объекта
+    let normalizedField;
+    try {
+        normalizedField = JSON.parse(JSON.stringify(field));
+    } catch (e) {
+        normalizedField = field;
+    }
     
     // Проверяем null значение
-    if (field.nullFlagValue !== undefined) return '';
+    if (normalizedField.nullFlagValue !== undefined) return '';
     
     // Прямое textValue (основной формат YDB для UTF8)
-    if (field.textValue !== undefined && field.textValue !== null) {
-        return String(field.textValue);
+    if (normalizedField.textValue !== undefined && normalizedField.textValue !== null) {
+        return String(normalizedField.textValue);
     }
     
     // UTF8 значение
-    if (field.utf8Value !== undefined && field.utf8Value !== null) {
-        return String(field.utf8Value);
+    if (normalizedField.utf8Value !== undefined && normalizedField.utf8Value !== null) {
+        return String(normalizedField.utf8Value);
     }
     
     // stringValue
-    if (field.stringValue !== undefined && field.stringValue !== null) {
-        return String(field.stringValue);
+    if (normalizedField.stringValue !== undefined && normalizedField.stringValue !== null) {
+        return String(normalizedField.stringValue);
     }
     
     // int32Value / int64Value / uint64Value
-    if (field.int32Value !== undefined) return String(field.int32Value);
-    if (field.int64Value !== undefined) return String(field.int64Value);
-    if (field.uint64Value !== undefined) return String(field.uint64Value);
+    if (normalizedField.int32Value !== undefined) return String(normalizedField.int32Value);
+    if (normalizedField.int64Value !== undefined) return String(normalizedField.int64Value);
+    if (normalizedField.uint64Value !== undefined) return String(normalizedField.uint64Value);
     
     // doubleValue / floatValue
-    if (field.doubleValue !== undefined) return String(field.doubleValue);
-    if (field.floatValue !== undefined) return String(field.floatValue);
+    if (normalizedField.doubleValue !== undefined) return String(normalizedField.doubleValue);
+    if (normalizedField.floatValue !== undefined) return String(normalizedField.floatValue);
     
     // Вложенный value (для опциональных типов)
-    if (field.value !== undefined && field.value !== null) {
-        return getStringValue(field.value);
+    if (normalizedField.value !== undefined && normalizedField.value !== null) {
+        return getStringValue(normalizedField.value);
     }
     
     // bytesValue
-    if (field.bytesValue !== undefined) {
-        if (Buffer.isBuffer(field.bytesValue)) {
-            return field.bytesValue.toString('utf-8');
+    if (normalizedField.bytesValue !== undefined) {
+        if (Buffer.isBuffer(normalizedField.bytesValue)) {
+            return normalizedField.bytesValue.toString('utf-8');
         }
-        if (typeof field.bytesValue === 'string') {
-            // Base64 encoded
+        if (typeof normalizedField.bytesValue === 'string') {
             try {
-                return Buffer.from(field.bytesValue, 'base64').toString('utf-8');
+                return Buffer.from(normalizedField.bytesValue, 'base64').toString('utf-8');
             } catch (e) {
-                return field.bytesValue;
+                return normalizedField.bytesValue;
             }
         }
-        if (field.bytesValue.type === 'Buffer' && field.bytesValue.data) {
-            return Buffer.from(field.bytesValue.data).toString('utf-8');
-        }
-        return String(field.bytesValue);
+        return String(normalizedField.bytesValue);
     }
     
     // text
-    if (field.text !== undefined) return String(field.text);
+    if (normalizedField.text !== undefined) return String(normalizedField.text);
     
     // Если это Buffer напрямую
     if (Buffer.isBuffer(field)) return field.toString('utf-8');
     
-    // Если это объект с data (сериализованный Buffer)
-    if (field.type === 'Buffer' && field.data) {
-        return Buffer.from(field.data).toString('utf-8');
-    }
-    
     // Попробуем взять первый не-null ключ со значением
-    const keys = Object.keys(field);
+    const keys = Object.keys(normalizedField);
     for (const key of keys) {
-        if (key.endsWith('Value') && field[key] !== undefined && field[key] !== null) {
-            return String(field[key]);
+        if (key.endsWith('Value') && normalizedField[key] !== undefined && normalizedField[key] !== null) {
+            return String(normalizedField[key]);
         }
     }
     
-    // Для отладки - вернём JSON если ничего не подошло
-    console.log('Unknown field format, keys:', keys, 'value:', JSON.stringify(field));
+    // Для отладки
+    console.log('Unknown field format, keys:', keys, 'value:', JSON.stringify(normalizedField));
     return '';
 }
 
