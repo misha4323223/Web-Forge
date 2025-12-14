@@ -24,6 +24,8 @@ const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const PDFDocument = require('pdfkit');
 
+// Простое хранилище заказов (работает в пределах одного инстанса)
+const orders = new Map();
 let orderCounter = 1;
 
 module.exports.handler = async function (event, context) {
@@ -203,6 +205,9 @@ async function handleOrder(data, headers) {
         createdAt: new Date().toISOString(),
     };
 
+    // Сохраняем заказ
+    orders.set(orderId, order);
+
     console.log('New order created:', order);
 
     await sendTelegramNotification(formatOrderMessage(order));
@@ -226,21 +231,12 @@ async function handleOrder(data, headers) {
     const sum = parseFloat(order.amount).toFixed(2);
     const description = encodeURIComponent(`Заказ сайта: ${getProjectTypeName(order.projectType)}`);
     
-    // Передаём все данные клиента через shp_ параметры
-    // Они вернутся в callback от Robokassa
-    const shpParams = [
-        `shp_clientEmail=${encodeURIComponent(order.clientEmail)}`,
-        `shp_clientName=${encodeURIComponent(order.clientName)}`,
-        `shp_clientPhone=${encodeURIComponent(order.clientPhone)}`,
-        `shp_orderId=${orderId}`,
-        `shp_projectType=${order.projectType}`
-    ].sort().join(':'); // Robokassa требует сортировку по алфавиту
-    
-    const signatureString = `${MERCHANT_LOGIN}:${sum}:${invId}:${PASSWORD1}:${shpParams}`;
+    // Простая подпись только с shp_orderId
+    const signatureString = `${MERCHANT_LOGIN}:${sum}:${invId}:${PASSWORD1}:shp_orderId=${orderId}`;
     const signature = crypto.createHash('md5').update(signatureString).digest('hex');
 
     const baseUrl = 'https://auth.robokassa.ru/Merchant/Index.aspx';
-    const paymentUrl = `${baseUrl}?MerchantLogin=${MERCHANT_LOGIN}&OutSum=${sum}&InvId=${invId}&Description=${description}&SignatureValue=${signature}&IsTest=${IS_TEST ? 1 : 0}&shp_clientEmail=${encodeURIComponent(order.clientEmail)}&shp_clientName=${encodeURIComponent(order.clientName)}&shp_clientPhone=${encodeURIComponent(order.clientPhone)}&shp_orderId=${orderId}&shp_projectType=${order.projectType}`;
+    const paymentUrl = `${baseUrl}?MerchantLogin=${MERCHANT_LOGIN}&OutSum=${sum}&InvId=${invId}&Description=${description}&SignatureValue=${signature}&IsTest=${IS_TEST ? 1 : 0}&shp_orderId=${orderId}&Email=${encodeURIComponent(order.clientEmail)}`;
 
     return {
         statusCode: 200,
@@ -260,21 +256,15 @@ async function handleRobokassaResult(data, headers) {
     const OutSum = data.OutSum;
     const InvId = data.InvId;
     const SignatureValue = data.SignatureValue;
-    
-    // Получаем данные клиента из shp_ параметров
     const shp_orderId = data.shp_orderId;
-    const shp_clientName = decodeURIComponent(data.shp_clientName || '');
-    const shp_clientEmail = decodeURIComponent(data.shp_clientEmail || '');
-    const shp_clientPhone = decodeURIComponent(data.shp_clientPhone || '');
-    const shp_projectType = data.shp_projectType || '';
+    // Email может прийти от Robokassa если клиент его ввёл
+    const clientEmail = data.EMail || '';
 
     console.log('Robokassa result callback:', { 
         OutSum, 
         InvId, 
         shp_orderId, 
-        shp_clientName,
-        shp_clientEmail,
-        shp_projectType,
+        clientEmail,
         SignatureValue: SignatureValue ? 'present' : 'missing' 
     });
 
@@ -290,22 +280,12 @@ async function handleRobokassaResult(data, headers) {
         return { statusCode: 500, headers, body: 'config error' };
     }
 
-    // Проверяем подпись с учетом всех shp_ параметров (в алфавитном порядке!)
-    const shpParams = [
-        `shp_clientEmail=${encodeURIComponent(shp_clientEmail)}`,
-        `shp_clientName=${encodeURIComponent(shp_clientName)}`,
-        `shp_clientPhone=${encodeURIComponent(shp_clientPhone)}`,
-        `shp_orderId=${shp_orderId}`,
-        `shp_projectType=${shp_projectType}`
-    ].sort().join(':');
-    
-    const signatureString = `${OutSum}:${InvId}:${PASSWORD2}:${shpParams}`;
+    const signatureString = `${OutSum}:${InvId}:${PASSWORD2}:shp_orderId=${shp_orderId}`;
     const calculatedSignature = crypto.createHash('md5').update(signatureString).digest('hex');
     
     console.log('Signature check:', { 
         expected: calculatedSignature.toLowerCase(), 
-        received: SignatureValue.toLowerCase(),
-        signatureString: signatureString
+        received: SignatureValue.toLowerCase() 
     });
 
     if (calculatedSignature.toLowerCase() !== SignatureValue.toLowerCase()) {
@@ -313,21 +293,32 @@ async function handleRobokassaResult(data, headers) {
         return { statusCode: 400, headers, body: 'bad sign' };
     }
 
-    // Теперь у нас есть все данные клиента из shp_ параметров!
-    const order = {
-        id: shp_orderId,
-        clientName: shp_clientName,
-        clientEmail: shp_clientEmail,
-        clientPhone: shp_clientPhone,
-        projectType: shp_projectType,
-        amount: OutSum,
-        status: 'paid',
-        paidAt: new Date().toISOString()
-    };
+    // Пробуем получить заказ из памяти
+    let order = orders.get(shp_orderId);
+    
+    // Если заказ не найден в памяти (serverless перезапустился),
+    // создаём минимальный объект заказа для отправки уведомления
+    if (!order) {
+        console.log('Order not found in memory, creating from callback data');
+        order = {
+            id: shp_orderId,
+            clientName: 'Клиент',
+            clientEmail: clientEmail || '',
+            clientPhone: '',
+            projectType: 'unknown',
+            amount: OutSum,
+            status: 'paid',
+            paidAt: new Date().toISOString()
+        };
+    } else {
+        order.status = 'paid';
+        order.paidAt = new Date().toISOString();
+        orders.set(shp_orderId, order);
+    }
 
-    console.log('Order reconstructed from shp params:', order);
+    console.log('Order for processing:', order);
 
-    // Генерируем PDF и отправляем на email
+    // Отправляем PDF на email если есть email
     if (order.clientEmail) {
         try {
             console.log('Generating PDF for order:', order.id);
@@ -337,23 +328,22 @@ async function handleRobokassaResult(data, headers) {
             await sendContractEmail(order, pdfBuffer);
             console.log('Contract email sent to:', order.clientEmail);
         } catch (emailError) {
-            console.error('Failed to send contract email:', emailError.message, emailError.stack);
+            console.error('Failed to send contract email:', emailError.message);
         }
     } else {
-        console.log('No client email, skipping contract email');
+        console.log('No client email available, skipping contract email');
     }
     
+    // Отправляем уведомление в Telegram
     await sendTelegramNotification(`
-Оплата получена! Договор подписан!
+Оплата получена!
 
 Заказ: ${shp_orderId}
 Сумма: ${OutSum} руб.
 Клиент: ${order.clientName}
-Email: ${order.clientEmail}
-Телефон: ${order.clientPhone}
+Email: ${order.clientEmail || 'не указан'}
+Телефон: ${order.clientPhone || 'не указан'}
 Тип: ${getProjectTypeName(order.projectType)}
-
-Договор отправлен клиенту на email.
     `);
 
     console.log('Order paid successfully:', shp_orderId);
@@ -426,9 +416,13 @@ async function generateContractPDF(order) {
         doc.moveDown(0.5);
 
         doc.font('Roboto-Bold').text('ЗАКАЗЧИК: ', { continued: true });
-        doc.font('Roboto').text(order.clientName);
-        doc.text(`Телефон: ${order.clientPhone}`);
-        doc.text(`Email: ${order.clientEmail}`);
+        doc.font('Roboto').text(order.clientName || 'Клиент');
+        if (order.clientPhone) {
+            doc.text(`Телефон: ${order.clientPhone}`);
+        }
+        if (order.clientEmail) {
+            doc.text(`Email: ${order.clientEmail}`);
+        }
         doc.moveDown(1);
 
         doc.text('совместно именуемые "Стороны", заключили настоящий Договор:');
@@ -511,7 +505,7 @@ async function sendContractEmail(order, pdfBuffer) {
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                 <h2 style="color: #0891b2;">Спасибо за заказ!</h2>
                 
-                <p>Здравствуйте, ${order.clientName}!</p>
+                <p>Здравствуйте, ${order.clientName || 'Уважаемый клиент'}!</p>
                 
                 <p>Ваша предоплата успешно получена. Договор на оказание услуг подписан (акцептован оплатой).</p>
                 
@@ -563,8 +557,9 @@ function getProjectTypeName(type) {
         landing: 'Лендинг',
         corporate: 'Корпоративный сайт',
         shop: 'Интернет-магазин',
+        unknown: 'Веб-разработка',
     };
-    return types[type] || type;
+    return types[type] || type || 'Веб-разработка';
 }
 
 function isValidEmail(email) {
