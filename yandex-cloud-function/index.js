@@ -24,7 +24,6 @@ const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const PDFDocument = require('pdfkit');
 
-const orders = new Map();
 let orderCounter = 1;
 
 module.exports.handler = async function (event, context) {
@@ -47,16 +46,13 @@ module.exports.handler = async function (event, context) {
     try {
         let body = {};
         if (event.body) {
-            // Декодируем base64 если нужно
             let rawBody = event.isBase64Encoded 
                 ? Buffer.from(event.body, 'base64').toString('utf-8')
                 : event.body;
             
-            // Пробуем распарсить как JSON
             try {
                 body = JSON.parse(rawBody);
             } catch (e) {
-                // Если не JSON, парсим как form-urlencoded
                 if (typeof rawBody === 'string' && rawBody.length > 0) {
                     const params = new URLSearchParams(rawBody);
                     body = Object.fromEntries(params);
@@ -64,7 +60,6 @@ module.exports.handler = async function (event, context) {
             }
         }
         
-        // Логируем входящие данные для отладки
         console.log('Incoming request:', { 
             method, 
             action, 
@@ -102,6 +97,7 @@ module.exports.handler = async function (event, context) {
                     timestamp: new Date().toISOString(),
                     robokassa: process.env.ROBOKASSA_MERCHANT_LOGIN ? 'configured' : 'not configured',
                     smtp: process.env.SMTP_EMAIL ? 'configured' : 'not configured',
+                    telegram: process.env.TELEGRAM_BOT_TOKEN ? 'configured' : 'not configured',
                     action: action || 'none'
                 }),
             };
@@ -207,8 +203,6 @@ async function handleOrder(data, headers) {
         createdAt: new Date().toISOString(),
     };
 
-    orders.set(orderId, order);
-
     console.log('New order created:', order);
 
     await sendTelegramNotification(formatOrderMessage(order));
@@ -232,11 +226,21 @@ async function handleOrder(data, headers) {
     const sum = parseFloat(order.amount).toFixed(2);
     const description = encodeURIComponent(`Заказ сайта: ${getProjectTypeName(order.projectType)}`);
     
-    const signatureString = `${MERCHANT_LOGIN}:${sum}:${invId}:${PASSWORD1}:shp_orderId=${orderId}`;
+    // Передаём все данные клиента через shp_ параметры
+    // Они вернутся в callback от Robokassa
+    const shpParams = [
+        `shp_clientEmail=${encodeURIComponent(order.clientEmail)}`,
+        `shp_clientName=${encodeURIComponent(order.clientName)}`,
+        `shp_clientPhone=${encodeURIComponent(order.clientPhone)}`,
+        `shp_orderId=${orderId}`,
+        `shp_projectType=${order.projectType}`
+    ].sort().join(':'); // Robokassa требует сортировку по алфавиту
+    
+    const signatureString = `${MERCHANT_LOGIN}:${sum}:${invId}:${PASSWORD1}:${shpParams}`;
     const signature = crypto.createHash('md5').update(signatureString).digest('hex');
 
     const baseUrl = 'https://auth.robokassa.ru/Merchant/Index.aspx';
-    const paymentUrl = `${baseUrl}?MerchantLogin=${MERCHANT_LOGIN}&OutSum=${sum}&InvId=${invId}&Description=${description}&SignatureValue=${signature}&IsTest=${IS_TEST ? 1 : 0}&shp_orderId=${orderId}`;
+    const paymentUrl = `${baseUrl}?MerchantLogin=${MERCHANT_LOGIN}&OutSum=${sum}&InvId=${invId}&Description=${description}&SignatureValue=${signature}&IsTest=${IS_TEST ? 1 : 0}&shp_clientEmail=${encodeURIComponent(order.clientEmail)}&shp_clientName=${encodeURIComponent(order.clientName)}&shp_clientPhone=${encodeURIComponent(order.clientPhone)}&shp_orderId=${orderId}&shp_projectType=${order.projectType}`;
 
     return {
         statusCode: 200,
@@ -251,17 +255,29 @@ async function handleOrder(data, headers) {
 }
 
 async function handleRobokassaResult(data, headers) {
-    // Логируем все входящие данные для отладки
     console.log('Robokassa result - full data:', JSON.stringify(data));
     
     const OutSum = data.OutSum;
     const InvId = data.InvId;
     const SignatureValue = data.SignatureValue;
+    
+    // Получаем данные клиента из shp_ параметров
     const shp_orderId = data.shp_orderId;
+    const shp_clientName = decodeURIComponent(data.shp_clientName || '');
+    const shp_clientEmail = decodeURIComponent(data.shp_clientEmail || '');
+    const shp_clientPhone = decodeURIComponent(data.shp_clientPhone || '');
+    const shp_projectType = data.shp_projectType || '';
 
-    console.log('Robokassa result callback:', { OutSum, InvId, shp_orderId, SignatureValue: SignatureValue ? 'present' : 'missing' });
+    console.log('Robokassa result callback:', { 
+        OutSum, 
+        InvId, 
+        shp_orderId, 
+        shp_clientName,
+        shp_clientEmail,
+        shp_projectType,
+        SignatureValue: SignatureValue ? 'present' : 'missing' 
+    });
 
-    // Проверяем обязательные параметры
     if (!OutSum || !InvId || !SignatureValue) {
         console.error('Missing required Robokassa parameters:', { OutSum, InvId, SignatureValue: !!SignatureValue });
         return { statusCode: 400, headers, body: 'missing params' };
@@ -274,12 +290,22 @@ async function handleRobokassaResult(data, headers) {
         return { statusCode: 500, headers, body: 'config error' };
     }
 
-    const signatureString = `${OutSum}:${InvId}:${PASSWORD2}:shp_orderId=${shp_orderId}`;
+    // Проверяем подпись с учетом всех shp_ параметров (в алфавитном порядке!)
+    const shpParams = [
+        `shp_clientEmail=${encodeURIComponent(shp_clientEmail)}`,
+        `shp_clientName=${encodeURIComponent(shp_clientName)}`,
+        `shp_clientPhone=${encodeURIComponent(shp_clientPhone)}`,
+        `shp_orderId=${shp_orderId}`,
+        `shp_projectType=${shp_projectType}`
+    ].sort().join(':');
+    
+    const signatureString = `${OutSum}:${InvId}:${PASSWORD2}:${shpParams}`;
     const calculatedSignature = crypto.createHash('md5').update(signatureString).digest('hex');
     
     console.log('Signature check:', { 
         expected: calculatedSignature.toLowerCase(), 
-        received: SignatureValue.toLowerCase() 
+        received: SignatureValue.toLowerCase(),
+        signatureString: signatureString
     });
 
     if (calculatedSignature.toLowerCase() !== SignatureValue.toLowerCase()) {
@@ -287,22 +313,37 @@ async function handleRobokassaResult(data, headers) {
         return { statusCode: 400, headers, body: 'bad sign' };
     }
 
-    const order = orders.get(shp_orderId);
-    if (order) {
-        order.status = 'paid';
-        order.paidAt = new Date().toISOString();
-        orders.set(shp_orderId, order);
-        
-        // Генерируем PDF и отправляем на email
+    // Теперь у нас есть все данные клиента из shp_ параметров!
+    const order = {
+        id: shp_orderId,
+        clientName: shp_clientName,
+        clientEmail: shp_clientEmail,
+        clientPhone: shp_clientPhone,
+        projectType: shp_projectType,
+        amount: OutSum,
+        status: 'paid',
+        paidAt: new Date().toISOString()
+    };
+
+    console.log('Order reconstructed from shp params:', order);
+
+    // Генерируем PDF и отправляем на email
+    if (order.clientEmail) {
         try {
+            console.log('Generating PDF for order:', order.id);
             const pdfBuffer = await generateContractPDF(order);
+            console.log('PDF generated, size:', pdfBuffer.length);
+            
             await sendContractEmail(order, pdfBuffer);
             console.log('Contract email sent to:', order.clientEmail);
         } catch (emailError) {
-            console.error('Failed to send contract email:', emailError);
+            console.error('Failed to send contract email:', emailError.message, emailError.stack);
         }
-        
-        await sendTelegramNotification(`
+    } else {
+        console.log('No client email, skipping contract email');
+    }
+    
+    await sendTelegramNotification(`
 Оплата получена! Договор подписан!
 
 Заказ: ${shp_orderId}
@@ -313,8 +354,7 @@ Email: ${order.clientEmail}
 Тип: ${getProjectTypeName(order.projectType)}
 
 Договор отправлен клиенту на email.
-        `);
-    }
+    `);
 
     console.log('Order paid successfully:', shp_orderId);
 
@@ -362,7 +402,6 @@ async function generateContractPDF(order) {
         doc.on('end', () => resolve(Buffer.concat(chunks)));
         doc.on('error', reject);
 
-        // Register Cyrillic fonts
         const path = require('path');
         doc.registerFont('Roboto', path.join(__dirname, 'Roboto-Regular.ttf'));
         doc.registerFont('Roboto-Bold', path.join(__dirname, 'Roboto-Bold.ttf'));
@@ -377,13 +416,11 @@ async function generateContractPDF(order) {
             year: 'numeric'
         });
 
-        // Header
         doc.fontSize(16).font('Roboto-Bold').text('ДОГОВОР ОКАЗАНИЯ УСЛУГ', { align: 'center' });
         doc.moveDown(0.5);
         doc.fontSize(10).font('Roboto').text(date, { align: 'center' });
         doc.moveDown(1.5);
 
-        // Parties
         doc.fontSize(10).font('Roboto-Bold').text('ИСПОЛНИТЕЛЬ: ', { continued: true });
         doc.font('Roboto').text('MP.WebStudio, самозанятый, действующий на основании справки о постановке на учет в качестве плательщика НПД');
         doc.moveDown(0.5);
@@ -397,15 +434,10 @@ async function generateContractPDF(order) {
         doc.text('совместно именуемые "Стороны", заключили настоящий Договор:');
         doc.moveDown(1);
 
-        // Section 1
         doc.font('Roboto-Bold').text('1. ПРЕДМЕТ ДОГОВОРА');
         doc.font('Roboto').text(`1.1. Исполнитель обязуется оказать услуги по разработке: ${projectTypeLabel}`);
-        if (order.projectDescription) {
-            doc.text(`1.2. Описание проекта: ${order.projectDescription}`);
-        }
         doc.moveDown(1);
 
-        // Section 2
         doc.font('Roboto-Bold').text('2. СТОИМОСТЬ И ПОРЯДОК ОПЛАТЫ');
         doc.font('Roboto').text(`2.1. Стоимость услуг: ${formatPrice(amount)} рублей`);
         doc.text('2.2. НДС не облагается (п. 8 ст. 2 ФЗ от 27.11.2018 N 422-ФЗ)');
@@ -413,32 +445,27 @@ async function generateContractPDF(order) {
         doc.text(`2.4. Остаток 50%: ${formatPrice(prepayment)} руб. - после подписания Акта`);
         doc.moveDown(1);
 
-        // Section 3
         doc.font('Roboto-Bold').text('3. СРОКИ ВЫПОЛНЕНИЯ');
         doc.font('Roboto').text('3.1. Срок: от 5 до 20 рабочих дней с момента получения предоплаты и материалов');
         doc.text('3.2. Этапы: Создание первой версии -> Правки (до 3 итераций) -> Запуск');
         doc.moveDown(1);
 
-        // Section 4
         doc.font('Roboto-Bold').text('4. ГАРАНТИИ');
         doc.font('Roboto').text('4.1. Гарантийный срок: 14 календарных дней');
         doc.text('4.2. Бесплатное устранение технических ошибок в течение гарантийного срока');
         doc.moveDown(1);
 
-        // Section 5
         doc.font('Roboto-Bold').text('5. ИНТЕЛЛЕКТУАЛЬНАЯ СОБСТВЕННОСТЬ');
         doc.font('Roboto').text('5.1. Все права на сайт переходят к Заказчику после полной оплаты');
         doc.text('5.2. Исполнитель вправе использовать результат в портфолио');
         doc.moveDown(1);
 
-        // Acceptance
         doc.font('Roboto-Bold').text('АКЦЕПТ ОФЕРТЫ');
         doc.font('Roboto').text('Оплата предоплаты является акцептом настоящего договора.');
         doc.text(`Дата акцепта: ${new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' })}`);
         doc.text(`ID заказа: ${order.id}`);
         doc.moveDown(2);
 
-        // Footer
         doc.fontSize(9).text('MP.WebStudio | https://mp-webstudio.ru', { align: 'center' });
 
         doc.end();
@@ -451,11 +478,17 @@ async function sendContractEmail(order, pdfBuffer) {
     const smtpEmail = process.env.SMTP_EMAIL;
     const smtpPassword = process.env.SMTP_PASSWORD;
 
+    console.log('SMTP config check:', { 
+        emailConfigured: !!smtpEmail, 
+        passwordConfigured: !!smtpPassword 
+    });
+
     if (!smtpEmail || !smtpPassword) {
         console.log('SMTP not configured, skipping email');
         return;
     }
 
+    console.log('Creating SMTP transport...');
     const transporter = nodemailer.createTransport({
         host: 'smtp.yandex.ru',
         port: 465,
@@ -518,7 +551,9 @@ async function sendContractEmail(order, pdfBuffer) {
         ],
     };
 
+    console.log('Sending email to:', order.clientEmail);
     await transporter.sendMail(mailOptions);
+    console.log('Email sent successfully');
 }
 
 // ============ Helpers ============
@@ -592,6 +627,8 @@ async function sendTelegramNotification(message) {
 
         if (!response.ok) {
             console.error('Telegram error:', await response.text());
+        } else {
+            console.log('Telegram notification sent');
         }
     } catch (error) {
         console.error('Failed to send Telegram notification:', error);

@@ -1,0 +1,190 @@
+
+
+14 дек. 15:26:38.380
+REPORT RequestID: ac13637b-ec02-4d6b-accc-482b929dd4b9 Duration: 344.286 ms Billed Duration: 400 ms Memory Size: 256 MB Max Memory Used: 108 MB Queuing Duration: 0.090 ms Function Init Duration: 337.772 ms CPU Usage: 13.086 %
+
+14 дек. 15:26:38.380
+END RequestID: ac13637b-ec02-4d6b-accc-482b929dd4b9
+
+14 дек. 15:26:38.379
+Order paid successfully: ws_mj5p8873iu1zraeor
+
+14 дек. 15:26:38.379
+}
+
+14 дек. 15:26:38.379
+received: 'e1ac71c6e03da0575424713e9b488006'
+
+14 дек. 15:26:38.378
+expected: 'e1ac71c6e03da0575424713e9b488006',
+
+14 дек. 15:26:38.378
+Signature check: {
+
+14 дек. 15:26:38.377
+}
+
+14 дек. 15:26:38.377
+SignatureValue: 'present'
+
+14 дек. 15:26:38.377
+shp_orderId: 'ws_mj5p8873iu1zraeor',
+
+14 дек. 15:26:38.377
+InvId: '1',
+
+14 дек. 15:26:38.377
+OutSum: '25000',
+
+14 дек. 15:26:38.377
+Robokassa result callback: {
+
+14 дек. 15:26:38.376
+Robokassa result - full data: {"out_summ":"25000","OutSum":"25000","inv_id":"1","InvId":"1","crc":"E1AC71C6E03DA0575424713E9B488006","SignatureValue":"E1AC71C6E03DA0575424713E9B488006","PaymentMethod":"BankCard","IncSum":"25000","IncCurrLabel":"BankCardForeignPSR","IsTest":"1","EMail":"","Fee":"0.0","shp_orderId":"ws_mj5p8873iu1zraeor","action":"robokassa/result"}
+
+14 дек. 15:26:38.376
+}
+
+14 дек. 15:26:38.376
+queryKeys: [ 'action' ]
+
+14 дек. 15:26:38.376
+],
+
+14 дек. 15:26:38.376
+'shp_orderId'
+
+14 дек. 15:26:38.376
+'EMail', 'Fee',
+
+14 дек. 15:26:38.376
+'IncCurrLabel', 'IsTest',
+
+14 дек. 15:26:38.376
+'PaymentMethod', 'IncSum',
+
+14 дек. 15:26:38.376
+'crc', 'SignatureValue',
+
+14 дек. 15:26:38.376
+'inv_id', 'InvId',
+
+14 дек. 15:26:38.376
+'out_summ', 'OutSum',
+
+14 дек. 15:26:38.376
+bodyKeys: [
+
+14 дек. 15:26:38.376
+path: '',
+
+14 дек. 15:26:38.376
+action: 'robokassa/result',
+
+14 дек. 15:26:38.376
+method: 'POST',
+
+14 дек. 15:26:38.376
+Incoming request: {
+
+14 дек. 15:26:38.032
+START RequestID: ac13637b-ec02-4d6b-accc-482b929dd4b9 Version: d4e81ku338ntvd5k4kt1
+
+14 дек. 15:26:19.690
+REPORT RequestID: b0fbf169-accc-4c80-bb2a-b4c349078f83 Duration: 44.427 ms Billed Duration: 100 ms Memory Size: 256 MB Max Memory Used: 107 MB Queuing Duration: 0.072 ms CPU Usage: 12.988 %
+
+14 дек. 15:26:19.690
+END RequestID: b0fbf169-accc-4c80-bb2a-b4c349078f83
+
+14 дек. 15:26:19.688
+Telegram not configured, skipping notification
+
+14 дек. 15:26:19.653
+}
+
+14 дек. 15:26:19.653
+createdAt: '2025-12-14T12:26:19.648Z'
+
+14 дек. 15:26:19.653
+status: 'pending',
+
+14 дек. 15:26:19.653
+amount: '25000',
+
+14 дек. 15:26:19.653
+projectDescription: 'пкупкупукпукпук',
+
+14 дек. 15:26:19.653
+projectType: 'landing',
+
+14 дек. 15:26:19.653
+clientPhone: '89531814136',
+
+14 дек. 15:26:19.653
+clientEmail: 'pimashin2015@gmail.com',
+
+14 дек. 15:26:19.653
+clientName: 'Миша',
+
+14 дек. 15:26:19.653
+invId: 1,
+
+14 дек. 15:26:19.653
+id: 'ws_mj5p8873iu1zraeor',
+
+14 дек. 15:26:19.653
+New order created: {
+
+14 дек. 15:26:19.648
+}
+
+14 дек. 15:26:19.648
+queryKeys: [ 'action' ]
+
+14 дек. 15:26:19.648
+],
+
+14 дек. 15:26:19.648
+'amount'
+
+14 дек. 15:26:19.648
+'projectDescription',
+
+14 дек. 15:26:19.647
+'projectType',
+
+14 дек. 15:26:19.647
+'clientPhone',
+
+14 дек. 15:26:19.647
+'clientEmail',
+
+14 дек. 15:26:19.647
+'clientName',
+
+14 дек. 15:26:19.647
+bodyKeys: [
+
+14 дек. 15:26:19.647
+path: '',
+
+14 дек. 15:26:19.647
+action: 'orders',
+
+14 дек. 15:26:19.647
+method: 'POST',
+
+14 дек. 15:26:19.647
+Incoming request: {
+
+14 дек. 15:26:19.643
+START RequestID: b0fbf169-accc-4c80-bb2a-b4c349078f83 Version: d4e81ku338ntvd5k4kt1
+
+14 дек. 15:26:19.615
+REPORT RequestID: c61da7ac-e91a-4629-a8da-df5cf3db5441 Duration: 321.734 ms Billed Duration: 400 ms Memory Size: 256 MB Max Memory Used: 107 MB Queuing Duration: 0.067 ms Function Init Duration: 319.091 ms CPU Usage: 12.988 %
+
+14 дек. 15:26:19.615
+END RequestID: c61da7ac-e91a-4629-a8da-df5cf3db5441
+
+14 дек. 15:26:19.291
+START RequestID: c61da7ac-e91a-4629-a8da-df5cf3db5441 Version: d4e81ku338ntvd5k4kt1
