@@ -723,42 +723,108 @@ async function sendContractEmail(order, pdfBuffer) {
         </div>
     `;
     
-    // Yandex Cloud Postbox (приоритет)
-    const postboxApiKey = process.env.POSTBOX_API_KEY;
+    // Yandex Cloud Postbox через AWS SES-совместимый API
+    const postboxAccessKey = process.env.POSTBOX_ACCESS_KEY_ID;
+    const postboxSecretKey = process.env.POSTBOX_SECRET_ACCESS_KEY;
     const postboxFromEmail = process.env.POSTBOX_FROM_EMAIL;
     
-    if (postboxApiKey && postboxFromEmail) {
-        console.log('Using Yandex Cloud Postbox, from:', postboxFromEmail);
+    if (postboxAccessKey && postboxSecretKey && postboxFromEmail) {
+        console.log('Using Yandex Cloud Postbox (AWS SES API), from:', postboxFromEmail);
         
+        // Формируем raw email с вложением
+        const boundary = '----=_Part_' + Date.now().toString(36);
         const pdfBase64 = pdfBuffer.toString('base64');
         
-        // Формат Postbox API v1
-        const postboxPayload = {
-            from: postboxFromEmail,
-            to: order.clientEmail,
-            subject: `Договор на разработку сайта - Заказ ${order.id}`,
-            html: emailHtml,
-            attachments: [
-                {
-                    name: `Договор_${order.id}.pdf`,
-                    content: pdfBase64,
-                    contentType: 'application/pdf',
-                }
-            ]
+        const rawEmail = [
+            `From: MP.WebStudio <${postboxFromEmail}>`,
+            `To: ${order.clientEmail}`,
+            `Subject: =?UTF-8?B?${Buffer.from(`Договор на разработку сайта - Заказ ${order.id}`).toString('base64')}?=`,
+            'MIME-Version: 1.0',
+            `Content-Type: multipart/mixed; boundary="${boundary}"`,
+            '',
+            `--${boundary}`,
+            'Content-Type: text/html; charset=UTF-8',
+            'Content-Transfer-Encoding: base64',
+            '',
+            Buffer.from(emailHtml).toString('base64'),
+            '',
+            `--${boundary}`,
+            `Content-Type: application/pdf; name="Contract_${order.id}.pdf"`,
+            'Content-Transfer-Encoding: base64',
+            `Content-Disposition: attachment; filename="Contract_${order.id}.pdf"`,
+            '',
+            pdfBase64,
+            '',
+            `--${boundary}--`,
+        ].join('\r\n');
+        
+        // AWS SES SendRawEmail через AWS Signature V4
+        const region = 'ru-central1';
+        const service = 'ses';
+        const host = 'postbox.cloud.yandex.net';
+        const endpoint = `https://${host}`;
+        const method = 'POST';
+        const now = new Date();
+        const amzDate = now.toISOString().replace(/[:-]|\.\d{3}/g, '');
+        const dateStamp = amzDate.substring(0, 8);
+        
+        // Формируем тело запроса в формате AWS
+        const rawMessageB64 = Buffer.from(rawEmail).toString('base64');
+        const requestBody = `Action=SendRawEmail&RawMessage.Data=${encodeURIComponent(rawMessageB64)}`;
+        
+        // Создаём подпись AWS Signature V4
+        const algorithm = 'AWS4-HMAC-SHA256';
+        const credentialScope = `${dateStamp}/${region}/${service}/aws4_request`;
+        const signedHeaders = 'content-type;host;x-amz-date';
+        
+        const payloadHash = crypto.createHash('sha256').update(requestBody).digest('hex');
+        
+        const canonicalRequest = [
+            method,
+            '/',
+            '',
+            `content-type:application/x-www-form-urlencoded`,
+            `host:${host}`,
+            `x-amz-date:${amzDate}`,
+            '',
+            signedHeaders,
+            payloadHash
+        ].join('\n');
+        
+        const canonicalRequestHash = crypto.createHash('sha256').update(canonicalRequest).digest('hex');
+        
+        const stringToSign = [
+            algorithm,
+            amzDate,
+            credentialScope,
+            canonicalRequestHash
+        ].join('\n');
+        
+        // Создаём ключ подписи
+        const getSignatureKey = (key, dateStamp, region, service) => {
+            const kDate = crypto.createHmac('sha256', 'AWS4' + key).update(dateStamp).digest();
+            const kRegion = crypto.createHmac('sha256', kDate).update(region).digest();
+            const kService = crypto.createHmac('sha256', kRegion).update(service).digest();
+            const kSigning = crypto.createHmac('sha256', kService).update('aws4_request').digest();
+            return kSigning;
         };
         
-        console.log('Postbox payload (without attachment content):', JSON.stringify({
-            ...postboxPayload,
-            attachments: postboxPayload.attachments.map(a => ({ name: a.name, contentType: a.contentType }))
-        }));
+        const signingKey = getSignatureKey(postboxSecretKey, dateStamp, region, service);
+        const signature = crypto.createHmac('sha256', signingKey).update(stringToSign).digest('hex');
         
-        const response = await fetch('https://postbox.cloud.yandex.net/v1/email/outbound/raw', {
+        const authorizationHeader = `${algorithm} Credential=${postboxAccessKey}/${credentialScope}, SignedHeaders=${signedHeaders}, Signature=${signature}`;
+        
+        console.log('Sending email via Postbox AWS SES API');
+        
+        const response = await fetch(endpoint, {
             method: 'POST',
             headers: {
-                'Authorization': `Api-Key ${postboxApiKey}`,
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Host': host,
+                'X-Amz-Date': amzDate,
+                'Authorization': authorizationHeader,
             },
-            body: JSON.stringify(postboxPayload),
+            body: requestBody,
         });
         
         const responseText = await response.text();
