@@ -492,17 +492,17 @@ function generateRobokassaUrl(orderId, amount) {
         return null;
     }
     
-    const prepayment = Math.round(numericAmount / 2);
+    // amount уже содержит сумму предоплаты (50%), НЕ делим повторно
     const invId = Date.now() % 1000000;
     
-    const signatureString = `${merchantLogin}:${prepayment}:${invId}:${password1}:shp_orderId=${orderId}`;
+    const signatureString = `${merchantLogin}:${numericAmount}:${invId}:${password1}:shp_orderId=${orderId}`;
     const signature = crypto.createHash('md5').update(signatureString).digest('hex');
     
     const baseUrl = 'https://auth.robokassa.ru/Merchant/Index.aspx';
     
     const params = new URLSearchParams({
         MerchantLogin: merchantLogin,
-        OutSum: prepayment,
+        OutSum: numericAmount,
         InvId: invId,
         Description: `Предоплата за разработку сайта`,
         SignatureValue: signature,
