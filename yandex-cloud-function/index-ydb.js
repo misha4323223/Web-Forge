@@ -109,6 +109,12 @@ module.exports.handler = async function (event, context) {
             return await handlePayRemaining(body, headers);
         }
 
+        // GET /api/orders/:orderId - получить заказ по ID
+        const orderMatch = path.match(/\/orders\/([a-zA-Z0-9_-]+)$/);
+        if (orderMatch && method === 'GET') {
+            return await handleGetOrder(orderMatch[1], headers);
+        }
+
         if (action === 'health' || path.includes('/health') || method === 'GET') {
             return {
                 statusCode: 200,
@@ -637,6 +643,41 @@ function handleRobokassaFail(query) {
         headers: { 'Location': `${SITE_URL}/payment-fail?orderId=${orderId}` },
         body: '',
     };
+}
+
+async function handleGetOrder(orderId, headers) {
+    if (!orderId) {
+        return {
+            statusCode: 400,
+            headers,
+            body: JSON.stringify({ error: 'Не указан номер заказа' }),
+        };
+    }
+
+    try {
+        const order = await getOrderFromYdb(orderId);
+        
+        if (!order) {
+            return {
+                statusCode: 404,
+                headers,
+                body: JSON.stringify({ error: 'Заказ не найден' }),
+            };
+        }
+
+        return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify(order),
+        };
+    } catch (error) {
+        console.error('Error fetching order:', error.message);
+        return {
+            statusCode: 500,
+            headers,
+            body: JSON.stringify({ error: 'Ошибка получения заказа' }),
+        };
+    }
 }
 
 async function handlePayRemaining(data, headers) {
