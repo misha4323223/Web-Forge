@@ -47,18 +47,31 @@ module.exports.handler = async function (event, context) {
     try {
         let body = {};
         if (event.body) {
+            // Декодируем base64 если нужно
+            let rawBody = event.isBase64Encoded 
+                ? Buffer.from(event.body, 'base64').toString('utf-8')
+                : event.body;
+            
+            // Пробуем распарсить как JSON
             try {
-                body = JSON.parse(event.isBase64Encoded 
-                    ? Buffer.from(event.body, 'base64').toString('utf-8')
-                    : event.body
-                );
+                body = JSON.parse(rawBody);
             } catch (e) {
-                if (typeof event.body === 'string') {
-                    const params = new URLSearchParams(event.body);
+                // Если не JSON, парсим как form-urlencoded
+                if (typeof rawBody === 'string' && rawBody.length > 0) {
+                    const params = new URLSearchParams(rawBody);
                     body = Object.fromEntries(params);
                 }
             }
         }
+        
+        // Логируем входящие данные для отладки
+        console.log('Incoming request:', { 
+            method, 
+            action, 
+            path,
+            bodyKeys: Object.keys(body),
+            queryKeys: Object.keys(query)
+        });
 
         if ((action === 'contact' || path.includes('/contact')) && method === 'POST') {
             return await handleContact(body, headers);
@@ -238,12 +251,21 @@ async function handleOrder(data, headers) {
 }
 
 async function handleRobokassaResult(data, headers) {
+    // Логируем все входящие данные для отладки
+    console.log('Robokassa result - full data:', JSON.stringify(data));
+    
     const OutSum = data.OutSum;
     const InvId = data.InvId;
     const SignatureValue = data.SignatureValue;
     const shp_orderId = data.shp_orderId;
 
-    console.log('Robokassa result callback:', { OutSum, InvId, shp_orderId });
+    console.log('Robokassa result callback:', { OutSum, InvId, shp_orderId, SignatureValue: SignatureValue ? 'present' : 'missing' });
+
+    // Проверяем обязательные параметры
+    if (!OutSum || !InvId || !SignatureValue) {
+        console.error('Missing required Robokassa parameters:', { OutSum, InvId, SignatureValue: !!SignatureValue });
+        return { statusCode: 400, headers, body: 'missing params' };
+    }
 
     const PASSWORD2 = process.env.ROBOKASSA_PASSWORD2;
     
@@ -254,6 +276,11 @@ async function handleRobokassaResult(data, headers) {
 
     const signatureString = `${OutSum}:${InvId}:${PASSWORD2}:shp_orderId=${shp_orderId}`;
     const calculatedSignature = crypto.createHash('md5').update(signatureString).digest('hex');
+    
+    console.log('Signature check:', { 
+        expected: calculatedSignature.toLowerCase(), 
+        received: SignatureValue.toLowerCase() 
+    });
 
     if (calculatedSignature.toLowerCase() !== SignatureValue.toLowerCase()) {
         console.error('Invalid Robokassa signature');

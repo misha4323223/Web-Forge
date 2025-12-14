@@ -1,0 +1,283 @@
+
+
+14 дек. 14:56:52.925
+REPORT RequestID: ba314ad8-b37d-49e1-8a25-38cc795240b9 Duration: 324.405 ms Billed Duration: 400 ms Memory Size: 256 MB Max Memory Used: 107 MB Queuing Duration: 0.045 ms Function Init Duration: 318.490 ms CPU Usage: 16.797 %
+
+14 дек. 14:56:52.925
+END RequestID: ba314ad8-b37d-49e1-8a25-38cc795240b9
+
+14 дек. 14:56:52.923
+at Generator.next (<anonymous>)
+
+14 дек. 14:56:52.923
+at ve.<anonymous> (/function/runtime/bootstrap:212:136)
+
+14 дек. 14:56:52.923
+at ve.handler (/function/runtime/bootstrap:194:106)
+
+14 дек. 14:56:52.923
+at ie (/function/runtime/bootstrap:158:76)
+
+14 дек. 14:56:52.923
+at new Promise (<anonymous>)
+
+14 дек. 14:56:52.923
+at /function/runtime/bootstrap:159:108
+
+14 дек. 14:56:52.923
+at Generator.next (<anonymous>)
+
+14 дек. 14:56:52.923
+at ve.<anonymous> (/function/runtime/bootstrap:196:14)
+
+14 дек. 14:56:52.923
+at module.exports.handler [as handlerFn] (/function/code/index.js:72:26)
+
+14 дек. 14:56:52.923
+at handleRobokassaResult (/function/code/index.js:258:62)
+
+14 дек. 14:56:52.923
+Error: TypeError: Cannot read properties of undefined (reading 'toLowerCase')
+
+14 дек. 14:56:52.921
+Robokassa result callback: { OutSum: undefined, InvId: undefined, shp_orderId: undefined }
+
+14 дек. 14:56:52.511
+START RequestID: ba314ad8-b37d-49e1-8a25-38cc795240b9 Version: d4e7rae2aboesc0p36bs
+
+14 дек. 14:55:52.801
+REPORT RequestID: 878e148e-94b0-465e-86c7-94f92e3b1bdd Duration: 406.261 ms Billed Duration: 500 ms Memory Size: 256 MB Max Memory Used: 103 MB Queuing Duration: 0.052 ms Function Init Duration: 400.081 ms CPU Usage: 16.602 %
+
+14 дек. 14:55:52.801
+END RequestID: 878e148e-94b0-465e-86c7-94f92e3b1bdd
+
+14 дек. 14:55:52.799
+at Generator.next (<anonymous>)
+
+14 дек. 14:55:52.799
+at ve.<anonymous> (/function/runtime/bootstrap:212:136)
+
+14 дек. 14:55:52.799
+at ve.handler (/function/runtime/bootstrap:194:106)
+
+14 дек. 14:55:52.799
+at ie (/function/runtime/bootstrap:158:76)
+
+14 дек. 14:55:52.799
+at new Promise (<anonymous>)
+
+14 дек. 14:55:52.799
+at /function/runtime/bootstrap:159:108
+
+14 дек. 14:55:52.799
+at Generator.next (<anonymous>)
+
+14 дек. 14:55:52.799
+at ve.<anonymous> (/function/runtime/bootstrap:196:14)
+
+14 дек. 14:55:52.799
+at module.exports.handler [as handlerFn] (/function/code/index.js:72:26)
+
+14 дек. 14:55:52.799
+at handleRobokassaResult (/function/code/index.js:258:62)
+
+14 дек. 14:55:52.799
+Error: TypeError: Cannot read properties of undefined (reading 'toLowerCase')
+
+14 дек. 14:55:52.797
+Robokassa result callback: { OutSum: undefined, InvId: undefined, shp_orderId: undefined }
+
+14 дек. 14:55:52.343
+START RequestID: 878e148e-94b0-465e-86c7-94f92e3b1bdd Version: d4e7rae2aboesc0p36bs
+
+14 дек. 14:55:34.733
+REPORT RequestID: 689cf442-fe49-4523-b551-3f8e9e7e0fd9 Duration: 48.706 ms Billed Duration: 100 ms Memory Size: 256 MB Max Memory Used: 105 MB Queuing Duration: 0.106 ms CPU Usage: 16.699 %
+
+14 дек. 14:55:34.733
+END RequestID: 689cf442-fe49-4523-b551-3f8e9e7e0fd9
+
+14 дек. 14:55:34.730
+Telegram not configured, skipping notification
+
+14 дек. 14:55:34.692
+}
+
+14 дек. 14:55:34.692
+createdAt: '2025-12-14T11:55:34.685Z'
+
+14 дек. 14:55:34.692
+status: 'pending',
+
+14 дек. 14:55:34.692
+amount: '120000',
+
+14 дек. 14:55:34.692
+projectDescription: 'аываыаываывафафауФАФЦУ',
+
+14 дек. 14:55:34.692
+projectType: 'shop',
+
+14 дек. 14:55:34.692
+clientPhone: '89531814136',
+
+14 дек. 14:55:34.692
+clientEmail: 'pimashin2016@gmail.com',
+
+14 дек. 14:55:34.692
+clientName: 'Миша',
+
+14 дек. 14:55:34.692
+invId: 1,
+
+14 дек. 14:55:34.692
+id: 'ws_mj5o4om56joazsbfx',
+
+14 дек. 14:55:34.692
+New order created: {
+
+14 дек. 14:55:34.681
+START RequestID: 689cf442-fe49-4523-b551-3f8e9e7e0fd9 Version: d4e7rae2aboesc0p36bs
+
+14 дек. 14:55:34.639
+REPORT RequestID: 09795f82-6c79-49f2-bfea-d97482bf38ef Duration: 371.604 ms Billed Duration: 400 ms Memory Size: 256 MB Max Memory Used: 105 MB Queuing Duration: 0.063 ms Function Init Duration: 368.606 ms CPU Usage: 16.699 %
+
+14 дек. 14:55:34.639
+END RequestID: 09795f82-6c79-49f2-bfea-d97482bf38ef
+
+14 дек. 14:55:34.168
+START RequestID: 09795f82-6c79-49f2-bfea-d97482bf38ef Version: d4e7rae2aboesc0p36bs
+
+14 дек. 14:55:20.203
+REPORT RequestID: 068afb13-9c53-41ec-b1c5-f47e5841189f Duration: 4.952 ms Billed Duration: 100 ms Memory Size: 256 MB Max Memory Used: 129 MB Queuing Duration: 0.058 ms
+
+14 дек. 14:55:20.203
+END RequestID: 068afb13-9c53-41ec-b1c5-f47e5841189f
+
+14 дек. 14:55:20.202
+at Generator.next (<anonymous>)
+
+14 дек. 14:55:20.202
+at ve.<anonymous> (/function/runtime/bootstrap:212:136)
+
+14 дек. 14:55:20.202
+at ve.handler (/function/runtime/bootstrap:194:106)
+
+14 дек. 14:55:20.202
+at ie (/function/runtime/bootstrap:158:76)
+
+14 дек. 14:55:20.202
+at new Promise (<anonymous>)
+
+14 дек. 14:55:20.202
+at /function/runtime/bootstrap:159:108
+
+14 дек. 14:55:20.202
+at Generator.next (<anonymous>)
+
+14 дек. 14:55:20.202
+at ve.<anonymous> (/function/runtime/bootstrap:196:14)
+
+14 дек. 14:55:20.202
+at module.exports.handler [as handlerFn] (/function/code/index.js:72:26)
+
+14 дек. 14:55:20.202
+at handleRobokassaResult (/function/code/index.js:258:62)
+
+14 дек. 14:55:20.202
+Error: TypeError: Cannot read properties of undefined (reading 'toLowerCase')
+
+14 дек. 14:55:20.202
+Robokassa result callback: { OutSum: undefined, InvId: undefined, shp_orderId: undefined }
+
+14 дек. 14:55:20.195
+START RequestID: 068afb13-9c53-41ec-b1c5-f47e5841189f Version: d4e7rae2aboesc0p36bs
+
+14 дек. 14:54:20.025
+REPORT RequestID: de0ace1a-1ff2-4245-8ec3-d50aa17bc707 Duration: 335.233 ms Billed Duration: 400 ms Memory Size: 256 MB Max Memory Used: 107 MB Queuing Duration: 0.063 ms Function Init Duration: 329.297 ms CPU Usage: 16.699 %
+
+14 дек. 14:54:20.025
+END RequestID: de0ace1a-1ff2-4245-8ec3-d50aa17bc707
+
+14 дек. 14:54:20.019
+at Generator.next (<anonymous>)
+
+14 дек. 14:54:20.019
+at ve.<anonymous> (/function/runtime/bootstrap:212:136)
+
+14 дек. 14:54:20.019
+at ve.handler (/function/runtime/bootstrap:194:106)
+
+14 дек. 14:54:20.019
+at ie (/function/runtime/bootstrap:158:76)
+
+14 дек. 14:54:20.019
+at new Promise (<anonymous>)
+
+14 дек. 14:54:20.019
+at /function/runtime/bootstrap:159:108
+
+14 дек. 14:54:20.019
+at Generator.next (<anonymous>)
+
+14 дек. 14:54:20.019
+at ve.<anonymous> (/function/runtime/bootstrap:196:14)
+
+14 дек. 14:54:20.019
+at module.exports.handler [as handlerFn] (/function/code/index.js:72:26)
+
+14 дек. 14:54:20.019
+at handleRobokassaResult (/function/code/index.js:258:62)
+
+14 дек. 14:54:20.019
+Error: TypeError: Cannot read properties of undefined (reading 'toLowerCase')
+
+14 дек. 14:54:20.017
+Robokassa result callback: { OutSum: undefined, InvId: undefined, shp_orderId: undefined }
+
+14 дек. 14:54:19.599
+START RequestID: de0ace1a-1ff2-4245-8ec3-d50aa17bc707 Version: d4e7rae2aboesc0p36bs
+
+14 дек. 14:46:07.280
+REPORT RequestID: 70e569eb-5248-4252-a05b-2866f442cc6c Duration: 45.146 ms Billed Duration: 100 ms Memory Size: 128 MB Max Memory Used: 105 MB Queuing Duration: 0.069 ms CPU Usage: 14.648 %
+
+14 дек. 14:46:07.280
+END RequestID: 70e569eb-5248-4252-a05b-2866f442cc6c
+
+14 дек. 14:46:07.278
+Telegram not configured, skipping notification
+
+14 дек. 14:46:07.242
+}
+
+14 дек. 14:46:07.242
+createdAt: '2025-12-14T11:46:07.236Z'
+
+14 дек. 14:46:07.242
+status: 'pending',
+
+14 дек. 14:46:07.242
+amount: '25000',
+
+14 дек. 14:46:07.242
+projectDescription: 'апмыапыавпывапывапыва',
+
+14 дек. 14:46:07.242
+projectType: 'landing',
+
+14 дек. 14:46:07.242
+clientPhone: '89531814136',
+
+14 дек. 14:46:07.242
+clientEmail: 'pimashin2015@gmail.com',
+
+14 дек. 14:46:07.242
+clientName: 'михаил',
+
+14 дек. 14:46:07.242
+invId: 1,
+
+14 дек. 14:46:07.242
+id: 'ws_mj5nsiroktd6z2vsm',
+
+14 дек. 14:46:07.242
+New order created: {
