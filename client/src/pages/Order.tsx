@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -30,12 +30,94 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Loader2, CreditCard, FileText } from "lucide-react";
+import { Loader2, CreditCard, FileText, Check } from "lucide-react";
 
-const projectTypes = [
-  { value: "landing", label: "Лендинг", price: 25000, description: "Одностраничный продающий сайт" },
-  { value: "corporate", label: "Корпоративный сайт", price: 60000, description: "Многостраничный сайт компании" },
-  { value: "shop", label: "Интернет-магазин", price: 120000, description: "Каталог, корзина, оплата" },
+type ProjectType = "landing" | "corporate" | "shop";
+
+interface Feature {
+  id: string;
+  label: string;
+  price: number;
+  description?: string;
+  availableFor: ProjectType[];
+}
+
+interface ProjectTypeConfig {
+  value: ProjectType;
+  label: string;
+  basePrice: number;
+  description: string;
+  includes: string[];
+}
+
+const projectTypes: ProjectTypeConfig[] = [
+  {
+    value: "landing",
+    label: "Лендинг",
+    basePrice: 15000,
+    description: "Одностраничный продающий сайт",
+    includes: [
+      "Адаптивный дизайн",
+      "До 7 секций",
+      "Форма обратной связи",
+      "Базовые анимации",
+      "SEO-основа",
+      "Хостинг",
+    ],
+  },
+  {
+    value: "corporate",
+    label: "Корпоративный сайт",
+    basePrice: 40000,
+    description: "Многостраничный сайт компании",
+    includes: [
+      "Всё из лендинга",
+      "До 10 страниц",
+      "Навигация",
+      "Единый шаблон",
+      "Страница контактов",
+    ],
+  },
+  {
+    value: "shop",
+    label: "Интернет-магазин",
+    basePrice: 80000,
+    description: "Каталог, корзина, оформление заказа",
+    includes: [
+      "Всё из корп. сайта",
+      "Каталог товаров",
+      "Карточки товаров",
+      "Корзина",
+      "Оформление заказа",
+    ],
+  },
+];
+
+const features: Feature[] = [
+  { id: "calculator", label: "Калькулятор стоимости", price: 5000, description: "Интерактивный расчёт", availableFor: ["landing", "corporate", "shop"] },
+  { id: "gallery", label: "Галерея / Портфолио", price: 5000, description: "Слайдер с лайтбоксом", availableFor: ["landing", "corporate", "shop"] },
+  { id: "messengers", label: "Виджеты мессенджеров", price: 3000, description: "WhatsApp, Telegram", availableFor: ["landing", "corporate", "shop"] },
+  { id: "analytics", label: "Яндекс.Метрика", price: 3000, description: "Подключение аналитики", availableFor: ["landing", "corporate", "shop"] },
+  { id: "email_notify", label: "Email-уведомления", price: 5000, description: "Письма о заявках", availableFor: ["landing", "corporate", "shop"] },
+  { id: "telegram_notify", label: "Telegram-уведомления", price: 5000, description: "Заявки в Telegram-бот", availableFor: ["landing", "corporate", "shop"] },
+  { id: "animations", label: "Продвинутые анимации", price: 8000, description: "Параллакс, 3D-эффекты", availableFor: ["landing", "corporate", "shop"] },
+  { id: "chat_widget", label: "Чат-виджет", price: 3000, description: "Jivo, Tawk.to", availableFor: ["landing", "corporate", "shop"] },
+  { id: "popup", label: "Pop-up окна", price: 3000, description: "При выходе, по таймеру", availableFor: ["landing", "corporate", "shop"] },
+  { id: "countdown", label: "Таймер акции", price: 2000, description: "Обратный отсчёт", availableFor: ["landing", "corporate", "shop"] },
+  { id: "multilang", label: "Мультиязычность", price: 10000, description: "2+ языка", availableFor: ["landing", "corporate", "shop"] },
+  { id: "extra_sections", label: "Доп. секции (5 шт)", price: 5000, description: "Сверх базовых", availableFor: ["landing"] },
+  { id: "extra_pages", label: "Доп. страницы (5 шт)", price: 10000, description: "Сверх базовых", availableFor: ["corporate"] },
+  { id: "blog", label: "Блог / Новости", price: 15000, description: "Раздел статей", availableFor: ["corporate", "shop"] },
+  { id: "search", label: "Поиск по сайту", price: 8000, description: "Умный поиск", availableFor: ["corporate", "shop"] },
+  { id: "team", label: "Страница команды", price: 5000, description: "Карточки сотрудников", availableFor: ["corporate"] },
+  { id: "booking", label: "Онлайн-запись", price: 15000, description: "Календарь бронирования", availableFor: ["landing", "corporate"] },
+  { id: "payment", label: "Онлайн-оплата", price: 15000, description: "Robokassa / ЮKassa", availableFor: ["landing", "corporate", "shop"] },
+  { id: "crm", label: "Интеграция CRM", price: 20000, description: "AmoCRM, Bitrix24", availableFor: ["landing", "corporate", "shop"] },
+  { id: "filters", label: "Фильтры и сортировка", price: 10000, description: "По параметрам товаров", availableFor: ["shop"] },
+  { id: "favorites", label: "Избранное", price: 5000, description: "Сохранение товаров", availableFor: ["shop"] },
+  { id: "admin", label: "Админ-панель", price: 25000, description: "Управление товарами", availableFor: ["shop"] },
+  { id: "telegram_shop", label: "Telegram-магазин", price: 20000, description: "Мини-приложение", availableFor: ["shop"] },
+  { id: "delivery", label: "Интеграция доставки", price: 15000, description: "СДЭК, Boxberry", availableFor: ["shop"] },
 ];
 
 const orderSchema = z.object({
@@ -60,17 +142,23 @@ const formatDate = () => {
   return `«${day}» ${month} ${year} г.`;
 };
 
+const formatPrice = (price: number) => new Intl.NumberFormat("ru-RU").format(price);
+
 const generateContractText = (
   clientName: string,
   clientEmail: string,
   clientPhone: string,
   projectType: string,
   projectDescription: string,
-  amount: number
+  amount: number,
+  selectedFeatureLabels: string[]
 ) => {
   const projectTypeLabel = projectTypes.find(p => p.value === projectType)?.label || projectType;
   const prepayment = Math.round(amount / 2);
-  const formatPrice = (price: number) => new Intl.NumberFormat("ru-RU").format(price);
+  
+  const featuresText = selectedFeatureLabels.length > 0 
+    ? `\n\nДополнительные функции:\n${selectedFeatureLabels.map(f => `    • ${f}`).join('\n')}`
+    : '';
   
   return `ДОГОВОР ОКАЗАНИЯ УСЛУГ
 
@@ -91,7 +179,7 @@ Email: ${clientEmail || "_______________"}
 1. ПРЕДМЕТ ДОГОВОРА
 
 1.1. Исполнитель обязуется оказать Заказчику услуги по разработке:
-    ✓ ${projectTypeLabel}
+    ✓ ${projectTypeLabel}${featuresText}
 
 1.2. Описание проекта:
 ${projectDescription || "Будет согласовано дополнительно"}
@@ -177,7 +265,8 @@ MP.WebStudio | https://mp-webstudio.ru
 };
 
 export default function Order() {
-  const [selectedType, setSelectedType] = useState<string>("corporate");
+  const [selectedType, setSelectedType] = useState<ProjectType>("landing");
+  const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
 
   const form = useForm<OrderFormData>({
     resolver: zodResolver(orderSchema),
@@ -185,23 +274,65 @@ export default function Order() {
       clientName: "",
       clientEmail: "",
       clientPhone: "",
-      projectType: "corporate",
+      projectType: "landing",
       projectDescription: "",
     },
   });
 
+  const currentProjectType = projectTypes.find((p) => p.value === selectedType);
+  const basePrice = currentProjectType?.basePrice || 0;
+
+  const availableFeatures = useMemo(() => {
+    return features.filter((f) => f.availableFor.includes(selectedType));
+  }, [selectedType]);
+
+  const featuresPrice = selectedFeatures.reduce((sum, featureId) => {
+    const feature = features.find((f) => f.id === featureId);
+    if (feature && feature.availableFor.includes(selectedType)) {
+      return sum + feature.price;
+    }
+    return sum;
+  }, 0);
+
+  const totalPrice = basePrice + featuresPrice;
+  const prepayment = Math.round(totalPrice / 2);
+
+  const selectedFeatureLabels = selectedFeatures
+    .map(id => features.find(f => f.id === id)?.label)
+    .filter(Boolean) as string[];
+
+  const toggleFeature = (featureId: string) => {
+    setSelectedFeatures((prev) =>
+      prev.includes(featureId)
+        ? prev.filter((id) => id !== featureId)
+        : [...prev, featureId]
+    );
+  };
+
+  const handleProjectTypeChange = (value: ProjectType) => {
+    setSelectedType(value);
+    form.setValue("projectType", value);
+    setSelectedFeatures((prev) =>
+      prev.filter((featureId) => {
+        const feature = features.find((f) => f.id === featureId);
+        return feature?.availableFor.includes(value);
+      })
+    );
+  };
+
   const createOrderMutation = useMutation({
     mutationFn: async (data: OrderFormData) => {
-      const selectedProject = projectTypes.find((p) => p.value === data.projectType);
-      const amount = selectedProject?.price.toString() || "60000";
+      const featuresInfo = selectedFeatures.join(",");
       
       const response = await apiRequest("POST", "/api/orders", {
         clientName: data.clientName,
         clientEmail: data.clientEmail,
         clientPhone: data.clientPhone,
         projectType: data.projectType,
-        projectDescription: data.projectDescription,
-        amount,
+        projectDescription: data.projectDescription + (featuresInfo ? `\n\nДоп. функции: ${selectedFeatureLabels.join(", ")}` : ""),
+        amount: prepayment.toString(),
+        selectedFeatures: featuresInfo,
+        totalAmount: totalPrice.toString(),
       });
       return response.json();
     },
@@ -216,14 +347,11 @@ export default function Order() {
     createOrderMutation.mutate(data);
   };
 
-  const selectedProject = projectTypes.find((p) => p.value === selectedType);
-  const formatPrice = (price: number) => new Intl.NumberFormat("ru-RU").format(price);
-
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navigation />
       <main className="pt-24 pb-16">
-        <div className="max-w-4xl mx-auto px-6">
+        <div className="max-w-5xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -240,7 +368,7 @@ export default function Order() {
               </span>
             </h1>
             <p className="text-muted-foreground max-w-xl mx-auto">
-              Заполните форму, примите условия договора и внесите предоплату 50%
+              Выберите тип сайта, добавьте нужные функции и оформите заказ
             </p>
           </motion.div>
 
@@ -249,13 +377,91 @@ export default function Order() {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="lg:col-span-2"
+              className="lg:col-span-2 space-y-6"
             >
+              <Card className="p-6 bg-background/50 border-border backdrop-blur-sm">
+                <h3 className="text-lg font-semibold mb-4">1. Выберите основу сайта</h3>
+                <RadioGroup
+                  value={selectedType}
+                  onValueChange={(value) => handleProjectTypeChange(value as ProjectType)}
+                  className="space-y-3"
+                >
+                  {projectTypes.map((type) => (
+                    <div key={type.value}>
+                      <RadioGroupItem
+                        value={type.value}
+                        id={`order-${type.value}`}
+                        className="peer sr-only"
+                        data-testid={`radio-${type.value}`}
+                      />
+                      <Label
+                        htmlFor={`order-${type.value}`}
+                        className="flex flex-col p-4 rounded-md border border-border bg-card/50 cursor-pointer transition-all peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 hover-elevate"
+                      >
+                        <div className="flex items-center justify-between gap-4 mb-2">
+                          <span className="font-bold text-foreground">{type.label}</span>
+                          <span className="text-sm font-mono text-primary">
+                            {formatPrice(type.basePrice)} ₽
+                          </span>
+                        </div>
+                        <p className="text-sm text-muted-foreground mb-2">{type.description}</p>
+                        <div className="flex flex-wrap gap-x-3 gap-y-1">
+                          {type.includes.map((item, i) => (
+                            <span key={i} className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                              <Check className="w-3 h-3 text-emerald-500" />
+                              {item}
+                            </span>
+                          ))}
+                        </div>
+                      </Label>
+                    </div>
+                  ))}
+                </RadioGroup>
+              </Card>
+
+              <Card className="p-6 bg-background/50 border-border backdrop-blur-sm">
+                <h3 className="text-lg font-semibold mb-2">2. Дополнительные функции</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Выберите опции для расширения возможностей сайта
+                </p>
+                <div className="grid sm:grid-cols-2 gap-3">
+                  {availableFeatures.map((feature) => (
+                    <div
+                      key={feature.id}
+                      className={`flex items-start gap-3 p-3 rounded-md border cursor-pointer transition-all ${
+                        selectedFeatures.includes(feature.id)
+                          ? "border-primary bg-primary/5"
+                          : "border-border bg-card/50"
+                      }`}
+                      onClick={() => toggleFeature(feature.id)}
+                      data-testid={`feature-${feature.id}`}
+                    >
+                      <Checkbox
+                        checked={selectedFeatures.includes(feature.id)}
+                        onCheckedChange={() => toggleFeature(feature.id)}
+                        className="mt-0.5"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-sm font-medium text-foreground">{feature.label}</span>
+                          <span className="text-xs font-mono text-primary whitespace-nowrap">
+                            +{formatPrice(feature.price)} ₽
+                          </span>
+                        </div>
+                        {feature.description && (
+                          <span className="text-xs text-muted-foreground">{feature.description}</span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+
               <Card className="p-6 bg-background/50 border-border backdrop-blur-sm">
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                     <div className="space-y-4">
-                      <h3 className="text-lg font-semibold">Ваши данные</h3>
+                      <h3 className="text-lg font-semibold">3. Ваши данные</h3>
                       
                       <FormField
                         control={form.control}
@@ -302,51 +508,6 @@ export default function Order() {
                       </div>
                     </div>
 
-                    <div className="space-y-4">
-                      <h3 className="text-lg font-semibold">Тип проекта</h3>
-                      
-                      <FormField
-                        control={form.control}
-                        name="projectType"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <RadioGroup
-                                value={field.value}
-                                onValueChange={(value) => {
-                                  field.onChange(value);
-                                  setSelectedType(value);
-                                }}
-                                className="grid sm:grid-cols-2 gap-4"
-                              >
-                                {projectTypes.map((type) => (
-                                  <div key={type.value}>
-                                    <RadioGroupItem
-                                      value={type.value}
-                                      id={type.value}
-                                      className="peer sr-only"
-                                      data-testid={`radio-${type.value}`}
-                                    />
-                                    <Label
-                                      htmlFor={type.value}
-                                      className="flex flex-col p-4 rounded-md border border-border bg-card/50 cursor-pointer transition-all peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 hover-elevate"
-                                    >
-                                      <span className="font-medium">{type.label}</span>
-                                      <span className="text-sm text-muted-foreground">{type.description}</span>
-                                      <span className="text-sm font-mono text-primary mt-2">
-                                        от {formatPrice(type.price)} ₽
-                                      </span>
-                                    </Label>
-                                  </div>
-                                ))}
-                              </RadioGroup>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
                     <FormField
                       control={form.control}
                       name="projectDescription"
@@ -356,7 +517,7 @@ export default function Order() {
                           <FormControl>
                             <Textarea
                               placeholder="Расскажите о вашем бизнесе, целях сайта, желаемом функционале..."
-                              className="min-h-[120px]"
+                              className="min-h-[100px]"
                               {...field}
                               data-testid="input-project-description"
                             />
@@ -403,7 +564,8 @@ export default function Order() {
                                           form.watch("clientPhone"),
                                           form.watch("projectType"),
                                           form.watch("projectDescription"),
-                                          projectTypes.find(p => p.value === form.watch("projectType"))?.price || 60000
+                                          totalPrice,
+                                          selectedFeatureLabels
                                         )}
                                       </div>
                                     </ScrollArea>
@@ -432,7 +594,7 @@ export default function Order() {
                       ) : (
                         <>
                           <CreditCard className="w-4 h-4 mr-2" />
-                          Перейти к оплате
+                          Перейти к оплате ({formatPrice(prepayment)} ₽)
                         </>
                       )}
                     </Button>
@@ -449,20 +611,39 @@ export default function Order() {
               <Card className="p-6 bg-gradient-to-br from-cyan-500/10 to-purple-500/10 border-primary/20 sticky top-24">
                 <h3 className="text-lg font-bold mb-4">Ваш заказ</h3>
                 
-                <div className="space-y-4 mb-6">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Тип сайта</span>
-                    <span className="font-medium">{selectedProject?.label}</span>
+                <div className="space-y-3 mb-6">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">{currentProjectType?.label}</span>
+                    <span className="font-mono">{formatPrice(basePrice)} ₽</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Стоимость</span>
-                    <span className="font-mono">{formatPrice(selectedProject?.price || 0)} ₽</span>
-                  </div>
+                  
+                  {selectedFeatures.length > 0 && (
+                    <>
+                      <div className="h-px bg-border" />
+                      {selectedFeatures.map((featureId) => {
+                        const feature = features.find((f) => f.id === featureId);
+                        if (!feature || !feature.availableFor.includes(selectedType)) return null;
+                        return (
+                          <div key={featureId} className="flex justify-between text-sm">
+                            <span className="text-muted-foreground truncate mr-2">{feature.label}</span>
+                            <span className="font-mono whitespace-nowrap">+{formatPrice(feature.price)} ₽</span>
+                          </div>
+                        );
+                      })}
+                    </>
+                  )}
+                  
                   <div className="h-px bg-border" />
+                  
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Предоплата 50%</span>
+                    <span className="text-muted-foreground">Полная стоимость</span>
+                    <span className="font-mono font-medium">{formatPrice(totalPrice)} ₽</span>
+                  </div>
+                  
+                  <div className="flex justify-between pt-2">
+                    <span className="font-medium">Предоплата 50%</span>
                     <span className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
-                      {formatPrice((selectedProject?.price || 0) / 2)} ₽
+                      {formatPrice(prepayment)} ₽
                     </span>
                   </div>
                 </div>

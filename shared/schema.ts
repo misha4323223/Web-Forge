@@ -45,6 +45,8 @@ export const orders = pgTable("orders", {
   projectType: text("project_type").notNull(),
   projectDescription: text("project_description").notNull(),
   amount: text("amount").notNull(),
+  totalAmount: text("total_amount"),
+  selectedFeatures: text("selected_features"),
   status: text("status").notNull().default("pending"),
   contractAccepted: timestamp("contract_accepted"),
   paidAt: timestamp("paid_at"),
@@ -65,6 +67,8 @@ export const insertOrderSchema = createInsertSchema(orders).pick({
   projectType: z.enum(["landing", "corporate", "shop"]),
   projectDescription: z.string().min(10, "Опишите проект подробнее"),
   amount: z.string(),
+  totalAmount: z.string().optional(),
+  selectedFeatures: z.string().optional(),
 });
 
 export type InsertOrder = z.infer<typeof insertOrderSchema>;
