@@ -1,0 +1,116 @@
+14 дек. 20:05:39.261
+Order paid successfully: ord_mj5z5ywg0fwamox4i
+
+14 дек. 20:05:39.261
+Telegram not configured
+
+14 дек. 20:05:39.261
+at async module.exports.handler [as handlerFn] (/function/code/index.js:96:20)
+
+14 дек. 20:05:39.261
+at async handleRobokassaResult (/function/code/index.js:554:13)
+
+14 дек. 20:05:39.261
+at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+14 дек. 20:05:39.261
+at sendContractEmail (/function/code/index.js:779:19)
+
+14 дек. 20:05:39.261
+Error: Yandex Postbox error: 403 - Forbidden
+
+14 дек. 20:05:39.261
+Failed to send contract email: Yandex Postbox error: 403 - Forbidden
+
+14 дек. 20:05:39.261
+Postbox response: Forbidden
+
+14 дек. 20:05:39.261
+Postbox response status: 403
+
+14 дек. 20:05:39.185
+Using Yandex Cloud Postbox, from: info@mp-webstudio.ru
+
+14 дек. 20:05:39.184
+PDF generated, size: 20636
+
+14 дек. 20:05:38.802
+Generating PDF for order: ord_mj5z5ywg0fwamox4i
+
+14 дек. 20:05:38.802
+Order status updated in YDB: ord_mj5z5ywg0fwamox4i -> paid
+
+14 дек. 20:05:38.717
+}
+
+14 дек. 20:05:38.717
+paidAt: ''
+
+14 дек. 20:05:38.717
+createdAt: '2025-12-14T17:04:30.448Z',
+
+14 дек. 20:05:38.308
+}
+
+14 дек. 20:05:38.308
+received: 'a0ab90de5e0e9d759561f53f1b146e37'
+
+14 дек. 20:05:38.308
+expected: 'a0ab90de5e0e9d759561f53f1b146e37',
+
+14 дек. 20:05:38.308
+Signature check: {
+
+14 дек. 20:05:38.307
+}
+
+14 дек. 20:05:38.307
+shp_orderId: 'ord_mj5z5ywg0fwamox4i'
+
+14 дек. 20:05:38.307
+InvId: '870626',
+
+14 дек. 20:05:38.307
+OutSum: '12500',
+
+14 дек. 20:05:38.307
+Robokassa result callback: {
+
+14 дек. 20:05:38.306
+Robokassa result - full data: {"out_summ":"12500","OutSum":"12500","inv_id":"870626","InvId":"870626","crc":"A0AB90DE5E0E9D759561F53F1B146E37","SignatureValue":"A0AB90DE5E0E9D759561F53F1B146E37","PaymentMethod":"BankCard","IncSum":"12500","IncCurrLabel":"BankCardForeignPSR","IsTest":"1","EMail":"","Fee":"0.0","shp_orderId":"ord_mj5z5ywg0fwamox4i","action":"robokassa/result"}
+
+14 дек. 20:05:38.306
+Incoming request: { method: 'POST', action: 'robokassa/result', path: '' }
+
+14 дек. 20:05:37.420
+START RequestID: 88f7adc6-672c-40a8-bef0-ddb5420e37e9 Version: d4ec6ivauegtlnl83u77
+
+14 дек. 20:04:30.630
+REPORT RequestID: 1bab74b4-fb50-4a80-afa5-da4160fc5091 Duration: 439.555 ms Billed Duration: 500 ms Memory Size: 256 MB Max Memory Used: 154 MB Queuing Duration: 0.066 ms CPU Usage: 99.805 %
+
+14 дек. 20:04:30.630
+END RequestID: 1bab74b4-fb50-4a80-afa5-da4160fc5091
+
+14 дек. 20:04:30.627
+Telegram not configured
+
+14 дек. 20:04:30.627
+Order created in YDB: ord_mj5z5ywg0fwamox4i
+
+14 дек. 20:04:30.448
+YDB driver connected to: /ru-central1/b1gnp4ml7k5j7cquabad/etn2gipa2pvm2qj5ga83
+
+14 дек. 20:04:30.192
+Incoming request: { method: 'POST', action: 'orders', path: '' }
+
+14 дек. 20:04:30.185
+START RequestID: 1bab74b4-fb50-4a80-afa5-da4160fc5091 Version: d4ec6ivauegtlnl83u77
+
+14 дек. 20:04:30.146
+REPORT RequestID: fa4a7c91-b030-436c-b19c-36899d1b54d6 Duration: 628.199 ms Billed Duration: 700 ms Memory Size: 256 MB Max Memory Used: 154 MB Queuing Duration: 0.059 ms Function Init Duration: 616.073 ms CPU Usage: 99.805 %
+
+14 дек. 20:04:30.146
+END RequestID: fa4a7c91-b030-436c-b19c-36899d1b54d6
+
+14 дек. 20:04:29.511
+START RequestID: fa4a7c91-b030-436c-b19c-36899d1b54d6 Version: d4ec6ivauegtlnl83u77
