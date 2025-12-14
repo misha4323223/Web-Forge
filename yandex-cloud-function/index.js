@@ -35,7 +35,9 @@ module.exports.handler = async function (event, context) {
         return { statusCode: 200, headers, body: '' };
     }
 
+    const query = event.queryStringParameters || {};
     const path = event.path || event.url || '';
+    const action = query.action || '';
     const method = event.httpMethod;
     
     try {
@@ -54,36 +56,35 @@ module.exports.handler = async function (event, context) {
             }
         }
 
-        const query = event.queryStringParameters || {};
-
-        if (path.includes('/contact') && method === 'POST') {
+        if ((action === 'contact' || path.includes('/contact')) && method === 'POST') {
             return await handleContact(body, headers);
         }
         
-        if (path.includes('/order') && method === 'POST') {
+        if ((action === 'orders' || path.includes('/order')) && method === 'POST') {
             return await handleOrder(body, headers);
         }
 
-        if (path.includes('/robokassa/result') && method === 'POST') {
+        if ((action === 'robokassa/result' || path.includes('/robokassa/result')) && method === 'POST') {
             return await handleRobokassaResult({ ...body, ...query }, headers);
         }
 
-        if (path.includes('/robokassa/success')) {
+        if (action === 'robokassa/success' || path.includes('/robokassa/success')) {
             return handleRobokassaSuccess(query);
         }
 
-        if (path.includes('/robokassa/fail')) {
+        if (action === 'robokassa/fail' || path.includes('/robokassa/fail')) {
             return handleRobokassaFail(query);
         }
 
-        if (path.includes('/health') || method === 'GET') {
+        if (action === 'health' || path.includes('/health') || method === 'GET') {
             return {
                 statusCode: 200,
                 headers,
                 body: JSON.stringify({ 
                     status: 'ok', 
                     timestamp: new Date().toISOString(),
-                    robokassa: process.env.ROBOKASSA_MERCHANT_LOGIN ? 'configured' : 'not configured'
+                    robokassa: process.env.ROBOKASSA_MERCHANT_LOGIN ? 'configured' : 'not configured',
+                    action: action || 'none'
                 }),
             };
         }
