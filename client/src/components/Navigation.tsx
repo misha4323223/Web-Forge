@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLocation } from "wouter";
 
 const navItems = [
   { label: "О студии", href: "#about" },
@@ -17,6 +18,9 @@ const orderPagePath = "/order";
 export function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [location] = useLocation();
+
+  const isHomePage = location === "/";
 
   useEffect(() => {
     const handleScroll = () => {
@@ -27,6 +31,10 @@ export function Navigation() {
   }, []);
 
   const scrollToSection = (href: string) => {
+    if (!isHomePage) {
+      window.location.href = "/" + href;
+      return;
+    }
     const element = document.querySelector(href);
     if (element) {
       element.scrollIntoView({ behavior: "smooth" });
@@ -47,10 +55,12 @@ export function Navigation() {
     >
       <nav className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
         <a
-          href="#"
+          href="/"
           onClick={(e) => {
-            e.preventDefault();
-            window.scrollTo({ top: 0, behavior: "smooth" });
+            if (isHomePage) {
+              e.preventDefault();
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }
           }}
           className="flex items-center gap-2"
           data-testid="link-logo"

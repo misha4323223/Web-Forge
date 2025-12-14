@@ -30,7 +30,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Loader2, CreditCard, FileText, Check } from "lucide-react";
+import { Loader2, CreditCard, FileText, Check, ArrowLeft } from "lucide-react";
 
 type ProjectType = "landing" | "corporate" | "shop";
 
@@ -356,11 +356,18 @@ export default function Order() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-12"
+            className="mb-12"
           >
-            <span className="inline-block px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-mono mb-6">
-              Оформление заказа
-            </span>
+            <a href="/">
+              <Button variant="ghost" className="mb-6" data-testid="button-back-home">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                На главную
+              </Button>
+            </a>
+            <div className="text-center">
+              <span className="inline-block px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-mono mb-6">
+                Оформление заказа
+              </span>
             <h1 className="text-3xl md:text-4xl font-bold mb-4">
               Заказать{" "}
               <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
@@ -368,8 +375,9 @@ export default function Order() {
               </span>
             </h1>
             <p className="text-muted-foreground max-w-xl mx-auto">
-              Выберите тип сайта, добавьте нужные функции и оформите заказ
-            </p>
+                Выберите тип сайта, добавьте нужные функции и оформите заказ
+              </p>
+            </div>
           </motion.div>
 
           <div className="grid lg:grid-cols-3 gap-8">
