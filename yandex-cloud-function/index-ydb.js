@@ -570,23 +570,23 @@ async function handleRobokassaResult(data, headers) {
         console.error('Error fetching/updating order from YDB:', error.message, error.stack);
     }
 
-    // Если заказ найден, отправляем договор на email
+    // Отправляем документы на email в зависимости от типа оплаты
     if (order && order.clientEmail) {
-        try {
-            console.log('Generating PDF for order:', order.id);
-            const pdfBuffer = await generateContractPDF(order);
-            console.log('PDF generated, size:', pdfBuffer.length);
-            
-            await sendContractEmail(order, pdfBuffer);
-            console.log('Contract email sent to:', order.clientEmail);
-        } catch (emailError) {
-            console.error('Failed to send contract email:', emailError.message, emailError.stack);
-        }
-        
         if (isPrepayment) {
+            // Предоплата - отправляем договор
+            try {
+                console.log('Generating contract PDF for order:', order.id);
+                const pdfBuffer = await generateContractPDF(order);
+                console.log('Contract PDF generated, size:', pdfBuffer.length);
+                
+                await sendContractEmail(order, pdfBuffer);
+                console.log('Contract email sent to:', order.clientEmail);
+            } catch (emailError) {
+                console.error('Failed to send contract email:', emailError.message, emailError.stack);
+            }
+            
             // Формируем ссылку для оплаты остатка
             const payRemainingLink = `${SITE_URL}/pay-remaining?orderId=${shp_orderId}`;
-            const fullAmount = parseFloat(order.amount) || 0;
             const prepaymentPercent = order.prepaymentPercent || 50;
             
             await sendTelegramNotification(`Получена предоплата!
@@ -601,7 +601,19 @@ ${payRemainingLink}
 
 Договор отправлен клиенту на email.`);
         } else {
-            await sendTelegramNotification(`Получена полная оплата!
+            // Полная оплата - отправляем акт выполненных работ
+            try {
+                console.log('Generating completion act PDF for order:', order.id);
+                const pdfBuffer = await generateCompletionActPDF(order);
+                console.log('Completion act PDF generated, size:', pdfBuffer.length);
+                
+                await sendCompletionActEmail(order, pdfBuffer);
+                console.log('Completion act email sent to:', order.clientEmail);
+            } catch (emailError) {
+                console.error('Failed to send completion act email:', emailError.message, emailError.stack);
+            }
+            
+            await sendTelegramNotification(`Заказ полностью оплачен!
 👤 Клиент: ${order.clientName}
 📧 Email: ${order.clientEmail}
 📱 Телефон: ${order.clientPhone}
@@ -609,7 +621,10 @@ ${payRemainingLink}
 💰 Сумма: ${OutSum} ₽ (остаток)
 📋 Заказ: ${shp_orderId.toUpperCase()}
 
-Заказ полностью оплачен!`);
+Акт выполненных работ отправлен клиенту.
+
+⚠️ ВАЖНО: Отправьте клиенту данные доступа к сайту!
+(URL админки, логин, пароль)`);
         }
     } else {
         await sendTelegramNotification(`
@@ -871,6 +886,100 @@ async function generateContractPDF(order) {
     });
 }
 
+async function generateCompletionActPDF(order) {
+    return new Promise((resolve, reject) => {
+        const chunks = [];
+        const doc = new PDFDocument({ size: 'A4', margin: 50 });
+        
+        doc.on('data', chunk => chunks.push(chunk));
+        doc.on('end', () => resolve(Buffer.concat(chunks)));
+        doc.on('error', reject);
+
+        const path = require('path');
+        doc.registerFont('Roboto', path.join(__dirname, 'Roboto-Regular.ttf'));
+        doc.registerFont('Roboto-Bold', path.join(__dirname, 'Roboto-Bold.ttf'));
+
+        const formatPrice = (price) => {
+            const num = parseFloat(price) || 0;
+            return new Intl.NumberFormat('ru-RU').format(num);
+        };
+        const amount = parseFloat(order.amount) || 0;
+        const totalAmount = amount * 2;
+        const projectTypeLabel = getProjectTypeName(order.projectType);
+        const date = new Date().toLocaleDateString('ru-RU', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        });
+
+        doc.fontSize(16).font('Roboto-Bold').text('АКТ ВЫПОЛНЕННЫХ РАБОТ', { align: 'center' });
+        doc.moveDown(0.5);
+        doc.fontSize(10).font('Roboto').text(date, { align: 'center' });
+        doc.moveDown(1.5);
+
+        doc.fontSize(10).font('Roboto-Bold').text('ИСПОЛНИТЕЛЬ: ', { continued: true });
+        doc.font('Roboto').text('MP.WebStudio, самозанятый');
+        doc.moveDown(0.5);
+
+        doc.font('Roboto-Bold').text('ЗАКАЗЧИК: ', { continued: true });
+        doc.font('Roboto').text(order.clientName || 'Клиент');
+        if (order.clientPhone) doc.text(`Телефон: ${order.clientPhone}`);
+        if (order.clientEmail) doc.text(`Email: ${order.clientEmail}`);
+        doc.moveDown(1);
+
+        doc.font('Roboto-Bold').text('1. ВЫПОЛНЕННЫЕ РАБОТЫ');
+        doc.font('Roboto').text(`Разработка: ${projectTypeLabel}`);
+        if (order.projectDescription) {
+            doc.text(`Описание: ${order.projectDescription}`);
+        }
+        doc.moveDown(1);
+
+        doc.font('Roboto-Bold').text('2. СТОИМОСТЬ РАБОТ');
+        doc.font('Roboto').text(`Полная стоимость: ${formatPrice(totalAmount)} рублей`);
+        doc.text(`Предоплата (50%): ${formatPrice(amount)} руб. - ОПЛАЧЕНО`);
+        doc.text(`Остаток (50%): ${formatPrice(amount)} руб. - ОПЛАЧЕНО`);
+        doc.text('НДС не облагается (п. 8 ст. 2 ФЗ от 27.11.2018 N 422-ФЗ)');
+        doc.moveDown(1);
+
+        doc.font('Roboto-Bold').text('3. ПЕРЕДАЧА ПРАВ');
+        doc.font('Roboto').text('3.1. Все исключительные права на созданный сайт полностью переходят к Заказчику.');
+        doc.text('3.2. Исполнитель передаёт Заказчику все материалы и доступы к сайту.');
+        doc.text('3.3. Заказчик подтверждает получение всех необходимых доступов.');
+        doc.moveDown(1);
+
+        doc.font('Roboto-Bold').text('4. ГАРАНТИЙНЫЕ ОБЯЗАТЕЛЬСТВА');
+        doc.font('Roboto').text('4.1. Гарантийный период: 14 календарных дней с момента подписания акта.');
+        doc.text('4.2. В течение гарантийного периода Исполнитель бесплатно устраняет технические ошибки.');
+        doc.text('4.3. Гарантия не распространяется на изменения, внесённые Заказчиком или третьими лицами.');
+        doc.moveDown(1);
+
+        doc.font('Roboto-Bold').text('5. ПОДТВЕРЖДЕНИЕ');
+        doc.font('Roboto').text('Стороны подтверждают, что:');
+        doc.text('- Работы выполнены в полном объёме и в согласованные сроки');
+        doc.text('- Заказчик принимает результат работ без претензий');
+        doc.text('- Оплата произведена полностью');
+        doc.moveDown(1);
+
+        doc.font('Roboto-Bold').text('ДАННЫЕ ДОСТУПА К САЙТУ');
+        doc.font('Roboto').text('Данные доступа к панели управления сайтом отправлены вам');
+        doc.text('отдельным защищённым сообщением на указанный email или телефон.');
+        doc.moveDown(0.5);
+        doc.text('Рекомендуем сменить пароли после получения доступов.', { oblique: true });
+        doc.moveDown(1);
+
+        doc.font('Roboto-Bold').text('АКЦЕПТ АКТА');
+        doc.font('Roboto').text('Оплата остатка является подтверждением приёмки работ.');
+        doc.text(`Дата акцепта: ${new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' })}`);
+        doc.text(`ID заказа: ${order.id}`);
+        doc.moveDown(2);
+
+        doc.fontSize(9).text('MP.WebStudio | https://mp-webstudio.ru', { align: 'center' });
+        doc.text('Спасибо за сотрудничество!', { align: 'center' });
+
+        doc.end();
+    });
+}
+
 // ============ Email Sending ============
 
 async function sendContractEmail(order, pdfBuffer) {
@@ -1008,6 +1117,132 @@ async function sendContractEmail(order, pdfBuffer) {
     console.log('Sending email via SMTP to:', order.clientEmail);
     await transporter.sendMail(mailOptions);
     console.log('Email sent successfully via SMTP');
+}
+
+async function sendCompletionActEmail(order, pdfBuffer) {
+    const formatPrice = (price) => {
+        const num = parseFloat(price) || 0;
+        return new Intl.NumberFormat('ru-RU').format(num);
+    };
+    const amount = parseFloat(order.amount) || 0;
+    const totalAmount = amount * 2;
+    
+    const emailHtml = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #10b981;">Проект завершён!</h2>
+            <p>Здравствуйте, ${order.clientName || 'Уважаемый клиент'}!</p>
+            <p>Поздравляем! Ваш проект полностью оплачен и передан вам.</p>
+            <div style="background: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <h3 style="margin-top: 0;">Итоги проекта:</h3>
+                <p><strong>Тип проекта:</strong> ${getProjectTypeName(order.projectType)}</p>
+                <p><strong>Полная стоимость:</strong> ${formatPrice(totalAmount)} руб.</p>
+                <p><strong>Статус:</strong> <span style="color: #10b981;">Полностью оплачен</span></p>
+                <p><strong>ID заказа:</strong> ${order.id}</p>
+            </div>
+            <div style="background: #fef3c7; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #f59e0b;">
+                <p style="margin: 0;"><strong>Данные доступа к сайту</strong> будут отправлены вам отдельным защищённым сообщением в ближайшее время.</p>
+            </div>
+            <p><strong>Акт выполненных работ</strong> прикреплён к письму в PDF.</p>
+            <h3 style="margin-top: 30px;">Гарантия</h3>
+            <p>В течение 14 дней мы бесплатно исправим любые технические ошибки.</p>
+            <p style="color: #6b7280; font-size: 14px; margin-top: 30px;">
+                Спасибо за сотрудничество!<br>
+                С уважением,<br>MP.WebStudio<br>
+                <a href="https://mp-webstudio.ru">mp-webstudio.ru</a>
+            </p>
+        </div>
+    `;
+    
+    const postboxAccessKey = process.env.POSTBOX_ACCESS_KEY_ID;
+    const postboxSecretKey = process.env.POSTBOX_SECRET_ACCESS_KEY;
+    const postboxFromEmail = process.env.POSTBOX_FROM_EMAIL;
+    
+    if (postboxAccessKey && postboxSecretKey && postboxFromEmail) {
+        console.log('Sending completion act via Yandex Cloud Postbox');
+        
+        const sesClient = new SESv2Client({
+            region: 'ru-central1',
+            endpoint: 'https://postbox.cloud.yandex.net',
+            credentials: {
+                accessKeyId: postboxAccessKey,
+                secretAccessKey: postboxSecretKey,
+            },
+        });
+        
+        const wrapBase64 = (base64) => base64.match(/.{1,76}/g).join('\r\n');
+        const boundary = '----=_Part_' + Date.now().toString(36);
+        const pdfBase64 = wrapBase64(pdfBuffer.toString('base64'));
+        const htmlBase64 = wrapBase64(Buffer.from(emailHtml).toString('base64'));
+        
+        const rawEmail = [
+            `From: MP.WebStudio <${postboxFromEmail}>`,
+            `To: ${order.clientEmail}`,
+            `Subject: =?UTF-8?B?${Buffer.from(`Акт выполненных работ - Заказ ${order.id}`).toString('base64')}?=`,
+            'MIME-Version: 1.0',
+            `Content-Type: multipart/mixed; boundary="${boundary}"`,
+            '',
+            `--${boundary}`,
+            'Content-Type: text/html; charset=UTF-8',
+            'Content-Transfer-Encoding: base64',
+            '',
+            htmlBase64,
+            '',
+            `--${boundary}`,
+            `Content-Type: application/pdf; name="CompletionAct_${order.id}.pdf"`,
+            'Content-Transfer-Encoding: base64',
+            `Content-Disposition: attachment; filename="CompletionAct_${order.id}.pdf"`,
+            '',
+            pdfBase64,
+            '',
+            `--${boundary}--`,
+        ].join('\r\n');
+        
+        try {
+            const command = new SendEmailCommand({
+                FromEmailAddress: postboxFromEmail,
+                Destination: { ToAddresses: [order.clientEmail] },
+                Content: { Raw: { Data: Buffer.from(rawEmail) } },
+            });
+            
+            const response = await sesClient.send(command);
+            console.log('Completion act sent via Postbox, MessageId:', response.MessageId);
+            return;
+        } catch (error) {
+            console.error('Postbox error:', error.message);
+            throw new Error(`Yandex Postbox error: ${error.message}`);
+        }
+    }
+    
+    const smtpEmail = process.env.SMTP_EMAIL;
+    const smtpPassword = process.env.SMTP_PASSWORD;
+
+    if (!smtpEmail || !smtpPassword) {
+        console.log('No email service configured, skipping completion act email');
+        return;
+    }
+
+    const transporter = nodemailer.createTransport({
+        host: 'smtp.yandex.ru',
+        port: 465,
+        secure: true,
+        auth: { user: smtpEmail, pass: smtpPassword },
+    });
+
+    const mailOptions = {
+        from: `"MP.WebStudio" <${smtpEmail}>`,
+        to: order.clientEmail,
+        subject: `Акт выполненных работ - Заказ ${order.id}`,
+        html: emailHtml,
+        attachments: [{
+            filename: `Акт_${order.id}.pdf`,
+            content: pdfBuffer,
+            contentType: 'application/pdf',
+        }],
+    };
+
+    console.log('Sending completion act via SMTP to:', order.clientEmail);
+    await transporter.sendMail(mailOptions);
+    console.log('Completion act sent via SMTP');
 }
 
 // ============ Helpers ============
