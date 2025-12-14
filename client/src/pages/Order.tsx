@@ -54,7 +54,7 @@ const projectTypes: ProjectTypeConfig[] = [
   {
     value: "landing",
     label: "Лендинг",
-    basePrice: 15000,
+    basePrice: 25000,
     description: "Одностраничный продающий сайт",
     includes: [
       "Адаптивный дизайн",
@@ -68,7 +68,7 @@ const projectTypes: ProjectTypeConfig[] = [
   {
     value: "corporate",
     label: "Корпоративный сайт",
-    basePrice: 40000,
+    basePrice: 60000,
     description: "Многостраничный сайт компании",
     includes: [
       "Всё из лендинга",
@@ -81,7 +81,7 @@ const projectTypes: ProjectTypeConfig[] = [
   {
     value: "shop",
     label: "Интернет-магазин",
-    basePrice: 80000,
+    basePrice: 120000,
     description: "Каталог, корзина, оформление заказа",
     includes: [
       "Всё из корп. сайта",
@@ -94,30 +94,30 @@ const projectTypes: ProjectTypeConfig[] = [
 ];
 
 const features: Feature[] = [
-  { id: "calculator", label: "Калькулятор стоимости", price: 5000, description: "Интерактивный расчёт", availableFor: ["landing", "corporate", "shop"] },
-  { id: "gallery", label: "Галерея / Портфолио", price: 5000, description: "Слайдер с лайтбоксом", availableFor: ["landing", "corporate", "shop"] },
-  { id: "messengers", label: "Виджеты мессенджеров", price: 3000, description: "WhatsApp, Telegram", availableFor: ["landing", "corporate", "shop"] },
-  { id: "analytics", label: "Яндекс.Метрика", price: 3000, description: "Подключение аналитики", availableFor: ["landing", "corporate", "shop"] },
-  { id: "email_notify", label: "Email-уведомления", price: 5000, description: "Письма о заявках", availableFor: ["landing", "corporate", "shop"] },
-  { id: "telegram_notify", label: "Telegram-уведомления", price: 5000, description: "Заявки в Telegram-бот", availableFor: ["landing", "corporate", "shop"] },
-  { id: "animations", label: "Продвинутые анимации", price: 8000, description: "Параллакс, 3D-эффекты", availableFor: ["landing", "corporate", "shop"] },
-  { id: "chat_widget", label: "Чат-виджет", price: 3000, description: "Jivo, Tawk.to", availableFor: ["landing", "corporate", "shop"] },
-  { id: "popup", label: "Pop-up окна", price: 3000, description: "При выходе, по таймеру", availableFor: ["landing", "corporate", "shop"] },
-  { id: "countdown", label: "Таймер акции", price: 2000, description: "Обратный отсчёт", availableFor: ["landing", "corporate", "shop"] },
-  { id: "multilang", label: "Мультиязычность", price: 10000, description: "2+ языка", availableFor: ["landing", "corporate", "shop"] },
-  { id: "extra_sections", label: "Доп. секции (5 шт)", price: 5000, description: "Сверх базовых", availableFor: ["landing"] },
-  { id: "extra_pages", label: "Доп. страницы (5 шт)", price: 10000, description: "Сверх базовых", availableFor: ["corporate"] },
-  { id: "blog", label: "Блог / Новости", price: 15000, description: "Раздел статей", availableFor: ["corporate", "shop"] },
-  { id: "search", label: "Поиск по сайту", price: 8000, description: "Умный поиск", availableFor: ["corporate", "shop"] },
-  { id: "team", label: "Страница команды", price: 5000, description: "Карточки сотрудников", availableFor: ["corporate"] },
-  { id: "booking", label: "Онлайн-запись", price: 15000, description: "Календарь бронирования", availableFor: ["landing", "corporate"] },
-  { id: "payment", label: "Онлайн-оплата", price: 15000, description: "Robokassa / ЮKassa", availableFor: ["landing", "corporate", "shop"] },
-  { id: "crm", label: "Интеграция CRM", price: 20000, description: "AmoCRM, Bitrix24", availableFor: ["landing", "corporate", "shop"] },
-  { id: "filters", label: "Фильтры и сортировка", price: 10000, description: "По параметрам товаров", availableFor: ["shop"] },
-  { id: "favorites", label: "Избранное", price: 5000, description: "Сохранение товаров", availableFor: ["shop"] },
-  { id: "admin", label: "Админ-панель", price: 25000, description: "Управление товарами", availableFor: ["shop"] },
-  { id: "telegram_shop", label: "Telegram-магазин", price: 20000, description: "Мини-приложение", availableFor: ["shop"] },
-  { id: "delivery", label: "Интеграция доставки", price: 15000, description: "СДЭК, Boxberry", availableFor: ["shop"] },
+  { id: "calculator", label: "Калькулятор стоимости", price: 8000, description: "Интерактивный расчёт", availableFor: ["landing", "corporate", "shop"] },
+  { id: "gallery", label: "Галерея / Портфолио", price: 8000, description: "Слайдер с лайтбоксом", availableFor: ["landing", "corporate", "shop"] },
+  { id: "messengers", label: "Виджеты мессенджеров", price: 5000, description: "WhatsApp, Telegram", availableFor: ["landing", "corporate", "shop"] },
+  { id: "analytics", label: "Яндекс.Метрика", price: 5000, description: "Подключение аналитики", availableFor: ["landing", "corporate", "shop"] },
+  { id: "email_notify", label: "Email-уведомления", price: 8000, description: "Письма о заявках", availableFor: ["landing", "corporate", "shop"] },
+  { id: "telegram_notify", label: "Telegram-уведомления", price: 8000, description: "Заявки в Telegram-бот", availableFor: ["landing", "corporate", "shop"] },
+  { id: "animations", label: "Продвинутые анимации", price: 15000, description: "Параллакс, 3D-эффекты", availableFor: ["landing", "corporate", "shop"] },
+  { id: "chat_widget", label: "Чат-виджет", price: 5000, description: "Jivo, Tawk.to", availableFor: ["landing", "corporate", "shop"] },
+  { id: "popup", label: "Pop-up окна", price: 5000, description: "При выходе, по таймеру", availableFor: ["landing", "corporate", "shop"] },
+  { id: "countdown", label: "Таймер акции", price: 3000, description: "Обратный отсчёт", availableFor: ["landing", "corporate", "shop"] },
+  { id: "multilang", label: "Мультиязычность", price: 20000, description: "2+ языка", availableFor: ["landing", "corporate", "shop"] },
+  { id: "extra_sections", label: "Доп. секции (5 шт)", price: 8000, description: "Сверх базовых", availableFor: ["landing"] },
+  { id: "extra_pages", label: "Доп. страницы (5 шт)", price: 15000, description: "Сверх базовых", availableFor: ["corporate"] },
+  { id: "blog", label: "Блог / Новости", price: 25000, description: "Раздел статей", availableFor: ["corporate", "shop"] },
+  { id: "search", label: "Поиск по сайту", price: 12000, description: "Умный поиск", availableFor: ["corporate", "shop"] },
+  { id: "team", label: "Страница команды", price: 8000, description: "Карточки сотрудников", availableFor: ["corporate"] },
+  { id: "booking", label: "Онлайн-запись", price: 25000, description: "Календарь бронирования", availableFor: ["landing", "corporate"] },
+  { id: "payment", label: "Онлайн-оплата", price: 25000, description: "Robokassa / ЮKassa", availableFor: ["landing", "corporate", "shop"] },
+  { id: "crm", label: "Интеграция CRM", price: 35000, description: "AmoCRM, Bitrix24", availableFor: ["landing", "corporate", "shop"] },
+  { id: "filters", label: "Фильтры и сортировка", price: 15000, description: "По параметрам товаров", availableFor: ["shop"] },
+  { id: "favorites", label: "Избранное", price: 8000, description: "Сохранение товаров", availableFor: ["shop"] },
+  { id: "admin", label: "Админ-панель", price: 45000, description: "Управление товарами", availableFor: ["shop"] },
+  { id: "telegram_shop", label: "Telegram-магазин", price: 40000, description: "Мини-приложение", availableFor: ["shop"] },
+  { id: "delivery", label: "Интеграция доставки", price: 25000, description: "СДЭК, Boxberry", availableFor: ["shop"] },
 ];
 
 const orderSchema = z.object({
