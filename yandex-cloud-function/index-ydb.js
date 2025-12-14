@@ -20,7 +20,7 @@
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const PDFDocument = require('pdfkit');
-const { Driver, getCredentialsFromEnv } = require('ydb-sdk');
+const { Driver, getCredentialsFromEnv, TypedValues, Types } = require('ydb-sdk');
 
 const SITE_URL = process.env.SITE_URL || 'https://www.mp-webstudio.ru';
 
@@ -43,7 +43,7 @@ async function getYdbDriver() {
         if (!(await ydbDriver.ready(timeout))) {
             throw new Error('YDB driver failed to connect');
         }
-        console.log('YDB driver connected');
+        console.log('YDB driver connected to:', database);
     }
     return ydbDriver;
 }
@@ -123,11 +123,11 @@ module.exports.handler = async function (event, context) {
         };
 
     } catch (error) {
-        console.error('Error:', error);
+        console.error('Handler error:', error.message, error.stack);
         return {
             statusCode: 500,
             headers,
-            body: JSON.stringify({ success: false, message: 'Internal server error' }),
+            body: JSON.stringify({ success: false, message: 'Internal server error', error: error.message }),
         };
     }
 };
@@ -139,8 +139,20 @@ async function createOrderInYdb(orderData) {
     const orderId = generateOrderId();
     const now = new Date().toISOString();
     
+    // Валидация входных данных
+    const clientName = String(orderData.clientName || '').trim();
+    const clientEmail = String(orderData.clientEmail || '').trim();
+    const clientPhone = String(orderData.clientPhone || '').trim();
+    const projectType = String(orderData.projectType || '').trim();
+    const projectDescription = String(orderData.projectDescription || '').trim();
+    const amount = String(orderData.amount || '0').trim();
+    
+    if (!clientName || !clientEmail) {
+        throw new Error('clientName and clientEmail are required');
+    }
+    
     await driver.tableClient.withSession(async (session) => {
-        const query = `
+        const queryText = `
             DECLARE $id AS Utf8;
             DECLARE $client_name AS Utf8;
             DECLARE $client_email AS Utf8;
@@ -155,19 +167,19 @@ async function createOrderInYdb(orderData) {
             VALUES ($id, $client_name, $client_email, $client_phone, $project_type, $project_description, $amount, $status, $created_at);
         `;
         
-        const params = {
-            '$id': { typeId: 'UTF8', value: orderId },
-            '$client_name': { typeId: 'UTF8', value: orderData.clientName || '' },
-            '$client_email': { typeId: 'UTF8', value: orderData.clientEmail || '' },
-            '$client_phone': { typeId: 'UTF8', value: orderData.clientPhone || '' },
-            '$project_type': { typeId: 'UTF8', value: orderData.projectType || '' },
-            '$project_description': { typeId: 'UTF8', value: orderData.projectDescription || '' },
-            '$amount': { typeId: 'UTF8', value: String(orderData.amount || '0') },
-            '$status': { typeId: 'UTF8', value: 'pending' },
-            '$created_at': { typeId: 'UTF8', value: now },
-        };
+        const preparedQuery = await session.prepareQuery(queryText);
         
-        await session.executeQuery(query, params);
+        await session.executeQuery(preparedQuery, {
+            '$id': TypedValues.utf8(orderId),
+            '$client_name': TypedValues.utf8(clientName),
+            '$client_email': TypedValues.utf8(clientEmail),
+            '$client_phone': TypedValues.utf8(clientPhone),
+            '$project_type': TypedValues.utf8(projectType),
+            '$project_description': TypedValues.utf8(projectDescription),
+            '$amount': TypedValues.utf8(amount),
+            '$status': TypedValues.utf8('pending'),
+            '$created_at': TypedValues.utf8(now),
+        });
     });
     
     console.log('Order created in YDB:', orderId);
@@ -179,36 +191,51 @@ async function getOrderFromYdb(orderId) {
     let order = null;
     
     await driver.tableClient.withSession(async (session) => {
-        const query = `
+        const queryText = `
             DECLARE $id AS Utf8;
             SELECT id, client_name, client_email, client_phone, project_type, project_description, amount, status, created_at
             FROM orders
             WHERE id = $id;
         `;
         
-        const params = {
-            '$id': { typeId: 'UTF8', value: orderId },
-        };
+        const preparedQuery = await session.prepareQuery(queryText);
         
-        const result = await session.executeQuery(query, params);
+        const result = await session.executeQuery(preparedQuery, {
+            '$id': TypedValues.utf8(orderId),
+        });
         
-        if (result.resultSets[0] && result.resultSets[0].rows && result.resultSets[0].rows.length > 0) {
-            const row = result.resultSets[0].rows[0];
-            order = {
-                id: row.items[0].textValue,
-                clientName: row.items[1].textValue,
-                clientEmail: row.items[2].textValue,
-                clientPhone: row.items[3].textValue,
-                projectType: row.items[4].textValue,
-                projectDescription: row.items[5].textValue,
-                amount: row.items[6].textValue,
-                status: row.items[7].textValue,
-                createdAt: row.items[8].textValue,
-            };
+        if (result.resultSets && result.resultSets.length > 0) {
+            const resultSet = result.resultSets[0];
+            const rows = resultSet.rows || [];
+            
+            if (rows.length > 0) {
+                const row = rows[0];
+                // YDB SDK возвращает объекты с именованными полями
+                order = {
+                    id: getStringValue(row.id),
+                    clientName: getStringValue(row.client_name),
+                    clientEmail: getStringValue(row.client_email),
+                    clientPhone: getStringValue(row.client_phone),
+                    projectType: getStringValue(row.project_type),
+                    projectDescription: getStringValue(row.project_description),
+                    amount: getStringValue(row.amount),
+                    status: getStringValue(row.status),
+                    createdAt: getStringValue(row.created_at),
+                };
+            }
         }
     });
     
+    console.log('Order fetched from YDB:', order ? order.id : 'not found');
     return order;
+}
+
+function getStringValue(field) {
+    if (!field) return '';
+    if (typeof field === 'string') return field;
+    if (field.textValue !== undefined) return field.textValue;
+    if (field.value !== undefined) return String(field.value);
+    return String(field);
 }
 
 async function updateOrderStatusInYdb(orderId, status) {
@@ -216,7 +243,7 @@ async function updateOrderStatusInYdb(orderId, status) {
     const now = new Date().toISOString();
     
     await driver.tableClient.withSession(async (session) => {
-        const query = `
+        const queryText = `
             DECLARE $id AS Utf8;
             DECLARE $status AS Utf8;
             DECLARE $paid_at AS Utf8;
@@ -226,16 +253,16 @@ async function updateOrderStatusInYdb(orderId, status) {
             WHERE id = $id;
         `;
         
-        const params = {
-            '$id': { typeId: 'UTF8', value: orderId },
-            '$status': { typeId: 'UTF8', value: status },
-            '$paid_at': { typeId: 'UTF8', value: now },
-        };
+        const preparedQuery = await session.prepareQuery(queryText);
         
-        await session.executeQuery(query, params);
+        await session.executeQuery(preparedQuery, {
+            '$id': TypedValues.utf8(orderId),
+            '$status': TypedValues.utf8(status),
+            '$paid_at': TypedValues.utf8(now),
+        });
     });
     
-    console.log('Order status updated:', orderId, status);
+    console.log('Order status updated in YDB:', orderId, '->', status);
 }
 
 function generateOrderId() {
@@ -254,7 +281,7 @@ async function handleContact(data, headers) {
             body: JSON.stringify({ success: true, message: 'Заявка отправлена' }),
         };
     } catch (error) {
-        console.error('Error handling contact:', error);
+        console.error('Error handling contact:', error.message);
         return {
             statusCode: 500,
             headers,
@@ -265,6 +292,15 @@ async function handleContact(data, headers) {
 
 async function handleOrder(data, headers) {
     try {
+        // Валидация
+        if (!data.clientName || !data.clientEmail) {
+            return {
+                statusCode: 400,
+                headers,
+                body: JSON.stringify({ success: false, message: 'Имя и email обязательны' }),
+            };
+        }
+        
         const orderId = await createOrderInYdb(data);
         
         await sendTelegramNotification(formatOrderMessage({
@@ -291,11 +327,11 @@ async function handleOrder(data, headers) {
             }),
         };
     } catch (error) {
-        console.error('Error creating order:', error);
+        console.error('Error creating order:', error.message, error.stack);
         return {
             statusCode: 500,
             headers,
-            body: JSON.stringify({ success: false, message: 'Ошибка создания заказа' }),
+            body: JSON.stringify({ success: false, message: 'Ошибка создания заказа', error: error.message }),
         };
     }
 }
@@ -310,15 +346,19 @@ function generateRobokassaUrl(orderId, amount) {
         return null;
     }
     
-    const prepayment = Math.round(parseFloat(amount) / 2);
+    const numericAmount = parseFloat(amount) || 0;
+    if (numericAmount <= 0) {
+        console.error('Invalid amount:', amount);
+        return null;
+    }
+    
+    const prepayment = Math.round(numericAmount / 2);
     const invId = Date.now() % 1000000;
     
     const signatureString = `${merchantLogin}:${prepayment}:${invId}:${password1}:shp_orderId=${orderId}`;
     const signature = crypto.createHash('md5').update(signatureString).digest('hex');
     
-    const baseUrl = isTestMode 
-        ? 'https://auth.robokassa.ru/Merchant/Index.aspx'
-        : 'https://auth.robokassa.ru/Merchant/Index.aspx';
+    const baseUrl = 'https://auth.robokassa.ru/Merchant/Index.aspx';
     
     const params = new URLSearchParams({
         MerchantLogin: merchantLogin,
@@ -345,14 +385,14 @@ async function handleRobokassaResult(data, headers) {
 
     if (!OutSum || !InvId || !SignatureValue) {
         console.error('Missing required Robokassa parameters');
-        return { statusCode: 400, headers, body: 'missing params' };
+        return { statusCode: 400, headers: { 'Content-Type': 'text/plain' }, body: 'missing params' };
     }
 
     const PASSWORD2 = process.env.ROBOKASSA_PASSWORD2;
     
     if (!PASSWORD2) {
         console.error('ROBOKASSA_PASSWORD2 not configured');
-        return { statusCode: 500, headers, body: 'config error' };
+        return { statusCode: 500, headers: { 'Content-Type': 'text/plain' }, body: 'config error' };
     }
 
     const signatureString = `${OutSum}:${InvId}:${PASSWORD2}:shp_orderId=${shp_orderId}`;
@@ -365,7 +405,7 @@ async function handleRobokassaResult(data, headers) {
 
     if (calculatedSignature.toLowerCase() !== SignatureValue.toLowerCase()) {
         console.error('Invalid Robokassa signature');
-        return { statusCode: 400, headers, body: 'bad sign' };
+        return { statusCode: 400, headers: { 'Content-Type': 'text/plain' }, body: 'bad sign' };
     }
 
     // Получаем заказ из YDB
@@ -378,7 +418,7 @@ async function handleRobokassaResult(data, headers) {
             await updateOrderStatusInYdb(shp_orderId, 'paid');
         }
     } catch (error) {
-        console.error('Error fetching order from YDB:', error);
+        console.error('Error fetching/updating order from YDB:', error.message, error.stack);
     }
 
     // Если заказ найден, отправляем договор на email
@@ -391,7 +431,7 @@ async function handleRobokassaResult(data, headers) {
             await sendContractEmail(order, pdfBuffer);
             console.log('Contract email sent to:', order.clientEmail);
         } catch (emailError) {
-            console.error('Failed to send contract email:', emailError.message);
+            console.error('Failed to send contract email:', emailError.message, emailError.stack);
         }
         
         await sendTelegramNotification(`
@@ -461,8 +501,11 @@ async function generateContractPDF(order) {
         doc.registerFont('Roboto', path.join(__dirname, 'Roboto-Regular.ttf'));
         doc.registerFont('Roboto-Bold', path.join(__dirname, 'Roboto-Bold.ttf'));
 
-        const formatPrice = (price) => new Intl.NumberFormat('ru-RU').format(price);
-        const amount = parseFloat(order.amount);
+        const formatPrice = (price) => {
+            const num = parseFloat(price) || 0;
+            return new Intl.NumberFormat('ru-RU').format(num);
+        };
+        const amount = parseFloat(order.amount) || 0;
         const prepayment = Math.round(amount / 2);
         const projectTypeLabel = getProjectTypeName(order.projectType);
         const date = new Date().toLocaleDateString('ru-RU', {
@@ -547,8 +590,11 @@ async function sendContractEmail(order, pdfBuffer) {
         auth: { user: smtpEmail, pass: smtpPassword },
     });
 
-    const formatPrice = (price) => new Intl.NumberFormat('ru-RU').format(price);
-    const amount = parseFloat(order.amount);
+    const formatPrice = (price) => {
+        const num = parseFloat(price) || 0;
+        return new Intl.NumberFormat('ru-RU').format(num);
+    };
+    const amount = parseFloat(order.amount) || 0;
     const prepayment = Math.round(amount / 2);
 
     const mailOptions = {
@@ -622,6 +668,6 @@ async function sendTelegramNotification(message) {
         });
         console.log('Telegram notification sent');
     } catch (error) {
-        console.error('Telegram error:', error);
+        console.error('Telegram error:', error.message);
     }
 }
