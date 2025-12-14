@@ -538,6 +538,7 @@ async function handleRobokassaResult(data, headers) {
 
     // Получаем заказ из YDB
     let order = null;
+    let isPrepayment = false;
     try {
         order = await getOrderFromYdb(shp_orderId);
         console.log('Order fetched from YDB:', order);
@@ -546,9 +547,11 @@ async function handleRobokassaResult(data, headers) {
             if (order.status === 'paid') {
                 await updateOrderStatusInYdb(shp_orderId, 'completed');
                 console.log('Order fully paid (remaining):', shp_orderId);
+                isPrepayment = false;
             } else {
                 await updateOrderStatusInYdb(shp_orderId, 'paid');
                 console.log('Order prepaid:', shp_orderId);
+                isPrepayment = true;
             }
         }
     } catch (error) {
@@ -568,18 +571,34 @@ async function handleRobokassaResult(data, headers) {
             console.error('Failed to send contract email:', emailError.message, emailError.stack);
         }
         
-        await sendTelegramNotification(`
-Оплата получена! Договор подписан!
+        if (isPrepayment) {
+            // Формируем ссылку для оплаты остатка
+            const payRemainingLink = `${SITE_URL}/pay-remaining?orderId=${shp_orderId}`;
+            const fullAmount = parseFloat(order.amount) || 0;
+            const prepaymentPercent = order.prepaymentPercent || 50;
+            
+            await sendTelegramNotification(`Получена предоплата!
+👤 Клиент: ${order.clientName}
+📧 Email: ${order.clientEmail}
+📱 Телефон: ${order.clientPhone}
+🌐 Тип: ${getProjectTypeName(order.projectType)}
+💰 Сумма: ${OutSum} ₽ (${prepaymentPercent}%)
+📋 Заказ: ${shp_orderId.toUpperCase()}
+🔗 Ссылка для оплаты остатка:
+${payRemainingLink}
 
-Заказ: ${shp_orderId}
-Сумма: ${OutSum} руб.
-Клиент: ${order.clientName}
-Email: ${order.clientEmail}
-Телефон: ${order.clientPhone}
-Тип: ${getProjectTypeName(order.projectType)}
+Договор отправлен клиенту на email.`);
+        } else {
+            await sendTelegramNotification(`Получена полная оплата!
+👤 Клиент: ${order.clientName}
+📧 Email: ${order.clientEmail}
+📱 Телефон: ${order.clientPhone}
+🌐 Тип: ${getProjectTypeName(order.projectType)}
+💰 Сумма: ${OutSum} ₽ (остаток)
+📋 Заказ: ${shp_orderId.toUpperCase()}
 
-Договор отправлен клиенту на email.
-        `);
+Заказ полностью оплачен!`);
+        }
     } else {
         await sendTelegramNotification(`
 Оплата получена!

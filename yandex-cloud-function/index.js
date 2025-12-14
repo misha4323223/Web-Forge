@@ -212,11 +212,14 @@ async function handleRobokassaResult(data, headers) {
 
     // Получаем заказ из базы данных через API
     let order = null;
+    let isPrepayment = false;
     try {
         const response = await fetch(`${SITE_API_URL}/api/orders/${shp_orderId}`);
         if (response.ok) {
             order = await response.json();
             console.log('Order fetched from DB:', order);
+            // Определяем, это предоплата или полная оплата
+            isPrepayment = order.status !== 'paid';
         } else {
             console.log('Order not found in DB, status:', response.status);
         }
@@ -237,18 +240,35 @@ async function handleRobokassaResult(data, headers) {
             console.error('Failed to send contract email:', emailError.message);
         }
         
-        await sendTelegramNotification(`
-Оплата получена! Договор подписан!
+        const siteUrl = process.env.SITE_URL || 'https://www.mp-webstudio.ru';
+        
+        if (isPrepayment) {
+            // Формируем ссылку для оплаты остатка
+            const payRemainingLink = `${siteUrl}/pay-remaining?orderId=${shp_orderId}`;
+            const prepaymentPercent = order.prepaymentPercent || 50;
+            
+            await sendTelegramNotification(`Получена предоплата!
+👤 Клиент: ${order.clientName}
+📧 Email: ${order.clientEmail}
+📱 Телефон: ${order.clientPhone}
+🌐 Тип: ${getProjectTypeName(order.projectType)}
+💰 Сумма: ${OutSum} ₽ (${prepaymentPercent}%)
+📋 Заказ: ${shp_orderId.toUpperCase()}
+🔗 Ссылка для оплаты остатка:
+${payRemainingLink}
 
-Заказ: ${shp_orderId}
-Сумма: ${OutSum} руб.
-Клиент: ${order.clientName}
-Email: ${order.clientEmail}
-Телефон: ${order.clientPhone}
-Тип: ${getProjectTypeName(order.projectType)}
+Договор отправлен клиенту на email.`);
+        } else {
+            await sendTelegramNotification(`Получена полная оплата!
+👤 Клиент: ${order.clientName}
+📧 Email: ${order.clientEmail}
+📱 Телефон: ${order.clientPhone}
+🌐 Тип: ${getProjectTypeName(order.projectType)}
+💰 Сумма: ${OutSum} ₽ (остаток)
+📋 Заказ: ${shp_orderId.toUpperCase()}
 
-Договор отправлен клиенту на email.
-        `);
+Заказ полностью оплачен!`);
+        }
     } else {
         await sendTelegramNotification(`
 Оплата получена!
