@@ -7,13 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Link } from "wouter";
 import { useState } from "react";
 
-import heroImg from "@assets/stock_images/cosmetics_skincare_p_2775c0e7.webp";
-import moisturizerImg from "@assets/stock_images/face_moisturizer_cre_59e07cda.webp";
-import serumImg from "@assets/stock_images/vitamin_c_serum_drop_c449b45e.webp";
-import micellarImg from "@assets/stock_images/micellar_water_clean_dda3e93a.webp";
-import maskImg from "@assets/stock_images/face_mask_cosmetic_s_4961cbaf.webp";
-import tonerImg from "@assets/stock_images/toner_bottle_skincar_632250d7.webp";
-import nightCreamImg from "@assets/stock_images/night_cream_luxury_s_7bf4c694.webp";
+const heroImg = "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=1920&q=80";
 
 const products = [
   {
@@ -22,7 +16,7 @@ const products = [
     brand: "HYDRA",
     price: 2890,
     oldPrice: 3490,
-    image: moisturizerImg,
+    image: "https://images.unsplash.com/photo-1570194065650-d99fb4b38b17?w=600&q=80",
     rating: 4.8,
     reviews: 124,
     tag: "Хит",
@@ -32,7 +26,7 @@ const products = [
     name: "Сыворотка с витамином C",
     brand: "GLOW",
     price: 3450,
-    image: serumImg,
+    image: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=600&q=80",
     rating: 4.9,
     reviews: 89,
     tag: "Новинка",
@@ -42,7 +36,7 @@ const products = [
     name: "Мицеллярная вода",
     brand: "PURE",
     price: 890,
-    image: micellarImg,
+    image: "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=600&q=80",
     rating: 4.7,
     reviews: 256,
   },
@@ -51,7 +45,7 @@ const products = [
     name: "Маска для лица",
     brand: "CARE",
     price: 1290,
-    image: maskImg,
+    image: "https://images.unsplash.com/photo-1596755389378-c31d21fd1273?w=600&q=80",
     rating: 4.6,
     reviews: 78,
     tag: "Веган",
@@ -61,7 +55,7 @@ const products = [
     name: "Тоник с гиалуроновой кислотой",
     brand: "HYDRA",
     price: 1890,
-    image: tonerImg,
+    image: "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=600&q=80",
     rating: 4.8,
     reviews: 145,
   },
@@ -71,7 +65,7 @@ const products = [
     brand: "RESTORE",
     price: 3290,
     oldPrice: 3990,
-    image: nightCreamImg,
+    image: "https://images.unsplash.com/photo-1611930022073-b7a4ba5fcccd?w=600&q=80",
     rating: 4.9,
     reviews: 67,
     tag: "Скидка",

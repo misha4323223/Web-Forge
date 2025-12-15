@@ -87,7 +87,11 @@ export default function FoodDelivery() {
 
       <header className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-orange-500/90 to-red-500/90" />
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1920')] bg-cover bg-center opacity-30" />
+        <img 
+          src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1920&q=80" 
+          alt="Еда" 
+          className="absolute inset-0 w-full h-full object-cover opacity-30"
+        />
         
         <nav className="relative z-10 max-w-7xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-2">
