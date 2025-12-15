@@ -3,12 +3,14 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { CookieConsent } from "@/components/CookieConsent";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import Order from "@/pages/Order";
 import PaymentSuccess from "@/pages/PaymentSuccess";
 import PaymentFail from "@/pages/PaymentFail";
 import PayRemaining from "@/pages/PayRemaining";
+import Privacy from "@/pages/Privacy";
 import FoodDelivery from "@/pages/demo/FoodDelivery";
 import FitnessStudio from "@/pages/demo/FitnessStudio";
 import CosmeticsShop from "@/pages/demo/CosmeticsShop";
@@ -25,6 +27,7 @@ function Router() {
       <Route path="/payment-success" component={PaymentSuccess} />
       <Route path="/payment-fail" component={PaymentFail} />
       <Route path="/pay-remaining" component={PayRemaining} />
+      <Route path="/privacy" component={Privacy} />
       <Route path="/demo/food-delivery" component={FoodDelivery} />
       <Route path="/demo/fitness" component={FitnessStudio} />
       <Route path="/demo/cosmetics" component={CosmeticsShop} />
@@ -43,6 +46,7 @@ function App() {
       <TooltipProvider>
         <Toaster />
         <Router />
+        <CookieConsent />
       </TooltipProvider>
     </QueryClientProvider>
   );
