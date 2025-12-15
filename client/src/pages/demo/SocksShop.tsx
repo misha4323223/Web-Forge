@@ -6,12 +6,12 @@ import { ShoppingCart, Gift, Menu, Truck, CreditCard, RefreshCw, ArrowLeft, Plus
 import { Link } from "wouter";
 import { useState } from "react";
 
-import giftBoxImg from "@assets/generated_images/gift_box_socks_set.png";
-import businessImg from "@assets/generated_images/business_socks_gift_box.png";
-import noveltyImg from "@assets/generated_images/novelty_socks_with_text.png";
-import athleticImg from "@assets/generated_images/athletic_running_socks.png";
-import colorfulImg from "@assets/generated_images/colorful_patterned_socks_set.png";
-import heroImg from "@assets/generated_images/socks_collection_hero_image.png";
+import giftBoxImg from "@assets/generated_images/gift_box_socks_set.webp";
+import businessImg from "@assets/generated_images/business_socks_gift_box.webp";
+import noveltyImg from "@assets/generated_images/novelty_socks_with_text.webp";
+import athleticImg from "@assets/generated_images/athletic_running_socks.webp";
+import colorfulImg from "@assets/generated_images/colorful_patterned_socks_set.webp";
+import heroImg from "@assets/generated_images/socks_collection_hero_image.webp";
 
 const products = [
   {

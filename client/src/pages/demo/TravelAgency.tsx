@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Link } from "wouter";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import travelHeroImg from "@assets/generated_images/tropical_beach_travel_destination.png";
+import travelHeroImg from "@assets/generated_images/tropical_beach_travel_destination.webp";
 
 const destinations = [
   { 

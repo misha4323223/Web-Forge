@@ -7,7 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Link } from "wouter";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import barberHeroImg from "@assets/generated_images/stylish_barbershop_interior.png";
+import barberHeroImg from "@assets/generated_images/stylish_barbershop_interior.webp";
+import alexeyImg from "@assets/generated_images/russian_barber_alexey_portrait.webp";
+import dmitryImg from "@assets/generated_images/russian_barber_dmitry_portrait.webp";
+import maximImg from "@assets/generated_images/russian_barber_maxim_portrait.webp";
 
 const services = [
   { id: 1, name: "Мужская стрижка", duration: "45 мин", price: 1500, icon: Scissors },
@@ -24,7 +27,7 @@ const barbers = [
     name: "Алексей", 
     role: "Старший барбер", 
     experience: "8 лет",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300",
+    image: alexeyImg,
     rating: 4.9,
     reviews: 234
   },
@@ -33,7 +36,7 @@ const barbers = [
     name: "Дмитрий", 
     role: "Барбер", 
     experience: "5 лет",
-    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300",
+    image: dmitryImg,
     rating: 4.8,
     reviews: 156
   },
@@ -42,7 +45,7 @@ const barbers = [
     name: "Максим", 
     role: "Барбер", 
     experience: "3 года",
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300",
+    image: maximImg,
     rating: 4.7,
     reviews: 89
   },

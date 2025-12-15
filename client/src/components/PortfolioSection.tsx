@@ -5,10 +5,10 @@ import { Badge } from "@/components/ui/badge";
 import { ExternalLink } from "lucide-react";
 import { useLocation } from "wouter";
 
-import sweetDelightsImg from "@assets/image_1765623150824.png";
-import socksHeroImg from "@assets/generated_images/socks_collection_hero_image.png";
-import travelHeroImg from "@assets/generated_images/tropical_beach_travel_destination.png";
-import barberHeroImg from "@assets/generated_images/stylish_barbershop_interior.png";
+import sweetDelightsImg from "@assets/image_1765623150824.webp";
+import socksHeroImg from "@assets/generated_images/socks_collection_hero_image.webp";
+import travelHeroImg from "@assets/generated_images/tropical_beach_travel_destination.webp";
+import barberHeroImg from "@assets/generated_images/stylish_barbershop_interior.webp";
 
 const portfolioItems = [
   {

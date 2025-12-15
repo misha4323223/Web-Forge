@@ -7,13 +7,13 @@ import { Input } from "@/components/ui/input";
 import { Link } from "wouter";
 import { useState } from "react";
 
-import heroImg from "@assets/stock_images/cosmetics_skincare_p_2775c0e7.jpg";
-import moisturizerImg from "@assets/stock_images/face_moisturizer_cre_59e07cda.jpg";
-import serumImg from "@assets/stock_images/vitamin_c_serum_drop_c449b45e.jpg";
-import micellarImg from "@assets/stock_images/micellar_water_clean_dda3e93a.jpg";
-import maskImg from "@assets/stock_images/face_mask_cosmetic_s_4961cbaf.jpg";
-import tonerImg from "@assets/stock_images/toner_bottle_skincar_632250d7.jpg";
-import nightCreamImg from "@assets/stock_images/night_cream_luxury_s_7bf4c694.jpg";
+import heroImg from "@assets/stock_images/cosmetics_skincare_p_2775c0e7.webp";
+import moisturizerImg from "@assets/stock_images/face_moisturizer_cre_59e07cda.webp";
+import serumImg from "@assets/stock_images/vitamin_c_serum_drop_c449b45e.webp";
+import micellarImg from "@assets/stock_images/micellar_water_clean_dda3e93a.webp";
+import maskImg from "@assets/stock_images/face_mask_cosmetic_s_4961cbaf.webp";
+import tonerImg from "@assets/stock_images/toner_bottle_skincar_632250d7.webp";
+import nightCreamImg from "@assets/stock_images/night_cream_luxury_s_7bf4c694.webp";
 
 const products = [
   {
