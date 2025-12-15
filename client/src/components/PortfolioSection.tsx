@@ -9,6 +9,10 @@ import sweetDelightsImg from "@assets/image_1765623150824.webp";
 import socksHeroImg from "@assets/generated_images/socks_collection_hero_image.webp";
 import travelHeroImg from "@assets/generated_images/tropical_beach_travel_destination.webp";
 import barberHeroImg from "@assets/generated_images/stylish_barbershop_interior.webp";
+import foodHeroImg from "@assets/generated_images/asian_food_arrangement_table.png";
+import fitnessHeroImg from "@assets/generated_images/modern_gym_interior_purple.png";
+import cosmeticsHeroImg from "@assets/stock_images/cosmetics_skincare_p_2775c0e7.webp";
+import streetwearHeroImg from "@assets/generated_images/streetwear_hero_banner_dark.webp";
 
 const portfolioItems = [
   {
@@ -25,7 +29,7 @@ const portfolioItems = [
     title: "ВкусДом",
     description: "Концепт лендинга для доставки азиатской еды. Яркий дизайн, анимированное меню, корзина заказа.",
     tags: ["React", "Framer Motion", "Tailwind"],
-    image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&h=400&fit=crop",
+    image: foodHeroImg,
     demoUrl: "/demo/food-delivery",
     badgeType: "concept" as const,
   },
@@ -34,7 +38,7 @@ const portfolioItems = [
     title: "ФОРМА",
     description: "Концепт сайта фитнес-студии. Тёмный стиль, расписание тренировок, тарифные планы.",
     tags: ["React", "Framer Motion", "Dark Theme"],
-    image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&h=400&fit=crop",
+    image: fitnessHeroImg,
     demoUrl: "/demo/fitness",
     badgeType: "concept" as const,
   },
@@ -43,7 +47,7 @@ const portfolioItems = [
     title: "NATURA",
     description: "Концепт интернет-магазина косметики. Минималистичный дизайн, каталог товаров, избранное и корзина.",
     tags: ["React", "E-commerce", "Minimalist"],
-    image: "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=600&h=400&fit=crop",
+    image: cosmeticsHeroImg,
     demoUrl: "/demo/cosmetics",
     badgeType: "concept" as const,
   },
@@ -52,7 +56,7 @@ const portfolioItems = [
     title: "STREETWEAR",
     description: "Концепт магазина российского стритвира. Тёмная тема, категории, бренды, корзина.",
     tags: ["React", "E-commerce", "Dark Theme"],
-    image: "https://images.unsplash.com/photo-1523398002811-999ca8dec234?w=600&h=400&fit=crop",
+    image: streetwearHeroImg,
     demoUrl: "/demo/streetwear",
     badgeType: "concept" as const,
   },
@@ -105,35 +109,32 @@ export function PortfolioSection() {
       <div className="max-w-7xl mx-auto px-6">
         <motion.div
           ref={ref}
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <span className="inline-block px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-mono mb-6">
+          <Badge className="mb-4 bg-purple-500/10 text-purple-400 border-purple-500/20">
             Портфолио
-          </span>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
-            Проекты и{" "}
-            <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
-              демо-концепты
-            </span>
+          </Badge>
+          <h2 className="text-3xl md:text-5xl font-bold mb-4">
+            Наши работы
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Реализованные проекты и примеры сайтов для разных ниш — кликните, чтобы посмотреть вживую.
+          <p className="text-muted-foreground max-w-2xl mx-auto">
+            Примеры сайтов, которые мы создаём. Кликните на любой проект, чтобы посмотреть демо.
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {portfolioItems.map((item, index) => (
             <motion.div
               key={item.id}
-              initial={{ opacity: 0, y: 50 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.1 + index * 0.1 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
             >
               <Card
-                className="group relative overflow-hidden p-0 border-border bg-card/50 backdrop-blur-sm hover-elevate cursor-pointer h-full"
+                className="group cursor-pointer overflow-hidden bg-card/50 backdrop-blur-sm border-border/50 hover:border-purple-500/30 transition-all duration-300 hover-elevate"
                 onClick={() => handleItemClick(item)}
                 data-testid={`card-portfolio-${item.id}`}
               >
@@ -144,34 +145,44 @@ export function PortfolioSection() {
                     className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute top-4 right-4">
-                    {item.badgeType === "live" ? (
-                      <Badge variant="secondary" className="bg-emerald-500/90 backdrop-blur-sm text-white border-0">
-                        Live
-                      </Badge>
-                    ) : (
-                      <Badge variant="secondary" className="bg-purple-500/90 backdrop-blur-sm text-white border-0">
-                        Концепт
-                      </Badge>
-                    )}
+                    <Badge 
+                      className={`text-xs ${
+                        item.badgeType === "live" 
+                          ? "bg-green-500/90 text-white border-0" 
+                          : "bg-purple-500/90 text-white border-0"
+                      }`}
+                    >
+                      {item.badgeType === "live" ? "Live" : "Концепт"}
+                    </Badge>
                   </div>
+                  {item.externalUrl && (
+                    <div className="absolute top-4 left-4">
+                      <ExternalLink className="w-4 h-4 text-white drop-shadow-lg" />
+                    </div>
+                  )}
                 </div>
-
                 <div className="p-5">
-                  <div className="flex items-start justify-between gap-4 mb-2">
-                    <h3 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors">
-                      {item.title}
-                    </h3>
-                    {item.externalUrl && (
-                      <ExternalLink className="w-5 h-5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
-                    )}
-                  </div>
-                  <p className="text-sm text-muted-foreground mb-3">{item.description}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {item.tags.map((tag) => (
-                      <Badge key={tag} variant="secondary" className="font-mono text-xs">
+                  <h3 className="font-semibold text-lg mb-2 group-hover:text-purple-400 transition-colors">
+                    {item.title}
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+                    {item.description}
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {item.tags.slice(0, 3).map(tag => (
+                      <Badge 
+                        key={tag} 
+                        variant="secondary" 
+                        className="text-xs bg-secondary/50"
+                      >
                         {tag}
                       </Badge>
                     ))}
+                    {item.tags.length > 3 && (
+                      <Badge variant="secondary" className="text-xs bg-secondary/50">
+                        +{item.tags.length - 3}
+                      </Badge>
+                    )}
                   </div>
                 </div>
               </Card>

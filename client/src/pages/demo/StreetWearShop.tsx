@@ -5,8 +5,13 @@ import { Badge } from "@/components/ui/badge";
 import { ShoppingCart, Heart, Menu, Truck, CreditCard, RefreshCw, ArrowLeft, Plus, X } from "lucide-react";
 import { Link } from "wouter";
 import { useState } from "react";
-
-const heroImg = "https://images.unsplash.com/photo-1523398002811-999ca8dec234?w=1920&q=80";
+import heroImg from "@assets/generated_images/streetwear_hero_banner_dark.webp";
+import hoodieImg from "@assets/stock_images/black_hoodie_sweatsh_8695e617.webp";
+import tshirtImg from "@assets/stock_images/black_t-shirt_produc_31de54c2.webp";
+import cargoImg from "@assets/stock_images/cargo_pants_black_fa_5a1e6752.webp";
+import bomberImg from "@assets/stock_images/black_bomber_jacket__1a8aa186.webp";
+import bagImg from "@assets/stock_images/black_crossbody_bag__19ee7dbb.webp";
+import beanieImg from "@assets/stock_images/black_beanie_hat_pro_3400e727.webp";
 
 const products = [
   {
@@ -15,7 +20,7 @@ const products = [
     brand: "ТЕНЕВОЙ",
     price: 5990,
     oldPrice: 7490,
-    image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=600&q=80",
+    image: hoodieImg,
     tag: "SALE",
     sizes: ["S", "M", "L", "XL"],
   },
@@ -24,7 +29,7 @@ const products = [
     name: "Футболка БАЗОВАЯ Чёрная",
     brand: "УЛИЦА",
     price: 2490,
-    image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&q=80",
+    image: tshirtImg,
     tag: "Хит",
     sizes: ["M", "L", "XL"],
   },
@@ -33,7 +38,7 @@ const products = [
     name: "Карго ТАКТИК с карманами",
     brand: "НОРД",
     price: 6990,
-    image: "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=600&q=80",
+    image: cargoImg,
     sizes: ["S", "M", "L"],
   },
   {
@@ -42,7 +47,7 @@ const products = [
     brand: "УЛИЦА",
     price: 9990,
     oldPrice: 12990,
-    image: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=600&q=80",
+    image: bomberImg,
     tag: "SALE",
     sizes: ["M", "L", "XL", "XXL"],
   },
@@ -51,7 +56,7 @@ const products = [
     name: "Сумка ПАТРУЛЬ Tactical",
     brand: "ТЕНЕВОЙ",
     price: 2990,
-    image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&q=80",
+    image: bagImg,
     tag: "New",
     sizes: ["ONE SIZE"],
   },
@@ -60,7 +65,7 @@ const products = [
     name: "Шапка МОРОЗ Beanie",
     brand: "НОРД",
     price: 1490,
-    image: "https://images.unsplash.com/photo-1576871337622-98d48d1cf531?w=600&q=80",
+    image: beanieImg,
     sizes: ["ONE SIZE"],
   },
 ];

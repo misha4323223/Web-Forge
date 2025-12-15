@@ -5,6 +5,11 @@ import { Badge } from "@/components/ui/badge";
 import { Clock, MapPin, Phone, Star, Flame, Leaf, ChefHat, Truck, ArrowLeft, ShoppingCart, Plus } from "lucide-react";
 import { Link } from "wouter";
 import { useState } from "react";
+import foodHeroImg from "@assets/generated_images/asian_food_arrangement_table.png";
+import tomYumImg from "@assets/generated_images/tom_yum_shrimp_soup.png";
+import padThaiImg from "@assets/generated_images/pad_thai_chicken_noodles.png";
+import greenCurryImg from "@assets/generated_images/green_curry_coconut_milk.png";
+import springRollsImg from "@assets/generated_images/spring_rolls_crispy_vietnamese.png";
 
 const menuItems = [
   {
@@ -12,7 +17,7 @@ const menuItems = [
     name: "Том Ям с креветками",
     description: "Острый тайский суп с креветками, грибами и лемонграссом",
     price: 590,
-    image: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=400&h=300&fit=crop",
+    image: tomYumImg,
     tags: ["острое", "хит"],
     calories: 280,
   },
@@ -21,7 +26,7 @@ const menuItems = [
     name: "Пад Тай с курицей",
     description: "Рисовая лапша с курицей, арахисом и ростками бамбука",
     price: 450,
-    image: "https://images.unsplash.com/photo-1559314809-0d155014e29e?w=400&h=300&fit=crop",
+    image: padThaiImg,
     tags: ["популярное"],
     calories: 520,
   },
@@ -30,7 +35,7 @@ const menuItems = [
     name: "Зелёный карри",
     description: "Нежное куриное филе в кокосовом молоке с овощами",
     price: 520,
-    image: "https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?w=400&h=300&fit=crop",
+    image: greenCurryImg,
     tags: ["веган"],
     calories: 380,
   },
@@ -39,7 +44,7 @@ const menuItems = [
     name: "Спринг роллы",
     description: "Хрустящие роллы с овощами и соусом sweet chili",
     price: 320,
-    image: "https://images.unsplash.com/photo-1544025162-d76694265947?w=400&h=300&fit=crop",
+    image: springRollsImg,
     tags: ["веган", "лёгкое"],
     calories: 180,
   },
@@ -88,7 +93,7 @@ export default function FoodDelivery() {
       <header className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-orange-500/90 to-red-500/90" />
         <img 
-          src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1920&q=80" 
+          src={foodHeroImg} 
           alt="Еда" 
           className="absolute inset-0 w-full h-full object-cover opacity-30"
         />

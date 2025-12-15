@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Link } from "wouter";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import fitnessHeroImg from "@assets/generated_images/modern_gym_interior_purple.png";
 
 const classes = [
   { id: 1, name: "Силовая тренировка", time: "07:00", trainer: "Алексей", duration: "60 мин", spots: 8 },
@@ -84,7 +85,7 @@ export default function FitnessStudio() {
       <header className="relative min-h-screen flex items-center overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-violet-900/50 via-neutral-950 to-neutral-950" />
         <img 
-          src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1920&q=80" 
+          src={fitnessHeroImg} 
           alt="Фитнес" 
           className="absolute inset-0 w-full h-full object-cover opacity-20"
         />

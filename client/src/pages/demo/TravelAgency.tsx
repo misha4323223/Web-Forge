@@ -8,13 +8,19 @@ import { Link } from "wouter";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import travelHeroImg from "@assets/generated_images/tropical_beach_travel_destination.webp";
+import maldivesImg from "@assets/generated_images/maldives_beach_paradise_resort.png";
+import parisImg from "@assets/generated_images/paris_eiffel_tower_sunset.png";
+import baliImg from "@assets/generated_images/bali_rice_terraces_tropical.png";
+import dubaiImg from "@assets/generated_images/dubai_skyline_night_burj.png";
+import santoriniImg from "@assets/generated_images/santorini_greece_blue_domes.png";
+import tokyoImg from "@assets/generated_images/tokyo_neon_cityscape_night.png";
 
 const destinations = [
   { 
     id: 1, 
     name: "Мальдивы", 
     country: "Мальдивы",
-    image: "https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=600",
+    image: maldivesImg,
     price: 185000, 
     duration: "7 ночей",
     rating: 4.9,
@@ -25,7 +31,7 @@ const destinations = [
     id: 2, 
     name: "Париж", 
     country: "Франция",
-    image: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=600",
+    image: parisImg,
     price: 95000, 
     duration: "5 ночей",
     rating: 4.8,
@@ -36,7 +42,7 @@ const destinations = [
     id: 3, 
     name: "Бали", 
     country: "Индонезия",
-    image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=600",
+    image: baliImg,
     price: 125000, 
     duration: "10 ночей",
     rating: 4.7,
@@ -47,7 +53,7 @@ const destinations = [
     id: 4, 
     name: "Дубай", 
     country: "ОАЭ",
-    image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=600",
+    image: dubaiImg,
     price: 145000, 
     duration: "7 ночей",
     rating: 4.8,
@@ -58,7 +64,7 @@ const destinations = [
     id: 5, 
     name: "Санторини", 
     country: "Греция",
-    image: "https://images.unsplash.com/photo-1613395877344-13d4a8e0d49e?w=600",
+    image: santoriniImg,
     price: 110000, 
     duration: "6 ночей",
     rating: 4.9,
@@ -69,7 +75,7 @@ const destinations = [
     id: 6, 
     name: "Токио", 
     country: "Япония",
-    image: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600",
+    image: tokyoImg,
     price: 175000, 
     duration: "8 ночей",
     rating: 4.8,
