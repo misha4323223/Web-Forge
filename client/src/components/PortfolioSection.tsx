@@ -141,13 +141,91 @@ const connections: [number, number][] = [
   [6, 7], // Booking связи (ДримТур, SHARP)
 ];
 
+function Nebulae() {
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <div 
+        className="absolute w-96 h-96 rounded-full opacity-20 blur-3xl"
+        style={{
+          left: "10%",
+          top: "20%",
+          background: "radial-gradient(circle, rgba(168, 85, 247, 0.4) 0%, transparent 70%)",
+        }}
+      />
+      <div 
+        className="absolute w-80 h-80 rounded-full opacity-15 blur-3xl"
+        style={{
+          right: "5%",
+          top: "40%",
+          background: "radial-gradient(circle, rgba(59, 130, 246, 0.4) 0%, transparent 70%)",
+        }}
+      />
+      <div 
+        className="absolute w-64 h-64 rounded-full opacity-20 blur-3xl"
+        style={{
+          left: "40%",
+          bottom: "10%",
+          background: "radial-gradient(circle, rgba(236, 72, 153, 0.3) 0%, transparent 70%)",
+        }}
+      />
+    </div>
+  );
+}
+
+function ShootingStars() {
+  const shootingStars = useMemo(() => 
+    Array.from({ length: 3 }, (_, i) => ({
+      id: i,
+      startX: 10 + Math.random() * 30,
+      startY: 5 + Math.random() * 20,
+      duration: 2 + Math.random() * 2,
+      delay: i * 4 + Math.random() * 3,
+    })), []
+  );
+
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {shootingStars.map((star) => (
+        <motion.div
+          key={star.id}
+          className="absolute"
+          style={{
+            left: `${star.startX}%`,
+            top: `${star.startY}%`,
+          }}
+          initial={{ x: 0, y: 0, opacity: 0 }}
+          animate={{
+            x: [0, 300],
+            y: [0, 200],
+            opacity: [0, 1, 1, 0],
+          }}
+          transition={{
+            duration: star.duration,
+            delay: star.delay,
+            repeat: Infinity,
+            repeatDelay: 8,
+            ease: "easeOut",
+          }}
+        >
+          <div 
+            className="w-1 h-1 bg-white rounded-full"
+            style={{
+              boxShadow: "0 0 6px #fff, -20px 0 15px rgba(255,255,255,0.5), -40px 0 10px rgba(255,255,255,0.3), -60px 0 5px rgba(255,255,255,0.1)",
+            }}
+          />
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
 function StarParticles() {
   const particles = useMemo(() => 
-    Array.from({ length: 50 }, (_, i) => ({
+    Array.from({ length: 60 }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
       y: Math.random() * 100,
-      size: Math.random() * 2 + 1,
+      size: Math.random() * 2 + 0.5,
       duration: Math.random() * 3 + 2,
       delay: Math.random() * 2,
     })), []
@@ -166,8 +244,8 @@ function StarParticles() {
             height: particle.size,
           }}
           animate={{
-            opacity: [0.2, 0.8, 0.2],
-            scale: [1, 1.2, 1],
+            opacity: [0.2, 0.9, 0.2],
+            scale: [1, 1.3, 1],
           }}
           transition={{
             duration: particle.duration,
@@ -289,23 +367,39 @@ function StarNode({
         transition={{ type: "spring", stiffness: 300 }}
       />
 
-      {/* Название при наведении */}
+      {/* Превью при наведении */}
       <AnimatePresence>
         {isHovered && (
           <motion.div
-            className="absolute left-1/2 whitespace-nowrap pointer-events-none"
+            className="absolute pointer-events-none"
             style={{ 
-              top: starSize + 10,
+              top: starSize + 15,
+              left: "50%",
               transform: "translateX(-50%)",
+              zIndex: 100,
             }}
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
+            initial={{ opacity: 0, y: -10, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.9 }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
           >
-            <span className="text-sm font-medium text-white bg-black/70 px-3 py-1 rounded-full backdrop-blur-sm">
-              {item.title}
-            </span>
+            <div className="relative w-48 rounded-lg overflow-hidden shadow-2xl border border-white/20">
+              <img 
+                src={item.image} 
+                alt={item.title}
+                className="w-full h-28 object-cover object-top"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-2">
+                <p className="text-xs font-semibold text-white truncate">{item.title}</p>
+                <p className="text-[10px] text-white/70">{item.category}</p>
+              </div>
+              {item.badgeType === "live" && (
+                <div className="absolute top-2 right-2">
+                  <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                </div>
+              )}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -455,7 +549,9 @@ export function PortfolioSection() {
             background: "radial-gradient(ellipse at center, rgba(15, 10, 30, 0.95) 0%, rgba(5, 5, 15, 0.98) 100%)",
           }}
         >
+          <Nebulae />
           <StarParticles />
+          <ShootingStars />
           <ConstellationLines hoveredId={hoveredId} />
           
           {portfolioItems.map((item, index) => (
