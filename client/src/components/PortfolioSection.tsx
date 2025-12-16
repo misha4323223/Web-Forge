@@ -12,7 +12,7 @@ import barberHeroImg from "@assets/generated_images/stylish_barbershop_interior.
 import foodHeroImg from "@assets/generated_images/asian_food_arrangement_table.png";
 import fitnessHeroImg from "@assets/generated_images/modern_gym_interior_purple.png";
 import cosmeticsHeroImg from "@assets/stock_images/cosmetics_skincare_p_2775c0e7.webp";
-import streetwearHeroImg from "@assets/generated_images/streetwear_hero_banner_dark.webp";
+import streetwearHeroImg from "@assets/generated_images/streetwear_hero_banner_dark.png";
 
 const portfolioItems = [
   {
