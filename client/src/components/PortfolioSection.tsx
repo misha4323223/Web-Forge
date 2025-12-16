@@ -373,21 +373,22 @@ function StarNode({
           <motion.div
             className="absolute pointer-events-none"
             style={{ 
-              top: starSize + 15,
-              left: "50%",
-              transform: "translateX(-50%)",
+              top: position.y > 70 ? "auto" : starSize + 15,
+              bottom: position.y > 70 ? starSize + 15 : "auto",
+              right: position.x >= 50 ? 0 : "auto",
+              left: position.x < 50 ? 0 : "auto",
               zIndex: 100,
             }}
-            initial={{ opacity: 0, y: -10, scale: 0.9 }}
+            initial={{ opacity: 0, y: position.y > 70 ? 10 : -10, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -10, scale: 0.9 }}
+            exit={{ opacity: 0, y: position.y > 70 ? 10 : -10, scale: 0.9 }}
             transition={{ duration: 0.25, ease: "easeOut" }}
           >
-            <div className="relative w-48 rounded-lg overflow-hidden shadow-2xl border border-white/20">
+            <div className="relative w-44 rounded-lg overflow-hidden shadow-2xl border border-white/20 bg-black/50 backdrop-blur-sm">
               <img 
                 src={item.image} 
                 alt={item.title}
-                className="w-full h-28 object-cover object-top"
+                className="w-full h-24 object-cover object-top"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-2">
