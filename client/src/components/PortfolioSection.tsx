@@ -13,6 +13,8 @@ import foodHeroImg from "@assets/generated_images/asian_food_arrangement_table.p
 import fitnessHeroImg from "@assets/generated_images/modern_gym_interior_purple.png";
 import cosmeticsHeroImg from "@assets/stock_images/cosmetics_skincare_p_2775c0e7.webp";
 import streetwearHeroImg from "@assets/generated_images/streetwear_hero_banner_dark.png";
+import dentalHeroImg from "@assets/generated_images/dental_clinic_modern_reception.png";
+import renovationHeroImg from "@assets/generated_images/modern_living_room_renovation.png";
 
 const portfolioItems = [
   {
@@ -85,6 +87,24 @@ const portfolioItems = [
     tags: ["React", "Booking", "Dark Theme"],
     image: barberHeroImg,
     demoUrl: "/demo/barber",
+    badgeType: "concept" as const,
+  },
+  {
+    id: 9,
+    title: "ДентаПро",
+    description: "Концепт сайта стоматологической клиники. Услуги, врачи, онлайн-запись, акции.",
+    tags: ["React", "Medical", "Light Theme"],
+    image: dentalHeroImg,
+    demoUrl: "/demo/dental",
+    badgeType: "concept" as const,
+  },
+  {
+    id: 10,
+    title: "РемонтМастер",
+    description: "Концепт сайта ремонта квартир. Портфолио работ, калькулятор стоимости, этапы работ.",
+    tags: ["React", "Services", "Calculator"],
+    image: renovationHeroImg,
+    demoUrl: "/demo/renovation",
     badgeType: "concept" as const,
   },
 ];

@@ -18,6 +18,8 @@ import StreetWearShop from "@/pages/demo/StreetWearShop";
 import SocksShop from "@/pages/demo/SocksShop";
 import TravelAgency from "@/pages/demo/TravelAgency";
 import BarberShop from "@/pages/demo/BarberShop";
+import DentalClinic from "@/pages/demo/DentalClinic";
+import ApartmentRenovation from "@/pages/demo/ApartmentRenovation";
 
 function Router() {
   return (
@@ -35,6 +37,8 @@ function Router() {
       <Route path="/demo/socks" component={SocksShop} />
       <Route path="/demo/travel" component={TravelAgency} />
       <Route path="/demo/barber" component={BarberShop} />
+      <Route path="/demo/dental" component={DentalClinic} />
+      <Route path="/demo/renovation" component={ApartmentRenovation} />
       <Route component={NotFound} />
     </Switch>
   );
