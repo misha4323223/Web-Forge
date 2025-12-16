@@ -9,7 +9,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Link } from "wouter";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 
 import heroImg from "@assets/generated_images/dental_clinic_modern_reception.png";
@@ -101,6 +101,10 @@ const advantages = [
 export default function DentalClinic() {
   const [formData, setFormData] = useState({ name: "", phone: "", service: "" });
   const { toast } = useToast();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

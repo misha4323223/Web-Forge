@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ShoppingCart, Gift, Menu, Truck, CreditCard, RefreshCw, ArrowLeft, Plus, X } from "lucide-react";
 import { Link } from "wouter";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import giftBoxImg from "@assets/generated_images/gift_box_socks_set.webp";
 import businessImg from "@assets/generated_images/business_socks_gift_box.webp";
@@ -126,6 +126,10 @@ export default function SocksShop() {
   const [activeCategory, setActiveCategory] = useState("Все");
   const [cart, setCart] = useState<number[]>([]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const addToCart = (id: number) => {
     setCart(prev => [...prev, id]);

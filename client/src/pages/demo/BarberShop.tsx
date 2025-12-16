@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Scissors, Clock, MapPin, Phone, Star, Calendar, User, Check, ArrowLeft, Instagram } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Link } from "wouter";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import barberHeroImg from "@assets/generated_images/stylish_barbershop_interior.webp";
 import alexeyImg from "@assets/generated_images/russian_barber_alexey_portrait.webp";
@@ -69,6 +69,10 @@ export default function BarberShop() {
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [step, setStep] = useState(1);
   const { toast } = useToast();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const handleServiceSelect = (id: number) => {
     setSelectedService(id);

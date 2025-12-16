@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Plane, MapPin, Calendar, Star, Users, Sun, Palmtree, Mountain, Ship, ArrowLeft, Clock, Heart } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Link } from "wouter";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import travelHeroImg from "@assets/generated_images/tropical_beach_travel_destination.webp";
 import maldivesImg from "@assets/generated_images/maldives_beach_paradise_resort.png";
@@ -102,6 +102,10 @@ export default function TravelAgency() {
   const [favorites, setFavorites] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const { toast } = useToast();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const toggleFavorite = (id: number) => {
     if (favorites.includes(id)) {

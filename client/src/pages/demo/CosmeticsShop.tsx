@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { ShoppingBag, Heart, Search, Star, Sparkles, Leaf, Droplet, ArrowLeft, Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Link } from "wouter";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import heroImg from "@assets/stock_images/cosmetics_skincare_p_2775c0e7.webp";
 import moisturizerImg from "@assets/stock_images/face_moisturizer_cre_59e07cda.webp";
 import serumImg from "@assets/stock_images/vitamin_c_serum_drop_c449b45e.webp";
@@ -89,6 +89,10 @@ export default function CosmeticsShop() {
   const [activeCategory, setActiveCategory] = useState("Все");
   const [cart, setCart] = useState<number[]>([]);
   const [favorites, setFavorites] = useState<number[]>([]);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const toggleFavorite = (id: number) => {
     setFavorites(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);

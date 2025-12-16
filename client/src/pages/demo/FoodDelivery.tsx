@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Clock, MapPin, Phone, Star, Flame, Leaf, ChefHat, Truck, ArrowLeft, ShoppingCart, Plus } from "lucide-react";
 import { Link } from "wouter";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import foodHeroImg from "@assets/generated_images/asian_food_arrangement_table.png";
 import tomYumImg from "@assets/generated_images/tom_yum_shrimp_soup.png";
 import padThaiImg from "@assets/generated_images/pad_thai_chicken_noodles.png";
@@ -58,6 +58,10 @@ const features = [
 
 export default function FoodDelivery() {
   const [cart, setCart] = useState<number[]>([]);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const addToCart = (id: number) => {
     setCart(prev => [...prev, id]);

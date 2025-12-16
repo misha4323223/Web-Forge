@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ShoppingCart, Heart, Menu, Truck, CreditCard, RefreshCw, ArrowLeft, Plus, X } from "lucide-react";
 import { Link } from "wouter";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import heroImg from "@assets/generated_images/streetwear_hero_banner_dark.png";
 import hoodieImg from "@assets/generated_images/black_oversized_hoodie_product.png";
 import tshirtImg from "@assets/generated_images/black_t-shirt_product_photo.png";
@@ -92,6 +92,10 @@ export default function StreetWearShop() {
   const [cart, setCart] = useState<number[]>([]);
   const [favorites, setFavorites] = useState<number[]>([]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const toggleFavorite = (id: number) => {
     setFavorites(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);

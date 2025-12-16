@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Clock, MapPin, Phone, Dumbbell, Users, Calendar, Zap, Heart, Trophy, ArrowLeft, Check } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Link } from "wouter";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import fitnessHeroImg from "@assets/generated_images/modern_gym_interior_purple.png";
 
@@ -34,6 +34,10 @@ export default function FitnessStudio() {
   const [bookedClasses, setBookedClasses] = useState<number[]>([]);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const bookClass = (id: number) => {
     if (bookedClasses.includes(id)) {

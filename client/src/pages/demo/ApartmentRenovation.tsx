@@ -9,7 +9,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Link } from "wouter";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 
 import livingRoomImg from "@assets/generated_images/modern_living_room_renovation.png";
@@ -127,6 +127,10 @@ const steps = [
 export default function ApartmentRenovation() {
   const [formData, setFormData] = useState({ name: "", phone: "", area: "", description: "" });
   const { toast } = useToast();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
