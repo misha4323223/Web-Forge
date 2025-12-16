@@ -6,12 +6,12 @@ import { ShoppingCart, Heart, Menu, Truck, CreditCard, RefreshCw, ArrowLeft, Plu
 import { Link } from "wouter";
 import { useState } from "react";
 import heroImg from "@assets/generated_images/streetwear_hero_banner_dark.webp";
-import hoodieImg from "@assets/stock_images/black_hoodie_sweatsh_8695e617.webp";
-import tshirtImg from "@assets/stock_images/black_t-shirt_produc_31de54c2.webp";
-import cargoImg from "@assets/stock_images/cargo_pants_black_fa_5a1e6752.webp";
-import bomberImg from "@assets/stock_images/black_bomber_jacket__1a8aa186.webp";
-import bagImg from "@assets/stock_images/black_crossbody_bag__19ee7dbb.webp";
-import beanieImg from "@assets/stock_images/black_beanie_hat_pro_3400e727.webp";
+import hoodieImg from "@assets/generated_images/black_oversized_hoodie_product.webp";
+import tshirtImg from "@assets/generated_images/black_t-shirt_product_photo.webp";
+import cargoImg from "@assets/generated_images/black_cargo_pants_product.webp";
+import bomberImg from "@assets/generated_images/black_bomber_jacket_product.webp";
+import bagImg from "@assets/generated_images/black_crossbody_bag_product.webp";
+import beanieImg from "@assets/generated_images/black_beanie_hat_product.webp";
 
 const products = [
   {
