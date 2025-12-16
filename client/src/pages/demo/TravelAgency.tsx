@@ -127,7 +127,7 @@ export default function TravelAgency() {
       <Link href="/#portfolio">
         <Button
           variant="ghost"
-          className="fixed top-4 left-4 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm shadow-lg"
+          className="fixed top-2 left-4 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm shadow-lg"
           data-testid="button-back-home"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />

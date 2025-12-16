@@ -69,7 +69,7 @@ export default function FitnessStudio() {
       <Link href="/#portfolio">
         <Button
           variant="ghost"
-          className="fixed top-4 left-4 z-50 bg-black/80 backdrop-blur-sm text-white hover:text-white hover:bg-white/10"
+          className="fixed top-2 left-4 z-50 bg-black/80 backdrop-blur-sm text-white hover:text-white hover:bg-white/10"
           data-testid="button-back-home"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />

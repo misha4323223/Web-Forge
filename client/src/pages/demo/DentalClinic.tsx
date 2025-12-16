@@ -122,7 +122,7 @@ export default function DentalClinic() {
       <Link href="/#portfolio">
         <Button
           variant="ghost"
-          className="fixed top-4 left-4 z-50 bg-white/90 backdrop-blur-sm text-gray-900 hover:bg-gray-100"
+          className="fixed top-2 left-4 z-50 bg-white/90 backdrop-blur-sm text-gray-900 hover:bg-gray-100"
           data-testid="button-back-home"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
