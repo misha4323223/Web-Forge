@@ -43,6 +43,22 @@ export function ProcessSection() {
       
       <ParticleBackground />
 
+      {/* Grid pattern like HeroSection */}
+      <div className="absolute inset-0 opacity-[0.03]">
+        <div
+          className="w-full h-full"
+          style={{
+            backgroundImage: `linear-gradient(rgba(168,85,247,0.3) 1px, transparent 1px),
+                             linear-gradient(90deg, rgba(168,85,247,0.3) 1px, transparent 1px)`,
+            backgroundSize: "60px 60px",
+          }}
+        />
+      </div>
+
+      {/* Floating orbs */}
+      <div className="absolute top-1/4 right-10 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl animate-float" />
+      <div className="absolute bottom-1/4 left-10 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl animate-float-slow" />
+
       <div className="max-w-4xl mx-auto px-6 relative z-10">
         <motion.div
           ref={ref}
