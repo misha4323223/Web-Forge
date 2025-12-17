@@ -84,7 +84,7 @@ export function ServicesSection() {
                 <h3 className="text-base font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
                   {service.title}
                 </h3>
-                <p className="text-muted-foreground text-sm leading-snug">{service.description}</p>
+                <p className="text-muted-foreground text-sm leading-snug break-words hyphens-auto">{service.description}</p>
 
                 <div className={`absolute inset-0 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`}>
                   <div className={`absolute inset-0 rounded-md bg-gradient-to-br ${service.color} opacity-[0.05]`} />
