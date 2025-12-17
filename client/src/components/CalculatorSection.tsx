@@ -1,11 +1,108 @@
 import { motion, useInView, AnimatePresence } from "framer-motion";
-import { useRef, useState } from "react";
+import { useRef, useState, useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Calculator, ArrowRight, Check, ChevronDown, Plus } from "lucide-react";
+import { ParticleBackground } from "./ParticleBackground";
+
+interface FlyingLetterProps {
+  letter: string;
+  index: number;
+  totalLetters: number;
+  isGradient?: boolean;
+  isInView: boolean;
+}
+
+function FlyingLetter({ letter, index, totalLetters, isGradient, isInView }: FlyingLetterProps) {
+  const startPosition = useMemo(() => {
+    const angle = (index / totalLetters) * Math.PI * 2 + Math.random() * 0.5;
+    const distance = 200 + Math.random() * 300;
+    return {
+      x: Math.cos(angle) * distance,
+      y: Math.sin(angle) * distance - 100,
+      rotate: (Math.random() - 0.5) * 180,
+      scale: 0.5 + Math.random() * 0.3,
+    };
+  }, [index, totalLetters]);
+
+  const delay = index * 0.02;
+
+  if (letter === " ") {
+    return <span className="inline-block w-[0.3em]">&nbsp;</span>;
+  }
+
+  return (
+    <motion.span
+      className={`inline-block ${isGradient ? "bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent" : ""}`}
+      initial={{
+        x: startPosition.x,
+        y: startPosition.y,
+        rotate: startPosition.rotate,
+        scale: startPosition.scale,
+        opacity: 0,
+        filter: "blur(6px)",
+      }}
+      animate={isInView ? {
+        x: 0,
+        y: 0,
+        rotate: 0,
+        scale: 1,
+        opacity: 1,
+        filter: "blur(0px)",
+      } : {}}
+      transition={{
+        duration: 0.6,
+        delay: delay,
+        type: "spring",
+        stiffness: 120,
+        damping: 14,
+      }}
+      style={{ willChange: "transform, opacity, filter" }}
+    >
+      {letter}
+    </motion.span>
+  );
+}
+
+interface AnimatedTextProps {
+  text: string;
+  startIndex: number;
+  isGradient?: boolean;
+  isInView: boolean;
+}
+
+function AnimatedText({ text, startIndex, isGradient, isInView }: AnimatedTextProps) {
+  const words = text.split(" ");
+  let letterIndex = startIndex;
+
+  return (
+    <>
+      {words.map((word, wordIdx) => {
+        const wordStartIndex = letterIndex;
+        letterIndex += word.length + 1;
+        
+        return (
+          <span key={wordIdx} className="inline-block whitespace-nowrap">
+            {word.split("").map((letter, i) => (
+              <FlyingLetter
+                key={i}
+                letter={letter}
+                index={wordStartIndex + i}
+                totalLetters={startIndex + text.length + 10}
+                isGradient={isGradient}
+                isInView={isInView}
+              />
+            ))}
+            {wordIdx < words.length - 1 && <span className="inline-block w-[0.3em]">&nbsp;</span>}
+          </span>
+        );
+      })}
+    </>
+  );
+}
 
 type ProjectType = "landing" | "corporate" | "shop";
 
@@ -155,37 +252,61 @@ export function CalculatorSection() {
     }).length;
   };
 
+  const line1 = "Рассчитайте ";
+  const line2 = "стоимость проекта";
+
   return (
     <section id="calculator" className="py-24 md:py-32 relative overflow-hidden bg-card/30">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(56,189,248,0.05),transparent_70%)]" />
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-background">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(168,85,247,0.1),transparent_60%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(56,189,248,0.08),transparent_50%)]" />
+      </div>
 
-      <div className="max-w-7xl mx-auto px-6">
-        <motion.div
-          ref={ref}
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-16"
-        >
-          <span className="inline-block px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-mono mb-6">
+      <ParticleBackground />
+
+      <div className="absolute inset-0 opacity-[0.03]">
+        <div
+          className="w-full h-full"
+          style={{
+            backgroundImage: `linear-gradient(rgba(168,85,247,0.3) 1px, transparent 1px),
+                             linear-gradient(90deg, rgba(168,85,247,0.3) 1px, transparent 1px)`,
+            backgroundSize: "60px 60px",
+          }}
+        />
+      </div>
+
+      <div className="absolute top-1/4 right-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl animate-float" />
+      <div className="absolute bottom-1/4 left-10 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl animate-float-slow" />
+
+      <div className="max-w-7xl mx-auto px-6 relative z-10" ref={ref}>
+        <div className="text-center mb-16">
+          <motion.span
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={isInView ? { opacity: 1, scale: 1 } : {}}
+            transition={{ duration: 0.5 }}
+            className="inline-block px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-mono mb-6"
+          >
             Калькулятор
-          </span>
+          </motion.span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
-            Рассчитайте{" "}
-            <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
-              стоимость проекта
-            </span>
+            <AnimatedText text={line1} startIndex={0} isInView={isInView} />
+            <AnimatedText text={line2} startIndex={line1.length} isGradient isInView={isInView} />
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="text-muted-foreground text-lg max-w-2xl mx-auto"
+          >
             Выберите тип сайта и добавьте нужные функции — цена рассчитается автоматически
-          </p>
-        </motion.div>
+          </motion.p>
+        </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.8, delay: 0.5 }}
             className="lg:col-span-2 space-y-6"
           >
             <Card className="p-6 bg-background/50 border-border backdrop-blur-sm">
@@ -315,9 +436,9 @@ export function CalculatorSection() {
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.8, delay: 0.3 }}
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.8, delay: 0.6 }}
           >
             <Card className="p-6 bg-gradient-to-br from-cyan-500/10 to-purple-500/10 border-primary/20 sticky top-24">
               <div className="flex items-center gap-3 mb-6">
