@@ -1,7 +1,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { SiReact, SiNextdotjs, SiVuedotjs, SiTypescript, SiNodedotjs, SiPython, SiPostgresql, SiTailwindcss, SiTelegram, SiVk } from "react-icons/si";
-import { Cloud, CreditCard, Server, Database, Truck, Building2, BarChart3, MapPin, Code, Layers } from "lucide-react";
+import { Cloud, CreditCard, Server, Database, Truck, Building2, BarChart3, MapPin } from "lucide-react";
 
 const programmingTech = [
   { name: "React", icon: SiReact, color: "#61DAFB" },
@@ -34,36 +34,49 @@ interface TechItem {
   color: string;
 }
 
-function TechPill({ tech, index, isInView }: { tech: TechItem; index: number; isInView: boolean }) {
+function TechBadge({ tech }: { tech: TechItem }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={isInView ? { opacity: 1, scale: 1 } : {}}
-      transition={{ duration: 0.5, delay: 0.05 * index }}
-      className="group"
+    <div
+      className="flex items-center gap-2 px-4 py-2 rounded-full bg-card/50 border border-border/50 backdrop-blur-sm whitespace-nowrap"
+      data-testid={`tech-${tech.name.toLowerCase().replace(/\s+/g, "-")}`}
     >
+      <tech.icon className="w-4 h-4 flex-shrink-0" style={{ color: tech.color }} />
+      <span className="text-sm font-medium text-foreground">{tech.name}</span>
+    </div>
+  );
+}
+
+function MarqueeRow({ items, direction = "left", speed = 30 }: { items: TechItem[]; direction?: "left" | "right"; speed?: number }) {
+  const duplicatedItems = [...items, ...items, ...items];
+  
+  return (
+    <div className="relative overflow-hidden py-2">
+      <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
+      <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
+      
       <div
-        className="flex items-center gap-3 px-5 py-3 rounded-full bg-card/50 border border-border backdrop-blur-sm hover-elevate cursor-default transition-all duration-300"
+        className="flex gap-4"
         style={{
-          boxShadow: `0 0 0 0 ${tech.color}20`,
+          animation: `marquee-${direction} ${speed}s linear infinite`,
+          width: "max-content",
         }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.boxShadow = `0 0 20px 0 ${tech.color}30`;
-          e.currentTarget.style.borderColor = `${tech.color}50`;
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.boxShadow = `0 0 0 0 ${tech.color}20`;
-          e.currentTarget.style.borderColor = "";
-        }}
-        data-testid={`tech-${tech.name.toLowerCase().replace(/\s+/g, "-")}`}
       >
-        <tech.icon
-          className="w-5 h-5 transition-colors duration-300"
-          style={{ color: tech.color }}
-        />
-        <span className="text-sm font-medium text-foreground">{tech.name}</span>
+        {duplicatedItems.map((tech, index) => (
+          <TechBadge key={`${tech.name}-${index}`} tech={tech} />
+        ))}
       </div>
-    </motion.div>
+      
+      <style>{`
+        @keyframes marquee-left {
+          from { transform: translateX(0); }
+          to { transform: translateX(-33.333%); }
+        }
+        @keyframes marquee-right {
+          from { transform: translateX(-33.333%); }
+          to { transform: translateX(0); }
+        }
+      `}</style>
+    </div>
   );
 }
 
@@ -72,7 +85,7 @@ export function TechnologiesSection() {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section className="py-24 md:py-32 relative overflow-hidden">
+    <section className="py-16 md:py-24 relative overflow-hidden">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(56,189,248,0.03),transparent_70%)]" />
 
       <div className="max-w-7xl mx-auto px-6">
@@ -81,55 +94,31 @@ export function TechnologiesSection() {
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8 }}
-          className="text-center mb-16"
+          className="text-center mb-10"
         >
-          <span className="inline-block px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-mono mb-6">
+          <span className="inline-block px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-mono mb-4">
             Технологии
           </span>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4">
             Используем{" "}
             <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
               современный стек
             </span>
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Работаем с проверенными технологиями и российскими сервисами для надёжных решений
+          <p className="text-muted-foreground text-base max-w-xl mx-auto">
+            Проверенные технологии и российские сервисы
           </p>
         </motion.div>
 
-        <div className="space-y-12">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <div className="flex items-center justify-center gap-3 mb-6">
-              <Code className="w-5 h-5 text-cyan-400" />
-              <h3 className="text-lg font-semibold text-foreground">Технологии разработки</h3>
-            </div>
-            <div className="flex flex-wrap justify-center gap-4 md:gap-5">
-              {programmingTech.map((tech, index) => (
-                <TechPill key={tech.name} tech={tech} index={index} isInView={isInView} />
-              ))}
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.4 }}
-          >
-            <div className="flex items-center justify-center gap-3 mb-6">
-              <Layers className="w-5 h-5 text-purple-400" />
-              <h3 className="text-lg font-semibold text-foreground">Сервисы и интеграции</h3>
-            </div>
-            <div className="flex flex-wrap justify-center gap-4 md:gap-5">
-              {russianServices.map((tech, index) => (
-                <TechPill key={tech.name} tech={tech} index={index + programmingTech.length} isInView={isInView} />
-              ))}
-            </div>
-          </motion.div>
-        </div>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : {}}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="space-y-3"
+        >
+          <MarqueeRow items={programmingTech} direction="left" speed={25} />
+          <MarqueeRow items={russianServices} direction="right" speed={35} />
+        </motion.div>
       </div>
     </section>
   );
