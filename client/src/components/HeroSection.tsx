@@ -142,12 +142,12 @@ export function HeroSection() {
           </span>
         </motion.div>
 
-        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6 relative">
+        <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6 relative">
           <GlowPulse />
-          <span className="text-foreground block">
+          <span className="text-foreground block whitespace-nowrap">
             <AnimatedText text={line1} startIndex={0} />
           </span>
-          <span className="block mt-2">
+          <span className="block mt-2 whitespace-nowrap">
             <AnimatedText text={line2} startIndex={line1.length} isGradient />
           </span>
         </h1>
