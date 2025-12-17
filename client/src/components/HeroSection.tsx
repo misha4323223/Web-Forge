@@ -2,7 +2,6 @@ import { motion } from "framer-motion";
 import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { ParticleBackground } from "./ParticleBackground";
-import { ChevronDown } from "lucide-react";
 
 interface FlyingLetterProps {
   letter: string;
@@ -189,17 +188,6 @@ export function HeroSection() {
         </motion.div>
       </div>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 2 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2"
-      >
-        <div className="flex flex-col items-center gap-2 text-muted-foreground">
-          <span className="text-sm">Листайте вниз</span>
-          <ChevronDown className="w-5 h-5 animate-scroll-indicator" />
-        </div>
-      </motion.div>
 
       <div className="absolute top-1/4 left-10 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl animate-float" />
       <div className="absolute bottom-1/4 right-10 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-float-slow" />
