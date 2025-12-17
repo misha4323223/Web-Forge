@@ -1,11 +1,11 @@
-import { motion, useInView } from "framer-motion";
-import { useRef, useState, useMemo } from "react";
+import { motion, useInView, AnimatePresence } from "framer-motion";
+import { useRef, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Calculator, ArrowRight, Check } from "lucide-react";
+import { Calculator, ArrowRight, Check, ChevronDown, Plus } from "lucide-react";
 
 type ProjectType = "landing" | "corporate" | "shop";
 
@@ -102,13 +102,14 @@ export function CalculatorSection() {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   const [projectType, setProjectType] = useState<ProjectType>("landing");
   const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
+  const [expandedType, setExpandedType] = useState<ProjectType | null>("landing");
 
   const currentProjectType = projectTypes.find((p) => p.value === projectType);
   const basePrice = currentProjectType?.basePrice || 0;
 
-  const availableFeatures = useMemo(() => {
-    return features.filter((f) => f.availableFor.includes(projectType));
-  }, [projectType]);
+  const getAvailableFeatures = (type: ProjectType) => {
+    return features.filter((f) => f.availableFor.includes(type));
+  };
 
   const featuresPrice = selectedFeatures.reduce((sum, featureId) => {
     const feature = features.find((f) => f.id === featureId);
@@ -130,6 +131,7 @@ export function CalculatorSection() {
 
   const handleProjectTypeChange = (value: ProjectType) => {
     setProjectType(value);
+    setExpandedType(value);
     setSelectedFeatures((prev) =>
       prev.filter((featureId) => {
         const feature = features.find((f) => f.id === featureId);
@@ -138,8 +140,19 @@ export function CalculatorSection() {
     );
   };
 
+  const toggleExpanded = (type: ProjectType) => {
+    setExpandedType(expandedType === type ? null : type);
+  };
+
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("ru-RU").format(price);
+  };
+
+  const getSelectedCountForType = (type: ProjectType) => {
+    return selectedFeatures.filter((fId) => {
+      const feature = features.find((f) => f.id === fId);
+      return feature?.availableFor.includes(type);
+    }).length;
   };
 
   return (
@@ -176,85 +189,128 @@ export function CalculatorSection() {
             className="lg:col-span-2 space-y-6"
           >
             <Card className="p-6 bg-background/50 border-border backdrop-blur-sm">
-              <h3 className="text-lg font-bold mb-4">Выберите основу</h3>
+              <h3 className="text-lg font-bold mb-4">Выберите основу и доп. опции</h3>
               <RadioGroup
                 value={projectType}
                 onValueChange={(value) => handleProjectTypeChange(value as ProjectType)}
                 className="space-y-4"
               >
-                {projectTypes.map((type) => (
-                  <div key={type.value}>
-                    <RadioGroupItem
-                      value={type.value}
-                      id={type.value}
-                      className="peer sr-only"
-                      data-testid={`radio-input-${type.value}`}
-                    />
-                    <Label
-                      htmlFor={type.value}
-                      className="flex flex-col sm:flex-row sm:items-start gap-4 p-4 rounded-md border border-border bg-card/50 cursor-pointer transition-all peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 hover-elevate"
-                      data-testid={`radio-label-${type.value}`}
-                    >
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <span className="font-bold text-lg text-foreground">{type.label}</span>
-                          <span className="text-sm font-mono text-primary">
-                            {formatPrice(type.basePrice)} ₽
-                          </span>
-                        </div>
-                        <p className="text-sm text-muted-foreground mb-3">{type.description}</p>
-                        <div className="flex flex-wrap gap-2">
-                          {type.includes.map((item, i) => (
-                            <span key={i} className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-                              <Check className="w-3 h-3 text-emerald-500" />
-                              {item}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    </Label>
-                  </div>
-                ))}
-              </RadioGroup>
-            </Card>
+                {projectTypes.map((type) => {
+                  const typeFeatures = getAvailableFeatures(type.value);
+                  const selectedCount = getSelectedCountForType(type.value);
+                  const isExpanded = expandedType === type.value;
+                  const isSelected = projectType === type.value;
 
-            <Card className="p-6 bg-background/50 border-border backdrop-blur-sm">
-              <h3 className="text-lg font-bold mb-2">Дополнительные функции</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Выберите опции для расширения возможностей сайта
-              </p>
-              <div className="grid sm:grid-cols-2 gap-3">
-                {availableFeatures.map((feature) => (
-                  <div
-                    key={feature.id}
-                    className={`flex items-start gap-3 p-4 rounded-md border cursor-pointer transition-all ${
-                      selectedFeatures.includes(feature.id)
-                        ? "border-primary bg-primary/5"
-                        : "border-border bg-card/50"
-                    }`}
-                    onClick={() => toggleFeature(feature.id)}
-                    data-testid={`checkbox-container-${feature.id}`}
-                  >
-                    <Checkbox
-                      checked={selectedFeatures.includes(feature.id)}
-                      onCheckedChange={() => toggleFeature(feature.id)}
-                      className="mt-0.5"
-                      data-testid={`checkbox-${feature.id}`}
-                    />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-sm font-medium text-foreground">{feature.label}</span>
-                        <span className="text-xs font-mono text-primary whitespace-nowrap">
-                          +{formatPrice(feature.price)} ₽
-                        </span>
-                      </div>
-                      {feature.description && (
-                        <span className="text-xs text-muted-foreground">{feature.description}</span>
-                      )}
+                  return (
+                    <div key={type.value} className="space-y-0">
+                      <RadioGroupItem
+                        value={type.value}
+                        id={type.value}
+                        className="peer sr-only"
+                        data-testid={`radio-input-${type.value}`}
+                      />
+                      <Label
+                        htmlFor={type.value}
+                        className={`flex flex-col p-4 rounded-md border cursor-pointer transition-all hover-elevate ${
+                          isSelected
+                            ? "border-primary bg-primary/5"
+                            : "border-border bg-card/50"
+                        } ${isExpanded && isSelected ? "rounded-b-none border-b-0" : ""}`}
+                        data-testid={`radio-label-${type.value}`}
+                      >
+                        <div className="flex flex-col sm:flex-row sm:items-start gap-4">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-2">
+                              <span className="font-bold text-lg text-foreground">{type.label}</span>
+                              <span className="text-sm font-mono text-primary">
+                                {formatPrice(type.basePrice)} ₽
+                              </span>
+                              {selectedCount > 0 && isSelected && (
+                                <span className="text-xs px-2 py-0.5 rounded-full bg-primary/20 text-primary font-medium">
+                                  +{selectedCount} опций
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-sm text-muted-foreground mb-3">{type.description}</p>
+                            <div className="flex flex-wrap gap-2">
+                              {type.includes.map((item, i) => (
+                                <span key={i} className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                                  <Check className="w-3 h-3 text-emerald-500" />
+                                  {item}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                          {isSelected && (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleExpanded(type.value); }}
+                              className="shrink-0 gap-1"
+                              data-testid={`button-expand-${type.value}`}
+                            >
+                              <Plus className="w-4 h-4" />
+                              <span className="hidden sm:inline">Опции</span>
+                              <ChevronDown className={`w-4 h-4 transition-transform ${isExpanded ? "rotate-180" : ""}`} />
+                            </Button>
+                          )}
+                        </div>
+                      </Label>
+
+                      <AnimatePresence>
+                        {isExpanded && isSelected && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.3, ease: "easeInOut" }}
+                            className="overflow-hidden"
+                          >
+                            <div className="p-4 bg-primary/5 border border-primary border-t-0 rounded-b-md">
+                              <p className="text-sm text-muted-foreground mb-3">
+                                Доп. опции для «{type.label}»:
+                              </p>
+                              <div className="grid sm:grid-cols-2 gap-2">
+                                {typeFeatures.map((feature) => (
+                                  <div
+                                    key={feature.id}
+                                    className={`flex items-start gap-3 p-3 rounded-md border cursor-pointer transition-all ${
+                                      selectedFeatures.includes(feature.id)
+                                        ? "border-primary bg-background/80"
+                                        : "border-border/50 bg-background/40"
+                                    }`}
+                                    onClick={(e) => { e.stopPropagation(); toggleFeature(feature.id); }}
+                                    data-testid={`checkbox-container-${feature.id}`}
+                                  >
+                                    <Checkbox
+                                      checked={selectedFeatures.includes(feature.id)}
+                                      onCheckedChange={() => {}}
+                                      className="mt-0.5"
+                                      data-testid={`checkbox-${feature.id}`}
+                                    />
+                                    <div className="flex-1 min-w-0">
+                                      <div className="flex items-center justify-between gap-2">
+                                        <span className="text-sm font-medium text-foreground">{feature.label}</span>
+                                        <span className="text-xs font-mono text-primary whitespace-nowrap">
+                                          +{formatPrice(feature.price)} ₽
+                                        </span>
+                                      </div>
+                                      {feature.description && (
+                                        <span className="text-xs text-muted-foreground">{feature.description}</span>
+                                      )}
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  );
+                })}
+              </RadioGroup>
             </Card>
           </motion.div>
 
