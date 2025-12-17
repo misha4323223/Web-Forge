@@ -1,7 +1,104 @@
 import { motion } from "framer-motion";
+import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { ParticleBackground } from "./ParticleBackground";
 import { ChevronDown } from "lucide-react";
+
+interface FlyingLetterProps {
+  letter: string;
+  index: number;
+  totalLetters: number;
+  isGradient?: boolean;
+}
+
+function FlyingLetter({ letter, index, totalLetters, isGradient }: FlyingLetterProps) {
+  const startPosition = useMemo(() => {
+    const angle = (index / totalLetters) * Math.PI * 2 + Math.random() * 0.5;
+    const distance = 300 + Math.random() * 400;
+    return {
+      x: Math.cos(angle) * distance,
+      y: Math.sin(angle) * distance - 200,
+      rotate: (Math.random() - 0.5) * 360,
+      scale: 0.3 + Math.random() * 0.3,
+    };
+  }, [index, totalLetters]);
+
+  const delay = 0.3 + index * 0.03;
+
+  if (letter === " ") {
+    return <span className="inline-block w-[0.3em]">&nbsp;</span>;
+  }
+
+  return (
+    <motion.span
+      className={`inline-block ${isGradient ? "bg-gradient-to-r from-cyan-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent bg-[length:200%_auto]" : ""}`}
+      initial={{
+        x: startPosition.x,
+        y: startPosition.y,
+        rotate: startPosition.rotate,
+        scale: startPosition.scale,
+        opacity: 0,
+        filter: "blur(8px)",
+      }}
+      animate={{
+        x: 0,
+        y: 0,
+        rotate: 0,
+        scale: 1,
+        opacity: 1,
+        filter: "blur(0px)",
+      }}
+      transition={{
+        duration: 0.8,
+        delay: delay,
+        type: "spring",
+        stiffness: 100,
+        damping: 12,
+      }}
+      style={{ willChange: "transform, opacity, filter" }}
+    >
+      {letter}
+    </motion.span>
+  );
+}
+
+interface AnimatedTextProps {
+  text: string;
+  startIndex: number;
+  isGradient?: boolean;
+}
+
+function AnimatedText({ text, startIndex, isGradient }: AnimatedTextProps) {
+  const letters = text.split("");
+  const totalLetters = letters.length + startIndex;
+
+  return (
+    <>
+      {letters.map((letter, i) => (
+        <FlyingLetter
+          key={i}
+          letter={letter}
+          index={startIndex + i}
+          totalLetters={totalLetters + 15}
+          isGradient={isGradient}
+        />
+      ))}
+    </>
+  );
+}
+
+function GlowPulse() {
+  return (
+    <motion.div
+      className="absolute inset-0 pointer-events-none"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: [0, 0.5, 0] }}
+      transition={{ duration: 1.5, delay: 1.8, ease: "easeInOut" }}
+    >
+      <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 via-purple-500/20 to-cyan-500/20 blur-xl" />
+    </motion.div>
+  );
+}
 
 export function HeroSection() {
   const scrollToPortfolio = () => {
@@ -10,6 +107,9 @@ export function HeroSection() {
       element.scrollIntoView({ behavior: "smooth" });
     }
   };
+
+  const line1 = "Создаём сайты,";
+  const line2 = "которые работают";
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
@@ -33,42 +133,39 @@ export function HeroSection() {
 
       <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
         >
           <span className="inline-block px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-mono mb-8">
             Веб-студия нового поколения
           </span>
         </motion.div>
 
-        <motion.h1
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6"
-        >
-          <span className="text-foreground">Создаём сайты,</span>
-          <br />
-          <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient-shift">
-            которые работают
+        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6 relative">
+          <GlowPulse />
+          <span className="text-foreground block">
+            <AnimatedText text={line1} startIndex={0} />
           </span>
-        </motion.h1>
+          <span className="block mt-2">
+            <AnimatedText text={line2} startIndex={line1.length} isGradient />
+          </span>
+        </h1>
 
         <motion.p
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
+          transition={{ duration: 0.6, delay: 1.5 }}
           className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10"
         >
           Превращаем ваши идеи в современные цифровые продукты.
-          Разработка лендингов, корпоративных сайтов и интернет-магазинов с использованием передовых технологий.
+          Разработка лендингов, корпоративных сайтов и интернет-магазинов.
         </motion.p>
 
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.8 }}
+          transition={{ duration: 0.6, delay: 1.7 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
           <a href="/order">
@@ -95,7 +192,7 @@ export function HeroSection() {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 1.2 }}
+        transition={{ duration: 1, delay: 2 }}
         className="absolute bottom-8 left-1/2 -translate-x-1/2"
       >
         <div className="flex flex-col items-center gap-2 text-muted-foreground">
