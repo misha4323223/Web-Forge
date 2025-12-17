@@ -66,25 +66,25 @@ export function ServicesSection() {
           </p>
         </motion.div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           {services.map((service, index) => (
             <motion.div
               key={service.title}
-              initial={{ opacity: 0, y: 50 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.1 + index * 0.1 }}
+              transition={{ duration: 0.5, delay: 0.1 + index * 0.08 }}
             >
               <Card
-                className="group relative overflow-visible h-full p-6 border-border bg-background/50 backdrop-blur-sm hover-elevate"
+                className="group relative overflow-visible h-full p-4 border-border bg-background/50 backdrop-blur-sm hover-elevate"
                 data-testid={`card-service-${index}`}
               >
-                <div className={`w-12 h-12 rounded-md bg-gradient-to-br ${service.color} flex items-center justify-center mb-4`}>
-                  <service.icon className="w-6 h-6 text-white" />
+                <div className={`w-10 h-10 rounded-md bg-gradient-to-br ${service.color} flex items-center justify-center mb-3`}>
+                  <service.icon className="w-5 h-5 text-white" />
                 </div>
-                <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors">
+                <h3 className="text-base font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
                   {service.title}
                 </h3>
-                <p className="text-muted-foreground">{service.description}</p>
+                <p className="text-muted-foreground text-sm leading-snug">{service.description}</p>
 
                 <div className={`absolute inset-0 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`}>
                   <div className={`absolute inset-0 rounded-md bg-gradient-to-br ${service.color} opacity-[0.05]`} />
