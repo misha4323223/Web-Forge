@@ -676,7 +676,7 @@ export function PortfolioSection() {
             transition={{ duration: 0.5 }}
           >
             <Badge className="mb-4 bg-purple-500/10 text-purple-400 border-purple-500/20">
-              Портфолио
+              Датасет проектов
             </Badge>
           </motion.div>
           <h2 className="text-3xl md:text-5xl font-bold mb-4">

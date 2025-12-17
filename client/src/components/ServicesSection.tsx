@@ -171,7 +171,7 @@ export function ServicesSection() {
             transition={{ duration: 0.5 }}
             className="inline-block px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-mono mb-6"
           >
-            Услуги
+            Алгоритмы создания
           </motion.span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
             <AnimatedText text={line1} startIndex={0} isInView={isInView} />

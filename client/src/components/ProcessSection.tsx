@@ -166,7 +166,7 @@ export function ProcessSection() {
             transition={{ duration: 0.5 }}
             className="inline-block px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-mono mb-4"
           >
-            Процесс
+            Pipeline разработки
           </motion.span>
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4">
             <AnimatedText text={line1} startIndex={0} isInView={isInView} />
