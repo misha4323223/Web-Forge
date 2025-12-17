@@ -158,8 +158,7 @@ export function HeroSection() {
           transition={{ duration: 0.6, delay: 1.5 }}
           className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10"
         >
-          Превращаем ваши идеи в современные цифровые продукты.
-          Разработка лендингов, корпоративных сайтов и интернет-магазинов.
+          Каждый сайт создаётся с нуля — под ваш бизнес, под вашу аудиторию, под ваши цели.
         </motion.p>
 
         <motion.div
