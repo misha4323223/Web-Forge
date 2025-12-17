@@ -377,18 +377,18 @@ function StarNode({
         transition={{ type: "spring", stiffness: 300 }}
       />
 
-      {/* Мини-подпись для мобильных */}
+      {/* Подпись под звездой */}
       <div 
-        className="md:hidden absolute whitespace-nowrap pointer-events-none"
+        className="absolute whitespace-nowrap pointer-events-none text-center"
         style={{
-          top: starSize + 8,
+          top: starSize + 10,
           left: "50%",
           transform: "translateX(-50%)",
         }}
       >
-        <span className="text-[9px] font-medium text-white/80 bg-black/40 px-1.5 py-0.5 rounded">
-          {item.title}
-        </span>
+        <p className="text-[10px] md:text-xs text-purple-300/80 font-medium">
+          {item.subtitle}
+        </p>
       </div>
 
       {/* Превью при наведении */}
