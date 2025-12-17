@@ -642,8 +642,8 @@ export function PortfolioSection() {
     }
   };
 
-  const line1 = "Созвездие ";
-  const line2 = "проектов";
+  const line1 = "Галактика ";
+  const line2 = "наших работ";
 
   return (
     <section id="portfolio" className="py-24 md:py-32 relative overflow-hidden">
@@ -690,7 +690,8 @@ export function PortfolioSection() {
             transition={{ duration: 0.6, delay: 0.4 }}
             className="text-muted-foreground max-w-2xl mx-auto"
           >
-            Наведите на звезду, чтобы увидеть проект. Линии соединяют похожие проекты.
+            Каждая звезда — отдельный проект. Разные ниши, разные задачи. 
+            Но подход один: сделать так, чтобы сайт работал на ваш бизнес. Нажмите — и посмотрите.
           </motion.p>
         </div>
 
