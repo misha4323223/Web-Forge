@@ -353,13 +353,6 @@ export function ContactSection() {
                 </Button>
               </div>
             </div>
-
-            <div className="p-6 rounded-md bg-gradient-to-br from-cyan-500/10 to-purple-500/10 border border-primary/20">
-              <h4 className="font-bold mb-2">Бесплатная консультация</h4>
-              <p className="text-muted-foreground text-sm">
-                Ответим на ваши вопросы, оценим проект и предложим оптимальное решение. Без обязательств.
-              </p>
-            </div>
           </motion.div>
         </div>
       </div>
