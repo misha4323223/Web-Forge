@@ -70,21 +70,31 @@ interface AnimatedTextProps {
 }
 
 function AnimatedText({ text, startIndex, isGradient, isInView }: AnimatedTextProps) {
-  const letters = text.split("");
-  const totalLetters = letters.length + startIndex;
+  const words = text.split(" ");
+  let letterIndex = startIndex;
 
   return (
     <>
-      {letters.map((letter, i) => (
-        <FlyingLetter
-          key={i}
-          letter={letter}
-          index={startIndex + i}
-          totalLetters={totalLetters + 10}
-          isGradient={isGradient}
-          isInView={isInView}
-        />
-      ))}
+      {words.map((word, wordIdx) => {
+        const wordStartIndex = letterIndex;
+        letterIndex += word.length + 1;
+        
+        return (
+          <span key={wordIdx} className="inline-block whitespace-nowrap">
+            {word.split("").map((letter, i) => (
+              <FlyingLetter
+                key={i}
+                letter={letter}
+                index={wordStartIndex + i}
+                totalLetters={startIndex + text.length + 10}
+                isGradient={isGradient}
+                isInView={isInView}
+              />
+            ))}
+            {wordIdx < words.length - 1 && <span className="inline-block w-[0.3em]">&nbsp;</span>}
+          </span>
+        );
+      })}
     </>
   );
 }
