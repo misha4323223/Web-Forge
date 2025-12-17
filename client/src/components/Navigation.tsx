@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "wouter";
+import logoImg from "@assets/generated_images/mp_hexagonal_tech_logo.png";
 
 const navItems = [
   { label: "О студии", href: "#about" },
@@ -65,9 +66,7 @@ export function Navigation() {
           className="flex items-center gap-2"
           data-testid="link-logo"
         >
-          <div className="w-10 h-10 rounded-md bg-gradient-to-br from-cyan-400 to-purple-500 flex items-center justify-center">
-            <span className="text-sm font-bold text-white">MP</span>
-          </div>
+          <img src={logoImg} alt="MP.WebStudio" className="w-10 h-10 rounded-md object-cover" />
           <span className="text-xl font-bold text-foreground">MP.WebStudio</span>
         </a>
 
