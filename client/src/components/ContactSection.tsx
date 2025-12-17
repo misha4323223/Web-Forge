@@ -215,14 +215,16 @@ export function ContactSection() {
 
       <div className="max-w-7xl mx-auto px-6 relative z-10" ref={ref}>
         <div className="text-center mb-16">
-          <motion.span
+          <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={isInView ? { opacity: 1, scale: 1 } : {}}
             transition={{ duration: 0.5 }}
-            className="inline-block px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-mono mb-6"
+            className="mb-6"
           >
-            Точка входа
-          </motion.span>
+            <span className="neon-badge">
+              <span className="neon-badge-text">Точка входа</span>
+            </span>
+          </motion.div>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
             <AnimatedText text={line1} startIndex={0} isInView={isInView} />
             <AnimatedText text={line2} startIndex={line1.length} isGradient isInView={isInView} />

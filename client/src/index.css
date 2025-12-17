@@ -291,4 +291,64 @@
   .border.hover-elevate:not(.no-hover-interaction-elevate)::after {
     inset: -1px;
   }
+
+  /* Neon Sign Badge */
+  @keyframes neon-pulse {
+    0%, 100% {
+      opacity: 1;
+      text-shadow: 
+        0 0 5px rgba(56, 189, 248, 0.8),
+        0 0 10px rgba(56, 189, 248, 0.6),
+        0 0 20px rgba(168, 85, 247, 0.4),
+        0 0 40px rgba(168, 85, 247, 0.2);
+      box-shadow: 
+        0 0 5px rgba(56, 189, 248, 0.3),
+        0 0 10px rgba(168, 85, 247, 0.2),
+        inset 0 0 10px rgba(56, 189, 248, 0.1);
+    }
+    50% {
+      opacity: 0.95;
+      text-shadow: 
+        0 0 3px rgba(56, 189, 248, 0.6),
+        0 0 8px rgba(56, 189, 248, 0.4),
+        0 0 15px rgba(168, 85, 247, 0.3),
+        0 0 30px rgba(168, 85, 247, 0.15);
+      box-shadow: 
+        0 0 3px rgba(56, 189, 248, 0.2),
+        0 0 8px rgba(168, 85, 247, 0.15),
+        inset 0 0 8px rgba(56, 189, 248, 0.08);
+    }
+  }
+
+  .neon-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+    border: 1px solid transparent;
+    border-image: linear-gradient(135deg, rgba(56, 189, 248, 0.5), rgba(168, 85, 247, 0.5)) 1;
+    border-radius: 0;
+    color: transparent;
+    background-clip: text;
+    -webkit-background-clip: text;
+    background-image: linear-gradient(90deg, #38bdf8, #a855f7, #38bdf8);
+    background-size: 200% auto;
+    animation: neon-pulse 3s ease-in-out infinite;
+    position: relative;
+  }
+
+
+  .neon-badge-text {
+    background: linear-gradient(90deg, #38bdf8, #a855f7, #38bdf8);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
 }

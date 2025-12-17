@@ -122,9 +122,10 @@ export function AboutSection() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={isInView ? { opacity: 1, scale: 1 } : {}}
             transition={{ duration: 0.5 }}
+            className="mb-6"
           >
-            <span className="inline-block px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-mono mb-6">
-              Нейроядро
+            <span className="neon-badge">
+              <span className="neon-badge-text">Нейроядро</span>
             </span>
           </motion.div>
           

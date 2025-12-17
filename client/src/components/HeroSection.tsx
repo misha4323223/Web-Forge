@@ -135,9 +135,10 @@ export function HeroSection() {
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: 0.1 }}
+          className="mb-8"
         >
-          <span className="inline-block px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-mono mb-8">
-            Веб-студия нового поколения
+          <span className="neon-badge">
+            <span className="neon-badge-text">Веб-студия нового поколения</span>
           </span>
         </motion.div>
 

@@ -674,10 +674,11 @@ export function PortfolioSection() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={isInView ? { opacity: 1, scale: 1 } : {}}
             transition={{ duration: 0.5 }}
+            className="mb-4"
           >
-            <Badge className="mb-4 bg-purple-500/10 text-purple-400 border-purple-500/20">
-              Датасет проектов
-            </Badge>
+            <span className="neon-badge">
+              <span className="neon-badge-text">Датасет проектов</span>
+            </span>
           </motion.div>
           <h2 className="text-3xl md:text-5xl font-bold mb-4">
             <AnimatedText text={line1} startIndex={0} isInView={isInView} />
