@@ -25,9 +25,9 @@ export function Footer() {
     <footer className="relative py-12 border-t border-border bg-card/30">
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-          <div className="flex items-center gap-2">
-            <img src={logoImg} alt="MP.WebStudio" className="w-10 h-10 rounded-md object-cover" />
-            <span className="text-xl font-bold text-foreground">MP.WebStudio</span>
+          <div className="flex items-center gap-3">
+            <img src={logoImg} alt="MP.WebStudio" className="w-14 h-14 rounded-md object-cover" />
+            <span className="text-2xl font-bold text-foreground">MP.WebStudio</span>
           </div>
 
           <nav className="flex flex-wrap items-center justify-center gap-1">
@@ -62,12 +62,9 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-8 pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
+        <div className="mt-8 pt-8 border-t border-border flex items-center justify-center text-sm text-muted-foreground">
           <p data-testid="text-copyright">
             © {new Date().getFullYear()} MP.WebStudio. Все права защищены.
-          </p>
-          <p>
-            Сделано с любовью в России
           </p>
         </div>
       </div>
