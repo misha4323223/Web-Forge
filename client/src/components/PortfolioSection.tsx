@@ -367,6 +367,20 @@ function StarNode({
         transition={{ type: "spring", stiffness: 300 }}
       />
 
+      {/* Мини-подпись для мобильных */}
+      <div 
+        className="md:hidden absolute whitespace-nowrap pointer-events-none"
+        style={{
+          top: starSize + 8,
+          left: "50%",
+          transform: "translateX(-50%)",
+        }}
+      >
+        <span className="text-[9px] font-medium text-white/80 bg-black/40 px-1.5 py-0.5 rounded">
+          {item.title}
+        </span>
+      </div>
+
       {/* Превью при наведении */}
       <AnimatePresence>
         {isHovered && (
