@@ -107,8 +107,8 @@ export function HeroSection() {
     }
   };
 
-  const line1 = "Сайты, которые";
-  const line2 = "приносят клиентов";
+  const line1 = "Это не лендинг про нас.";
+  const line2 = "Это витрина для вас.";
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
