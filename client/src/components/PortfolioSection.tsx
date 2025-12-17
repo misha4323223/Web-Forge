@@ -19,7 +19,8 @@ import renovationHeroImg from "@assets/generated_images/modern_living_room_renov
 const portfolioItems = [
   {
     id: 1,
-    title: "Sweet Delights",
+    title: "Сладкие наслаждения",
+    subtitle: "Интернет-магазин сладостей",
     description: "Интернет-магазин сладостей с админкой, Telegram-приложением, оплатой Robokassa и хранением в Яндекс Cloud.",
     tags: ["React", "Node.js", "PostgreSQL", "Robokassa", "Telegram"],
     image: sweetDelightsImg,
@@ -30,6 +31,7 @@ const portfolioItems = [
   {
     id: 2,
     title: "Вкусдом",
+    subtitle: "Доставка еды",
     description: "Концепт лендинга для доставки азиатской еды. Яркий дизайн, анимированное меню, корзина заказа.",
     tags: ["React", "Framer Motion", "Tailwind"],
     image: foodHeroImg,
@@ -40,6 +42,7 @@ const portfolioItems = [
   {
     id: 3,
     title: "Фитнес клуб",
+    subtitle: "Фитнес-студия",
     description: "Концепт сайта фитнес-студии. Тёмный стиль, расписание тренировок, тарифные планы.",
     tags: ["React", "Framer Motion", "Dark Theme"],
     image: fitnessHeroImg,
@@ -50,6 +53,7 @@ const portfolioItems = [
   {
     id: 4,
     title: "Natura",
+    subtitle: "Интернет-магазин косметики",
     description: "Концепт интернет-магазина косметики. Минималистичный дизайн, каталог товаров, избранное и корзина.",
     tags: ["React", "E-commerce", "Minimalist"],
     image: cosmeticsHeroImg,
@@ -60,6 +64,7 @@ const portfolioItems = [
   {
     id: 5,
     title: "Streetwear",
+    subtitle: "Интернет-магазин одежды",
     description: "Концепт магазина российского стритвира. Тёмная тема, категории, бренды, корзина.",
     tags: ["React", "E-commerce", "Dark Theme"],
     image: streetwearHeroImg,
@@ -70,6 +75,7 @@ const portfolioItems = [
   {
     id: 6,
     title: "Sockstyle",
+    subtitle: "Интернет-магазин носков",
     description: "Концепт магазина стильных мужских носков. Подарочные наборы, носки с надписями, спортивные.",
     tags: ["React", "E-commerce", "Light Theme"],
     image: socksHeroImg,
@@ -80,6 +86,7 @@ const portfolioItems = [
   {
     id: 7,
     title: "Дримтур",
+    subtitle: "Туристическое агентство",
     description: "Концепт сайта туристического агентства. Популярные направления, горячие туры, бронирование.",
     tags: ["React", "Travel", "Booking"],
     image: travelHeroImg,
@@ -90,6 +97,7 @@ const portfolioItems = [
   {
     id: 8,
     title: "Barbershop",
+    subtitle: "Барбершоп",
     description: "Концепт сайта барбершопа. Услуги, мастера, онлайн-запись, галерея работ.",
     tags: ["React", "Booking", "Dark Theme"],
     image: barberHeroImg,
@@ -100,6 +108,7 @@ const portfolioItems = [
   {
     id: 9,
     title: "Дентапро",
+    subtitle: "Стоматологическая клиника",
     description: "Концепт сайта стоматологической клиники. Услуги, врачи, онлайн-запись, акции.",
     tags: ["React", "Medical", "Light Theme"],
     image: dentalHeroImg,
@@ -110,6 +119,7 @@ const portfolioItems = [
   {
     id: 10,
     title: "Ремонтмастер",
+    subtitle: "Ремонт квартир",
     description: "Концепт сайта ремонта квартир. Портфолио работ, калькулятор стоимости, этапы работ.",
     tags: ["React", "Services", "Calculator"],
     image: renovationHeroImg,
@@ -135,7 +145,7 @@ const starPositions = [
 
 // Связи между проектами по категориям
 const connections: [number, number][] = [
-  [0, 3], [0, 4], [0, 5], // E-commerce связи (Sweet Delights, Natura, Streetwear, Sockstyle)
+  [0, 3], [0, 4], [0, 5], // E-commerce связи (Сладкие наслаждения, Natura, Streetwear, Sockstyle)
   [3, 4], [3, 5], [4, 5],
   [2, 4], [2, 7], // Dark Theme связи (Фитнес клуб, Streetwear, Barbershop)
   [6, 7], // Booking связи (Дримтур, Barbershop)
@@ -406,8 +416,8 @@ function StarNode({
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-2">
+                <p className="text-[10px] text-white/70">{item.subtitle}</p>
                 <p className="text-xs font-semibold text-white truncate">{item.title}</p>
-                <p className="text-[10px] text-white/70">{item.category}</p>
               </div>
               {item.badgeType === "live" && (
                 <div className="absolute top-2 right-2">
@@ -485,6 +495,7 @@ function ProjectCard({
           </div>
           
           <div className="p-6">
+            <p className="text-sm text-muted-foreground">{item.subtitle}</p>
             <h3 className="font-bold text-xl mb-2">{item.title}</h3>
             <p className="text-muted-foreground mb-4">{item.description}</p>
             
