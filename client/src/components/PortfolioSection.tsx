@@ -386,7 +386,7 @@ function StarNode({
           transform: "translateX(-50%)",
         }}
       >
-        <p className="text-[10px] md:text-xs text-purple-300/80 font-medium">
+        <p className="text-[8px] md:text-[10px] text-purple-300/80 font-medium">
           {item.subtitle}
         </p>
       </div>
