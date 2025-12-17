@@ -89,7 +89,7 @@ const portfolioItems = [
   },
   {
     id: 8,
-    title: "Sharp",
+    title: "Barbershop",
     description: "Концепт сайта барбершопа. Услуги, мастера, онлайн-запись, галерея работ.",
     tags: ["React", "Booking", "Dark Theme"],
     image: barberHeroImg,
@@ -137,8 +137,8 @@ const starPositions = [
 const connections: [number, number][] = [
   [0, 3], [0, 4], [0, 5], // E-commerce связи (Sweet Delights, Natura, Streetwear, Sockstyle)
   [3, 4], [3, 5], [4, 5],
-  [2, 4], [2, 7], // Dark Theme связи (Форма, Streetwear, Sharp)
-  [6, 7], // Booking связи (Дримтур, Sharp)
+  [2, 4], [2, 7], // Dark Theme связи (Форма, Streetwear, Barbershop)
+  [6, 7], // Booking связи (Дримтур, Barbershop)
 ];
 
 function Nebulae() {
