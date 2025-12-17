@@ -39,7 +39,7 @@ const portfolioItems = [
   },
   {
     id: 3,
-    title: "Форма",
+    title: "Фитнес клуб",
     description: "Концепт сайта фитнес-студии. Тёмный стиль, расписание тренировок, тарифные планы.",
     tags: ["React", "Framer Motion", "Dark Theme"],
     image: fitnessHeroImg,
@@ -137,7 +137,7 @@ const starPositions = [
 const connections: [number, number][] = [
   [0, 3], [0, 4], [0, 5], // E-commerce связи (Sweet Delights, Natura, Streetwear, Sockstyle)
   [3, 4], [3, 5], [4, 5],
-  [2, 4], [2, 7], // Dark Theme связи (Форма, Streetwear, Barbershop)
+  [2, 4], [2, 7], // Dark Theme связи (Фитнес клуб, Streetwear, Barbershop)
   [6, 7], // Booking связи (Дримтур, Barbershop)
 ];
 
