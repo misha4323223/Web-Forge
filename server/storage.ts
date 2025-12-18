@@ -1,4 +1,4 @@
-import { type User, type InsertUser, type ContactRequest, type InsertContactRequest, type Order, type InsertOrder, users, contactRequests, orders } from "@shared/schema";
+import { type User, type InsertUser, type ContactRequest, type InsertContactRequest, type Order, type InsertOrder, type AdditionalInvoice, type InsertAdditionalInvoice, users, contactRequests, orders, additionalInvoices } from "@shared/schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 
@@ -12,6 +12,10 @@ export interface IStorage {
   getOrder(id: string): Promise<Order | undefined>;
   updateOrderStatus(id: string, status: string, paidAt?: Date): Promise<Order | undefined>;
   getOrders(): Promise<Order[]>;
+  createAdditionalInvoice(invoice: InsertAdditionalInvoice): Promise<AdditionalInvoice>;
+  getAdditionalInvoice(id: string): Promise<AdditionalInvoice | undefined>;
+  getAdditionalInvoicesByOrderId(orderId: string): Promise<AdditionalInvoice[]>;
+  updateAdditionalInvoiceStatus(id: string, status: string, invId?: string, paidAt?: Date): Promise<AdditionalInvoice | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -63,6 +67,32 @@ export class DatabaseStorage implements IStorage {
 
   async getOrders(): Promise<Order[]> {
     return db.select().from(orders);
+  }
+
+  async createAdditionalInvoice(insertInvoice: InsertAdditionalInvoice): Promise<AdditionalInvoice> {
+    const [invoice] = await db.insert(additionalInvoices).values({
+      ...insertInvoice,
+      status: "pending",
+    }).returning();
+    return invoice;
+  }
+
+  async getAdditionalInvoice(id: string): Promise<AdditionalInvoice | undefined> {
+    const [invoice] = await db.select().from(additionalInvoices).where(eq(additionalInvoices.id, id));
+    return invoice;
+  }
+
+  async getAdditionalInvoicesByOrderId(orderId: string): Promise<AdditionalInvoice[]> {
+    return db.select().from(additionalInvoices).where(eq(additionalInvoices.orderId, orderId));
+  }
+
+  async updateAdditionalInvoiceStatus(id: string, status: string, invId?: string, paidAt?: Date): Promise<AdditionalInvoice | undefined> {
+    const [invoice] = await db
+      .update(additionalInvoices)
+      .set({ status, invId: invId || null, paidAt: paidAt || null })
+      .where(eq(additionalInvoices.id, id))
+      .returning();
+    return invoice;
   }
 }
 

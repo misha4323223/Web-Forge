@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertContactRequestSchema, insertOrderSchema } from "@shared/schema";
+import { insertContactRequestSchema, insertOrderSchema, insertAdditionalInvoiceSchema } from "@shared/schema";
 import { z } from "zod";
 import crypto from "crypto";
 
@@ -313,6 +313,107 @@ export async function registerRoutes(
         success: false,
         message: "Внутренняя ошибка сервера",
       });
+    }
+  });
+
+  app.post("/api/additional-invoices", async (req, res) => {
+    try {
+      const validatedData = insertAdditionalInvoiceSchema.parse(req.body);
+      const invoice = await storage.createAdditionalInvoice(validatedData);
+      
+      const invId = getNextInvId();
+      const sum = parseFloat(invoice.amount).toFixed(2);
+      const description = `Доп. счёт: ${invoice.description}`;
+      
+      const signatureValue = generateRobokassaSignature(
+        ROBOKASSA_MERCHANT_LOGIN,
+        sum,
+        invId,
+        ROBOKASSA_PASSWORD1,
+        invoice.id
+      );
+
+      const baseUrl = "https://auth.robokassa.ru/Merchant/Index.aspx";
+      const paymentUrl = `${baseUrl}?MerchantLogin=${ROBOKASSA_MERCHANT_LOGIN}&OutSum=${sum}&InvId=${invId}&Description=${encodeURIComponent(description)}&SignatureValue=${signatureValue}&IsTest=${IS_TEST_MODE ? 1 : 0}&shp_orderId=${invoice.id}`;
+
+      await storage.updateAdditionalInvoiceStatus(invoice.id, "pending", String(invId));
+
+      res.status(201).json({
+        success: true,
+        message: "Счёт создан",
+        invoiceId: invoice.id,
+        paymentUrl,
+      });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({
+          success: false,
+          message: "Ошибка валидации",
+          errors: error.errors,
+        });
+      } else {
+        console.error("Error creating additional invoice:", error);
+        res.status(500).json({
+          success: false,
+          message: "Внутренняя ошибка сервера",
+        });
+      }
+    }
+  });
+
+  app.get("/api/additional-invoices/order/:orderId", async (req, res) => {
+    try {
+      const invoices = await storage.getAdditionalInvoicesByOrderId(req.params.orderId);
+      res.json(invoices);
+    } catch (error) {
+      console.error("Error fetching invoices:", error);
+      res.status(500).json({
+        success: false,
+        message: "Внутренняя ошибка сервера",
+      });
+    }
+  });
+
+  app.post("/api/robokassa/additional-invoice", async (req, res) => {
+    try {
+      const OutSum = req.body.OutSum || req.query.OutSum;
+      const InvId = req.body.InvId || req.query.InvId;
+      const SignatureValue = req.body.SignatureValue || req.query.SignatureValue;
+      const shp_orderId = req.body.shp_orderId || req.query.shp_orderId;
+      
+      console.log("Robokassa additional invoice callback:", { OutSum, InvId, shp_orderId });
+      
+      if (!verifyRobokassaSignature(OutSum, InvId, SignatureValue, shp_orderId)) {
+        console.error("Invalid Robokassa signature for additional invoice");
+        return res.status(400).send("bad sign");
+      }
+
+      const invoice = await storage.getAdditionalInvoice(shp_orderId);
+      if (!invoice) {
+        console.error("Invoice not found:", shp_orderId);
+        return res.status(404).send("invoice not found");
+      }
+
+      const order = await storage.getOrder(invoice.orderId);
+      if (!order) {
+        console.error("Order not found:", invoice.orderId);
+        return res.status(404).send("order not found");
+      }
+
+      await storage.updateAdditionalInvoiceStatus(invoice.id, "paid", String(InvId), new Date());
+
+      await sendTelegramMessage(
+        `💳 <b>Дополнительный счёт оплачен!</b>\n\n` +
+        `👤 Клиент: ${order.clientName}\n` +
+        `📋 Счёт: ${invoice.description}\n` +
+        `💰 Сумма: ${OutSum} ₽\n` +
+        `📧 Email: ${order.clientEmail}`
+      );
+      
+      res.send(`OK${InvId}`);
+    } catch (error) {
+      console.error("Error processing additional invoice payment:", error);
+      res.status(500).send("error");
     }
   });
 

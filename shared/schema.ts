@@ -73,3 +73,27 @@ export const insertOrderSchema = createInsertSchema(orders).pick({
 
 export type InsertOrder = z.infer<typeof insertOrderSchema>;
 export type Order = typeof orders.$inferSelect;
+
+export const additionalInvoices = pgTable("additional_invoices", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  orderId: varchar("order_id").notNull(),
+  description: text("description").notNull(),
+  amount: text("amount").notNull(),
+  status: text("status").notNull().default("pending"),
+  invId: text("inv_id"),
+  createdAt: timestamp("created_at").defaultNow(),
+  paidAt: timestamp("paid_at"),
+});
+
+export const insertAdditionalInvoiceSchema = createInsertSchema(additionalInvoices).pick({
+  orderId: true,
+  description: true,
+  amount: true,
+}).extend({
+  orderId: z.string().min(1, "ID заказа обязателен"),
+  description: z.string().min(5, "Описание должно быть минимум 5 символов"),
+  amount: z.string().regex(/^\d+(\.\d{1,2})?$/, "Сумма должна быть числом"),
+});
+
+export type InsertAdditionalInvoice = z.infer<typeof insertAdditionalInvoiceSchema>;
+export type AdditionalInvoice = typeof additionalInvoices.$inferSelect;

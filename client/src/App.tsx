@@ -12,6 +12,7 @@ import PaymentFail from "@/pages/PaymentFail";
 import PayRemaining from "@/pages/PayRemaining";
 import Privacy from "@/pages/Privacy";
 import Offer from "@/pages/Offer";
+import Admin from "@/pages/Admin";
 import FoodDelivery from "@/pages/demo/FoodDelivery";
 import FitnessStudio from "@/pages/demo/FitnessStudio";
 import CosmeticsShop from "@/pages/demo/CosmeticsShop";
@@ -32,6 +33,7 @@ function Router() {
       <Route path="/pay-remaining" component={PayRemaining} />
       <Route path="/privacy" component={Privacy} />
       <Route path="/offer" component={Offer} />
+      <Route path="/admin/invoices" component={Admin} />
       <Route path="/demo/food-delivery" component={FoodDelivery} />
       <Route path="/demo/fitness" component={FitnessStudio} />
       <Route path="/demo/cosmetics" component={CosmeticsShop} />
