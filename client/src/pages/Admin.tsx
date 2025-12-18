@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { insertAdditionalInvoiceSchema } from "@shared/schema";
+import { insertAdditionalInvoiceSchema, type Order } from "@shared/schema";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { Card } from "@/components/ui/card";
@@ -12,8 +12,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Loader2, Copy, Check } from "lucide-react";
+import { Loader2, Copy, Check, ChevronDown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 type AdditionalInvoiceFormData = {
   orderId: string;
@@ -25,6 +26,10 @@ export default function Admin() {
   const { toast } = useToast();
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
+  const { data: orders = [], isLoading: ordersLoading } = useQuery<Order[]>({
+    queryKey: ["/api/orders"],
+  });
+
   const form = useForm<AdditionalInvoiceFormData>({
     resolver: zodResolver(insertAdditionalInvoiceSchema),
     defaultValues: {
@@ -33,6 +38,14 @@ export default function Admin() {
       amount: "",
     },
   });
+
+  const copyOrderId = (orderId: string) => {
+    navigator.clipboard.writeText(orderId);
+    toast({
+      title: "ID скопирован!",
+      description: orderId,
+    });
+  };
 
   const createInvoiceMutation = useMutation({
     mutationFn: async (data: AdditionalInvoiceFormData) => {
@@ -163,7 +176,7 @@ export default function Admin() {
           <div className="mt-8 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md">
             <h3 className="font-semibold mb-2">Как это работает:</h3>
             <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
-              <li>Введите ID заказа клиента</li>
+              <li>Выберите заказ из списка ниже (или введите ID вручную)</li>
               <li>Опишите дополнительную функцию/услугу</li>
               <li>Укажите стоимость</li>
               <li>Нажмите "Создать счёт"</li>
@@ -171,6 +184,42 @@ export default function Admin() {
               <li>Отправьте ссылку клиенту (например, через Telegram)</li>
             </ol>
           </div>
+
+          {orders.length > 0 && (
+            <Card className="mt-8 p-6">
+              <Collapsible>
+                <CollapsibleTrigger asChild>
+                  <Button variant="outline" className="w-full flex justify-between">
+                    <span>Список заказов ({orders.length})</span>
+                    <ChevronDown className="w-4 h-4" />
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="mt-4">
+                  <div className="space-y-2 max-h-96 overflow-y-auto">
+                    {orders.map((order) => (
+                      <div key={order.id} className="p-3 bg-card/50 rounded-md border flex items-center justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-mono text-muted-foreground truncate">{order.id}</p>
+                          <p className="text-sm text-foreground">{order.clientName}</p>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => {
+                            copyOrderId(order.id);
+                            form.setValue("orderId", order.id);
+                          }}
+                          data-testid={`button-select-order-${order.id}`}
+                        >
+                          <Copy className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+            </Card>
+          )}
         </div>
       </main>
       <Footer />
