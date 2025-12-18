@@ -17,6 +17,10 @@ export function Footer() {
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
+    if (href.startsWith("/")) {
+      window.location.href = href;
+      return;
+    }
     const element = document.querySelector(href);
     if (element) {
       element.scrollIntoView({ behavior: "smooth" });
