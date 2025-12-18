@@ -14,7 +14,6 @@ import { Label } from "@/components/ui/label";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Loader2, Copy, Check, ChevronDown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 type AdditionalInvoiceFormData = {
   orderId: string;
@@ -25,6 +24,7 @@ type AdditionalInvoiceFormData = {
 export default function Admin() {
   const { toast } = useToast();
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [showOrders, setShowOrders] = useState(false);
 
   const { data: orders = [], isLoading: ordersLoading } = useQuery<Order[]>({
     queryKey: ["/api/orders"],
@@ -187,37 +187,39 @@ export default function Admin() {
 
           {orders.length > 0 && (
             <Card className="mt-8 p-6">
-              <Collapsible>
-                <CollapsibleTrigger asChild>
-                  <Button variant="outline" className="w-full flex justify-between">
-                    <span>Список заказов ({orders.length})</span>
-                    <ChevronDown className="w-4 h-4" />
-                  </Button>
-                </CollapsibleTrigger>
-                <CollapsibleContent className="mt-4">
-                  <div className="space-y-2 max-h-96 overflow-y-auto">
-                    {orders.map((order) => (
-                      <div key={order.id} className="p-3 bg-card/50 rounded-md border flex items-center justify-between gap-2">
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-mono text-muted-foreground truncate">{order.id}</p>
-                          <p className="text-sm text-foreground">{order.clientName}</p>
-                        </div>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => {
-                            copyOrderId(order.id);
-                            form.setValue("orderId", order.id);
-                          }}
-                          data-testid={`button-select-order-${order.id}`}
-                        >
-                          <Copy className="w-4 h-4" />
-                        </Button>
+              <Button 
+                variant="outline" 
+                className="w-full flex justify-between"
+                onClick={() => setShowOrders(!showOrders)}
+                data-testid="button-toggle-orders"
+              >
+                <span>Список заказов ({orders.length})</span>
+                <ChevronDown className={`w-4 h-4 transition-transform ${showOrders ? "rotate-180" : ""}`} />
+              </Button>
+              
+              {showOrders && (
+                <div className="mt-4 space-y-2 max-h-96 overflow-y-auto">
+                  {orders.map((order) => (
+                    <div key={order.id} className="p-3 bg-card/50 rounded-md border flex items-center justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-mono text-muted-foreground truncate">{order.id}</p>
+                        <p className="text-sm text-foreground">{order.clientName}</p>
                       </div>
-                    ))}
-                  </div>
-                </CollapsibleContent>
-              </Collapsible>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => {
+                          copyOrderId(order.id);
+                          form.setValue("orderId", order.id);
+                        }}
+                        data-testid={`button-select-order-${order.id}`}
+                      >
+                        <Copy className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </Card>
           )}
         </div>
