@@ -130,6 +130,12 @@ const orderSchema = z.object({
   contractAccepted: z.literal(true, {
     errorMap: () => ({ message: "Необходимо принять условия договора" }),
   }),
+  offerAccepted: z.literal(true, {
+    errorMap: () => ({ message: "Необходимо принять публичную оферту" }),
+  }),
+  privacyAccepted: z.literal(true, {
+    errorMap: () => ({ message: "Необходимо принять политику конфиденциальности" }),
+  }),
 });
 
 type OrderFormData = z.infer<typeof orderSchema>;
@@ -278,6 +284,9 @@ export default function Order() {
       clientPhone: "",
       projectType: "landing",
       projectDescription: "",
+      contractAccepted: false,
+      offerAccepted: false,
+      privacyAccepted: false,
     },
   });
 
@@ -594,7 +603,57 @@ export default function Order() {
                       )}
                     />
 
-                    <div className="border-t border-border pt-6">
+                    <div className="border-t border-border pt-6 space-y-3">
+                      <FormField
+                        control={form.control}
+                        name="offerAccepted"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                                data-testid="checkbox-offer"
+                              />
+                            </FormControl>
+                            <div className="space-y-1 leading-none">
+                              <FormLabel className="text-sm">
+                                Я принимаю условия{" "}
+                                <a href="/offer" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:no-underline" data-testid="link-offer">
+                                  публичной оферты
+                                </a>
+                              </FormLabel>
+                              <FormMessage />
+                            </div>
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="privacyAccepted"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                                data-testid="checkbox-privacy"
+                              />
+                            </FormControl>
+                            <div className="space-y-1 leading-none">
+                              <FormLabel className="text-sm">
+                                Я согласен с{" "}
+                                <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:no-underline" data-testid="link-privacy">
+                                  политикой конфиденциальности
+                                </a>
+                              </FormLabel>
+                              <FormMessage />
+                            </div>
+                          </FormItem>
+                        )}
+                      />
+
                       <FormField
                         control={form.control}
                         name="contractAccepted"

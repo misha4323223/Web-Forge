@@ -14,6 +14,11 @@ const navItems = [
   { label: "Контакты", href: "#contact" },
 ];
 
+const legalLinks = [
+  { label: "Оферта", href: "/offer" },
+  { label: "Политика", href: "/privacy" },
+];
+
 const orderPagePath = "/order";
 
 export function Navigation() {
@@ -82,6 +87,19 @@ export function Navigation() {
               {item.label}
             </Button>
           ))}
+          <div className="hidden lg:flex items-center gap-0 ml-4 pl-4 border-l border-border">
+            {legalLinks.map((link) => (
+              <a key={link.href} href={link.href}>
+                <Button
+                  variant="ghost"
+                  className="text-muted-foreground text-xs"
+                  data-testid={`link-nav-legal-${link.href.slice(1)}`}
+                >
+                  {link.label}
+                </Button>
+              </a>
+            ))}
+          </div>
         </div>
 
         <div className="hidden md:block">
@@ -126,6 +144,19 @@ export function Navigation() {
                   {item.label}
                 </Button>
               ))}
+              <div className="flex gap-1 pt-2 mt-2 border-t border-border">
+                {legalLinks.map((link) => (
+                  <a key={link.href} href={link.href}>
+                    <Button
+                      variant="ghost"
+                      className="justify-start text-muted-foreground text-xs"
+                      data-testid={`link-mobile-nav-legal-${link.href.slice(1)}`}
+                    >
+                      {link.label}
+                    </Button>
+                  </a>
+                ))}
+              </div>
               <a href={orderPagePath}>
                 <Button
                   className="mt-2 w-full bg-gradient-to-r from-cyan-500 to-purple-500 text-white border-0"

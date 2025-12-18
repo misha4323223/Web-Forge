@@ -7,6 +7,8 @@ const footerLinks = [
   { label: "Портфолио", href: "#portfolio" },
   { label: "Услуги", href: "#services" },
   { label: "Контакты", href: "#contact" },
+  { label: "Оферта", href: "/offer" },
+  { label: "Политика", href: "/privacy" },
 ];
 
 export function Footer() {
@@ -62,8 +64,19 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-8 pt-8 border-t border-border flex items-center justify-center text-sm text-muted-foreground">
-          <p data-testid="text-copyright">
+        <div className="mt-8 pt-8 border-t border-border">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-4">
+            <div className="flex flex-col gap-2 text-sm">
+              <p className="font-semibold text-foreground">Контакты:</p>
+              <p className="text-muted-foreground">
+                Email: <a href="mailto:info@mp-webstudio.ru" className="text-primary hover:underline">info@mp-webstudio.ru</a>
+              </p>
+              <p className="text-muted-foreground">
+                Сайт: <a href="https://mp-webstudio.ru" className="text-primary hover:underline">mp-webstudio.ru</a>
+              </p>
+            </div>
+          </div>
+          <p className="text-center text-sm text-muted-foreground">
             © {new Date().getFullYear()} MP.WebStudio. Все права защищены.
           </p>
         </div>
