@@ -318,18 +318,26 @@ export async function registerRoutes(
 
   app.post("/api/additional-invoices", async (req, res) => {
     try {
+      console.log("Creating additional invoice with data:", req.body);
+      
       const validatedData = insertAdditionalInvoiceSchema.parse(req.body);
+      console.log("Validated data:", validatedData);
       
       // Проверяем, существует ли заказ
       const order = await storage.getOrder(validatedData.orderId);
+      console.log("Order lookup result:", order);
+      
       if (!order) {
+        console.log("Order not found for ID:", validatedData.orderId);
         return res.status(404).json({
           success: false,
           message: "Заказ не найден. Проверьте ID заказа",
         });
       }
       
+      console.log("Creating invoice in database...");
       const invoice = await storage.createAdditionalInvoice(validatedData);
+      console.log("Invoice created:", invoice);
       
       const invId = getNextInvId();
       const sum = parseFloat(invoice.amount).toFixed(2);
@@ -346,7 +354,9 @@ export async function registerRoutes(
       const baseUrl = "https://auth.robokassa.ru/Merchant/Index.aspx";
       const paymentUrl = `${baseUrl}?MerchantLogin=${ROBOKASSA_MERCHANT_LOGIN}&OutSum=${sum}&InvId=${invId}&Description=${encodeURIComponent(description)}&SignatureValue=${signatureValue}&IsTest=${IS_TEST_MODE ? 1 : 0}&shp_orderId=${invoice.id}`;
 
+      console.log("Updating invoice status...");
       await storage.updateAdditionalInvoiceStatus(invoice.id, "pending", String(invId));
+      console.log("Invoice status updated. Payment URL:", paymentUrl);
 
       res.status(201).json({
         success: true,
@@ -355,14 +365,15 @@ export async function registerRoutes(
         paymentUrl,
       });
     } catch (error) {
+      console.error("Error creating additional invoice:", error);
       if (error instanceof z.ZodError) {
+        console.error("Validation errors:", error.errors);
         res.status(400).json({
           success: false,
           message: "Ошибка валидации",
           errors: error.errors,
         });
       } else {
-        console.error("Error creating additional invoice:", error);
         res.status(500).json({
           success: false,
           message: "Внутренняя ошибка сервера",
