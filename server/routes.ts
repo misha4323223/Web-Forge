@@ -319,6 +319,16 @@ export async function registerRoutes(
   app.post("/api/additional-invoices", async (req, res) => {
     try {
       const validatedData = insertAdditionalInvoiceSchema.parse(req.body);
+      
+      // Проверяем, существует ли заказ
+      const order = await storage.getOrder(validatedData.orderId);
+      if (!order) {
+        return res.status(404).json({
+          success: false,
+          message: "Заказ не найден. Проверьте ID заказа",
+        });
+      }
+      
       const invoice = await storage.createAdditionalInvoice(validatedData);
       
       const invId = getNextInvId();
