@@ -143,11 +143,20 @@
       <div id="results"></div>
 
       <div class="footer">
-        <a href="https://mp-webstudio.ru" target="_blank">mp-webstudio.ru</a>
+        <button onclick="openWebsite()" style="background: none; border: none; color: #9ca3af; font-size: 14px; cursor: pointer;">mp-webstudio.ru</button>
       </div>
     </div>
 
     <script>
+      function openWebsite() {
+        const url = 'https://mp-webstudio.ru';
+        if (window.Telegram?.WebApp?.openLink) {
+          Telegram.WebApp.openLink(url);
+        } else {
+          window.open(url, '_blank');
+        }
+      }
+
       const API_URL = 'https://functions.yandexcloud.net/d4evq77bp5o80f8samhs';
       
       if (window.Telegram?.WebApp) {
@@ -184,7 +193,7 @@
           } else {
             results.innerHTML = `
               <div class="empty">
-                <div class="empty-icon">📋</div>
+                <div class="empty-icon" style="font-size: 48px; opacity: 0.3;">&#128203;</div>
                 <p>Заказы не найдены</p>
                 <p style="font-size: 12px; margin-top: 4px;">Проверьте правильность email</p>
               </div>

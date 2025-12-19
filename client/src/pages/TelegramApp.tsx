@@ -204,7 +204,7 @@ export default function TelegramApp() {
                   {order.status === "in_progress" && (
                     <div className="mt-4 p-3 bg-purple-500/10 rounded-md border border-purple-500/20">
                       <p className="text-sm text-purple-300">
-                        🚀 Ваш сайт в разработке! Мы свяжемся с вами для согласования.
+                        Ваш сайт в разработке! Мы свяжемся с вами для согласования.
                       </p>
                     </div>
                   )}
@@ -212,7 +212,7 @@ export default function TelegramApp() {
                   {order.status === "completed" && (
                     <div className="mt-4 p-3 bg-green-500/10 rounded-md border border-green-500/20">
                       <p className="text-sm text-green-300">
-                        ✅ Проект завершён! Акт выполненных работ отправлен на email.
+                        Проект завершён! Акт выполненных работ отправлен на email.
                       </p>
                     </div>
                   )}
@@ -223,15 +223,20 @@ export default function TelegramApp() {
         </div>
 
         <div className="mt-6 text-center">
-          <a 
-            href="https://mp-webstudio.ru" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-sm text-gray-400 hover:text-cyan-400 transition-colors"
+          <button 
+            onClick={() => {
+              const url = "https://mp-webstudio.ru";
+              if (window.Telegram?.WebApp?.openLink) {
+                window.Telegram.WebApp.openLink(url);
+              } else {
+                window.open(url, "_blank");
+              }
+            }}
+            className="inline-flex items-center gap-1 text-sm text-gray-400 hover:text-cyan-400 transition-colors bg-transparent border-none cursor-pointer"
           >
             mp-webstudio.ru
             <ExternalLink className="w-3 h-3" />
-          </a>
+          </button>
         </div>
       </motion.div>
     </div>
@@ -244,6 +249,7 @@ declare global {
       WebApp: {
         ready: () => void;
         expand: () => void;
+        openLink: (url: string) => void;
         themeParams: {
           bg_color?: string;
           text_color?: string;
