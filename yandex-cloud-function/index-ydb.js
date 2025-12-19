@@ -249,13 +249,12 @@ async function handleTelegramWebhook(body, headers) {
             const chatId = body.message.chat.id;
             const firstName = body.message.from?.first_name || 'Клиент';
             
-            const text = `Привет, ${firstName}! 👋\n\nДобро пожаловать в MP.WebStudio — веб-студию, где сайты создаёт искусственный интеллект.\n\nВыберите действие:`;
+            const text = `Привет, ${firstName}!\n\nДобро пожаловать в MP.WebStudio — веб-студию, где сайты создаёт искусственный интеллект.\n\nВыберите действие:`;
             
             const keyboard = {
                 inline_keyboard: [
-                    [{ text: '📋 Мои заказы', web_app: { url: 'https://mp-webstudio.ru/?tg=1' } }],
-                    [{ text: '🌐 Перейти на сайт', url: 'https://mp-webstudio.ru' }],
-                    [{ text: '📞 Связаться с нами', url: 'https://t.me/pimashkin' }]
+                    [{ text: 'Мои заказы', web_app: { url: 'https://mp-webstudio.ru/?tg=1' } }],
+                    [{ text: 'Перейти на сайт', url: 'https://mp-webstudio.ru' }]
                 ]
             };
 
