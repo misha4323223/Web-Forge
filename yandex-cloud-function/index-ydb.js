@@ -1593,36 +1593,36 @@ async function generateBankInvoicePDF(data) {
         doc.text(`${formatPrice(data.amount)} ₽`, col4 + 5, row1Top + 8);
         doc.moveDown(3);
 
-        // Итого
+        // Итого (с указанием ширины для правильного выравнивания)
+        const pageWidth = doc.page.width - doc.page.margins.left - doc.page.margins.right;
         doc.fontSize(12).font('Roboto-Bold');
-        doc.text(`ИТОГО: ${formatPrice(data.amount)} руб. 00 коп.`, { align: 'right' });
+        doc.text(`ИТОГО: ${formatPrice(data.amount)} руб. 00 коп.`, doc.page.margins.left, doc.y, { width: pageWidth, align: 'right' });
         doc.moveDown(0.5);
-        doc.fontSize(10).font('Roboto');
-        doc.text('НДС не облагается (самозанятый, п. 8 ст. 2 ФЗ от 27.11.2018 N 422-ФЗ)', { align: 'right' });
-        doc.moveDown(2);
+        doc.fontSize(9).font('Roboto');
+        doc.text('НДС не облагается (самозанятый, п. 8 ст. 2 ФЗ от 27.11.2018 N 422-ФЗ)', doc.page.margins.left, doc.y, { width: pageWidth, align: 'right' });
+        doc.moveDown(1.5);
 
         // Сумма прописью
         const amountWords = numberToWords(data.amount);
-        doc.font('Roboto').fontSize(10);
-        doc.text(`Всего к оплате: ${amountWords}`);
-        doc.moveDown(2);
+        doc.font('Roboto-Bold').fontSize(10);
+        doc.text(`Всего к оплате: ${amountWords}`, doc.page.margins.left, doc.y, { width: pageWidth });
+        doc.moveDown(1.5);
 
         // Примечания
         doc.fontSize(9).font('Roboto');
-        doc.text('Оплата данного счёта означает согласие с условиями публичной оферты,');
-        doc.text('размещённой на сайте mp-webstudio.ru/offer');
-        doc.moveDown(1);
-        doc.text('Счёт действителен в течение 5 банковских дней.');
+        doc.text('Оплата данного счёта означает согласие с условиями публичной оферты, размещённой на сайте mp-webstudio.ru/offer', doc.page.margins.left, doc.y, { width: pageWidth });
+        doc.moveDown(0.5);
+        doc.text('Счёт действителен в течение 5 банковских дней.', doc.page.margins.left, doc.y, { width: pageWidth });
         doc.moveDown(2);
 
         // Подпись
-        doc.font('Roboto-Bold').text('Исполнитель:');
+        doc.font('Roboto-Bold').text('Исполнитель:', doc.page.margins.left, doc.y);
         doc.moveDown(0.5);
-        doc.font('Roboto').text('Пимашин М.И. ________________');
+        doc.font('Roboto').text('Пимашин М.И. ________________', doc.page.margins.left, doc.y);
         doc.moveDown(2);
 
         // Футер
-        doc.fontSize(8).text('Пимашин М.И. | MP.WebStudio | ИНН 711612442203 | mp-webstudio.ru', { align: 'center' });
+        doc.fontSize(8).text('Пимашин М.И. | MP.WebStudio | ИНН 711612442203 | mp-webstudio.ru', doc.page.margins.left, doc.y, { width: pageWidth, align: 'center' });
 
         doc.end();
     });
