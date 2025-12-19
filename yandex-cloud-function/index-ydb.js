@@ -559,12 +559,11 @@ async function handleRobokassaResult(data, headers) {
         // Это оплата дополнительного счёта
         console.log('Processing additional invoice payment:', shp_orderId);
         
-        // Извлекаем orderId из addinv_ord_xxxxx_timestamp_desc
-        // Формат: addinv_{normalizedOrderId}_{timestamp}_{desc}
-        // Пример: addinv_ord_mjcv3hwa54rerggqx_1734567890123_extra
+        // Извлекаем orderId из addinv_{orderIdSuffix}_{timestamp}
+        // Пример: addinv_mjcv3hwa54rerggqx_lxyz123
         const parts = shp_orderId.split('_');
-        // parts[0] = "addinv", parts[1] = "ord", parts[2] = "xxxxx", parts[3] = timestamp, parts[4+] = desc
-        const realOrderId = parts.length >= 3 ? `${parts[1]}_${parts[2]}` : null;
+        // parts[0] = "addinv", parts[1] = "orderIdSuffix", parts[2] = "timestamp"
+        const realOrderId = parts.length >= 2 ? `ord_${parts[1]}` : null;
         
         console.log('Extracted order ID from additional invoice:', realOrderId);
         
@@ -953,8 +952,11 @@ async function handleAdditionalInvoice(data, headers) {
 
     const invId = Date.now() % 1000000;
     // Создаём уникальный ID для дополнительного счёта с префиксом addinv_
-    // Формат: addinv_{orderId}_{timestamp}_{description_hash}
-    const addInvUniqueId = `addinv_${normalizedOrderId}_${Date.now()}_${description ? description.substring(0, 10).replace(/[^a-zA-Zа-яА-Я0-9]/g, '') : 'extra'}`;
+    // Формат: addinv_{orderId без префикса ord_}_{timestamp}
+    // Используем только латиницу и цифры для совместимости с Robokassa
+    const orderIdSuffix = normalizedOrderId.replace('ord_', '');
+    const timestamp = Date.now().toString(36); // base36 для компактности
+    const addInvUniqueId = `addinv_${orderIdSuffix}_${timestamp}`;
     
     const signatureString = `${merchantLogin}:${numericAmount}:${invId}:${password1}:shp_orderId=${addInvUniqueId}`;
     const signature = crypto.createHash('md5').update(signatureString).digest('hex');
