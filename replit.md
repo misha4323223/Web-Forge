@@ -116,14 +116,20 @@ shared/
 ### Дополнительные счета для клиентов (Additional Invoices):
 1. **Назначение:** Система для выставления дополнительных счётов за доп. работы/функции к уже выполненным проектам
 2. **Где находится:** Админ-панель `/admin` (страница `client/src/pages/Admin.tsx`)
-3. **API endpoint:** `POST /api/additional-invoices`
+3. **API endpoints:**
+   - `POST /api/additional-invoices` — создание доп счета
+   - `GET /api/additional-invoices/order/:orderId` — получить все доп счета по заказу
+   - `POST /api/robokassa/additional-invoice` — callback оплаты доп счета
 4. **Как работает:**
    - Выбор заказа клиента по ID или ввод вручную
    - Описание дополнительной услуги/функции
    - Указание стоимости в рублях
    - Генерирование платёжной ссылки через Robokassa
    - Ссылка копируется в буфер обмена для отправки клиенту
-5. **Типы данных:** `insertAdditionalInvoiceSchema`, `AdditionalInvoice` в `shared/schema.ts`
+5. **Процесс оплаты:**
+   - При оплате доп счета → отправляется email "Платеж принят за [название функции]"
+   - При финальной оплате основного заказа → генерируется Акт со ВСЕМИ работами (включая оплаченные доп функции)
+6. **Типы данных:** `insertAdditionalInvoiceSchema`, `AdditionalInvoice` в `shared/schema.ts`
 
 ### Email с договором после оплаты:
 1. Настроен Yandex Cloud Postbox для отправки email

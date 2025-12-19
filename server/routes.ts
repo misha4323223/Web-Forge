@@ -449,6 +449,54 @@ export async function registerRoutes(
 
       await storage.updateAdditionalInvoiceStatus(invoice.id, "paid", String(InvId), new Date());
 
+      // Отправляем email уведомление о принятии платежа за доп счет
+      try {
+        const emailHtml = `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
+            <h2 style="color: #3b82f6;">Платеж принят</h2>
+            <p>Здравствуйте, ${order.clientName}!</p>
+            <p>Спасибо! Ваш платеж успешно получен и обработан.</p>
+            
+            <div style="background: #f0f9ff; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #3b82f6;">
+              <h3 style="margin-top: 0; color: #1e40af;">Дополнительная работа</h3>
+              <p><strong>Описание:</strong> ${invoice.description}</p>
+              <p><strong>Сумма:</strong> <span style="font-size: 18px; color: #10b981;">${OutSum} ₽</span></p>
+              <p><strong>Статус:</strong> <span style="color: #10b981;">✓ Оплачено</span></p>
+            </div>
+            
+            <p style="color: #6b7280; font-size: 14px; margin-top: 30px;">
+              Полный акт выполненных работ с учётом всех дополнительных услуг будет отправлен после оплаты остатка основного заказа.<br><br>
+              С уважением,<br>MP.WebStudio<br>
+              <a href="https://mp-webstudio.ru" style="color: #3b82f6;">mp-webstudio.ru</a>
+            </p>
+          </div>
+        `;
+
+        // Используем встроенный SMTP если доступен
+        const nodemailer = require("nodemailer");
+        const transporter = nodemailer.createTransport({
+          host: "smtp.yandex.ru",
+          port: 465,
+          secure: true,
+          auth: {
+            user: process.env.SMTP_EMAIL,
+            pass: process.env.SMTP_PASSWORD,
+          },
+        });
+
+        await transporter.sendMail({
+          from: `"MP.WebStudio" <${process.env.SMTP_EMAIL || "noreply@mp-webstudio.ru"}>`,
+          to: order.clientEmail,
+          subject: `Платеж принят: ${invoice.description}`,
+          html: emailHtml,
+        });
+
+        console.log("Additional invoice payment email sent to:", order.clientEmail);
+      } catch (emailError) {
+        console.error("Failed to send additional invoice email:", emailError.message);
+        // Не прерываем процесс если email не отправился
+      }
+
       await sendTelegramMessage(
         `💳 <b>Дополнительный счёт оплачен!</b>\n\n` +
         `👤 Клиент: ${order.clientName}\n` +
