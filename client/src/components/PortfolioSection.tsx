@@ -699,7 +699,7 @@ export function PortfolioSection() {
         <div 
           className="relative w-full rounded-2xl overflow-hidden"
           style={{ 
-            height: "min(800px, 90vh)",
+            height: "min(1200px, 95vh)",
             background: "radial-gradient(ellipse at center, rgba(15, 10, 30, 0.95) 0%, rgba(5, 5, 15, 0.98) 100%)",
           }}
         >
