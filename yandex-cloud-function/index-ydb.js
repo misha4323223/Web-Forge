@@ -1402,8 +1402,11 @@ async function generateContractPDF(order) {
         doc.fontSize(10).font('Roboto').text(date, { align: 'center' });
         doc.moveDown(1.5);
 
-        doc.fontSize(10).font('Roboto-Bold').text('ИСПОЛНИТЕЛЬ: ', { continued: true });
-        doc.font('Roboto').text('MP.WebStudio, самозанятый, действующий на основании справки о постановке на учет в качестве плательщика НПД');
+        doc.fontSize(10).font('Roboto-Bold').text('ИСПОЛНИТЕЛЬ:');
+        doc.font('Roboto').text('Пимашин Михаил Игоревич');
+        doc.text('Самозанятый (НПД), ИНН: 711612442203');
+        doc.text('Адрес: 301766, Тульская обл., г. Донской, ул. Новая, 49');
+        doc.text('Телефон: +7 (953) 181-41-36, Email: mpwebstudio1@gmail.com');
         doc.moveDown(0.5);
 
         doc.font('Roboto-Bold').text('ЗАКАЗЧИК: ', { continued: true });
@@ -1447,7 +1450,7 @@ async function generateContractPDF(order) {
         doc.text(`ID заказа: ${order.id}`);
         doc.moveDown(2);
 
-        doc.fontSize(9).text('MP.WebStudio | https://mp-webstudio.ru', { align: 'center' });
+        doc.fontSize(9).text('Пимашин М.И. | MP.WebStudio | ИНН 711612442203 | mp-webstudio.ru', { align: 'center' });
 
         doc.end();
     });
@@ -1492,11 +1495,14 @@ async function generateCompletionActPDF(order, additionalInvoices = []) {
         doc.fontSize(10).font('Roboto').text(date, { align: 'center' });
         doc.moveDown(1.5);
 
-        doc.fontSize(10).font('Roboto-Bold').text('ИСПОЛНИТЕЛЬ: ', { continued: true });
-        doc.font('Roboto').text('MP.WebStudio, самозанятый');
+        doc.fontSize(10).font('Roboto-Bold').text('ИСПОЛНИТЕЛЬ:');
+        doc.font('Roboto').text('Пимашин Михаил Игоревич');
+        doc.text('Самозанятый (НПД), ИНН: 711612442203');
+        doc.text('Адрес: 301766, Тульская обл., г. Донской, ул. Новая, 49');
+        doc.text('Телефон: +7 (953) 181-41-36, Email: mpwebstudio1@gmail.com');
         doc.moveDown(0.5);
 
-        doc.font('Roboto-Bold').text('ЗАКАЗЧИК: ', { continued: true });
+        doc.font('Roboto-Bold').text('ЗАКАЗЧИК:');
         doc.font('Roboto').text(order.clientName || 'Клиент');
         if (order.clientPhone) doc.text(`Телефон: ${order.clientPhone}`);
         if (order.clientEmail) doc.text(`Email: ${order.clientEmail}`);
@@ -1560,7 +1566,7 @@ async function generateCompletionActPDF(order, additionalInvoices = []) {
         doc.text(`ID заказа: ${order.id}`);
         doc.moveDown(2);
 
-        doc.fontSize(9).text('MP.WebStudio | https://mp-webstudio.ru', { align: 'center' });
+        doc.fontSize(9).text('Пимашин М.И. | MP.WebStudio | ИНН 711612442203 | mp-webstudio.ru', { align: 'center' });
         doc.text('Спасибо за сотрудничество!', { align: 'center' });
 
         doc.end();
