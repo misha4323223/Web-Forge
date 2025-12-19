@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Scissors, Clock, MapPin, Phone, Star, Calendar, User, Check, ArrowLeft, Instagram } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Link } from "wouter";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import barberHeroImg from "@assets/generated_images/stylish_barbershop_interior.webp";
 import alexeyImg from "@assets/generated_images/russian_barber_alexey_portrait.webp";
@@ -69,10 +69,19 @@ export default function BarberShop() {
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [step, setStep] = useState(1);
   const { toast } = useToast();
+  const servicesRef = useRef<HTMLElement>(null);
+  const barbersRef = useRef<HTMLElement>(null);
+  const bookingRef = useRef<HTMLElement>(null);
+  const contactRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  const scrollToServices = () => servicesRef.current?.scrollIntoView({ behavior: "smooth" });
+  const scrollToBarbers = () => barbersRef.current?.scrollIntoView({ behavior: "smooth" });
+  const scrollToBooking = () => bookingRef.current?.scrollIntoView({ behavior: "smooth" });
+  const scrollToContact = () => contactRef.current?.scrollIntoView({ behavior: "smooth" });
 
   const handleServiceSelect = (id: number) => {
     setSelectedService(id);
@@ -142,10 +151,10 @@ export default function BarberShop() {
             <span className="text-xl font-bold tracking-wider">BLADE</span>
           </div>
           <div className="hidden md:flex items-center gap-8 text-sm text-neutral-300">
-            <a href="#services" className="hover:text-amber-400 transition-colors">Услуги</a>
-            <a href="#barbers" className="hover:text-amber-400 transition-colors">Мастера</a>
-            <a href="#booking" className="hover:text-amber-400 transition-colors">Запись</a>
-            <a href="#contact" className="hover:text-amber-400 transition-colors">Контакты</a>
+            <button onClick={scrollToServices} className="hover:text-amber-400 transition-colors cursor-pointer">Услуги</button>
+            <button onClick={scrollToBarbers} className="hover:text-amber-400 transition-colors cursor-pointer">Мастера</button>
+            <button onClick={scrollToBooking} className="hover:text-amber-400 transition-colors cursor-pointer">Запись</button>
+            <button onClick={scrollToContact} className="hover:text-amber-400 transition-colors cursor-pointer">Контакты</button>
           </div>
           <Button className="bg-amber-500 hover:bg-amber-600 text-black font-semibold" data-testid="button-book-header">
             Записаться
@@ -198,7 +207,7 @@ export default function BarberShop() {
         </div>
       </header>
 
-      <section id="services" className="py-20 bg-neutral-900">
+      <section ref={servicesRef} id="services" className="py-20 bg-neutral-900">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -254,7 +263,7 @@ export default function BarberShop() {
         </div>
       </section>
 
-      <section id="barbers" className="py-20">
+      <section ref={barbersRef} id="barbers" className="py-20">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -316,7 +325,7 @@ export default function BarberShop() {
         </div>
       </section>
 
-      <section id="booking" className="py-20 bg-neutral-900">
+      <section ref={bookingRef} id="booking" className="py-20 bg-neutral-900">
         <div className="max-w-4xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -463,7 +472,7 @@ export default function BarberShop() {
         </div>
       </section>
 
-      <footer id="contact" className="py-12 bg-neutral-900 border-t border-neutral-800">
+      <footer ref={contactRef} id="contact" className="py-12 bg-neutral-900 border-t border-neutral-800">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>

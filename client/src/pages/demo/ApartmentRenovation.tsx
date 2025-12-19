@@ -133,6 +133,7 @@ export default function ApartmentRenovation() {
   const { toast } = useToast();
   const servicesRef = useRef<HTMLElement>(null);
   const portfolioRef = useRef<HTMLElement>(null);
+  const processRef = useRef<HTMLElement>(null);
   const contactRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -141,6 +142,7 @@ export default function ApartmentRenovation() {
 
   const scrollToServices = () => servicesRef.current?.scrollIntoView({ behavior: "smooth" });
   const scrollToPortfolio = () => portfolioRef.current?.scrollIntoView({ behavior: "smooth" });
+  const scrollToProcess = () => processRef.current?.scrollIntoView({ behavior: "smooth" });
   const scrollToContact = () => contactRef.current?.scrollIntoView({ behavior: "smooth" });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -243,10 +245,10 @@ export default function ApartmentRenovation() {
             <span className="text-xl font-bold text-amber-700">РемонтПро</span>
           </div>
           <div className="hidden md:flex items-center gap-8 text-sm text-gray-600">
-            <a href="#services" className="hover:text-amber-600 transition-colors">Услуги</a>
-            <a href="#portfolio" className="hover:text-amber-600 transition-colors">Портфолио</a>
-            <a href="#process" className="hover:text-amber-600 transition-colors">Как мы работаем</a>
-            <a href="#contact" className="hover:text-amber-600 transition-colors">Контакты</a>
+            <button onClick={scrollToServices} className="hover:text-amber-600 transition-colors cursor-pointer">Услуги</button>
+            <button onClick={scrollToPortfolio} className="hover:text-amber-600 transition-colors cursor-pointer">Портфолио</button>
+            <button onClick={scrollToProcess} className="hover:text-amber-600 transition-colors cursor-pointer">Как мы работаем</button>
+            <button onClick={scrollToContact} className="hover:text-amber-600 transition-colors cursor-pointer">Контакты</button>
           </div>
           <Button className="bg-amber-500 hover:bg-amber-600 text-white" onClick={() => setCallbackOpen(true)} data-testid="button-call-header">
             <Phone className="w-4 h-4 mr-2" />
@@ -455,7 +457,7 @@ export default function ApartmentRenovation() {
       </section>
 
       {/* Process */}
-      <section id="process" className="py-20 bg-gray-50">
+      <section ref={processRef} id="process" className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

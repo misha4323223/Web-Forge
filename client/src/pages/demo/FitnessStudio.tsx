@@ -42,6 +42,7 @@ export default function FitnessStudio() {
   const { toast } = useToast();
   const scheduleRef = useRef<HTMLElement>(null);
   const pricingRef = useRef<HTMLElement>(null);
+  const contactRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -49,6 +50,7 @@ export default function FitnessStudio() {
 
   const scrollToSchedule = () => scheduleRef.current?.scrollIntoView({ behavior: "smooth" });
   const scrollToPricing = () => pricingRef.current?.scrollIntoView({ behavior: "smooth" });
+  const scrollToContact = () => contactRef.current?.scrollIntoView({ behavior: "smooth" });
 
   const handleTrialSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -175,9 +177,9 @@ export default function FitnessStudio() {
             <span className="text-xl font-bold">ФОРМА</span>
           </div>
           <div className="hidden md:flex items-center gap-8 text-sm text-neutral-300">
-            <a href="#schedule" className="hover:text-white transition-colors">Расписание</a>
-            <a href="#pricing" className="hover:text-white transition-colors">Абонементы</a>
-            <a href="#contact" className="hover:text-white transition-colors">Контакты</a>
+            <button onClick={scrollToSchedule} className="hover:text-white transition-colors cursor-pointer">Расписание</button>
+            <button onClick={scrollToPricing} className="hover:text-white transition-colors cursor-pointer">Абонементы</button>
+            <button onClick={scrollToContact} className="hover:text-white transition-colors cursor-pointer">Контакты</button>
           </div>
           <Button className="bg-violet-600 hover:bg-violet-700" onClick={() => setTrialOpen(true)} data-testid="button-trial">
             Пробное занятие
@@ -377,7 +379,7 @@ export default function FitnessStudio() {
         </div>
       </section>
 
-      <footer id="contact" className="py-12 border-t border-neutral-800">
+      <footer ref={contactRef} id="contact" className="py-12 border-t border-neutral-800">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid md:grid-cols-3 gap-8">
             <div>

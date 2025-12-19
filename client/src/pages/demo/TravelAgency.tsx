@@ -111,6 +111,8 @@ export default function TravelAgency() {
   const [consultPhone, setConsultPhone] = useState("");
   const { toast } = useToast();
   const destinationsRef = useRef<HTMLElement>(null);
+  const categoriesRef = useRef<HTMLElement>(null);
+  const contactRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -153,6 +155,8 @@ export default function TravelAgency() {
   };
 
   const scrollToDestinations = () => destinationsRef.current?.scrollIntoView({ behavior: "smooth" });
+  const scrollToCategories = () => categoriesRef.current?.scrollIntoView({ behavior: "smooth" });
+  const scrollToContact = () => contactRef.current?.scrollIntoView({ behavior: "smooth" });
 
   const formatPrice = (price: number) => new Intl.NumberFormat("ru-RU").format(price);
 
@@ -260,9 +264,9 @@ export default function TravelAgency() {
             <span className="text-xl font-bold text-white">TravelDream</span>
           </div>
           <div className="hidden md:flex items-center gap-8 text-sm text-white/80">
-            <a href="#destinations" className="hover:text-white transition-colors">Направления</a>
-            <a href="#categories" className="hover:text-white transition-colors">Категории</a>
-            <a href="#contact" className="hover:text-white transition-colors">Контакты</a>
+            <button onClick={scrollToDestinations} className="hover:text-white transition-colors cursor-pointer">Направления</button>
+            <button onClick={scrollToCategories} className="hover:text-white transition-colors cursor-pointer">Категории</button>
+            <button onClick={scrollToContact} className="hover:text-white transition-colors cursor-pointer">Контакты</button>
           </div>
           <Button className="bg-white text-sky-600 hover:bg-white/90" data-testid="button-consultation">
             Консультация
@@ -342,7 +346,7 @@ export default function TravelAgency() {
         </div>
       </section>
 
-      <section id="categories" className="py-20">
+      <section ref={categoriesRef} id="categories" className="py-20">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -487,7 +491,7 @@ export default function TravelAgency() {
         </div>
       </section>
 
-      <footer id="contact" className="py-12 bg-slate-900 text-white">
+      <footer ref={contactRef} id="contact" className="py-12 bg-slate-900 text-white">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>

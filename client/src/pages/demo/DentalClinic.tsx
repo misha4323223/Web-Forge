@@ -106,6 +106,8 @@ export default function DentalClinic() {
   const [bookingSuccess, setBookingSuccess] = useState(false);
   const { toast } = useToast();
   const servicesRef = useRef<HTMLElement>(null);
+  const doctorsRef = useRef<HTMLElement>(null);
+  const aboutRef = useRef<HTMLElement>(null);
   const contactRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -113,6 +115,8 @@ export default function DentalClinic() {
   }, []);
 
   const scrollToServices = () => servicesRef.current?.scrollIntoView({ behavior: "smooth" });
+  const scrollToDoctors = () => doctorsRef.current?.scrollIntoView({ behavior: "smooth" });
+  const scrollToAbout = () => aboutRef.current?.scrollIntoView({ behavior: "smooth" });
   const scrollToContact = () => contactRef.current?.scrollIntoView({ behavior: "smooth" });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -224,10 +228,10 @@ export default function DentalClinic() {
             <span className="text-xl font-bold text-teal-700">DentaPro</span>
           </div>
           <div className="hidden md:flex items-center gap-8 text-sm text-gray-600">
-            <a href="#services" className="hover:text-teal-600 transition-colors">Услуги</a>
-            <a href="#doctors" className="hover:text-teal-600 transition-colors">Врачи</a>
-            <a href="#about" className="hover:text-teal-600 transition-colors">О клинике</a>
-            <a href="#contact" className="hover:text-teal-600 transition-colors">Контакты</a>
+            <button onClick={scrollToServices} className="hover:text-teal-600 transition-colors cursor-pointer">Услуги</button>
+            <button onClick={scrollToDoctors} className="hover:text-teal-600 transition-colors cursor-pointer">Врачи</button>
+            <button onClick={scrollToAbout} className="hover:text-teal-600 transition-colors cursor-pointer">О клинике</button>
+            <button onClick={scrollToContact} className="hover:text-teal-600 transition-colors cursor-pointer">Контакты</button>
           </div>
           <Button className="bg-teal-500 hover:bg-teal-600 text-white" onClick={() => setBookingOpen(true)} data-testid="button-book-header">
             <Phone className="w-4 h-4 mr-2" />
@@ -385,7 +389,7 @@ export default function DentalClinic() {
       </section>
 
       {/* Doctors */}
-      <section id="doctors" className="py-20 bg-white">
+      <section ref={doctorsRef} id="doctors" className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -432,7 +436,7 @@ export default function DentalClinic() {
       </section>
 
       {/* About / Gallery */}
-      <section id="about" className="py-20 bg-gray-50">
+      <section ref={aboutRef} id="about" className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
