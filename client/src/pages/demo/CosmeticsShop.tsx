@@ -311,11 +311,11 @@ export default function CosmeticsShop() {
       </header>
 
       <section className="relative py-20 md:py-32 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-rose-100 via-stone-100 to-amber-50 dark:from-rose-950/30 dark:via-neutral-950 dark:to-amber-950/20" />
+        <div className="absolute inset-0 bg-gradient-to-br from-rose-100 via-stone-100 to-amber-50 dark:from-rose-950/30 dark:via-neutral-950 dark:to-amber-950/20 pointer-events-none" />
         <img 
           src={heroImg} 
           alt="Косметика" 
-          className="absolute inset-0 w-full h-full object-cover opacity-30 dark:opacity-20"
+          className="absolute inset-0 w-full h-full object-cover opacity-30 dark:opacity-20 pointer-events-none"
         />
         <div className="relative max-w-7xl mx-auto px-6">
           <div className="grid md:grid-cols-2 gap-12 items-center">

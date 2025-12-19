@@ -243,11 +243,11 @@ export default function FoodDelivery() {
       </Dialog>
 
       <header className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-orange-500/90 to-red-500/90" />
+        <div className="absolute inset-0 bg-gradient-to-r from-orange-500/90 to-red-500/90 pointer-events-none" />
         <img 
           src={foodHeroImg} 
           alt="Еда" 
-          className="absolute inset-0 w-full h-full object-cover opacity-30"
+          className="absolute inset-0 w-full h-full object-cover opacity-30 pointer-events-none"
         />
         
         <nav className="relative z-10 max-w-7xl mx-auto px-6 py-4 flex items-center justify-between gap-4">

@@ -252,9 +252,9 @@ export default function TravelAgency() {
       </Dialog>
 
       <header className="relative min-h-[90vh] flex items-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-sky-400 via-sky-500 to-teal-500" />
-        <div className="absolute inset-0 bg-cover bg-center mix-blend-overlay opacity-40" style={{ backgroundImage: `url(${travelHeroImg})` }} />
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-br from-sky-400 via-sky-500 to-teal-500 pointer-events-none" />
+        <div className="absolute inset-0 bg-cover bg-center mix-blend-overlay opacity-40 pointer-events-none" style={{ backgroundImage: `url(${travelHeroImg})` }} />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none" />
         
         <nav className="absolute top-0 left-0 right-0 z-10 max-w-7xl mx-auto px-6 py-6 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">

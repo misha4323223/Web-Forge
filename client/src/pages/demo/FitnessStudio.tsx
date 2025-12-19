@@ -161,13 +161,13 @@ export default function FitnessStudio() {
       </Dialog>
 
       <header className="relative min-h-screen flex items-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-violet-900/50 via-neutral-950 to-neutral-950" />
+        <div className="absolute inset-0 bg-gradient-to-br from-violet-900/50 via-neutral-950 to-neutral-950 pointer-events-none" />
         <img 
           src={fitnessHeroImg} 
           alt="Фитнес" 
-          className="absolute inset-0 w-full h-full object-cover opacity-20"
+          className="absolute inset-0 w-full h-full object-cover opacity-20 pointer-events-none"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-transparent to-transparent pointer-events-none" />
         
         <nav className="absolute top-0 left-0 right-0 z-10 max-w-7xl mx-auto px-6 py-6 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">

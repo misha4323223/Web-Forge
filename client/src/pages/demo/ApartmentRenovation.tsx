@@ -230,12 +230,12 @@ export default function ApartmentRenovation() {
 
       {/* Hero Section */}
       <header className="relative min-h-screen flex items-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-amber-50 via-white to-orange-50" />
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-50 via-white to-orange-50 pointer-events-none" />
         <div 
-          className="absolute inset-0 bg-cover bg-center opacity-30" 
+          className="absolute inset-0 bg-cover bg-center opacity-30 pointer-events-none" 
           style={{ backgroundImage: `url(${livingRoomImg})` }} 
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent pointer-events-none" />
         
         <nav className="absolute top-0 left-0 right-0 z-10 max-w-7xl mx-auto px-6 py-6 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">

@@ -332,10 +332,10 @@ export default function StreetWearShop() {
         <img 
           src={heroImg} 
           alt="Streetwear" 
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover pointer-events-none"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent pointer-events-none" />
         
         <div className="relative h-full max-w-7xl mx-auto px-6 flex items-center">
           <motion.div
