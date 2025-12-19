@@ -24,6 +24,11 @@ import DentalClinic from "@/pages/demo/DentalClinic";
 import ApartmentRenovation from "@/pages/demo/ApartmentRenovation";
 import TelegramApp from "@/pages/TelegramApp";
 
+const isTelegramMiniApp = () => {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('tg') === '1' || (window as any).Telegram?.WebApp?.initData;
+};
+
 function Router() {
   return (
     <Switch>
@@ -52,6 +57,10 @@ function Router() {
 }
 
 function App() {
+  if (isTelegramMiniApp()) {
+    return <TelegramApp />;
+  }
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
