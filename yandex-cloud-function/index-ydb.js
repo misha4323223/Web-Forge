@@ -301,6 +301,95 @@ async function getOrderFromYdb(orderId) {
     return order;
 }
 
+// ============ Additional Invoices YDB Functions ============
+
+async function saveAdditionalInvoiceToYdb(invoiceId, orderId, description, amount) {
+    const driver = await getYdbDriver();
+    const now = new Date().toISOString();
+    
+    await driver.tableClient.withSession(async (session) => {
+        const queryText = `
+            DECLARE $id AS Utf8;
+            DECLARE $order_id AS Utf8;
+            DECLARE $description AS Utf8;
+            DECLARE $amount AS Utf8;
+            DECLARE $status AS Utf8;
+            DECLARE $paid_at AS Utf8;
+            
+            UPSERT INTO additional_invoices (id, order_id, description, amount, status, paid_at)
+            VALUES ($id, $order_id, $description, $amount, $status, $paid_at);
+        `;
+        
+        const preparedQuery = await session.prepareQuery(queryText);
+        
+        await session.executeQuery(preparedQuery, {
+            '$id': TypedValues.utf8(invoiceId),
+            '$order_id': TypedValues.utf8(orderId),
+            '$description': TypedValues.utf8(description || 'Дополнительные услуги'),
+            '$amount': TypedValues.utf8(amount),
+            '$status': TypedValues.utf8('paid'),
+            '$paid_at': TypedValues.utf8(now),
+        });
+    });
+    
+    console.log('Additional invoice saved to YDB:', invoiceId);
+}
+
+async function getAdditionalInvoicesFromYdb(orderId) {
+    const driver = await getYdbDriver();
+    const invoices = [];
+    
+    await driver.tableClient.withSession(async (session) => {
+        const queryText = `
+            DECLARE $order_id AS Utf8;
+            SELECT *
+            FROM additional_invoices
+            WHERE order_id = $order_id AND status = 'paid';
+        `;
+        
+        const preparedQuery = await session.prepareQuery(queryText);
+        
+        const result = await session.executeQuery(preparedQuery, {
+            '$order_id': TypedValues.utf8(orderId),
+        });
+        
+        if (result.resultSets && result.resultSets.length > 0) {
+            const resultSet = result.resultSets[0];
+            const rows = resultSet.rows || [];
+            const columns = resultSet.columns || [];
+            
+            const columnMap = {};
+            columns.forEach((col, idx) => {
+                columnMap[col.name] = idx;
+            });
+            
+            rows.forEach(row => {
+                if (row.items && Array.isArray(row.items)) {
+                    const getValue = (colName) => {
+                        const idx = columnMap[colName];
+                        if (idx !== undefined && row.items[idx]) {
+                            return getStringValue(row.items[idx]);
+                        }
+                        return '';
+                    };
+                    
+                    invoices.push({
+                        id: getValue('id'),
+                        orderId: getValue('order_id'),
+                        description: getValue('description'),
+                        amount: getValue('amount'),
+                        status: getValue('status'),
+                        paidAt: getValue('paid_at'),
+                    });
+                }
+            });
+        }
+    });
+    
+    console.log('Additional invoices fetched from YDB:', invoices.length);
+    return invoices;
+}
+
 function getStringValue(field) {
     if (field === null || field === undefined) return '';
     if (typeof field === 'string') return field;
@@ -577,6 +666,16 @@ async function handleRobokassaResult(data, headers) {
             console.error('Error fetching order for additional invoice:', error.message);
         }
         
+        // Сохраняем оплаченный дополнительный счёт в YDB
+        try {
+            // Описание берём из комментария или используем стандартное
+            const invoiceDescription = 'Дополнительные услуги по разработке сайта';
+            await saveAdditionalInvoiceToYdb(shp_orderId, realOrderId, invoiceDescription, OutSum);
+            console.log('Additional invoice saved to YDB');
+        } catch (saveError) {
+            console.error('Error saving additional invoice to YDB:', saveError.message);
+        }
+        
         // Отправляем уведомление в Telegram
         if (order) {
             await sendTelegramNotification(`💳 Оплачен дополнительный счёт!
@@ -667,19 +766,13 @@ ${payRemainingLink}
             try {
                 console.log('Generating completion act PDF for order:', order.id);
                 
-                // Получаем список всех оплаченных дополнительных счётов
+                // Получаем список всех оплаченных дополнительных счётов из YDB
                 try {
-                    const apiUrl = `${SITE_URL}/api/additional-invoices/order/${shp_orderId}`;
-                    console.log('Fetching additional invoices from:', apiUrl);
-                    const response = await fetch(apiUrl);
-                    if (response.ok) {
-                        additionalInvoices = await response.json();
-                        console.log('Additional invoices fetched:', additionalInvoices.length);
-                    } else {
-                        console.warn('Failed to fetch additional invoices:', response.status);
-                    }
+                    console.log('Fetching additional invoices from YDB for order:', shp_orderId);
+                    additionalInvoices = await getAdditionalInvoicesFromYdb(shp_orderId);
+                    console.log('Additional invoices fetched from YDB:', additionalInvoices.length);
                 } catch (fetchError) {
-                    console.error('Error fetching additional invoices:', fetchError.message);
+                    console.error('Error fetching additional invoices from YDB:', fetchError.message);
                 }
                 
                 const pdfBuffer = await generateCompletionActPDF(order, additionalInvoices);
