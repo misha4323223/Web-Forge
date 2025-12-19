@@ -104,7 +104,7 @@ function AnimatedText({ text, startIndex, isGradient, isInView }: AnimatedTextPr
   );
 }
 
-type ProjectType = "landing" | "corporate" | "shop";
+type ProjectType = "bizcard" | "landing" | "corporate" | "shop";
 
 interface Feature {
   id: string;
@@ -124,17 +124,30 @@ interface ProjectTypeConfig {
 
 const projectTypes: ProjectTypeConfig[] = [
   {
+    value: "bizcard",
+    label: "Сайт-визитка",
+    basePrice: 25000,
+    description: "Компактный сайт о вас или компании",
+    includes: [
+      "Адаптивный дизайн (мобильный + ПК)",
+      "1-3 страницы",
+      "Контактная информация",
+      "Базовый дизайн",
+      "SEO-основа",
+      "Хостинг на Яндекс Cloud",
+    ],
+  },
+  {
     value: "landing",
     label: "Лендинг",
     basePrice: 45000,
     description: "Одностраничный продающий сайт",
     includes: [
-      "Адаптивный дизайн (мобильный + ПК)",
+      "Всё из сайта-визитки",
       "До 7 секций",
       "Форма обратной связи",
       "Базовые анимации",
-      "SEO-основа",
-      "Хостинг на Яндекс Cloud",
+      "Продающая структура",
     ],
   },
   {
@@ -167,17 +180,20 @@ const projectTypes: ProjectTypeConfig[] = [
 ];
 
 const features: Feature[] = [
+  { id: "contact_form", label: "Форма обратной связи", price: 5000, description: "Отправка заявок", availableFor: ["bizcard"] },
+  { id: "extra_pages_bizcard", label: "Доп. страницы (3 шт)", price: 8000, description: "Сверх базовых", availableFor: ["bizcard"] },
+  { id: "map", label: "Карта с адресом", price: 5000, description: "Яндекс.Карты", availableFor: ["bizcard"] },
   { id: "calculator", label: "Калькулятор стоимости", price: 12000, description: "Интерактивный расчёт", availableFor: ["landing", "corporate", "shop"] },
-  { id: "gallery", label: "Галерея / Портфолио", price: 10000, description: "Слайдер с лайтбоксом", availableFor: ["landing", "corporate", "shop"] },
-  { id: "messengers", label: "Виджеты мессенджеров", price: 7000, description: "WhatsApp, Telegram", availableFor: ["landing", "corporate", "shop"] },
-  { id: "analytics", label: "Яндекс.Метрика", price: 5000, description: "Подключение аналитики", availableFor: ["landing", "corporate", "shop"] },
+  { id: "gallery", label: "Галерея / Портфолио", price: 10000, description: "Слайдер с лайтбоксом", availableFor: ["bizcard", "landing", "corporate", "shop"] },
+  { id: "messengers", label: "Виджеты мессенджеров", price: 7000, description: "WhatsApp, Telegram", availableFor: ["bizcard", "landing", "corporate", "shop"] },
+  { id: "analytics", label: "Яндекс.Метрика", price: 5000, description: "Подключение аналитики", availableFor: ["bizcard", "landing", "corporate", "shop"] },
   { id: "email_notify", label: "Email-уведомления", price: 10000, description: "Письма о заявках", availableFor: ["landing", "corporate", "shop"] },
   { id: "telegram_notify", label: "Telegram-уведомления", price: 12000, description: "Заявки в Telegram-бот", availableFor: ["landing", "corporate", "shop"] },
-  { id: "animations", label: "Продвинутые анимации", price: 20000, description: "Параллакс, 3D-эффекты", availableFor: ["landing", "corporate", "shop"] },
-  { id: "chat_widget", label: "Чат-виджет", price: 7000, description: "Jivo, Tawk.to", availableFor: ["landing", "corporate", "shop"] },
+  { id: "animations", label: "Продвинутые анимации", price: 20000, description: "Параллакс, 3D-эффекты", availableFor: ["bizcard", "landing", "corporate", "shop"] },
+  { id: "chat_widget", label: "Чат-виджет", price: 7000, description: "Jivo, Tawk.to", availableFor: ["bizcard", "landing", "corporate", "shop"] },
   { id: "popup", label: "Pop-up окна", price: 7000, description: "При выходе, по таймеру", availableFor: ["landing", "corporate", "shop"] },
   { id: "countdown", label: "Таймер акции", price: 5000, description: "Обратный отсчёт", availableFor: ["landing", "corporate", "shop"] },
-  { id: "multilang", label: "Мультиязычность", price: 30000, description: "2+ языка", availableFor: ["landing", "corporate", "shop"] },
+  { id: "multilang", label: "Мультиязычность", price: 30000, description: "2+ языка", availableFor: ["bizcard", "landing", "corporate", "shop"] },
   { id: "extra_sections", label: "Доп. секции (5 шт)", price: 12000, description: "Сверх базовых", availableFor: ["landing"] },
   { id: "extra_pages", label: "Доп. страницы (5 шт)", price: 20000, description: "Сверх базовых", availableFor: ["corporate"] },
   { id: "blog", label: "Блог / Новости", price: 35000, description: "Раздел статей", availableFor: ["corporate", "shop"] },
@@ -191,15 +207,15 @@ const features: Feature[] = [
   { id: "admin", label: "Админ-панель", price: 55000, description: "Управление товарами", availableFor: ["shop"] },
   { id: "telegram_shop", label: "Telegram-магазин", price: 50000, description: "Мини-приложение", availableFor: ["shop"] },
   { id: "delivery", label: "Интеграция доставки", price: 30000, description: "СДЭК, Boxberry", availableFor: ["shop"] },
-  { id: "custom", label: "Другое / Индивидуальная функция", price: 0, description: "Обсудим отдельно", availableFor: ["landing", "corporate", "shop"] },
+  { id: "custom", label: "Другое / Индивидуальная функция", price: 0, description: "Обсудим отдельно", availableFor: ["bizcard", "landing", "corporate", "shop"] },
 ];
 
 export function CalculatorSection() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
-  const [projectType, setProjectType] = useState<ProjectType>("landing");
+  const [projectType, setProjectType] = useState<ProjectType>("bizcard");
   const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
-  const [expandedType, setExpandedType] = useState<ProjectType | null>("landing");
+  const [expandedType, setExpandedType] = useState<ProjectType | null>("bizcard");
 
   const currentProjectType = projectTypes.find((p) => p.value === projectType);
   const basePrice = currentProjectType?.basePrice || 0;
