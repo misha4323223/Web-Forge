@@ -555,6 +555,7 @@ async function handleRobokassaResult(data, headers) {
     // Получаем заказ из YDB
     let order = null;
     let isPrepayment = false;
+    let additionalInvoices = [];
     try {
         order = await getOrderFromYdb(shp_orderId);
         console.log('Order fetched from YDB:', order);
@@ -608,7 +609,23 @@ ${payRemainingLink}
             // Полная оплата - отправляем акт выполненных работ
             try {
                 console.log('Generating completion act PDF for order:', order.id);
-                const pdfBuffer = await generateCompletionActPDF(order);
+                
+                // Получаем список всех оплаченных дополнительных счётов
+                try {
+                    const apiUrl = `${SITE_URL}/api/additional-invoices/order/${shp_orderId}`;
+                    console.log('Fetching additional invoices from:', apiUrl);
+                    const response = await fetch(apiUrl);
+                    if (response.ok) {
+                        additionalInvoices = await response.json();
+                        console.log('Additional invoices fetched:', additionalInvoices.length);
+                    } else {
+                        console.warn('Failed to fetch additional invoices:', response.status);
+                    }
+                } catch (fetchError) {
+                    console.error('Error fetching additional invoices:', fetchError.message);
+                }
+                
+                const pdfBuffer = await generateCompletionActPDF(order, additionalInvoices);
                 console.log('Completion act PDF generated, size:', pdfBuffer.length);
                 
                 await sendCompletionActEmail(order, pdfBuffer);
@@ -617,13 +634,25 @@ ${payRemainingLink}
                 console.error('Failed to send completion act email:', emailError.message, emailError.stack);
             }
             
+            // Формируем сообщение о дополнительных счётах
+            let additionalInvoicesMessage = '';
+            if (additionalInvoices && additionalInvoices.length > 0) {
+                const paidAdditional = additionalInvoices.filter(inv => inv.status === 'paid');
+                if (paidAdditional.length > 0) {
+                    additionalInvoicesMessage = '\n\n💳 <b>Дополнительные работы:</b>\n';
+                    paidAdditional.forEach(inv => {
+                        additionalInvoicesMessage += `• ${inv.description} - ${inv.amount} ₽\n`;
+                    });
+                }
+            }
+            
             await sendTelegramNotification(`Заказ полностью оплачен!
 👤 Клиент: ${order.clientName}
 📧 Email: ${order.clientEmail}
 📱 Телефон: ${order.clientPhone}
 🌐 Тип: ${getProjectTypeName(order.projectType)}
 💰 Сумма: ${OutSum} ₽ (остаток)
-📋 Заказ: ${shp_orderId.toUpperCase()}
+📋 Заказ: ${shp_orderId.toUpperCase()}${additionalInvoicesMessage}
 
 Акт выполненных работ отправлен клиенту.
 
@@ -995,7 +1024,7 @@ async function generateContractPDF(order) {
     });
 }
 
-async function generateCompletionActPDF(order) {
+async function generateCompletionActPDF(order, additionalInvoices = []) {
     return new Promise((resolve, reject) => {
         const chunks = [];
         const doc = new PDFDocument({ size: 'A4', margin: 50 });
@@ -1013,7 +1042,15 @@ async function generateCompletionActPDF(order) {
             return new Intl.NumberFormat('ru-RU').format(num);
         };
         const amount = parseFloat(order.amount) || 0;
-        const totalAmount = amount * 2;
+        
+        // Расчет итоговой суммы: базовая + все оплаченные доп счеты
+        let additionalAmount = 0;
+        const paidAdditional = (additionalInvoices || []).filter(inv => inv.status === 'paid');
+        paidAdditional.forEach(inv => {
+            additionalAmount += parseFloat(inv.amount) || 0;
+        });
+        
+        const totalAmount = amount * 2 + additionalAmount;
         const projectTypeLabel = getProjectTypeName(order.projectType);
         const date = new Date().toLocaleDateString('ru-RU', {
             day: 'numeric',
@@ -1044,10 +1081,22 @@ async function generateCompletionActPDF(order) {
         doc.moveDown(1);
 
         doc.font('Roboto-Bold').text('2. СТОИМОСТЬ РАБОТ');
-        doc.font('Roboto').text(`Полная стоимость: ${formatPrice(totalAmount)} рублей`);
+        doc.font('Roboto').text(`Базовая стоимость: ${formatPrice(amount * 2)} рублей`);
         doc.text(`Предоплата (50%): ${formatPrice(amount)} руб. - ОПЛАЧЕНО`);
         doc.text(`Остаток (50%): ${formatPrice(amount)} руб. - ОПЛАЧЕНО`);
-        doc.text('НДС не облагается (п. 8 ст. 2 ФЗ от 27.11.2018 N 422-ФЗ)');
+        
+        // Раздел дополнительных работ
+        if (paidAdditional.length > 0) {
+            doc.moveDown(0.5);
+            doc.font('Roboto-Bold').text('Дополнительные работы:');
+            paidAdditional.forEach(inv => {
+                doc.font('Roboto').text(`• ${inv.description} - ${formatPrice(inv.amount)} руб. - ОПЛАЧЕНО`);
+            });
+        }
+        
+        doc.moveDown(0.5);
+        doc.font('Roboto-Bold').text(`ИТОГО: ${formatPrice(totalAmount)} рублей`);
+        doc.font('Roboto').text('НДС не облагается (п. 8 ст. 2 ФЗ от 27.11.2018 N 422-ФЗ)');
         doc.moveDown(1);
 
         doc.font('Roboto-Bold').text('3. ПЕРЕДАЧА ПРАВ');
