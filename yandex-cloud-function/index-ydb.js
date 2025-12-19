@@ -15,6 +15,12 @@
  * - SITE_URL - URL сайта для редиректов
  * - SMTP_EMAIL - email для отправки писем (Яндекс)
  * - SMTP_PASSWORD - пароль приложения Яндекс
+ * 
+ * Банковские реквизиты (для оплаты по счёту):
+ * - BANK_NAME - название банка (например: Сбербанк)
+ * - BANK_BIK - БИК банка
+ * - BANK_ACCOUNT - номер расчётного счёта
+ * - BANK_CORR_ACCOUNT - корр. счёт (опционально)
  */
 
 const crypto = require('crypto');
@@ -111,6 +117,11 @@ module.exports.handler = async function (event, context) {
 
         if ((action === 'additional-invoices' || path.includes('/additional-invoices')) && method === 'POST') {
             return await handleAdditionalInvoice(body, headers);
+        }
+
+        // POST /api/bank-invoice - создать счёт на оплату для юрлиц
+        if ((action === 'bank-invoice' || path.includes('/bank-invoice')) && method === 'POST') {
+            return await handleBankInvoice(body, headers);
         }
 
         // POST ?action=delete-order - мягкое удаление заказа
@@ -1366,6 +1377,369 @@ ${paymentUrl}`);
             paymentUrl,
         }),
     };
+}
+
+// ============ Bank Invoice for Legal Entities ============
+
+async function handleBankInvoice(data, headers) {
+    try {
+        const { 
+            clientName, clientEmail, clientPhone, 
+            projectType, projectDescription, amount,
+            companyName, companyInn, companyKpp, companyAddress,
+            selectedFeatures, totalAmount
+        } = data;
+
+        // Валидация
+        if (!clientName || !clientEmail || !companyName || !companyInn) {
+            return {
+                statusCode: 400,
+                headers,
+                body: JSON.stringify({ 
+                    success: false, 
+                    message: 'Не заполнены обязательные поля (имя, email, название компании, ИНН)' 
+                }),
+            };
+        }
+
+        // Проверяем банковские реквизиты
+        const bankName = process.env.BANK_NAME;
+        const bankBik = process.env.BANK_BIK;
+        const bankAccount = process.env.BANK_ACCOUNT;
+
+        if (!bankName || !bankBik || !bankAccount) {
+            console.error('Bank credentials not configured');
+            return {
+                statusCode: 500,
+                headers,
+                body: JSON.stringify({ 
+                    success: false, 
+                    message: 'Банковские реквизиты не настроены. Свяжитесь с администратором.' 
+                }),
+            };
+        }
+
+        // Создаём заказ в YDB
+        const orderId = await createOrderInYdb({
+            clientName,
+            clientEmail,
+            clientPhone: clientPhone || '',
+            projectType: projectType || 'landing',
+            projectDescription: projectDescription || 'Разработка сайта',
+            amount: amount || '0',
+            totalAmount: totalAmount || amount || '0',
+            selectedFeatures: selectedFeatures || '',
+            status: 'pending_bank_payment',
+            companyName,
+            companyInn,
+            companyKpp: companyKpp || '',
+            companyAddress: companyAddress || '',
+        });
+
+        // Получаем номер счёта (используем timestamp + random для уникальности)
+        const invoiceNumber = Date.now().toString().slice(-8);
+        
+        // Генерируем PDF счёта
+        const pdfBuffer = await generateBankInvoicePDF({
+            invoiceNumber,
+            orderId,
+            clientName,
+            clientEmail,
+            clientPhone,
+            companyName,
+            companyInn,
+            companyKpp,
+            companyAddress,
+            projectType,
+            projectDescription,
+            amount: parseFloat(amount) || 0,
+            bankName,
+            bankBik,
+            bankAccount,
+            bankCorrAccount: process.env.BANK_CORR_ACCOUNT || '',
+        });
+
+        // Отправляем email со счётом
+        await sendBankInvoiceEmail({
+            clientName,
+            clientEmail,
+            companyName,
+            orderId,
+            invoiceNumber,
+            amount: parseFloat(amount) || 0,
+        }, pdfBuffer);
+
+        // Уведомляем в Telegram
+        await sendTelegramNotification(`🏢 Новый заказ с оплатой по счёту!
+
+👤 Контактное лицо: ${clientName}
+📧 Email: ${clientEmail}
+📱 Телефон: ${clientPhone || 'не указан'}
+
+🏛️ Компания: ${companyName}
+🔢 ИНН: ${companyInn}
+${companyKpp ? `КПП: ${companyKpp}` : ''}
+
+📋 Проект: ${getProjectTypeName(projectType)}
+💰 Сумма: ${new Intl.NumberFormat('ru-RU').format(parseFloat(amount) || 0)} ₽
+📄 Счёт №${invoiceNumber} отправлен на email
+
+🆔 ID заказа: ${orderId}`);
+
+        return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({
+                success: true,
+                message: 'Счёт создан и отправлен на email',
+                orderId,
+                invoiceNumber,
+            }),
+        };
+
+    } catch (error) {
+        console.error('Error creating bank invoice:', error.message, error.stack);
+        return {
+            statusCode: 500,
+            headers,
+            body: JSON.stringify({ 
+                success: false, 
+                message: 'Ошибка создания счёта: ' + error.message 
+            }),
+        };
+    }
+}
+
+async function generateBankInvoicePDF(data) {
+    return new Promise((resolve, reject) => {
+        const chunks = [];
+        const doc = new PDFDocument({ size: 'A4', margin: 40 });
+        
+        doc.on('data', chunk => chunks.push(chunk));
+        doc.on('end', () => resolve(Buffer.concat(chunks)));
+        doc.on('error', reject);
+
+        const path = require('path');
+        doc.registerFont('Roboto', path.join(__dirname, 'Roboto-Regular.ttf'));
+        doc.registerFont('Roboto-Bold', path.join(__dirname, 'Roboto-Bold.ttf'));
+
+        const formatPrice = (price) => new Intl.NumberFormat('ru-RU').format(price);
+        const date = new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+
+        // Заголовок
+        doc.fontSize(16).font('Roboto-Bold').text(`СЧЁТ НА ОПЛАТУ № ${data.invoiceNumber}`, { align: 'center' });
+        doc.fontSize(10).font('Roboto').text(`от ${date}`, { align: 'center' });
+        doc.moveDown(1.5);
+
+        // Блок получателя
+        doc.fontSize(11).font('Roboto-Bold').text('ПОЛУЧАТЕЛЬ:');
+        doc.moveDown(0.3);
+        doc.fontSize(10).font('Roboto');
+        doc.text('Пимашин Михаил Игоревич');
+        doc.text('Самозанятый (НПД)');
+        doc.text(`ИНН: 711612442203`);
+        doc.text(`Адрес: 301766, Тульская обл., г. Донской, ул. Новая, 49`);
+        doc.moveDown(0.5);
+        
+        // Банковские реквизиты
+        doc.font('Roboto-Bold').text('Банковские реквизиты:');
+        doc.font('Roboto');
+        doc.text(`Банк: ${data.bankName}`);
+        doc.text(`БИК: ${data.bankBik}`);
+        doc.text(`Расчётный счёт: ${data.bankAccount}`);
+        if (data.bankCorrAccount) {
+            doc.text(`Корр. счёт: ${data.bankCorrAccount}`);
+        }
+        doc.moveDown(1);
+
+        // Блок плательщика
+        doc.font('Roboto-Bold').text('ПЛАТЕЛЬЩИК:');
+        doc.moveDown(0.3);
+        doc.font('Roboto');
+        doc.text(data.companyName);
+        doc.text(`ИНН: ${data.companyInn}${data.companyKpp ? `, КПП: ${data.companyKpp}` : ''}`);
+        if (data.companyAddress) {
+            doc.text(`Адрес: ${data.companyAddress}`);
+        }
+        doc.text(`Контактное лицо: ${data.clientName}`);
+        doc.text(`Email: ${data.clientEmail}${data.clientPhone ? `, Тел: ${data.clientPhone}` : ''}`);
+        doc.moveDown(1.5);
+
+        // Таблица услуг
+        const tableTop = doc.y;
+        const col1 = 40;
+        const col2 = 350;
+        const col3 = 420;
+        const col4 = 490;
+        
+        // Заголовок таблицы
+        doc.font('Roboto-Bold').fontSize(9);
+        doc.rect(col1, tableTop, 475, 20).stroke();
+        doc.text('Наименование услуги', col1 + 5, tableTop + 6);
+        doc.text('Кол-во', col2 + 5, tableTop + 6);
+        doc.text('Цена', col3 + 5, tableTop + 6);
+        doc.text('Сумма', col4 + 5, tableTop + 6);
+
+        // Строка услуги
+        const row1Top = tableTop + 20;
+        const projectLabel = getProjectTypeName(data.projectType);
+        const serviceName = `Разработка: ${projectLabel}${data.projectDescription ? ' (' + data.projectDescription.substring(0, 50) + ')' : ''}`;
+        
+        doc.font('Roboto').fontSize(9);
+        doc.rect(col1, row1Top, 475, 25).stroke();
+        doc.text(serviceName, col1 + 5, row1Top + 8, { width: 300 });
+        doc.text('1', col2 + 15, row1Top + 8);
+        doc.text(`${formatPrice(data.amount)} ₽`, col3 + 5, row1Top + 8);
+        doc.text(`${formatPrice(data.amount)} ₽`, col4 + 5, row1Top + 8);
+        doc.moveDown(3);
+
+        // Итого
+        doc.fontSize(12).font('Roboto-Bold');
+        doc.text(`ИТОГО: ${formatPrice(data.amount)} руб. 00 коп.`, { align: 'right' });
+        doc.moveDown(0.5);
+        doc.fontSize(10).font('Roboto');
+        doc.text('НДС не облагается (самозанятый, п. 8 ст. 2 ФЗ от 27.11.2018 N 422-ФЗ)', { align: 'right' });
+        doc.moveDown(2);
+
+        // Сумма прописью
+        const amountWords = numberToWords(data.amount);
+        doc.font('Roboto').fontSize(10);
+        doc.text(`Всего к оплате: ${amountWords}`);
+        doc.moveDown(2);
+
+        // Примечания
+        doc.fontSize(9).font('Roboto');
+        doc.text('Оплата данного счёта означает согласие с условиями публичной оферты,');
+        doc.text('размещённой на сайте mp-webstudio.ru/offer');
+        doc.moveDown(1);
+        doc.text('Счёт действителен в течение 5 банковских дней.');
+        doc.moveDown(2);
+
+        // Подпись
+        doc.font('Roboto-Bold').text('Исполнитель:');
+        doc.moveDown(0.5);
+        doc.font('Roboto').text('Пимашин М.И. ________________');
+        doc.moveDown(2);
+
+        // Футер
+        doc.fontSize(8).text('Пимашин М.И. | MP.WebStudio | ИНН 711612442203 | mp-webstudio.ru', { align: 'center' });
+
+        doc.end();
+    });
+}
+
+// Функция для преобразования числа в слова (упрощённая версия)
+function numberToWords(num) {
+    const ones = ['', 'один', 'два', 'три', 'четыре', 'пять', 'шесть', 'семь', 'восемь', 'девять', 
+                  'десять', 'одиннадцать', 'двенадцать', 'тринадцать', 'четырнадцать', 'пятнадцать',
+                  'шестнадцать', 'семнадцать', 'восемнадцать', 'девятнадцать'];
+    const tens = ['', '', 'двадцать', 'тридцать', 'сорок', 'пятьдесят', 'шестьдесят', 'семьдесят', 'восемьдесят', 'девяносто'];
+    const hundreds = ['', 'сто', 'двести', 'триста', 'четыреста', 'пятьсот', 'шестьсот', 'семьсот', 'восемьсот', 'девятьсот'];
+    const thousands = ['', 'одна тысяча', 'две тысячи', 'три тысячи', 'четыре тысячи', 'пять тысяч', 
+                       'шесть тысяч', 'семь тысяч', 'восемь тысяч', 'девять тысяч'];
+
+    const n = Math.floor(num);
+    if (n === 0) return 'ноль рублей 00 копеек';
+    
+    let result = '';
+    
+    // Тысячи
+    const th = Math.floor(n / 1000);
+    if (th > 0 && th < 10) {
+        result += thousands[th] + ' ';
+    } else if (th >= 10 && th < 20) {
+        result += ones[th] + ' тысяч ';
+    } else if (th >= 20) {
+        const thTens = Math.floor(th / 10);
+        const thOnes = th % 10;
+        result += tens[thTens] + ' ';
+        if (thOnes > 0) {
+            if (thOnes === 1) result += 'одна тысяча ';
+            else if (thOnes >= 2 && thOnes <= 4) result += ones[thOnes].replace('два', 'две') + ' тысячи ';
+            else result += ones[thOnes] + ' тысяч ';
+        } else {
+            result += 'тысяч ';
+        }
+    }
+    
+    // Сотни
+    const remainder = n % 1000;
+    const h = Math.floor(remainder / 100);
+    if (h > 0) result += hundreds[h] + ' ';
+    
+    // Десятки и единицы
+    const t = remainder % 100;
+    if (t < 20) {
+        result += ones[t] + ' ';
+    } else {
+        result += tens[Math.floor(t / 10)] + ' ';
+        if (t % 10 > 0) result += ones[t % 10] + ' ';
+    }
+    
+    // Склонение "рублей"
+    const lastTwo = n % 100;
+    const lastOne = n % 10;
+    let rubles = 'рублей';
+    if (lastTwo >= 11 && lastTwo <= 19) rubles = 'рублей';
+    else if (lastOne === 1) rubles = 'рубль';
+    else if (lastOne >= 2 && lastOne <= 4) rubles = 'рубля';
+    
+    return result.trim() + ' ' + rubles + ' 00 копеек';
+}
+
+async function sendBankInvoiceEmail(orderData, pdfBuffer) {
+    const smtpEmail = process.env.SMTP_EMAIL;
+    const smtpPassword = process.env.SMTP_PASSWORD;
+
+    if (!smtpEmail || !smtpPassword) {
+        console.log('SMTP not configured, skipping email');
+        return;
+    }
+
+    const formatPrice = (price) => new Intl.NumberFormat('ru-RU').format(price);
+
+    const emailHtml = `
+    <!DOCTYPE html>
+    <html>
+    <head><meta charset="utf-8"></head>
+    <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h2 style="color: #1a1a2e;">Счёт на оплату</h2>
+        <p>Здравствуйте, ${orderData.clientName}!</p>
+        <p>Счёт на оплату для <strong>${orderData.companyName}</strong> прикреплён к этому письму.</p>
+        
+        <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin: 20px 0;">
+            <p style="margin: 5px 0;"><strong>Счёт №:</strong> ${orderData.invoiceNumber}</p>
+            <p style="margin: 5px 0;"><strong>Сумма:</strong> ${formatPrice(orderData.amount)} ₽</p>
+            <p style="margin: 5px 0;"><strong>ID заказа:</strong> ${orderData.orderId}</p>
+        </div>
+        
+        <p>После оплаты, пожалуйста, сообщите нам — мы начнём работу над вашим проектом.</p>
+        
+        <p style="margin-top: 30px;">С уважением,<br><strong>MP.WebStudio</strong><br>
+        Телефон: +7 (953) 181-41-36<br>
+        Email: mpwebstudio1@gmail.com</p>
+    </body>
+    </html>`;
+
+    const transporter = nodemailer.createTransport({
+        host: 'smtp.yandex.ru',
+        port: 465,
+        secure: true,
+        auth: { user: smtpEmail, pass: smtpPassword },
+    });
+
+    await transporter.sendMail({
+        from: `"MP.WebStudio" <${smtpEmail}>`,
+        to: orderData.clientEmail,
+        subject: `Счёт на оплату №${orderData.invoiceNumber} - MP.WebStudio`,
+        html: emailHtml,
+        attachments: [{
+            filename: `Счёт_${orderData.invoiceNumber}.pdf`,
+            content: pdfBuffer,
+        }],
+    });
+
+    console.log('Bank invoice email sent to:', orderData.clientEmail);
 }
 
 // ============ PDF Generation ============
