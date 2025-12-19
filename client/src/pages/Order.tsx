@@ -32,7 +32,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Loader2, CreditCard, FileText, Check, ArrowLeft, ChevronDown, Plus, Building2 } from "lucide-react";
 
-type ProjectType = "landing" | "corporate" | "shop";
+type ProjectType = "bizcard" | "landing" | "corporate" | "shop";
 
 interface Feature {
   id: string;
@@ -52,9 +52,23 @@ interface ProjectTypeConfig {
 
 const projectTypes: ProjectTypeConfig[] = [
   {
+    value: "bizcard",
+    label: "Сайт-визитка",
+    basePrice: 25000,
+    description: "Компактный сайт о вас или компании",
+    includes: [
+      "Адаптивный дизайн",
+      "1-3 страницы",
+      "Контактная информация",
+      "Базовый дизайн",
+      "SEO-основа",
+      "Хостинг включён",
+    ],
+  },
+  {
     value: "landing",
     label: "Лендинг",
-    basePrice: 25000,
+    basePrice: 45000,
     description: "Одностраничный продающий сайт",
     includes: [
       "Адаптивный дизайн",
@@ -62,13 +76,13 @@ const projectTypes: ProjectTypeConfig[] = [
       "Форма обратной связи",
       "Базовые анимации",
       "SEO-основа",
-      "Хостинг",
+      "Хостинг включён",
     ],
   },
   {
     value: "corporate",
     label: "Корпоративный сайт",
-    basePrice: 60000,
+    basePrice: 90000,
     description: "Многостраничный сайт компании",
     includes: [
       "Всё из лендинга",
@@ -81,7 +95,7 @@ const projectTypes: ProjectTypeConfig[] = [
   {
     value: "shop",
     label: "Интернет-магазин",
-    basePrice: 120000,
+    basePrice: 170000,
     description: "Каталог, корзина, оформление заказа",
     includes: [
       "Всё из корп. сайта",
@@ -94,31 +108,34 @@ const projectTypes: ProjectTypeConfig[] = [
 ];
 
 const features: Feature[] = [
-  { id: "calculator", label: "Калькулятор стоимости", price: 8000, description: "Интерактивный расчёт", availableFor: ["landing", "corporate", "shop"] },
-  { id: "gallery", label: "Галерея / Портфолио", price: 8000, description: "Слайдер с лайтбоксом", availableFor: ["landing", "corporate", "shop"] },
-  { id: "messengers", label: "Виджеты мессенджеров", price: 5000, description: "WhatsApp, Telegram", availableFor: ["landing", "corporate", "shop"] },
-  { id: "analytics", label: "Яндекс.Метрика", price: 5000, description: "Подключение аналитики", availableFor: ["landing", "corporate", "shop"] },
-  { id: "email_notify", label: "Email-уведомления", price: 8000, description: "Письма о заявках", availableFor: ["landing", "corporate", "shop"] },
-  { id: "telegram_notify", label: "Telegram-уведомления", price: 8000, description: "Заявки в Telegram-бот", availableFor: ["landing", "corporate", "shop"] },
-  { id: "animations", label: "Продвинутые анимации", price: 15000, description: "Параллакс, 3D-эффекты", availableFor: ["landing", "corporate", "shop"] },
-  { id: "chat_widget", label: "Чат-виджет", price: 5000, description: "Jivo, Tawk.to", availableFor: ["landing", "corporate", "shop"] },
-  { id: "popup", label: "Pop-up окна", price: 5000, description: "При выходе, по таймеру", availableFor: ["landing", "corporate", "shop"] },
-  { id: "countdown", label: "Таймер акции", price: 3000, description: "Обратный отсчёт", availableFor: ["landing", "corporate", "shop"] },
-  { id: "multilang", label: "Мультиязычность", price: 20000, description: "2+ языка", availableFor: ["landing", "corporate", "shop"] },
-  { id: "extra_sections", label: "Доп. секции (5 шт)", price: 8000, description: "Сверх базовых", availableFor: ["landing"] },
-  { id: "extra_pages", label: "Доп. страницы (5 шт)", price: 15000, description: "Сверх базовых", availableFor: ["corporate"] },
-  { id: "blog", label: "Блог / Новости", price: 25000, description: "Раздел статей", availableFor: ["corporate", "shop"] },
-  { id: "search", label: "Поиск по сайту", price: 12000, description: "Умный поиск", availableFor: ["corporate", "shop"] },
-  { id: "team", label: "Страница команды", price: 8000, description: "Карточки сотрудников", availableFor: ["corporate"] },
-  { id: "booking", label: "Онлайн-запись", price: 25000, description: "Календарь бронирования", availableFor: ["landing", "corporate"] },
-  { id: "payment", label: "Онлайн-оплата", price: 25000, description: "Robokassa / ЮKassa", availableFor: ["landing", "corporate", "shop"] },
-  { id: "crm", label: "Интеграция CRM", price: 35000, description: "AmoCRM, Bitrix24", availableFor: ["landing", "corporate", "shop"] },
-  { id: "filters", label: "Фильтры и сортировка", price: 15000, description: "По параметрам товаров", availableFor: ["shop"] },
-  { id: "favorites", label: "Избранное", price: 8000, description: "Сохранение товаров", availableFor: ["shop"] },
-  { id: "admin", label: "Админ-панель", price: 45000, description: "Управление товарами", availableFor: ["shop"] },
-  { id: "telegram_shop", label: "Telegram-магазин", price: 40000, description: "Мини-приложение", availableFor: ["shop"] },
-  { id: "delivery", label: "Интеграция доставки", price: 25000, description: "СДЭК, Boxberry", availableFor: ["shop"] },
-  { id: "custom", label: "Другое / Индивидуальная функция", price: 0, description: "Обсудим отдельно", availableFor: ["landing", "corporate", "shop"] },
+  { id: "contact_form", label: "Форма обратной связи", price: 5000, description: "Отправка заявок", availableFor: ["bizcard"] },
+  { id: "extra_pages_bizcard", label: "Доп. страницы (3 шт)", price: 8000, description: "Сверх базовых", availableFor: ["bizcard"] },
+  { id: "map", label: "Карта с адресом", price: 5000, description: "Яндекс.Карты", availableFor: ["bizcard"] },
+  { id: "calculator", label: "Калькулятор стоимости", price: 12000, description: "Интерактивный расчёт", availableFor: ["landing", "corporate", "shop"] },
+  { id: "gallery", label: "Галерея / Портфолио", price: 10000, description: "Слайдер с лайтбоксом", availableFor: ["bizcard", "landing", "corporate", "shop"] },
+  { id: "messengers", label: "Виджеты мессенджеров", price: 7000, description: "WhatsApp, Telegram", availableFor: ["bizcard", "landing", "corporate", "shop"] },
+  { id: "analytics", label: "Яндекс.Метрика", price: 5000, description: "Подключение аналитики", availableFor: ["bizcard", "landing", "corporate", "shop"] },
+  { id: "email_notify", label: "Email-уведомления", price: 10000, description: "Письма о заявках", availableFor: ["landing", "corporate", "shop"] },
+  { id: "telegram_notify", label: "Telegram-уведомления", price: 12000, description: "Заявки в Telegram-бот", availableFor: ["landing", "corporate", "shop"] },
+  { id: "animations", label: "Продвинутые анимации", price: 20000, description: "Параллакс, 3D-эффекты", availableFor: ["bizcard", "landing", "corporate", "shop"] },
+  { id: "chat_widget", label: "Чат-виджет", price: 7000, description: "Jivo, Tawk.to", availableFor: ["bizcard", "landing", "corporate", "shop"] },
+  { id: "popup", label: "Pop-up окна", price: 7000, description: "При выходе, по таймеру", availableFor: ["landing", "corporate", "shop"] },
+  { id: "countdown", label: "Таймер акции", price: 5000, description: "Обратный отсчёт", availableFor: ["landing", "corporate", "shop"] },
+  { id: "multilang", label: "Мультиязычность", price: 30000, description: "2+ языка", availableFor: ["bizcard", "landing", "corporate", "shop"] },
+  { id: "extra_sections", label: "Доп. секции (5 шт)", price: 12000, description: "Сверх базовых", availableFor: ["landing"] },
+  { id: "extra_pages", label: "Доп. страницы (5 шт)", price: 20000, description: "Сверх базовых", availableFor: ["corporate"] },
+  { id: "blog", label: "Блог / Новости", price: 35000, description: "Раздел статей", availableFor: ["corporate", "shop"] },
+  { id: "search", label: "Поиск по сайту", price: 15000, description: "Умный поиск", availableFor: ["corporate", "shop"] },
+  { id: "team", label: "Страница команды", price: 10000, description: "Карточки сотрудников", availableFor: ["corporate"] },
+  { id: "booking", label: "Онлайн-запись", price: 35000, description: "Календарь бронирования", availableFor: ["landing", "corporate"] },
+  { id: "payment", label: "Онлайн-оплата", price: 35000, description: "Robokassa / ЮKassa", availableFor: ["landing", "corporate", "shop"] },
+  { id: "crm", label: "Интеграция CRM", price: 45000, description: "AmoCRM, Bitrix24", availableFor: ["landing", "corporate", "shop"] },
+  { id: "filters", label: "Фильтры и сортировка", price: 20000, description: "По параметрам товаров", availableFor: ["shop"] },
+  { id: "favorites", label: "Избранное", price: 10000, description: "Сохранение товаров", availableFor: ["shop"] },
+  { id: "admin", label: "Админ-панель", price: 55000, description: "Управление товарами", availableFor: ["shop"] },
+  { id: "telegram_shop", label: "Telegram-магазин", price: 50000, description: "Мини-приложение", availableFor: ["shop"] },
+  { id: "delivery", label: "Интеграция доставки", price: 30000, description: "СДЭК, Boxberry", availableFor: ["shop"] },
+  { id: "custom", label: "Другое / Индивидуальная функция", price: 0, description: "Обсудим отдельно", availableFor: ["bizcard", "landing", "corporate", "shop"] },
 ];
 
 type PaymentMethod = "card" | "invoice";
@@ -127,7 +144,7 @@ const orderSchema = z.object({
   clientName: z.string().min(2, "Имя должно содержать минимум 2 символа"),
   clientEmail: z.string().email("Введите корректный email"),
   clientPhone: z.string().min(10, "Введите корректный телефон"),
-  projectType: z.enum(["landing", "corporate", "shop"]),
+  projectType: z.enum(["bizcard", "landing", "corporate", "shop"]),
   projectDescription: z.string().min(10, "Опишите проект подробнее"),
   contractAccepted: z.literal(true, {
     errorMap: () => ({ message: "Необходимо принять условия договора" }),
@@ -278,9 +295,9 @@ MP.WebStudio | https://mp-webstudio.ru
 };
 
 export default function Order() {
-  const [selectedType, setSelectedType] = useState<ProjectType>("landing");
+  const [selectedType, setSelectedType] = useState<ProjectType>("bizcard");
   const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
-  const [expandedType, setExpandedType] = useState<ProjectType | null>("landing");
+  const [expandedType, setExpandedType] = useState<ProjectType | null>("bizcard");
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("card");
   const [invoiceSuccess, setInvoiceSuccess] = useState(false);
 
@@ -290,7 +307,7 @@ export default function Order() {
       clientName: "",
       clientEmail: "",
       clientPhone: "",
-      projectType: "landing",
+      projectType: "bizcard",
       projectDescription: "",
       contractAccepted: false,
       offerAccepted: false,
