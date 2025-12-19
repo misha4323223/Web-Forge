@@ -144,21 +144,10 @@ export function AboutSection() {
               MP.WebStudio — это сочетание современных технологий и внимания к деталям. 
               Мы используем актуальные инструменты разработки, чтобы создавать сайты быстрее и качественнее.
             </p>
-            <p className="text-muted-foreground text-lg mb-8">
+            <p className="text-muted-foreground text-lg">
               Каждый проект начинается с понимания вашей задачи. Мы не предлагаем шаблонные решения — 
               мы разрабатываем продукт под ваш бизнес, вашу аудиторию и ваши цели.
             </p>
-
-            <div className="flex flex-wrap justify-center gap-3">
-              {["React", "Node.js", "Яндекс Cloud", "ЮКасса", "1С", "Битрикс24"].map((tech) => (
-                <span
-                  key={tech}
-                  className="px-3 py-1.5 rounded-md bg-card border border-border text-sm font-mono text-muted-foreground"
-                >
-                  {tech}
-                </span>
-              ))}
-            </div>
           </motion.div>
         </div>
       </div>
