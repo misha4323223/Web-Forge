@@ -1,0 +1,293 @@
+19 дек. 16:30:39.421
+Telegram notification sent
+
+19 дек. 16:30:39.213
+Full URL: https://auth.robokassa.ru/Merchant/Index.aspx?MerchantLogin=mpwebstudio&OutSum=4434433443434&InvId=39211&Description=1%29%D1%8F%D0%BD%D0%B4%D0%B5%D0%BA%D1%81%0A2%29%D1%82%D0%B5%D0%BB%D0%B5%D0%B3%D0%B0&SignatureValue=15cf806576de6105ff5405c7ed6e9de9&shp_orderId=addinv_mjcw0fz1xbvme71gm_mjcwq7l7&IsTest=1
+
+19 дек. 16:30:39.213
+Signature: 15cf806576de6105ff5405c7ed6e9de9
+
+19 дек. 16:30:39.213
+SignatureString: mpwebstudio:4434433443434:39211:Le4vP77RN1ChMXHfBk9b:shp_orderId=addinv_mjcw0fz1xbvme71gm_mjcwq7l7
+
+19 дек. 16:30:39.213
+IsTest: 1
+
+19 дек. 16:30:39.213
+shp_orderId: addinv_mjcw0fz1xbvme71gm_mjcwq7l7
+
+19 дек. 16:30:39.213
+2)телега
+
+19 дек. 16:30:39.213
+Description: 1)яндекс
+
+19 дек. 16:30:39.213
+InvId: 39211
+
+19 дек. 16:30:39.213
+OutSum: 4434433443434
+
+19 дек. 16:30:39.213
+MerchantLogin: mpwebstudio
+
+19 дек. 16:30:39.213
+Additional invoice payment URL generated:
+
+19 дек. 16:30:39.211
+Order fetched from YDB: {"id":"ord_mjcw0fz1xbvme71gm","clientName":"Миша","clientEmail":"pimashin2015@gmail.com","clientPhone":"89531814136","projectType":"landing","projectDescription":"tttttttttttttttttttttttttttttttt\n\nДоп. функции: Калькулятор стоимости, Галерея / Портфолио, Виджеты мессенджеров, Яндекс.Метрика, Email-уведомления, Telegram-уведомления","amount":"33500","status":"paid","createdAt":"2025-12-19T13:10:37.021Z","paidAt":"2025-12-19T13:10:56.599Z"}
+
+19 дек. 16:30:39.211
+Parsed order: {"id":"ord_mjcw0fz1xbvme71gm","clientName":"Миша","clientEmail":"pimashin2015@gmail.com","clientPhone":"89531814136","projectType":"landing","projectDescription":"tttttttttttttttttttttttttttttttt\n\nДоп. функции: Калькулятор стоимости, Галерея / Портфолио, Виджеты мессенджеров, Яндекс.Метрика, Email-уведомления, Telegram-уведомления","amount":"33500","status":"paid","createdAt":"2025-12-19T13:10:37.021Z","paidAt":"2025-12-19T13:10:56.599Z"}
+
+19 дек. 16:30:39.211
+Column [9] status: {"textValue":"paid"} -> "paid"
+
+19 дек. 16:30:39.211
+Column [8] project_type: {"textValue":"landing"} -> "landing"
+
+19 дек. 16:30:39.211
+Доп. функции: Калькулятор стоимости, Галерея / Портфолио, Виджеты мессенджеров, Яндекс.Метрика, Email-уведомления, Telegram-уведомления"
+
+19 дек. 16:30:39.211
+Column [7] project_description: {"textValue":"tttttttttttttttttttttttttttttttt\n\nДоп. функции: Калькулятор стоимости, Галерея / Портфолио, Виджеты мессенджеров, Яндекс.Метрика, Email-уведомления, Telegram-уведомления"} -> "tttttttttttttttttttttttttttttttt
+
+19 дек. 16:30:39.211
+Column [6] paid_at: {"textValue":"2025-12-19T13:10:56.599Z"} -> "2025-12-19T13:10:56.599Z"
+
+19 дек. 16:30:39.211
+Column [5] id: {"textValue":"ord_mjcw0fz1xbvme71gm"} -> "ord_mjcw0fz1xbvme71gm"
+
+19 дек. 16:30:39.211
+Column [4] created_at: {"textValue":"2025-12-19T13:10:37.021Z"} -> "2025-12-19T13:10:37.021Z"
+
+19 дек. 16:30:39.211
+Column [3] client_phone: {"textValue":"89531814136"} -> "89531814136"
+
+19 дек. 16:30:39.211
+Column [2] client_name: {"textValue":"Миша"} -> "Миша"
+
+19 дек. 16:30:39.211
+Column [1] client_email: {"textValue":"pimashin2015@gmail.com"} -> "pimashin2015@gmail.com"
+
+19 дек. 16:30:39.211
+Column [0] amount: {"textValue":"33500"} -> "33500"
+
+19 дек. 16:30:39.210
+Column mapping: {"amount":0,"client_email":1,"client_name":2,"client_phone":3,"created_at":4,"id":5,"paid_at":6,"project_description":7,"project_type":8,"status":9}
+
+19 дек. 16:30:39.210
+}
+
+19 дек. 16:30:39.210
+]
+
+19 дек. 16:30:39.210
+}
+
+19 дек. 16:30:39.210
+"textValue": "paid"
+
+19 дек. 16:30:39.210
+{
+
+19 дек. 16:30:39.210
+},
+
+19 дек. 16:30:39.210
+"textValue": "landing"
+
+19 дек. 16:30:39.210
+{
+
+19 дек. 16:30:39.210
+},
+
+19 дек. 16:30:39.210
+"textValue": "tttttttttttttttttttttttttttttttt\n\nДоп. функции: Калькулятор стоимости, Галерея / Портфолио, Виджеты мессенджеров, Яндекс.Метрика, Email-уведомления, Telegram-уведомления"
+
+19 дек. 16:30:39.210
+{
+
+19 дек. 16:30:39.210
+},
+
+19 дек. 16:30:39.210
+"textValue": "2025-12-19T13:10:56.599Z"
+
+19 дек. 16:30:39.210
+{
+
+19 дек. 16:30:39.210
+},
+
+19 дек. 16:30:39.210
+"textValue": "ord_mjcw0fz1xbvme71gm"
+
+19 дек. 16:30:39.210
+{
+
+19 дек. 16:30:39.210
+},
+
+19 дек. 16:30:39.210
+"textValue": "2025-12-19T13:10:37.021Z"
+
+19 дек. 16:30:39.210
+{
+
+19 дек. 16:30:39.210
+},
+
+19 дек. 16:30:39.210
+"textValue": "89531814136"
+
+19 дек. 16:30:39.210
+{
+
+19 дек. 16:30:39.210
+},
+
+19 дек. 16:30:39.210
+"textValue": "Миша"
+
+19 дек. 16:30:39.210
+{
+
+19 дек. 16:30:39.210
+},
+
+19 дек. 16:30:39.210
+"textValue": "pimashin2015@gmail.com"
+
+19 дек. 16:30:39.210
+{
+
+19 дек. 16:30:39.210
+},
+
+19 дек. 16:30:39.210
+"textValue": "33500"
+
+19 дек. 16:30:39.210
+{
+
+19 дек. 16:30:39.210
+"items": [
+
+19 дек. 16:30:39.210
+YDB row structure: {
+
+19 дек. 16:30:39.210
+YDB columns: ["amount","client_email","client_name","client_phone","created_at","id","paid_at","project_description","project_type","status"]
+
+19 дек. 16:30:39.210
+YDB rows count: 1
+
+19 дек. 16:30:39.210
+}
+
+19 дек. 16:30:39.210
+"txMeta": {}
+
+19 дек. 16:30:39.210
+],
+
+19 дек. 16:30:39.210
+}
+
+19 дек. 16:30:39.210
+]
+
+19 дек. 16:30:39.210
+}
+
+19 дек. 16:30:39.210
+]
+
+19 дек. 16:30:39.210
+}
+
+19 дек. 16:30:39.210
+"textValue": "paid"
+
+19 дек. 16:30:39.210
+{
+
+19 дек. 16:30:39.210
+},
+
+19 дек. 16:30:39.210
+"textValue": "landing"
+
+19 дек. 16:30:39.209
+{
+
+19 дек. 16:30:39.209
+},
+
+19 дек. 16:30:39.209
+"textValue": "tttttttttttttttttttttttttttttttt\n\nДоп. функции: Калькулятор стоимости, Галерея / Портфолио, Виджеты мессенджеров, Яндекс.Метрика, Email-уведомления, Telegram-уведомления"
+
+19 дек. 16:30:39.209
+{
+
+19 дек. 16:30:39.209
+},
+
+19 дек. 16:30:39.209
+"textValue": "2025-12-19T13:10:56.599Z"
+
+19 дек. 16:30:39.209
+{
+
+19 дек. 16:30:39.209
+},
+
+19 дек. 16:30:39.209
+"textValue": "ord_mjcw0fz1xbvme71gm"
+
+19 дек. 16:30:39.209
+{
+
+19 дек. 16:30:39.209
+},
+
+19 дек. 16:30:39.209
+"textValue": "2025-12-19T13:10:37.021Z"
+
+19 дек. 16:30:39.209
+{
+
+19 дек. 16:30:39.209
+},
+
+19 дек. 16:30:39.209
+"textValue": "89531814136"
+
+19 дек. 16:30:39.209
+{
+
+19 дек. 16:30:39.209
+},
+
+19 дек. 16:30:39.209
+"textValue": "Миша"
+
+19 дек. 16:30:39.209
+{
+
+19 дек. 16:30:39.209
+},
+
+19 дек. 16:30:39.209
+"textValue": "pimashin2015@gmail.com"
+
+19 дек. 16:30:39.209
+{
+
+19 дек. 16:30:39.209
+},
+
+19 дек. 16:30:39.209
+"textValue": "33500"
