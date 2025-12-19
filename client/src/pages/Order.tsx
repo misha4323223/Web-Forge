@@ -30,7 +30,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Loader2, CreditCard, FileText, Check, ArrowLeft, ChevronDown, Plus } from "lucide-react";
+import { Loader2, CreditCard, FileText, Check, ArrowLeft, ChevronDown, Plus, Building2 } from "lucide-react";
 
 type ProjectType = "landing" | "corporate" | "shop";
 
@@ -121,6 +121,8 @@ const features: Feature[] = [
   { id: "custom", label: "Другое / Индивидуальная функция", price: 0, description: "Обсудим отдельно", availableFor: ["landing", "corporate", "shop"] },
 ];
 
+type PaymentMethod = "card" | "invoice";
+
 const orderSchema = z.object({
   clientName: z.string().min(2, "Имя должно содержать минимум 2 символа"),
   clientEmail: z.string().email("Введите корректный email"),
@@ -136,6 +138,10 @@ const orderSchema = z.object({
   privacyAccepted: z.literal(true, {
     errorMap: () => ({ message: "Необходимо принять политику конфиденциальности" }),
   }),
+  companyName: z.string().optional(),
+  companyInn: z.string().optional(),
+  companyKpp: z.string().optional(),
+  companyAddress: z.string().optional(),
 });
 
 type OrderFormData = z.infer<typeof orderSchema>;
@@ -275,6 +281,8 @@ export default function Order() {
   const [selectedType, setSelectedType] = useState<ProjectType>("landing");
   const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
   const [expandedType, setExpandedType] = useState<ProjectType | null>("landing");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("card");
+  const [invoiceSuccess, setInvoiceSuccess] = useState(false);
 
   const form = useForm<OrderFormData>({
     resolver: zodResolver(orderSchema),
@@ -287,6 +295,10 @@ export default function Order() {
       contractAccepted: false,
       offerAccepted: false,
       privacyAccepted: false,
+      companyName: "",
+      companyInn: "",
+      companyKpp: "",
+      companyAddress: "",
     },
   });
 
@@ -366,9 +378,45 @@ export default function Order() {
     },
   });
 
+  const createBankInvoiceMutation = useMutation({
+    mutationFn: async (data: OrderFormData) => {
+      const featuresInfo = selectedFeatures.join(",");
+      
+      const response = await apiRequest("POST", "/api/bank-invoice", {
+        clientName: data.clientName,
+        clientEmail: data.clientEmail,
+        clientPhone: data.clientPhone,
+        projectType: data.projectType,
+        projectDescription: data.projectDescription + (featuresInfo ? `\n\nДоп. функции: ${selectedFeatureLabels.join(", ")}` : ""),
+        amount: prepayment.toString(),
+        selectedFeatures: featuresInfo,
+        totalAmount: totalPrice.toString(),
+        companyName: data.companyName,
+        companyInn: data.companyInn,
+        companyKpp: data.companyKpp,
+        companyAddress: data.companyAddress,
+      });
+      return response.json();
+    },
+    onSuccess: () => {
+      setInvoiceSuccess(true);
+    },
+  });
+
   const onSubmit = (data: OrderFormData) => {
-    createOrderMutation.mutate(data);
+    if (paymentMethod === "invoice") {
+      if (!data.companyName || !data.companyInn) {
+        form.setError("companyName", { message: "Укажите название компании" });
+        form.setError("companyInn", { message: "Укажите ИНН" });
+        return;
+      }
+      createBankInvoiceMutation.mutate(data);
+    } else {
+      createOrderMutation.mutate(data);
+    }
   };
+
+  const isPending = createOrderMutation.isPending || createBankInvoiceMutation.isPending;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -546,7 +594,7 @@ export default function Order() {
                           <FormItem>
                             <FormLabel>Имя</FormLabel>
                             <FormControl>
-                              <Input placeholder="Иван Иванов" {...field} data-testid="input-client-name" />
+                              <Input {...field} data-testid="input-client-name" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -561,7 +609,7 @@ export default function Order() {
                             <FormItem>
                               <FormLabel>Email</FormLabel>
                               <FormControl>
-                                <Input type="email" placeholder="email@example.com" {...field} data-testid="input-client-email" />
+                                <Input type="email" {...field} data-testid="input-client-email" />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -575,7 +623,7 @@ export default function Order() {
                             <FormItem>
                               <FormLabel>Телефон</FormLabel>
                               <FormControl>
-                                <Input type="tel" placeholder="+7 (999) 123-45-67" {...field} data-testid="input-client-phone" />
+                                <Input type="tel" {...field} data-testid="input-client-phone" />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -592,7 +640,6 @@ export default function Order() {
                           <FormLabel>Опишите ваш проект</FormLabel>
                           <FormControl>
                             <Textarea
-                              placeholder="Расскажите о вашем бизнесе, целях сайта, желаемом функционале..."
                               className="min-h-[100px]"
                               {...field}
                               data-testid="input-project-description"
@@ -602,6 +649,136 @@ export default function Order() {
                         </FormItem>
                       )}
                     />
+
+                    <div className="space-y-4 pt-4">
+                      <h3 className="text-lg font-semibold">3. Способ оплаты</h3>
+                      <RadioGroup
+                        value={paymentMethod}
+                        onValueChange={(value) => setPaymentMethod(value as PaymentMethod)}
+                        className="grid sm:grid-cols-2 gap-3"
+                      >
+                        <div className="relative">
+                          <RadioGroupItem
+                            value="card"
+                            id="payment-card"
+                            className="peer sr-only"
+                            data-testid="radio-payment-card"
+                          />
+                          <Label
+                            htmlFor="payment-card"
+                            className={`flex items-center gap-3 p-4 rounded-md border cursor-pointer transition-all hover-elevate ${
+                              paymentMethod === "card"
+                                ? "border-primary bg-primary/5"
+                                : "border-border bg-card/50"
+                            }`}
+                          >
+                            <CreditCard className="w-5 h-5 text-primary" />
+                            <div>
+                              <div className="font-medium">Картой онлайн</div>
+                              <div className="text-xs text-muted-foreground">Для физлиц через Robokassa</div>
+                            </div>
+                          </Label>
+                        </div>
+                        <div className="relative">
+                          <RadioGroupItem
+                            value="invoice"
+                            id="payment-invoice"
+                            className="peer sr-only"
+                            data-testid="radio-payment-invoice"
+                          />
+                          <Label
+                            htmlFor="payment-invoice"
+                            className={`flex items-center gap-3 p-4 rounded-md border cursor-pointer transition-all hover-elevate ${
+                              paymentMethod === "invoice"
+                                ? "border-primary bg-primary/5"
+                                : "border-border bg-card/50"
+                            }`}
+                          >
+                            <Building2 className="w-5 h-5 text-primary" />
+                            <div>
+                              <div className="font-medium">По счёту</div>
+                              <div className="text-xs text-muted-foreground">Для юрлиц и ИП</div>
+                            </div>
+                          </Label>
+                        </div>
+                      </RadioGroup>
+
+                      <AnimatePresence>
+                        {paymentMethod === "invoice" && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.3 }}
+                            className="overflow-hidden"
+                          >
+                            <div className="space-y-4 p-4 bg-primary/5 border border-primary/20 rounded-md mt-2">
+                              <p className="text-sm text-muted-foreground">
+                                Заполните реквизиты компании. Счёт будет отправлен на email.
+                              </p>
+                              
+                              <FormField
+                                control={form.control}
+                                name="companyName"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Название компании *</FormLabel>
+                                    <FormControl>
+                                      <Input {...field} data-testid="input-company-name" />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+
+                              <div className="grid sm:grid-cols-2 gap-4">
+                                <FormField
+                                  control={form.control}
+                                  name="companyInn"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>ИНН *</FormLabel>
+                                      <FormControl>
+                                        <Input {...field} data-testid="input-company-inn" />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+
+                                <FormField
+                                  control={form.control}
+                                  name="companyKpp"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>КПП (для ООО)</FormLabel>
+                                      <FormControl>
+                                        <Input {...field} data-testid="input-company-kpp" />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                              </div>
+
+                              <FormField
+                                control={form.control}
+                                name="companyAddress"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Юридический адрес</FormLabel>
+                                    <FormControl>
+                                      <Input {...field} data-testid="input-company-address" />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
 
                     <div className="border-t border-border pt-6 space-y-3">
                       <FormField
@@ -705,25 +882,51 @@ export default function Order() {
                       />
                     </div>
 
-                    <Button
-                      type="submit"
-                      size="lg"
-                      className="w-full bg-gradient-to-r from-cyan-500 to-purple-500 text-white border-0"
-                      disabled={createOrderMutation.isPending}
-                      data-testid="button-submit-order"
-                    >
-                      {createOrderMutation.isPending ? (
-                        <>
-                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                          Создание заказа...
-                        </>
-                      ) : (
-                        <>
-                          <CreditCard className="w-4 h-4 mr-2" />
-                          Перейти к оплате ({formatPrice(prepayment)} ₽)
-                        </>
-                      )}
-                    </Button>
+                    {invoiceSuccess ? (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="p-6 bg-emerald-500/10 border border-emerald-500/30 rounded-md text-center"
+                      >
+                        <Check className="w-12 h-12 text-emerald-500 mx-auto mb-3" />
+                        <h4 className="text-lg font-semibold text-foreground mb-2">Счёт отправлен!</h4>
+                        <p className="text-sm text-muted-foreground">
+                          Проверьте email — мы отправили счёт на оплату.
+                          После оплаты свяжитесь с нами для начала работы.
+                        </p>
+                        <a href="/">
+                          <Button variant="outline" className="mt-4">
+                            <ArrowLeft className="w-4 h-4 mr-2" />
+                            На главную
+                          </Button>
+                        </a>
+                      </motion.div>
+                    ) : (
+                      <Button
+                        type="submit"
+                        size="lg"
+                        className="w-full bg-gradient-to-r from-cyan-500 to-purple-500 text-white border-0"
+                        disabled={isPending}
+                        data-testid="button-submit-order"
+                      >
+                        {isPending ? (
+                          <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            {paymentMethod === "invoice" ? "Создание счёта..." : "Создание заказа..."}
+                          </>
+                        ) : paymentMethod === "invoice" ? (
+                          <>
+                            <Building2 className="w-4 h-4 mr-2" />
+                            Получить счёт на {formatPrice(prepayment)} ₽
+                          </>
+                        ) : (
+                          <>
+                            <CreditCard className="w-4 h-4 mr-2" />
+                            Перейти к оплате ({formatPrice(prepayment)} ₽)
+                          </>
+                        )}
+                      </Button>
+                    )}
                   </form>
                 </Form>
               </Card>
