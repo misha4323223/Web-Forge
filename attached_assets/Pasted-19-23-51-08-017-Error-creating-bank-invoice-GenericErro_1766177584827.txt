@@ -1,0 +1,251 @@
+19 дек. 23:51:08.017
+Error creating bank invoice: GenericError (code 400080): [
+
+19 дек. 23:51:07.970
+Incoming request: { method: 'POST', action: 'bank-invoice', path: '' }
+
+19 дек. 23:51:07.966
+START RequestID: 4545a707-e2ea-4198-91a9-483506f14f69 Version: d4evohfet1rsnsr32c85
+
+19 дек. 23:51:07.905
+REPORT RequestID: dbfd414a-1882-432f-b568-fe42c2c73c37 Duration: 4.942 ms Billed Duration: 100 ms Memory Size: 256 MB Max Memory Used: 182 MB Queuing Duration: 0.061 ms CPU Usage: 2.148 %
+
+19 дек. 23:51:07.905
+END RequestID: dbfd414a-1882-432f-b568-fe42c2c73c37
+
+19 дек. 23:51:07.888
+START RequestID: dbfd414a-1882-432f-b568-fe42c2c73c37 Version: d4evohfet1rsnsr32c85
+
+19 дек. 23:51:02.126
+REPORT RequestID: b2dc3f81-5f85-4dcd-89f8-a4c611566c09 Duration: 85.669 ms Billed Duration: 100 ms Memory Size: 256 MB Max Memory Used: 174 MB Queuing Duration: 0.126 ms
+
+19 дек. 23:51:02.126
+END RequestID: b2dc3f81-5f85-4dcd-89f8-a4c611566c09
+
+19 дек. 23:51:02.123
+at async TableSessionPool._withSession (/function/code/node_modules/ydb-sdk/build/cjs/src/table/table-session-pool.js:183:28)
+
+19 дек. 23:51:02.123
+at async /function/code/index.js:276:31
+
+19 дек. 23:51:02.123
+at async descriptor.value (/function/code/node_modules/ydb-sdk/build/cjs/src/retries_obsoleted.js:137:20)
+
+19 дек. 23:51:02.123
+at async RetryStrategy.retry (/function/code/node_modules/ydb-sdk/build/cjs/src/retries_obsoleted.js:86:24)
+
+19 дек. 23:51:02.123
+at async /function/code/node_modules/ydb-sdk/build/cjs/src/retries_obsoleted.js:137:53
+
+19 дек. 23:51:02.123
+at async descriptor.value (/function/code/node_modules/ydb-sdk/build/cjs/src/utils/pessimizable.js:13:20)
+
+19 дек. 23:51:02.123
+at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+19 дек. 23:51:02.123
+at TableSession.prepareQuery (/function/code/node_modules/ydb-sdk/build/cjs/src/table/table-session.js:355:80)
+
+19 дек. 23:51:02.123
+at getOperationPayload (/function/code/node_modules/ydb-sdk/build/cjs/src/utils/process-ydb-operation-result.js:11:27)
+
+19 дек. 23:51:02.123
+at YdbError.checkStatus (/function/code/node_modules/ydb-sdk/build/cjs/src/errors.js:69:23)
+
+19 дек. 23:51:02.123
+]
+
+19 дек. 23:51:02.123
+}
+
+19 дек. 23:51:02.123
+"severity": 1
+
+19 дек. 23:51:02.123
+},
+
+19 дек. 23:51:02.123
+"column": 25
+
+19 дек. 23:51:02.123
+"row": 19,
+
+19 дек. 23:51:02.123
+"endPosition": {
+
+19 дек. 23:51:02.123
+"message": "No such column: company_address, table: db.[/ru-central1/b1gnp4ml7k5j7cquabad/etn2gipa2pvm2qj5ga83/orders]",
+
+19 дек. 23:51:02.123
+},
+
+19 дек. 23:51:02.123
+"column": 25
+
+19 дек. 23:51:02.123
+"row": 19,
+
+19 дек. 23:51:02.123
+"position": {
+
+19 дек. 23:51:02.123
+{
+
+19 дек. 23:51:02.123
+},
+
+19 дек. 23:51:02.123
+"severity": 1
+
+19 дек. 23:51:02.123
+},
+
+19 дек. 23:51:02.123
+"column": 25
+
+19 дек. 23:51:02.123
+"row": 19,
+
+19 дек. 23:51:02.123
+"endPosition": {
+
+19 дек. 23:51:02.123
+"message": "At function: KiWriteTable!",
+
+19 дек. 23:51:02.122
+},
+
+19 дек. 23:51:02.122
+"column": 25
+
+19 дек. 23:51:02.122
+"row": 19,
+
+19 дек. 23:51:02.122
+"position": {
+
+19 дек. 23:51:02.122
+{
+
+19 дек. 23:51:02.122
+},
+
+19 дек. 23:51:02.122
+"severity": 1
+
+19 дек. 23:51:02.122
+"issueCode": 1030,
+
+19 дек. 23:51:02.122
+"message": "Type annotation",
+
+19 дек. 23:51:02.122
+{
+
+19 дек. 23:51:02.122
+] Error: GenericError (code 400080): [
+
+19 дек. 23:51:02.122
+}
+
+19 дек. 23:51:02.122
+"severity": 1
+
+19 дек. 23:51:02.122
+},
+
+19 дек. 23:51:02.122
+"column": 25
+
+19 дек. 23:51:02.122
+"row": 19,
+
+19 дек. 23:51:02.122
+"endPosition": {
+
+19 дек. 23:51:02.122
+"message": "No such column: company_address, table: db.[/ru-central1/b1gnp4ml7k5j7cquabad/etn2gipa2pvm2qj5ga83/orders]",
+
+19 дек. 23:51:02.122
+},
+
+19 дек. 23:51:02.122
+"column": 25
+
+19 дек. 23:51:02.122
+"row": 19,
+
+19 дек. 23:51:02.122
+"position": {
+
+19 дек. 23:51:02.122
+{
+
+19 дек. 23:51:02.122
+},
+
+19 дек. 23:51:02.122
+"severity": 1
+
+19 дек. 23:51:02.122
+},
+
+19 дек. 23:51:02.122
+"column": 25
+
+19 дек. 23:51:02.122
+"row": 19,
+
+19 дек. 23:51:02.122
+"endPosition": {
+
+19 дек. 23:51:02.122
+"message": "At function: KiWriteTable!",
+
+19 дек. 23:51:02.122
+},
+
+19 дек. 23:51:02.122
+"column": 25
+
+19 дек. 23:51:02.122
+"row": 19,
+
+19 дек. 23:51:02.122
+"position": {
+
+19 дек. 23:51:02.122
+{
+
+19 дек. 23:51:02.122
+},
+
+19 дек. 23:51:02.122
+"severity": 1
+
+19 дек. 23:51:02.122
+"issueCode": 1030,
+
+19 дек. 23:51:02.122
+"message": "Type annotation",
+
+19 дек. 23:51:02.122
+{
+
+19 дек. 23:51:02.122
+Error creating bank invoice: GenericError (code 400080): [
+
+19 дек. 23:51:02.040
+Incoming request: { method: 'POST', action: 'bank-invoice', path: '' }
+
+19 дек. 23:51:02.036
+START RequestID: b2dc3f81-5f85-4dcd-89f8-a4c611566c09 Version: d4evohfet1rsnsr32c85
+
+19 дек. 23:51:01.976
+REPORT RequestID: d4c27957-3f4f-4c63-8db2-f5131bed7e01 Duration: 12.736 ms Billed Duration: 100 ms Memory Size: 256 MB Max Memory Used: 174 MB Queuing Duration: 0.056 ms
+
+19 дек. 23:51:01.976
+END RequestID: d4c27957-3f4f-4c63-8db2-f5131bed7e01
+
+19 дек. 23:51:01.958
+START RequestID: d4c27957-3f4f-4c63-8db2-f5131bed7e01 Version: d4evohfet1rsnsr32c85

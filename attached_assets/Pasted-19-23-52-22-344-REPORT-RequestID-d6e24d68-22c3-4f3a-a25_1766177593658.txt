@@ -1,0 +1,236 @@
+19 дек. 23:52:22.344
+REPORT RequestID: d6e24d68-22c3-4f3a-a252-bf501c5506da Duration: 349.115 ms Billed Duration: 400 ms Memory Size: 256 MB Max Memory Used: 163 MB Queuing Duration: 0.048 ms CPU Usage: 14.551 %
+
+19 дек. 23:52:22.344
+END RequestID: d6e24d68-22c3-4f3a-a252-bf501c5506da
+
+19 дек. 23:51:39.996
+REPORT RequestID: 605f20a8-e944-4fcb-bdfb-51f08dff1419 Duration: 1323.004 ms Billed Duration: 1400 ms Memory Size: 256 MB Max Memory Used: 174 MB Queuing Duration: 0.056 ms Function Init Duration: 859.612 ms CPU Usage: 99.902 %
+
+19 дек. 23:51:39.996
+END RequestID: 605f20a8-e944-4fcb-bdfb-51f08dff1419
+
+19 дек. 23:51:39.821
+YDB driver connected to: /ru-central1/b1gnp4ml7k5j7cquabad/etn2gipa2pvm2qj5ga83
+
+19 дек. 23:51:39.543
+Incoming request: { method: 'GET', action: 'orders', path: '' }
+
+19 дек. 23:51:38.614
+START RequestID: 605f20a8-e944-4fcb-bdfb-51f08dff1419 Version: d4evohfet1rsnsr32c85
+
+19 дек. 23:51:08.020
+REPORT RequestID: 4545a707-e2ea-4198-91a9-483506f14f69 Duration: 50.700 ms Billed Duration: 100 ms Memory Size: 256 MB Max Memory Used: 182 MB Queuing Duration: 0.060 ms CPU Usage: 2.148 %
+
+19 дек. 23:51:08.020
+END RequestID: 4545a707-e2ea-4198-91a9-483506f14f69
+
+19 дек. 23:51:08.018
+at async TableSessionPool._withSession (/function/code/node_modules/ydb-sdk/build/cjs/src/table/table-session-pool.js:183:28)
+
+19 дек. 23:51:08.018
+at async /function/code/index.js:276:31
+
+19 дек. 23:51:08.018
+at async descriptor.value (/function/code/node_modules/ydb-sdk/build/cjs/src/retries_obsoleted.js:137:20)
+
+19 дек. 23:51:08.018
+at async RetryStrategy.retry (/function/code/node_modules/ydb-sdk/build/cjs/src/retries_obsoleted.js:86:24)
+
+19 дек. 23:51:08.018
+at async /function/code/node_modules/ydb-sdk/build/cjs/src/retries_obsoleted.js:137:53
+
+19 дек. 23:51:08.018
+at async descriptor.value (/function/code/node_modules/ydb-sdk/build/cjs/src/utils/pessimizable.js:13:20)
+
+19 дек. 23:51:08.018
+at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+19 дек. 23:51:08.018
+at TableSession.prepareQuery (/function/code/node_modules/ydb-sdk/build/cjs/src/table/table-session.js:355:80)
+
+19 дек. 23:51:08.018
+at getOperationPayload (/function/code/node_modules/ydb-sdk/build/cjs/src/utils/process-ydb-operation-result.js:11:27)
+
+19 дек. 23:51:08.018
+at YdbError.checkStatus (/function/code/node_modules/ydb-sdk/build/cjs/src/errors.js:69:23)
+
+19 дек. 23:51:08.018
+]
+
+19 дек. 23:51:08.018
+}
+
+19 дек. 23:51:08.018
+"severity": 1
+
+19 дек. 23:51:08.018
+},
+
+19 дек. 23:51:08.018
+"column": 25
+
+19 дек. 23:51:08.018
+"row": 19,
+
+19 дек. 23:51:08.018
+"endPosition": {
+
+19 дек. 23:51:08.018
+"message": "No such column: company_address, table: db.[/ru-central1/b1gnp4ml7k5j7cquabad/etn2gipa2pvm2qj5ga83/orders]",
+
+19 дек. 23:51:08.018
+},
+
+19 дек. 23:51:08.018
+"column": 25
+
+19 дек. 23:51:08.018
+"row": 19,
+
+19 дек. 23:51:08.018
+"position": {
+
+19 дек. 23:51:08.018
+{
+
+19 дек. 23:51:08.018
+},
+
+19 дек. 23:51:08.018
+"severity": 1
+
+19 дек. 23:51:08.018
+},
+
+19 дек. 23:51:08.018
+"column": 25
+
+19 дек. 23:51:08.018
+"row": 19,
+
+19 дек. 23:51:08.018
+"endPosition": {
+
+19 дек. 23:51:08.018
+"message": "At function: KiWriteTable!",
+
+19 дек. 23:51:08.018
+},
+
+19 дек. 23:51:08.018
+"column": 25
+
+19 дек. 23:51:08.018
+"row": 19,
+
+19 дек. 23:51:08.018
+"position": {
+
+19 дек. 23:51:08.018
+{
+
+19 дек. 23:51:08.018
+},
+
+19 дек. 23:51:08.017
+"severity": 1
+
+19 дек. 23:51:08.017
+"issueCode": 1030,
+
+19 дек. 23:51:08.017
+"message": "Type annotation",
+
+19 дек. 23:51:08.017
+{
+
+19 дек. 23:51:08.017
+] Error: GenericError (code 400080): [
+
+19 дек. 23:51:08.017
+}
+
+19 дек. 23:51:08.017
+"severity": 1
+
+19 дек. 23:51:08.017
+},
+
+19 дек. 23:51:08.017
+"column": 25
+
+19 дек. 23:51:08.017
+"row": 19,
+
+19 дек. 23:51:08.017
+"endPosition": {
+
+19 дек. 23:51:08.017
+"message": "No such column: company_address, table: db.[/ru-central1/b1gnp4ml7k5j7cquabad/etn2gipa2pvm2qj5ga83/orders]",
+
+19 дек. 23:51:08.017
+},
+
+19 дек. 23:51:08.017
+"column": 25
+
+19 дек. 23:51:08.017
+"row": 19,
+
+19 дек. 23:51:08.017
+"position": {
+
+19 дек. 23:51:08.017
+{
+
+19 дек. 23:51:08.017
+},
+
+19 дек. 23:51:08.017
+"severity": 1
+
+19 дек. 23:51:08.017
+},
+
+19 дек. 23:51:08.017
+"column": 25
+
+19 дек. 23:51:08.017
+"row": 19,
+
+19 дек. 23:51:08.017
+"endPosition": {
+
+19 дек. 23:51:08.017
+"message": "At function: KiWriteTable!",
+
+19 дек. 23:51:08.017
+},
+
+19 дек. 23:51:08.017
+"column": 25
+
+19 дек. 23:51:08.017
+"row": 19,
+
+19 дек. 23:51:08.017
+"position": {
+
+19 дек. 23:51:08.017
+{
+
+19 дек. 23:51:08.017
+},
+
+19 дек. 23:51:08.017
+"severity": 1
+
+19 дек. 23:51:08.017
+"issueCode": 1030,
+
+19 дек. 23:51:08.017
+"message": "Type annotation",
+
+19 дек. 23:51:08.017
+{
