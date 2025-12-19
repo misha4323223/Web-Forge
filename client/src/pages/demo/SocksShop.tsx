@@ -376,7 +376,7 @@ export default function SocksShop() {
               >
                 <Card 
                   className="group overflow-hidden cursor-pointer border-0 shadow-lg hover:shadow-xl transition-shadow"
-                  onClick={() => setActiveCategory(cat.filter)}
+                  onClick={() => { setActiveCategory(cat.filter); scrollToProducts(); }}
                   data-testid={`card-hero-${cat.filter.toLowerCase()}`}
                 >
                   <div className="relative h-48 overflow-hidden">
@@ -524,7 +524,7 @@ export default function SocksShop() {
           <p className="text-rose-100 mb-6 max-w-md mx-auto">
             Выбери любые носки и мы упакуем их в красивую подарочную коробку
           </p>
-          <Button size="lg" className="bg-white text-rose-500 hover:bg-rose-50 font-bold" data-testid="button-create-set">
+          <Button size="lg" className="bg-white text-rose-500 hover:bg-rose-50 font-bold" onClick={scrollToProducts} data-testid="button-create-set">
             Создать набор
           </Button>
         </div>
