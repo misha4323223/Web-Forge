@@ -163,6 +163,11 @@ module.exports.handler = async function (event, context) {
             return await handleListOrders(query, headers);
         }
 
+        // GET ?action=client-orders&email=... - заказы клиента по email (для Mini App)
+        if (action === 'client-orders' && method === 'GET') {
+            return await handleClientOrders(query, headers);
+        }
+
         // GET /api/orders/:orderId - получить заказ по ID
         const orderMatch = path.match(/\/orders\/([a-zA-Z0-9_-]+)$/);
         if (orderMatch && method === 'GET') {
@@ -1040,6 +1045,44 @@ async function handleListOrders(query, headers) {
             statusCode: 500,
             headers,
             body: JSON.stringify({ error: 'Ошибка получения списка заказов' }),
+        };
+    }
+}
+
+// GET ?action=client-orders&email=... - заказы клиента по email (для Telegram Mini App)
+async function handleClientOrders(query, headers) {
+    try {
+        const email = (query.email || '').trim().toLowerCase();
+        
+        if (!email) {
+            return {
+                statusCode: 400,
+                headers,
+                body: JSON.stringify({ success: false, message: 'Email обязателен' }),
+            };
+        }
+
+        const allOrders = await getAllOrdersFromYdb(false);
+        
+        const clientOrders = allOrders.filter(order => 
+            order.clientEmail && order.clientEmail.toLowerCase() === email
+        );
+
+        return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({ 
+                success: true, 
+                orders: clientOrders,
+                count: clientOrders.length 
+            }),
+        };
+    } catch (error) {
+        console.error('Error fetching client orders:', error.message);
+        return {
+            statusCode: 500,
+            headers,
+            body: JSON.stringify({ success: false, error: 'Ошибка получения заказов' }),
         };
     }
 }

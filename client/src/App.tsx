@@ -22,6 +22,7 @@ import TravelAgency from "@/pages/demo/TravelAgency";
 import BarberShop from "@/pages/demo/BarberShop";
 import DentalClinic from "@/pages/demo/DentalClinic";
 import ApartmentRenovation from "@/pages/demo/ApartmentRenovation";
+import TelegramApp from "@/pages/TelegramApp";
 
 function Router() {
   return (
@@ -44,6 +45,7 @@ function Router() {
       <Route path="/demo/barber" component={BarberShop} />
       <Route path="/demo/dental" component={DentalClinic} />
       <Route path="/demo/renovation" component={ApartmentRenovation} />
+      <Route path="/tg-app" component={TelegramApp} />
       <Route component={NotFound} />
     </Switch>
   );
