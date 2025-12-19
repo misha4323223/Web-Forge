@@ -107,7 +107,12 @@ export default function Admin() {
 
   const updateNoteMutation = useMutation({
     mutationFn: async ({ id, note }: { id: string; note: string }) => {
-      const res = await apiRequest("PATCH", `/api/orders/${id}/note`, { note });
+      const res = await fetch(`${API_BASE_URL}?action=orders/${id}/note`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId: id, note }),
+      });
+      if (!res.ok) throw new Error("Failed to update note");
       return res.json();
     },
     onSuccess: () => {
@@ -123,7 +128,12 @@ export default function Admin() {
 
   const deleteOrderMutation = useMutation({
     mutationFn: async (id: string) => {
-      const res = await apiRequest("DELETE", `/api/orders/${id}`);
+      const res = await fetch(`${API_BASE_URL}?action=delete-order`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId: id }),
+      });
+      if (!res.ok) throw new Error("Failed to delete order");
       return res.json();
     },
     onSuccess: () => {

@@ -113,6 +113,25 @@ module.exports.handler = async function (event, context) {
             return await handleAdditionalInvoice(body, headers);
         }
 
+        // POST ?action=delete-order - мягкое удаление заказа
+        if (action === 'delete-order' && method === 'POST') {
+            const orderIdToDelete = body.orderId;
+            if (orderIdToDelete) {
+                return await handleDeleteOrder(orderIdToDelete, headers);
+            }
+            return {
+                statusCode: 400,
+                headers,
+                body: JSON.stringify({ success: false, message: 'orderId is required' }),
+            };
+        }
+
+        // POST ?action=orders/{id}/note - обновить заметку
+        const noteActionMatch = action.match(/^orders\/([a-zA-Z0-9_-]+)\/note$/);
+        if (noteActionMatch && method === 'POST') {
+            return await handleUpdateOrderNote(noteActionMatch[1], body.note || '', headers);
+        }
+
         // GET /api/orders - получить список всех заказов
         if ((action === 'orders' || path.endsWith('/orders')) && method === 'GET') {
             return await handleListOrders(query, headers);
@@ -128,6 +147,26 @@ module.exports.handler = async function (event, context) {
         const actionOrderMatch = action.match(/^orders\/([a-zA-Z0-9_-]+)$/);
         if (actionOrderMatch && method === 'GET') {
             return await handleGetOrder(actionOrderMatch[1], headers);
+        }
+
+        // DELETE /api/orders/:orderId - мягкое удаление заказа
+        if (method === 'DELETE') {
+            const deleteMatch = path.match(/\/orders\/([a-zA-Z0-9_-]+)$/);
+            const deleteActionMatch = action.match(/^orders\/([a-zA-Z0-9_-]+)$/);
+            const orderIdToDelete = deleteMatch?.[1] || deleteActionMatch?.[1] || body.orderId;
+            if (orderIdToDelete) {
+                return await handleDeleteOrder(orderIdToDelete, headers);
+            }
+        }
+
+        // PATCH /api/orders/:orderId/note - обновить заметку
+        if (method === 'PATCH' || (method === 'POST' && action.includes('/note'))) {
+            const noteMatch = path.match(/\/orders\/([a-zA-Z0-9_-]+)\/note$/);
+            const noteActionMatch = action.match(/^orders\/([a-zA-Z0-9_-]+)\/note$/);
+            const orderIdForNote = noteMatch?.[1] || noteActionMatch?.[1] || body.orderId;
+            if (orderIdForNote) {
+                return await handleUpdateOrderNote(orderIdForNote, body.note || '', headers);
+            }
         }
 
         if (action === 'health' || path.includes('/health') || method === 'GET') {
@@ -908,6 +947,93 @@ async function handleListOrders(query, headers) {
             body: JSON.stringify({ error: 'Ошибка получения списка заказов' }),
         };
     }
+}
+
+// DELETE /api/orders/:orderId - мягкое удаление заказа
+async function handleDeleteOrder(orderId, headers) {
+    try {
+        await softDeleteOrderInYdb(orderId);
+        return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({ success: true, message: 'Заказ удалён' }),
+        };
+    } catch (error) {
+        console.error('Error deleting order:', error.message);
+        return {
+            statusCode: 500,
+            headers,
+            body: JSON.stringify({ success: false, error: 'Ошибка удаления заказа' }),
+        };
+    }
+}
+
+// PATCH /api/orders/:orderId/note - обновить заметку
+async function handleUpdateOrderNote(orderId, note, headers) {
+    try {
+        await updateOrderNoteInYdb(orderId, note);
+        return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({ success: true, message: 'Заметка обновлена' }),
+        };
+    } catch (error) {
+        console.error('Error updating order note:', error.message);
+        return {
+            statusCode: 500,
+            headers,
+            body: JSON.stringify({ success: false, error: 'Ошибка обновления заметки' }),
+        };
+    }
+}
+
+// Мягкое удаление заказа в YDB
+async function softDeleteOrderInYdb(orderId) {
+    const driver = await getYdbDriver();
+    const now = new Date().toISOString();
+    
+    await driver.tableClient.withSession(async (session) => {
+        const queryText = `
+            DECLARE $id AS Utf8;
+            DECLARE $deleted_at AS Utf8;
+            
+            UPDATE orders
+            SET deleted_at = $deleted_at
+            WHERE id = $id;
+        `;
+        
+        const preparedQuery = await session.prepareQuery(queryText);
+        await session.executeQuery(preparedQuery, {
+            '$id': TypedValues.utf8(orderId),
+            '$deleted_at': TypedValues.utf8(now),
+        });
+    });
+    
+    console.log('Order soft deleted:', orderId);
+}
+
+// Обновление заметки заказа в YDB
+async function updateOrderNoteInYdb(orderId, note) {
+    const driver = await getYdbDriver();
+    
+    await driver.tableClient.withSession(async (session) => {
+        const queryText = `
+            DECLARE $id AS Utf8;
+            DECLARE $internal_note AS Utf8;
+            
+            UPDATE orders
+            SET internal_note = $internal_note
+            WHERE id = $id;
+        `;
+        
+        const preparedQuery = await session.prepareQuery(queryText);
+        await session.executeQuery(preparedQuery, {
+            '$id': TypedValues.utf8(orderId),
+            '$internal_note': TypedValues.utf8(note || ''),
+        });
+    });
+    
+    console.log('Order note updated:', orderId);
 }
 
 // Получение всех заказов из YDB

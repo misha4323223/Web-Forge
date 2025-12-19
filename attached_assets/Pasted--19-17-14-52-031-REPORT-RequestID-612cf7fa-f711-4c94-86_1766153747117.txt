@@ -1,0 +1,64 @@
+
+
+19 дек. 17:14:52.031
+REPORT RequestID: 612cf7fa-f711-4c94-8660-3fdb54397a41 Duration: 4.513 ms Billed Duration: 100 ms Memory Size: 256 MB Max Memory Used: 173 MB Queuing Duration: 0.073 ms
+
+19 дек. 17:14:52.031
+END RequestID: 612cf7fa-f711-4c94-8660-3fdb54397a41
+
+19 дек. 17:14:52.013
+START RequestID: 612cf7fa-f711-4c94-8660-3fdb54397a41 Version: d4ejnep5u2a6e7k9hobj
+
+19 дек. 17:14:25.931
+REPORT RequestID: 671ef5d4-8aa6-4f71-95d5-b63b46f6d568 Duration: 14.850 ms Billed Duration: 100 ms Memory Size: 256 MB Max Memory Used: 166 MB Queuing Duration: 0.031 ms
+
+19 дек. 17:14:25.931
+END RequestID: 671ef5d4-8aa6-4f71-95d5-b63b46f6d568
+
+19 дек. 17:14:25.913
+START RequestID: 671ef5d4-8aa6-4f71-95d5-b63b46f6d568 Version: d4ejnep5u2a6e7k9hobj
+
+19 дек. 17:13:56.667
+REPORT RequestID: 5541700f-3e35-49cc-9732-32d55bb0220c Duration: 2.705 ms Billed Duration: 100 ms Memory Size: 256 MB Max Memory Used: 174 MB Queuing Duration: 0.063 ms CPU Usage: 1.953 %
+
+19 дек. 17:13:56.667
+END RequestID: 5541700f-3e35-49cc-9732-32d55bb0220c
+
+19 дек. 17:13:56.659
+START RequestID: 5541700f-3e35-49cc-9732-32d55bb0220c Version: d4ejnep5u2a6e7k9hobj
+
+19 дек. 17:13:51.905
+REPORT RequestID: 69b9d6aa-77d8-4355-ae65-96f18fed80f3 Duration: 3.991 ms Billed Duration: 100 ms Memory Size: 256 MB Max Memory Used: 174 MB Queuing Duration: 0.042 ms
+
+19 дек. 17:13:51.905
+END RequestID: 69b9d6aa-77d8-4355-ae65-96f18fed80f3
+
+19 дек. 17:13:51.898
+START RequestID: 69b9d6aa-77d8-4355-ae65-96f18fed80f3 Version: d4ejnep5u2a6e7k9hobj
+
+19 дек. 17:13:36.003
+REPORT RequestID: 23d31cef-e1fe-4162-bdf4-fa83d8921a5f Duration: 1261.589 ms Billed Duration: 1300 ms Memory Size: 256 MB Max Memory Used: 152 MB Queuing Duration: 0.027 ms Function Init Duration: 819.971 ms CPU Usage: 99.902 %
+
+19 дек. 17:13:36.003
+END RequestID: 23d31cef-e1fe-4162-bdf4-fa83d8921a5f
+
+19 дек. 17:13:35.836
+YDB driver connected to: /ru-central1/b1gnp4ml7k5j7cquabad/etn2gipa2pvm2qj5ga83
+
+19 дек. 17:13:35.572
+Incoming request: { method: 'GET', action: 'orders', path: '' }
+
+19 дек. 17:13:34.738
+START RequestID: 23d31cef-e1fe-4162-bdf4-fa83d8921a5f Version: d4ejnep5u2a6e7k9hobj
+
+19 дек. 17:13:33.439
+REPORT RequestID: 5536a29f-0e91-44dc-a08f-553386855086 Duration: 795.931 ms Billed Duration: 800 ms Memory Size: 256 MB Queuing Duration: 0.000 ms
+
+19 дек. 17:13:33.439
+ERROR RequestID: 5536a29f-0e91-44dc-a08f-553386855086 Code: 499 Message: Request cancelled
+
+19 дек. 17:13:33.439
+END RequestID: 5536a29f-0e91-44dc-a08f-553386855086
+
+19 дек. 17:13:32.643
+START RequestID: 5536a29f-0e91-44dc-a08f-553386855086 Version: d4ejnep5u2a6e7k9hobj
