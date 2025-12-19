@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="ru" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
+    <title>MP.WebStudio — Мои заказы</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <meta name="theme-color" content="#0a0a0a" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { 
+        font-family: 'Inter', sans-serif; 
+        background: #0a0a0a; 
+        color: #fff;
+        min-height: 100vh;
+      }
+      .container { max-width: 480px; margin: 0 auto; padding: 16px; }
+      .header { text-align: center; margin-bottom: 24px; }
+      .header h1 { 
+        font-size: 24px; 
+        font-weight: 700;
+        background: linear-gradient(to right, #22d3ee, #a855f7);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .header p { color: #9ca3af; font-size: 14px; margin-top: 4px; }
+      .search-box { 
+        background: rgba(17, 24, 39, 0.5); 
+        border: 1px solid #374151; 
+        border-radius: 8px; 
+        padding: 16px; 
+        margin-bottom: 16px;
+      }
+      .search-box label { display: block; color: #9ca3af; font-size: 14px; margin-bottom: 8px; }
+      .search-row { display: flex; gap: 8px; }
+      .search-input { 
+        flex: 1; 
+        background: #1f2937; 
+        border: 1px solid #374151; 
+        border-radius: 6px; 
+        padding: 10px 12px; 
+        color: #fff; 
+        font-size: 16px;
+        outline: none;
+      }
+      .search-input:focus { border-color: #22d3ee; }
+      .search-btn { 
+        background: linear-gradient(to right, #06b6d4, #8b5cf6); 
+        border: none; 
+        border-radius: 6px; 
+        padding: 10px 16px; 
+        color: #fff; 
+        cursor: pointer;
+        font-size: 16px;
+      }
+      .search-btn:disabled { opacity: 0.5; }
+      .error { color: #f87171; font-size: 14px; margin-top: 8px; }
+      .empty { 
+        text-align: center; 
+        padding: 40px 20px; 
+        background: rgba(17, 24, 39, 0.5); 
+        border: 1px solid #374151; 
+        border-radius: 8px;
+      }
+      .empty-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.3; }
+      .empty p { color: #9ca3af; }
+      .order-card {
+        background: rgba(17, 24, 39, 0.5);
+        border: 1px solid #374151;
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 12px;
+      }
+      .order-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; gap: 8px; }
+      .order-title { font-weight: 600; color: #fff; }
+      .order-id { font-size: 12px; color: #6b7280; font-family: monospace; }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 8px;
+        border-radius: 9999px;
+        font-size: 12px;
+        font-weight: 500;
+        white-space: nowrap;
+      }
+      .badge-pending { background: rgba(234, 179, 8, 0.2); color: #fbbf24; border: 1px solid rgba(234, 179, 8, 0.3); }
+      .badge-bank { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+      .badge-paid { background: rgba(34, 211, 238, 0.2); color: #22d3ee; border: 1px solid rgba(34, 211, 238, 0.3); }
+      .badge-progress { background: rgba(168, 85, 247, 0.2); color: #a855f7; border: 1px solid rgba(168, 85, 247, 0.3); }
+      .badge-completed { background: rgba(34, 197, 94, 0.2); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.3); }
+      .order-row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 6px; }
+      .order-label { color: #9ca3af; }
+      .order-value { color: #fff; }
+      .order-value.cyan { color: #22d3ee; }
+      .order-value.blue { color: #60a5fa; }
+      .order-note {
+        margin-top: 12px;
+        padding: 12px;
+        border-radius: 6px;
+        font-size: 14px;
+      }
+      .order-note.progress { background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.2); color: #c4b5fd; }
+      .order-note.completed { background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.2); color: #86efac; }
+      .footer { text-align: center; margin-top: 24px; }
+      .footer a { color: #9ca3af; font-size: 14px; text-decoration: none; }
+      .footer a:hover { color: #22d3ee; }
+      .loader { 
+        width: 20px; height: 20px; 
+        border: 2px solid transparent; 
+        border-top-color: #fff; 
+        border-radius: 50%; 
+        animation: spin 1s linear infinite;
+        display: inline-block;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>MP.WebStudio</h1>
+        <p>Личный кабинет клиента</p>
+      </div>
+
+      <div class="search-box">
+        <label>Введите email заказа</label>
+        <div class="search-row">
+          <input type="email" class="search-input" id="emailInput" placeholder="your@email.com" />
+          <button class="search-btn" id="searchBtn" onclick="searchOrders()">
+            <span id="btnText">Найти</span>
+          </button>
+        </div>
+        <div class="error" id="errorMsg"></div>
+      </div>
+
+      <div id="results"></div>
+
+      <div class="footer">
+        <a href="https://mp-webstudio.ru" target="_blank">mp-webstudio.ru</a>
+      </div>
+    </div>
+
+    <script>
+      const API_URL = 'https://functions.yandexcloud.net/d4evq77bp5o80f8samhs';
+      
+      if (window.Telegram?.WebApp) {
+        Telegram.WebApp.ready();
+        Telegram.WebApp.expand();
+      }
+
+      document.getElementById('emailInput').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') searchOrders();
+      });
+
+      async function searchOrders() {
+        const email = document.getElementById('emailInput').value.trim();
+        const errorMsg = document.getElementById('errorMsg');
+        const results = document.getElementById('results');
+        const btn = document.getElementById('searchBtn');
+        const btnText = document.getElementById('btnText');
+
+        if (!email) {
+          errorMsg.textContent = 'Введите email';
+          return;
+        }
+
+        errorMsg.textContent = '';
+        btn.disabled = true;
+        btnText.innerHTML = '<span class="loader"></span>';
+
+        try {
+          const response = await fetch(`${API_URL}?action=client-orders&email=${encodeURIComponent(email)}`);
+          const data = await response.json();
+
+          if (data.success && data.orders && data.orders.length > 0) {
+            results.innerHTML = data.orders.map(order => renderOrder(order)).join('');
+          } else {
+            results.innerHTML = `
+              <div class="empty">
+                <div class="empty-icon">📋</div>
+                <p>Заказы не найдены</p>
+                <p style="font-size: 12px; margin-top: 4px;">Проверьте правильность email</p>
+              </div>
+            `;
+          }
+        } catch (err) {
+          errorMsg.textContent = 'Ошибка загрузки заказов';
+        } finally {
+          btn.disabled = false;
+          btnText.textContent = 'Найти';
+        }
+      }
+
+      function renderOrder(order) {
+        const statusMap = {
+          pending: { label: 'Ожидает оплаты', class: 'badge-pending' },
+          pending_bank_payment: { label: 'Ожидает оплаты по счёту', class: 'badge-bank' },
+          paid: { label: 'Предоплата получена', class: 'badge-paid' },
+          in_progress: { label: 'В работе', class: 'badge-progress' },
+          completed: { label: 'Завершён', class: 'badge-completed' }
+        };
+
+        const projectTypes = {
+          landing: 'Лендинг',
+          corporate: 'Корпоративный сайт',
+          shop: 'Интернет-магазин'
+        };
+
+        const status = statusMap[order.status] || statusMap.pending;
+        const projectType = projectTypes[order.projectType] || order.projectType;
+        const totalAmount = order.totalAmount || (parseFloat(order.amount) * 2);
+
+        let note = '';
+        if (order.status === 'in_progress') {
+          note = '<div class="order-note progress">Ваш сайт в разработке! Мы свяжемся с вами для согласования.</div>';
+        } else if (order.status === 'completed') {
+          note = '<div class="order-note completed">Проект завершён! Акт выполненных работ отправлен на email.</div>';
+        }
+
+        return `
+          <div class="order-card">
+            <div class="order-header">
+              <div>
+                <div class="order-title">${projectType}</div>
+                <div class="order-id">${order.id}</div>
+              </div>
+              <span class="badge ${status.class}">${status.label}</span>
+            </div>
+            <div class="order-row">
+              <span class="order-label">Полная стоимость:</span>
+              <span class="order-value">${formatPrice(totalAmount)} ₽</span>
+            </div>
+            <div class="order-row">
+              <span class="order-label">Предоплата (50%):</span>
+              <span class="order-value cyan">${formatPrice(order.amount)} ₽</span>
+            </div>
+            <div class="order-row">
+              <span class="order-label">Дата заказа:</span>
+              <span class="order-value">${formatDate(order.createdAt)}</span>
+            </div>
+            ${order.paymentMethod === 'invoice' && order.companyName ? `
+            <div class="order-row">
+              <span class="order-label">Компания:</span>
+              <span class="order-value blue">${order.companyName}</span>
+            </div>
+            ` : ''}
+            ${note}
+          </div>
+        `;
+      }
+
+      function formatPrice(price) {
+        return new Intl.NumberFormat('ru-RU').format(parseFloat(price) || 0);
+      }
+
+      function formatDate(dateStr) {
+        return new Date(dateStr).toLocaleDateString('ru-RU');
+      }
+    </script>
+  </body>
+</html>
