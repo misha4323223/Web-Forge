@@ -56,6 +56,7 @@ export default function Admin() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [orderToDelete, setOrderToDelete] = useState<Order | null>(null);
   const [noteText, setNoteText] = useState("");
+  const [activeTab, setActiveTab] = useState("orders");
 
   const API_BASE_URL = import.meta.env.VITE_API_URL || "https://functions.yandexcloud.net/d4ed08qj9rekklj8b100";
   
@@ -174,7 +175,7 @@ export default function Admin() {
         <div className="max-w-6xl mx-auto px-6">
           <h1 className="text-3xl font-bold mb-8">Панель управления</h1>
 
-          <Tabs defaultValue="orders" className="space-y-6">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
             <TabsList className="grid w-full grid-cols-2 max-w-md">
               <TabsTrigger value="orders" data-testid="tab-orders">Заказы ({orders.length})</TabsTrigger>
               <TabsTrigger value="invoice" data-testid="tab-invoice">Выставить счёт</TabsTrigger>
@@ -267,6 +268,7 @@ export default function Admin() {
                               variant="outline"
                               onClick={() => {
                                 form.setValue("orderId", order.id);
+                                setActiveTab("invoice");
                               }}
                               data-testid={`button-invoice-${order.id}`}
                             >
