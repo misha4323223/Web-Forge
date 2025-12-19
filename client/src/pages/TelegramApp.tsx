@@ -16,7 +16,7 @@ import {
   ExternalLink
 } from "lucide-react";
 
-const API_BASE_URL = "https://functions.yandexcloud.net/d4evq77bp5o80f8samhs";
+const API_BASE_URL = "https://functions.yandexcloud.net/d4ed08qj9rekklj8b100";
 
 interface Order {
   id: string;
