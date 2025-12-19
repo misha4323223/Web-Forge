@@ -28,6 +28,7 @@ const products = [
     rating: 4.8,
     reviews: 124,
     tag: "Хит",
+    category: "Увлажнение",
   },
   {
     id: 2,
@@ -38,6 +39,7 @@ const products = [
     rating: 4.9,
     reviews: 89,
     tag: "Новинка",
+    category: "Антивозрастной",
   },
   {
     id: 3,
@@ -47,6 +49,7 @@ const products = [
     image: micellarImg,
     rating: 4.7,
     reviews: 256,
+    category: "Очищение",
   },
   {
     id: 4,
@@ -57,6 +60,7 @@ const products = [
     rating: 4.6,
     reviews: 78,
     tag: "Веган",
+    category: "Очищение",
   },
   {
     id: 5,
@@ -66,6 +70,7 @@ const products = [
     image: tonerImg,
     rating: 4.8,
     reviews: 145,
+    category: "Увлажнение",
   },
   {
     id: 6,
@@ -77,6 +82,7 @@ const products = [
     rating: 4.9,
     reviews: 67,
     tag: "Скидка",
+    category: "Антивозрастной",
   },
 ];
 
@@ -140,6 +146,10 @@ export default function CosmeticsShop() {
   const cartCount = Object.values(cart).reduce((a, b) => a + b, 0);
 
   const scrollToProducts = () => productsRef.current?.scrollIntoView({ behavior: "smooth" });
+
+  const filteredProducts = activeCategory === "Все" 
+    ? products 
+    : products.filter(p => p.category === activeCategory);
 
   const handleOrder = (e: React.FormEvent) => {
     e.preventDefault();
@@ -403,7 +413,7 @@ export default function CosmeticsShop() {
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {products.map((product, index) => (
+            {filteredProducts.map((product, index) => (
               <motion.div
                 key={product.id}
                 initial={{ opacity: 0, y: 30 }}

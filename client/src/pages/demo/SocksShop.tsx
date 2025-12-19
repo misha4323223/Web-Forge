@@ -135,6 +135,8 @@ export default function SocksShop() {
   const [orderForm, setOrderForm] = useState({ name: "", phone: "", email: "" });
   const { toast } = useToast();
   const productsRef = useRef<HTMLElement>(null);
+  const featuresRef = useRef<HTMLElement>(null);
+  const footerRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -170,6 +172,20 @@ export default function SocksShop() {
   const cartCount = Object.values(cart).reduce((a, b) => a + b, 0);
 
   const scrollToProducts = () => productsRef.current?.scrollIntoView({ behavior: "smooth" });
+
+  const handleNavClick = (item: string) => {
+    setMobileMenuOpen(false);
+    if (item === "Каталог") scrollToProducts();
+    else if (item === "Наборы") {
+      setActiveCategory("Наборы");
+      scrollToProducts();
+    }
+    else if (item === "SALE") {
+      scrollToProducts();
+      toast({ title: "Раздел SALE", description: "Скидки на избранные носки!" });
+    }
+    else if (item === "Доставка") featuresRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   const handleOrder = (e: React.FormEvent) => {
     e.preventDefault();
@@ -299,7 +315,8 @@ export default function SocksShop() {
               {["Каталог", "Наборы", "SALE", "Доставка"].map(item => (
                 <button
                   key={item}
-                  className={`text-sm font-medium transition-colors ${item === "SALE" ? "text-rose-500" : "text-neutral-600 hover:text-neutral-900"}`}
+                  onClick={() => handleNavClick(item)}
+                  className={`text-sm font-medium transition-colors cursor-pointer ${item === "SALE" ? "text-rose-500 hover:text-rose-400" : "text-neutral-600 hover:text-neutral-900"}`}
                   data-testid={`link-nav-${item.toLowerCase()}`}
                 >
                   {item}
@@ -340,7 +357,8 @@ export default function SocksShop() {
               {["Каталог", "Наборы", "SALE", "Доставка"].map(item => (
                 <button
                   key={item}
-                  className={`text-left text-sm font-medium py-2 ${item === "SALE" ? "text-rose-500" : "text-neutral-600"}`}
+                  onClick={() => handleNavClick(item)}
+                  className={`text-left text-sm font-medium py-2 cursor-pointer ${item === "SALE" ? "text-rose-500" : "text-neutral-600 hover:text-neutral-900"}`}
                 >
                   {item}
                 </button>
@@ -398,7 +416,7 @@ export default function SocksShop() {
         </div>
       </section>
 
-      <section className="py-8 border-b border-neutral-200 bg-neutral-50">
+      <section ref={featuresRef} className="py-8 border-b border-neutral-200 bg-neutral-50">
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid md:grid-cols-3 gap-6">
             {features.map((feature, index) => (

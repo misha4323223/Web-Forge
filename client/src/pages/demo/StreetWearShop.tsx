@@ -101,6 +101,8 @@ export default function StreetWearShop() {
   const [orderForm, setOrderForm] = useState({ name: "", phone: "", email: "" });
   const { toast } = useToast();
   const productsRef = useRef<HTMLElement>(null);
+  const brandsRef = useRef<HTMLElement>(null);
+  const footerRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -140,6 +142,20 @@ export default function StreetWearShop() {
   const cartCount = Object.values(cart).reduce((a, b) => a + b, 0);
 
   const scrollToProducts = () => productsRef.current?.scrollIntoView({ behavior: "smooth" });
+  const scrollToBrands = () => brandsRef.current?.scrollIntoView({ behavior: "smooth" });
+  const scrollToFooter = () => footerRef.current?.scrollIntoView({ behavior: "smooth" });
+  
+  const handleNavClick = (item: string) => {
+    setMobileMenuOpen(false);
+    if (item === "Каталог") scrollToProducts();
+    else if (item === "Бренды") scrollToBrands();
+    else if (item === "SALE") {
+      setActiveCategory("Все");
+      scrollToProducts();
+      toast({ title: "Раздел SALE", description: "Скидки на избранные товары!" });
+    }
+    else if (item === "О нас") scrollToFooter();
+  };
 
   const handleOrder = (e: React.FormEvent) => {
     e.preventDefault();
@@ -268,7 +284,8 @@ export default function StreetWearShop() {
                 {["Каталог", "Бренды", "SALE", "О нас"].map(item => (
                   <button
                     key={item}
-                    className={`text-sm font-medium transition-colors ${item === "SALE" ? "text-red-500" : "text-neutral-400 hover:text-white"}`}
+                    onClick={() => handleNavClick(item)}
+                    className={`text-sm font-medium transition-colors cursor-pointer ${item === "SALE" ? "text-red-500 hover:text-red-400" : "text-neutral-400 hover:text-white"}`}
                     data-testid={`link-nav-${item.toLowerCase()}`}
                   >
                     {item}
@@ -318,7 +335,8 @@ export default function StreetWearShop() {
               {["Каталог", "Бренды", "SALE", "О нас"].map(item => (
                 <button
                   key={item}
-                  className={`text-left text-sm font-medium py-2 ${item === "SALE" ? "text-red-500" : "text-neutral-400"}`}
+                  onClick={() => handleNavClick(item)}
+                  className={`text-left text-sm font-medium py-2 cursor-pointer ${item === "SALE" ? "text-red-500" : "text-neutral-400 hover:text-white"}`}
                 >
                   {item}
                 </button>
@@ -392,7 +410,7 @@ export default function StreetWearShop() {
         </div>
       </section>
 
-      <section className="py-12 border-b border-neutral-800">
+      <section ref={brandsRef} className="py-12 border-b border-neutral-800">
         <div className="max-w-7xl mx-auto px-6">
           <h3 className="text-sm font-bold text-neutral-500 uppercase tracking-wider mb-6">Бренды</h3>
           <div className="flex flex-wrap gap-3">
@@ -515,7 +533,7 @@ export default function StreetWearShop() {
         </div>
       </section>
 
-      <section className="py-16 bg-neutral-900">
+      <section ref={footerRef} className="py-16 bg-neutral-900">
         <div className="max-w-7xl mx-auto px-6 text-center">
           <h2 className="text-3xl font-black mb-4">
             Подпишись на <span className="text-amber-500">Telegram</span>
