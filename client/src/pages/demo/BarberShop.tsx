@@ -11,6 +11,10 @@ import barberHeroImg from "@assets/generated_images/stylish_barbershop_interior.
 import alexeyImg from "@assets/generated_images/russian_barber_alexey_portrait.webp";
 import dmitryImg from "@assets/generated_images/russian_barber_dmitry_portrait.webp";
 import maximImg from "@assets/generated_images/russian_barber_maxim_portrait.webp";
+import galleryImg1 from "@assets/generated_images/modern_undercut_fade_haircut.png";
+import galleryImg2 from "@assets/generated_images/professional_beard_styling_result.png";
+import galleryImg3 from "@assets/generated_images/classic_gentleman_side_part.png";
+import galleryImg4 from "@assets/generated_images/trendy_textured_crop_fade.png";
 
 const services = [
   { id: 1, name: "Мужская стрижка", duration: "45 мин", price: 1500, icon: Scissors },
@@ -56,10 +60,10 @@ const timeSlots = [
 ];
 
 const gallery = [
-  "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=400",
-  "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400",
-  "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=400",
-  "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400",
+  galleryImg1,
+  galleryImg2,
+  galleryImg3,
+  galleryImg4,
 ];
 
 export default function BarberShop() {

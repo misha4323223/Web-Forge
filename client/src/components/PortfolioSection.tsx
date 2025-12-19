@@ -103,7 +103,7 @@ function AnimatedText({ text, startIndex, isGradient, isInView }: AnimatedTextPr
 }
 
 import sweetDelightsImg from "@assets/image_1765623150824.webp";
-import socksHeroImg from "@assets/generated_images/socks_collection_hero_image.webp";
+import socksHeroImg from "@assets/generated_images/classic_socks_gift_box.png";
 import travelHeroImg from "@assets/generated_images/tropical_beach_travel_destination.webp";
 import barberHeroImg from "@assets/generated_images/stylish_barbershop_interior.webp";
 import foodHeroImg from "@assets/generated_images/asian_food_arrangement_table.png";
