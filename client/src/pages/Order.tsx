@@ -895,7 +895,7 @@ export default function Order() {
                           После оплаты свяжитесь с нами для начала работы.
                         </p>
                         <a href="/">
-                          <Button variant="outline" className="mt-4">
+                          <Button type="button" variant="outline" className="mt-4">
                             <ArrowLeft className="w-4 h-4 mr-2" />
                             На главную
                           </Button>
