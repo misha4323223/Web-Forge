@@ -102,6 +102,33 @@ shared/
 - Сайты с формами → Cloud Functions
 - Магазины → Cloud Run + Managed PostgreSQL
 
+## SEO-оптимизация (декабрь 2024)
+
+### Реализовано:
+1. **Meta-теги:** title, description, keywords, author, robots
+2. **Open Graph:** полная поддержка VK, Telegram, Facebook
+3. **Twitter Cards:** summary_large_image
+4. **JSON-LD структурированные данные:**
+   - WebSite (с SearchAction)
+   - Organization
+   - LocalBusiness
+   - Service (каталог услуг)
+5. **sitemap.xml:** все страницы и демо-сайты
+6. **robots.txt:** правила для Yandex и Google
+7. **Canonical URL:** https://mp-webstudio.ru/
+
+### Нужно сделать вручную:
+1. **Создать og-image.png** (1200x630 px) — изображение для соцсетей
+2. **Зарегистрировать в Яндекс.Вебмастер:**
+   - https://webmaster.yandex.ru/
+   - Добавить сайт, получить код верификации
+   - Раскомментировать `<meta name="yandex-verification">` в index.html
+3. **Зарегистрировать в Google Search Console:**
+   - https://search.google.com/search-console/
+   - Добавить сайт, получить код верификации
+   - Раскомментировать `<meta name="google-site-verification">` в index.html
+4. **Отправить sitemap:** в обоих сервисах указать https://mp-webstudio.ru/sitemap.xml
+
 ## Последние изменения (декабрь 2024)
 
 ### Улучшение процесса сборки для Yandex Cloud (19 декабря):
