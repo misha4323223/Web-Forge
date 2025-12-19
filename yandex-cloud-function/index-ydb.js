@@ -1688,14 +1688,6 @@ function numberToWords(num) {
 }
 
 async function sendBankInvoiceEmail(orderData, pdfBuffer) {
-    const smtpEmail = process.env.SMTP_EMAIL;
-    const smtpPassword = process.env.SMTP_PASSWORD;
-
-    if (!smtpEmail || !smtpPassword) {
-        console.log('SMTP not configured, skipping email');
-        return;
-    }
-
     const formatPrice = (price) => new Intl.NumberFormat('ru-RU').format(price);
 
     const emailHtml = `
@@ -1703,11 +1695,11 @@ async function sendBankInvoiceEmail(orderData, pdfBuffer) {
     <html>
     <head><meta charset="utf-8"></head>
     <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <h2 style="color: #1a1a2e;">Счёт на оплату</h2>
+        <h2 style="color: #0891b2;">Счёт на оплату</h2>
         <p>Здравствуйте, ${orderData.clientName}!</p>
         <p>Счёт на оплату для <strong>${orderData.companyName}</strong> прикреплён к этому письму.</p>
         
-        <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin: 20px 0;">
+        <div style="background: #f3f4f6; padding: 15px; border-radius: 8px; margin: 20px 0;">
             <p style="margin: 5px 0;"><strong>Счёт №:</strong> ${orderData.invoiceNumber}</p>
             <p style="margin: 5px 0;"><strong>Сумма:</strong> ${formatPrice(orderData.amount)} ₽</p>
             <p style="margin: 5px 0;"><strong>ID заказа:</strong> ${orderData.orderId}</p>
@@ -1715,11 +1707,91 @@ async function sendBankInvoiceEmail(orderData, pdfBuffer) {
         
         <p>После оплаты, пожалуйста, сообщите нам — мы начнём работу над вашим проектом.</p>
         
-        <p style="margin-top: 30px;">С уважением,<br><strong>MP.WebStudio</strong><br>
+        <p style="margin-top: 30px; color: #6b7280;">С уважением,<br><strong>MP.WebStudio</strong><br>
         Телефон: +7 (953) 181-41-36<br>
-        Email: mpwebstudio1@gmail.com</p>
+        <a href="https://mp-webstudio.ru">mp-webstudio.ru</a></p>
     </body>
     </html>`;
+
+    // Yandex Cloud Postbox через AWS SES-совместимый API
+    const postboxAccessKey = process.env.POSTBOX_ACCESS_KEY_ID;
+    const postboxSecretKey = process.env.POSTBOX_SECRET_ACCESS_KEY;
+    const postboxFromEmail = process.env.POSTBOX_FROM_EMAIL;
+    
+    if (postboxAccessKey && postboxSecretKey && postboxFromEmail) {
+        console.log('Sending bank invoice email via Yandex Cloud Postbox, to:', orderData.clientEmail);
+        
+        const sesClient = new SESv2Client({
+            region: 'ru-central1',
+            endpoint: 'https://postbox.cloud.yandex.net',
+            credentials: {
+                accessKeyId: postboxAccessKey,
+                secretAccessKey: postboxSecretKey,
+            },
+        });
+        
+        const wrapBase64 = (base64) => base64.match(/.{1,76}/g).join('\r\n');
+        
+        const boundary = '----=_Part_' + Date.now().toString(36);
+        const pdfBase64 = wrapBase64(pdfBuffer.toString('base64'));
+        const htmlBase64 = wrapBase64(Buffer.from(emailHtml).toString('base64'));
+        
+        const subjectText = `Счёт на оплату №${orderData.invoiceNumber} - MP.WebStudio`;
+        const fileName = `Invoice_${orderData.invoiceNumber}.pdf`;
+        
+        const rawEmail = [
+            `From: MP.WebStudio <${postboxFromEmail}>`,
+            `To: ${orderData.clientEmail}`,
+            `Subject: =?UTF-8?B?${Buffer.from(subjectText).toString('base64')}?=`,
+            'MIME-Version: 1.0',
+            `Content-Type: multipart/mixed; boundary="${boundary}"`,
+            '',
+            `--${boundary}`,
+            'Content-Type: text/html; charset=UTF-8',
+            'Content-Transfer-Encoding: base64',
+            '',
+            htmlBase64,
+            '',
+            `--${boundary}`,
+            `Content-Type: application/pdf; name="${fileName}"`,
+            'Content-Transfer-Encoding: base64',
+            `Content-Disposition: attachment; filename="${fileName}"`,
+            '',
+            pdfBase64,
+            '',
+            `--${boundary}--`,
+        ].join('\r\n');
+        
+        try {
+            const command = new SendEmailCommand({
+                FromEmailAddress: postboxFromEmail,
+                Destination: {
+                    ToAddresses: [orderData.clientEmail],
+                },
+                Content: {
+                    Raw: {
+                        Data: Buffer.from(rawEmail),
+                    },
+                },
+            });
+            
+            const response = await sesClient.send(command);
+            console.log('Bank invoice email sent via Yandex Cloud Postbox, MessageId:', response.MessageId);
+            return;
+        } catch (error) {
+            console.error('Postbox error sending bank invoice:', error.message);
+            throw new Error(`Email error: ${error.message}`);
+        }
+    }
+    
+    // Fallback на SMTP (если Postbox не настроен)
+    const smtpEmail = process.env.SMTP_EMAIL;
+    const smtpPassword = process.env.SMTP_PASSWORD;
+
+    if (!smtpEmail || !smtpPassword) {
+        console.log('No email service configured, skipping bank invoice email');
+        return;
+    }
 
     const transporter = nodemailer.createTransport({
         host: 'smtp.yandex.ru',
@@ -1734,12 +1806,12 @@ async function sendBankInvoiceEmail(orderData, pdfBuffer) {
         subject: `Счёт на оплату №${orderData.invoiceNumber} - MP.WebStudio`,
         html: emailHtml,
         attachments: [{
-            filename: `Счёт_${orderData.invoiceNumber}.pdf`,
+            filename: `Invoice_${orderData.invoiceNumber}.pdf`,
             content: pdfBuffer,
         }],
     });
 
-    console.log('Bank invoice email sent to:', orderData.clientEmail);
+    console.log('Bank invoice email sent via SMTP to:', orderData.clientEmail);
 }
 
 // ============ PDF Generation ============

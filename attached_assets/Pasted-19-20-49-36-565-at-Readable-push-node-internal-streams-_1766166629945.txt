@@ -1,0 +1,53 @@
+19 дек. 20:49:36.565
+at Readable.push (node:internal/streams/readable:392:5)
+
+19 дек. 20:49:36.565
+at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+
+19 дек. 20:49:36.565
+at addChunk (node:internal/streams/readable:561:12)
+
+19 дек. 20:49:36.565
+at TLSSocket.emit (node:events:518:28)
+
+19 дек. 20:49:36.565
+at SMTPConnection._onSocketData (/function/code/node_modules/nodemailer/lib/smtp-connection/index.js:195:44)
+
+19 дек. 20:49:36.565
+at SMTPConnection._onData (/function/code/node_modules/nodemailer/lib/smtp-connection/index.js:774:14)
+
+19 дек. 20:49:36.565
+at SMTPConnection._processResponse (/function/code/node_modules/nodemailer/lib/smtp-connection/index.js:993:20)
+
+19 дек. 20:49:36.565
+at SMTPConnection.<anonymous> (/function/code/node_modules/nodemailer/lib/smtp-connection/index.js:556:26)
+
+19 дек. 20:49:36.565
+at SMTPConnection._actionAUTHComplete (/function/code/node_modules/nodemailer/lib/smtp-connection/index.js:1588:34)
+
+19 дек. 20:49:36.565
+at SMTPConnection._formatError (/function/code/node_modules/nodemailer/lib/smtp-connection/index.js:809:19)
+
+19 дек. 20:49:36.565
+Error creating bank invoice: Invalid login: 535 5.7.8 Error: authentication failed: This user does not have access rights to this service 1766166576-anbOFxMGuiE0 Error: Invalid login: 535 5.7.8 Error: authentication failed: This user does not have access rights to this service 1766166576-anbOFxMGuiE0
+
+19 дек. 20:49:36.139
+Order created in YDB: ord_mjd5z7uhx4qnazhcx
+
+19 дек. 20:49:35.993
+YDB driver connected to: /ru-central1/b1gnp4ml7k5j7cquabad/etn2gipa2pvm2qj5ga83
+
+19 дек. 20:49:35.776
+Incoming request: { method: 'POST', action: 'bank-invoice', path: '' }
+
+19 дек. 20:49:35.772
+START RequestID: ed38c2b1-4395-4ea3-8c90-c6765983f2c3 Version: d4emuujbmjpf5qnqvbla
+
+19 дек. 20:49:35.667
+REPORT RequestID: 766ba9c9-ccf1-4363-9c83-73c447a59c68 Duration: 667.292 ms Billed Duration: 700 ms Memory Size: 256 MB Max Memory Used: 159 MB Queuing Duration: 0.032 ms Function Init Duration: 656.141 ms CPU Usage: 10.840 %
+
+19 дек. 20:49:35.667
+END RequestID: 766ba9c9-ccf1-4363-9c83-73c447a59c68
+
+19 дек. 20:49:34.996
+START RequestID: 766ba9c9-ccf1-4363-9c83-73c447a59c68 Version: d4emuujbmjpf5qnqvbla
