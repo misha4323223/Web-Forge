@@ -226,10 +226,14 @@ export default function TelegramApp() {
           <button 
             onClick={() => {
               const url = "https://mp-webstudio.ru";
-              if (window.Telegram?.WebApp?.openLink) {
-                window.Telegram.WebApp.openLink(url);
-              } else {
-                window.open(url, "_blank");
+              try {
+                if (window.Telegram?.WebApp?.openLink) {
+                  window.Telegram.WebApp.openLink(url, { try_instant_view: true });
+                } else {
+                  window.location.href = url;
+                }
+              } catch (e) {
+                window.location.href = url;
               }
             }}
             className="inline-flex items-center gap-1 text-sm text-gray-400 hover:text-cyan-400 transition-colors bg-transparent border-none cursor-pointer"
@@ -249,7 +253,7 @@ declare global {
       WebApp: {
         ready: () => void;
         expand: () => void;
-        openLink: (url: string) => void;
+        openLink: (url: string, options?: { try_instant_view?: boolean }) => void;
         themeParams: {
           bg_color?: string;
           text_color?: string;

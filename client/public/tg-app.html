@@ -150,10 +150,14 @@
     <script>
       function openWebsite() {
         const url = 'https://mp-webstudio.ru';
-        if (window.Telegram?.WebApp?.openLink) {
-          Telegram.WebApp.openLink(url);
-        } else {
-          window.open(url, '_blank');
+        try {
+          if (window.Telegram?.WebApp?.openLink) {
+            Telegram.WebApp.openLink(url, { try_instant_view: true });
+          } else {
+            window.location.href = url;
+          }
+        } catch (e) {
+          window.location.href = url;
         }
       }
 
