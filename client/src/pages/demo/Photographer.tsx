@@ -5,14 +5,21 @@ import { Camera, Mail, Phone, MapPin, Instagram, ArrowLeft, Play, ExternalLink }
 import { Link } from "wouter";
 import { useState, useEffect } from "react";
 import photographerHeroImg from "@assets/generated_images/photographer_workspace_studio_aesthetic.png";
+import portraitWomanImg from "@assets/generated_images/professional_woman_portrait_photography.png";
+import weddingSunsetImg from "@assets/generated_images/romantic_wedding_couple_sunset.png";
+import watchProductImg from "@assets/generated_images/luxury_watch_product_photo.png";
+import portraitManImg from "@assets/generated_images/professional_businessman_portrait_photo.png";
+import weddingAisleImg from "@assets/generated_images/bride_walking_down_aisle.png";
+import perfumeProductImg from "@assets/generated_images/luxury_perfume_bottle_product.png";
+import photographerPortraitImg from "@assets/generated_images/russian_male_photographer_portrait.png";
 
 const portfolioImages = [
-  { id: 1, category: "Портреты", src: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=600&h=400&fit=crop" },
-  { id: 2, category: "Свадьбы", src: "https://images.unsplash.com/photo-1519741497674-611481863552?w=600&h=400&fit=crop" },
-  { id: 3, category: "Предметка", src: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&h=400&fit=crop" },
-  { id: 4, category: "Портреты", src: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&h=400&fit=crop" },
-  { id: 5, category: "Свадьбы", src: "https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=600&h=400&fit=crop" },
-  { id: 6, category: "Предметка", src: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&h=400&fit=crop" },
+  { id: 1, category: "Портреты", src: portraitWomanImg },
+  { id: 2, category: "Свадьбы", src: weddingSunsetImg },
+  { id: 3, category: "Предметка", src: watchProductImg },
+  { id: 4, category: "Портреты", src: portraitManImg },
+  { id: 5, category: "Свадьбы", src: weddingAisleImg },
+  { id: 6, category: "Предметка", src: perfumeProductImg },
 ];
 
 const services = [
@@ -218,7 +225,7 @@ export default function Photographer() {
             >
               <div className="aspect-[4/5] rounded-lg overflow-hidden">
                 <img 
-                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=500&fit=crop"
+                  src={photographerPortraitImg}
                   alt="Андрей Соколов"
                   className="w-full h-full object-cover"
                 />
