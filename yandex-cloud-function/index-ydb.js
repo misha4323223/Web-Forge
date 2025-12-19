@@ -817,9 +817,19 @@ async function handleAdditionalInvoice(data, headers) {
         };
     }
 
+    // Нормализуем ID: убираем префикс ORD_ и переводим в нижний регистр
+    let normalizedOrderId = orderId;
+    if (orderId.toUpperCase().startsWith('ORD_')) {
+        normalizedOrderId = orderId.substring(4); // убираем 'ORD_'
+    }
+    normalizedOrderId = 'ord_' + normalizedOrderId.toLowerCase();
+    
+    console.log('Original orderId:', orderId);
+    console.log('Normalized orderId:', normalizedOrderId);
+
     let order = null;
     try {
-        order = await getOrderFromYdb(orderId);
+        order = await getOrderFromYdb(normalizedOrderId);
     } catch (error) {
         console.error('Error fetching order from YDB:', error.message);
     }
@@ -828,7 +838,7 @@ async function handleAdditionalInvoice(data, headers) {
         return {
             statusCode: 404,
             headers,
-            body: JSON.stringify({ success: false, message: 'Заказ не найден' }),
+            body: JSON.stringify({ success: false, message: `Заказ не найден (искал: ${normalizedOrderId})` }),
         };
     }
 
@@ -855,7 +865,8 @@ async function handleAdditionalInvoice(data, headers) {
     }
 
     const invId = Date.now() % 1000000;
-    const signatureString = `${merchantLogin}:${numericAmount}:${invId}:${password1}:shp_orderId=${orderId}`;
+    // Используем нормализованный ID для подписи (это ID в YDB)
+    const signatureString = `${merchantLogin}:${numericAmount}:${invId}:${password1}:shp_orderId=${normalizedOrderId}`;
     const signature = crypto.createHash('md5').update(signatureString).digest('hex');
     
     const baseUrl = 'https://auth.robokassa.ru/Merchant/Index.aspx';
@@ -866,7 +877,7 @@ async function handleAdditionalInvoice(data, headers) {
         InvId: invId.toString(),
         Description: description || 'Дополнительный счет за разработку сайта',
         SignatureValue: signature,
-        shp_orderId: orderId,
+        shp_orderId: normalizedOrderId,
         IsTest: isTestMode ? '1' : '0',
     });
     
@@ -878,7 +889,7 @@ async function handleAdditionalInvoice(data, headers) {
 📧 Email: ${order.clientEmail}
 💰 Сумма: ${numericAmount} ₽
 📝 Описание: ${description || 'Разработка сайта'}
-📋 Заказ: ${orderId.toUpperCase().substring(0, 8)}
+📋 Заказ: ${orderId}
 
 🔗 Ссылка для оплаты:
 ${paymentUrl}`);
@@ -892,7 +903,8 @@ ${paymentUrl}`);
         body: JSON.stringify({
             success: true,
             message: 'Счет выставлен успешно',
-            orderId: order.id,
+            orderId: normalizedOrderId,
+            originalOrderId: orderId,
             amount: numericAmount.toString(),
             paymentUrl,
         }),
