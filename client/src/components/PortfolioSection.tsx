@@ -697,10 +697,7 @@ export function PortfolioSection() {
 
         {/* Созвездие */}
         <div 
-          className="relative w-full overflow-hidden flex-1"
-          style={{ 
-            background: "radial-gradient(ellipse at center, rgba(15, 10, 30, 0.95) 0%, rgba(5, 5, 15, 0.98) 100%)",
-          }}
+          className="relative w-full overflow-hidden flex-1 bg-transparent"
         >
           <Nebulae />
           <StarParticles />
