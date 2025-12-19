@@ -552,7 +552,65 @@ async function handleRobokassaResult(data, headers) {
         return { statusCode: 400, headers: { 'Content-Type': 'text/plain' }, body: 'bad sign' };
     }
 
-    // Получаем заказ из YDB
+    // Проверяем, это оплата дополнительного счёта или основного заказа
+    const isAdditionalInvoicePayment = shp_orderId.startsWith('addinv_');
+    
+    if (isAdditionalInvoicePayment) {
+        // Это оплата дополнительного счёта
+        console.log('Processing additional invoice payment:', shp_orderId);
+        
+        // Извлекаем orderId из addinv_ord_xxxxx_timestamp_desc
+        // Формат: addinv_{normalizedOrderId}_{timestamp}_{desc}
+        // Пример: addinv_ord_mjcv3hwa54rerggqx_1734567890123_extra
+        const parts = shp_orderId.split('_');
+        // parts[0] = "addinv", parts[1] = "ord", parts[2] = "xxxxx", parts[3] = timestamp, parts[4+] = desc
+        const realOrderId = parts.length >= 3 ? `${parts[1]}_${parts[2]}` : null;
+        
+        console.log('Extracted order ID from additional invoice:', realOrderId);
+        
+        let order = null;
+        try {
+            if (realOrderId) {
+                order = await getOrderFromYdb(realOrderId);
+                console.log('Order for additional invoice:', order);
+            }
+        } catch (error) {
+            console.error('Error fetching order for additional invoice:', error.message);
+        }
+        
+        // Отправляем уведомление в Telegram
+        if (order) {
+            await sendTelegramNotification(`💳 Оплачен дополнительный счёт!
+👤 Клиент: ${order.clientName}
+📧 Email: ${order.clientEmail}
+💰 Сумма: ${OutSum} ₽
+📋 Заказ: ${realOrderId ? realOrderId.toUpperCase() : shp_orderId}
+
+Статус основного заказа: ${order.status === 'paid' ? 'Предоплата получена' : order.status === 'completed' ? 'Завершён' : 'Ожидает оплаты'}`);
+            
+            // Отправляем email клиенту об оплате дополнительной услуги
+            try {
+                await sendAdditionalInvoiceEmail(order, OutSum, shp_orderId);
+                console.log('Additional invoice email sent to:', order.clientEmail);
+            } catch (emailError) {
+                console.error('Failed to send additional invoice email:', emailError.message);
+            }
+        } else {
+            await sendTelegramNotification(`💳 Оплачен дополнительный счёт!
+💰 Сумма: ${OutSum} ₽
+🆔 ID: ${shp_orderId}
+
+(Данные заказа не найдены)`);
+        }
+        
+        return {
+            statusCode: 200,
+            headers: { 'Content-Type': 'text/plain' },
+            body: `OK${InvId}`,
+        };
+    }
+
+    // Это оплата основного заказа (предоплата или остаток)
     let order = null;
     let isPrepayment = false;
     let additionalInvoices = [];
@@ -894,8 +952,11 @@ async function handleAdditionalInvoice(data, headers) {
     }
 
     const invId = Date.now() % 1000000;
-    // Используем нормализованный ID для подписи (это ID в YDB)
-    const signatureString = `${merchantLogin}:${numericAmount}:${invId}:${password1}:shp_orderId=${normalizedOrderId}`;
+    // Создаём уникальный ID для дополнительного счёта с префиксом addinv_
+    // Формат: addinv_{orderId}_{timestamp}_{description_hash}
+    const addInvUniqueId = `addinv_${normalizedOrderId}_${Date.now()}_${description ? description.substring(0, 10).replace(/[^a-zA-Zа-яА-Я0-9]/g, '') : 'extra'}`;
+    
+    const signatureString = `${merchantLogin}:${numericAmount}:${invId}:${password1}:shp_orderId=${addInvUniqueId}`;
     const signature = crypto.createHash('md5').update(signatureString).digest('hex');
     
     const baseUrl = 'https://auth.robokassa.ru/Merchant/Index.aspx';
@@ -906,7 +967,7 @@ async function handleAdditionalInvoice(data, headers) {
         InvId: invId.toString(),
         Description: description || 'Дополнительный счет за разработку сайта',
         SignatureValue: signature,
-        shp_orderId: normalizedOrderId,
+        shp_orderId: addInvUniqueId,
         IsTest: isTestMode ? '1' : '0',
     });
     
@@ -1403,6 +1464,104 @@ async function sendCompletionActEmail(order, pdfBuffer) {
     console.log('Sending completion act via SMTP to:', order.clientEmail);
     await transporter.sendMail(mailOptions);
     console.log('Completion act sent via SMTP');
+}
+
+async function sendAdditionalInvoiceEmail(order, amount, invoiceId) {
+    const formatPrice = (price) => {
+        const num = parseFloat(price) || 0;
+        return new Intl.NumberFormat('ru-RU').format(num);
+    };
+    
+    // Извлекаем описание из invoiceId если возможно (addinv_orderId_timestamp_desc)
+    const parts = invoiceId.split('_');
+    const description = parts.length >= 4 ? parts.slice(3).join('_') : 'Дополнительная услуга';
+    
+    const emailHtml = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #3b82f6;">Платёж получен!</h2>
+            <p>Здравствуйте, ${order.clientName || 'Уважаемый клиент'}!</p>
+            <p>Спасибо! Ваш платёж за дополнительную услугу успешно получен.</p>
+            
+            <div style="background: #f0f9ff; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #3b82f6;">
+                <h3 style="margin-top: 0; color: #1e40af;">Детали платежа</h3>
+                <p><strong>Сумма:</strong> <span style="font-size: 18px; color: #10b981;">${formatPrice(amount)} ₽</span></p>
+                <p><strong>Статус:</strong> <span style="color: #10b981;">Оплачено</span></p>
+                <p><strong>ID заказа:</strong> ${order.id}</p>
+            </div>
+            
+            <div style="background: #fef3c7; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #f59e0b;">
+                <p style="margin: 0;">Полный акт выполненных работ с учётом всех дополнительных услуг будет отправлен после оплаты остатка основного заказа.</p>
+            </div>
+            
+            <p style="color: #6b7280; font-size: 14px; margin-top: 30px;">
+                С уважением,<br>MP.WebStudio<br>
+                <a href="https://mp-webstudio.ru" style="color: #3b82f6;">mp-webstudio.ru</a>
+            </p>
+        </div>
+    `;
+    
+    const postboxAccessKey = process.env.POSTBOX_ACCESS_KEY_ID;
+    const postboxSecretKey = process.env.POSTBOX_SECRET_ACCESS_KEY;
+    const postboxFromEmail = process.env.POSTBOX_FROM_EMAIL;
+    
+    if (postboxAccessKey && postboxSecretKey && postboxFromEmail) {
+        console.log('Sending additional invoice email via Yandex Cloud Postbox');
+        
+        const sesClient = new SESv2Client({
+            region: 'ru-central1',
+            endpoint: 'https://postbox.cloud.yandex.net',
+            credentials: {
+                accessKeyId: postboxAccessKey,
+                secretAccessKey: postboxSecretKey,
+            },
+        });
+        
+        try {
+            const command = new SendEmailCommand({
+                FromEmailAddress: postboxFromEmail,
+                Destination: { ToAddresses: [order.clientEmail] },
+                Content: {
+                    Simple: {
+                        Subject: { Data: `Платёж получен - Дополнительная услуга`, Charset: 'UTF-8' },
+                        Body: { Html: { Data: emailHtml, Charset: 'UTF-8' } },
+                    },
+                },
+            });
+            
+            const response = await sesClient.send(command);
+            console.log('Additional invoice email sent via Postbox, MessageId:', response.MessageId);
+            return;
+        } catch (error) {
+            console.error('Postbox error:', error.message);
+            throw new Error(`Yandex Postbox error: ${error.message}`);
+        }
+    }
+    
+    const smtpEmail = process.env.SMTP_EMAIL;
+    const smtpPassword = process.env.SMTP_PASSWORD;
+
+    if (!smtpEmail || !smtpPassword) {
+        console.log('No email service configured, skipping additional invoice email');
+        return;
+    }
+
+    const transporter = nodemailer.createTransport({
+        host: 'smtp.yandex.ru',
+        port: 465,
+        secure: true,
+        auth: { user: smtpEmail, pass: smtpPassword },
+    });
+
+    const mailOptions = {
+        from: `"MP.WebStudio" <${smtpEmail}>`,
+        to: order.clientEmail,
+        subject: `Платёж получен - Дополнительная услуга`,
+        html: emailHtml,
+    };
+
+    console.log('Sending additional invoice email via SMTP to:', order.clientEmail);
+    await transporter.sendMail(mailOptions);
+    console.log('Additional invoice email sent via SMTP');
 }
 
 // ============ Helpers ============
