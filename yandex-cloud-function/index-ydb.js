@@ -253,7 +253,6 @@ async function handleTelegramWebhook(body, headers) {
             
             const keyboard = {
                 inline_keyboard: [
-                    [{ text: 'Мои заказы', web_app: { url: 'https://mp-webstudio.ru?tg=1' } }],
                     [{ text: 'Перейти на сайт', url: 'https://mp-webstudio.ru' }]
                 ]
             };
