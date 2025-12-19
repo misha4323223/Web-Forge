@@ -1,0 +1,308 @@
+PS C:\Users\POSITIVE\OneDrive\Рабочий стол\Web-Forge> npm run build
+
+> rest-express@1.0.0 build
+> tsx script/build.ts
+
+building client...
+vite v5.4.20 building for production...
+✓ 4 modules transformed.
+x Build failed in 6.79s
+[vite:css] [postcss] EBUSY: resource busy or locked, open 'C:\Users\POSITIVE\OneDrive\Рабочий стол\Web-Forge\client\src\components\ui\avatar.tsx'
+file: C:/Users/POSITIVE/OneDrive/Рабочий стол/Web-Forge/client/src/index.css:undefined:NaN
+    at async open (node:internal/fs/promises:639:25)
+    at async Object.readFile (node:internal/fs/promises:1243:14)
+    at async C:\Users\POSITIVE\OneDrive\Рабочий стол\Web-Forge\node_modules\tailwindcss\lib\lib\expandTailwindAtRules.js:173:34
+    at async Promise.all (index 32)
+    at async C:\Users\POSITIVE\OneDrive\Рабочий стол\Web-Forge\node_modules\tailwindcss\lib\lib\expandTailwindAtRules.js:172:13
+    at async C:\Users\POSITIVE\OneDrive\Рабочий стол\Web-Forge\node_modules\tailwindcss\lib\processTailwindFeatures.js:51:9
+    at async plugins (C:\Users\POSITIVE\OneDrive\Рабочий стол\Web-Forge\node_modules\tailwindcss\lib\plugin.js:38:17)
+    at async LazyResult.runAsync (C:\Users\POSITIVE\OneDrive\Рабочий стол\Web-Forge\node_modules\postcss\lib\lazy-result.js:261:11)
+    at async compileCSS (C:\Users\POSITIVE\OneDrive\Рабочий стол\Web-Forge\node_modules\vite\dist\node\chunks\dep-D_zLpgQd.js:36898:21)
+    at async Object.transform (C:\Users\POSITIVE\OneDrive\Рабочий стол\Web-Forge\node_modules\vite\dist\node\chunks\dep-D_zLpgQd.js:36171:11) {
+  errno: -4082,
+  code: 'PLUGIN_ERROR',
+  syscall: 'open',
+  path: 'C:\\Users\\POSITIVE\\OneDrive\\Рабочий стол\\Web-Forge\\client\\src\\components\\ui\\avatar.tsx',
+  loc: { file: undefined, line: undefined, column: NaN },
+  pluginCode: '@tailwind base;\n' +
+    '@tailwind components;\n' +
+    '@tailwind utilities;\n' +
+    '\n' +
+    '/* LIGHT MODE - kept for compatibility but app uses dark mode */\n' +
+    ':root {\n' +
+    '  --button-outline: rgba(255,255,255, .10);\n' +
+    '  --badge-outline: rgba(255,255,255, .05);\n' +
+    '  --opaque-button-border-intensity: 9;\n' +
+    '  --elevate-1: rgba(255,255,255, .04);\n' +
+    '  --elevate-2: rgba(255,255,255, .09);\n' +
+    '  --background: 220 15% 6%;\n' +
+    '  --foreground: 220 10% 95%;\n' +
+    '  --border: 220 12% 18%;\n' +
+    '  --card: 220 15% 10%;\n' +
+    '  --card-foreground: 220 10% 95%;\n' +
+    '  --card-border: 220 12% 15%;\n' +
+    '  --sidebar: 220 15% 8%;\n' +
+    '  --sidebar-foreground: 220 10% 95%;\n' +
+    '  --sidebar-border: 220 12% 14%;\n' +
+    '  --sidebar-primary: 200 80% 55%;\n' +
+    '  --sidebar-primary-foreground: 200 80% 98%;\n' +
+    '  --sidebar-accent: 220 15% 14%;\n' +
+    '  --sidebar-accent-foreground: 220 10% 95%;\n' +
+    '  --sidebar-ring: 200 80% 55%;\n' +
+    '  --popover: 220 15% 12%;\n' +
+    '  --popover-foreground: 220 10% 95%;\n' +
+    '  --popover-border: 220 12% 18%;\n' +
+    '  --primary: 200 80% 55%;\n' +
+    '  --primary-foreground: 220 15% 6%;\n' +
+    '  --secondary: 220 12% 18%;\n' +
+    '  --secondary-foreground: 220 10% 95%;\n' +
+    '  --muted: 220 12% 16%;\n' +
+    '  --muted-foreground: 220 10% 65%;\n' +
+    '  --accent: 270 70% 55%;\n' +
+    '  --accent-foreground: 270 70% 98%;\n' +
+    '  --destructive: 0 62% 48%;\n' +
+    '  --destructive-foreground: 0 62% 98%;\n' +
+    '  --input: 220 12% 30%;\n' +
+    '  --ring: 200 80% 55%;\n' +
+    '  --chart-1: 200 80% 55%;\n' +
+    '  --chart-2: 270 70% 60%;\n' +
+    '  --chart-3: 190 75% 50%;\n' +
+    '  --chart-4: 310 65% 55%;\n' +
+    '  --chart-5: 32 75% 55%;\n' +
+    '  --font-sans: Inter, sans-serif;\n' +
+    '  --font-serif: Georgia, serif;\n' +
+    '  --font-mono: JetBrains Mono, monospace;\n' +
+    '  --radius: .5rem;\n' +
+    '  --shadow-2xs: 0px 2px 4px 0px hsl(0 0% 0% / 0.25);\n' +
+    '  --shadow-xs: 0px 2px 4px 0px hsl(0 0% 0% / 0.25);\n' +
+    '  --shadow-sm: 0px 2px 4px 0px hsl(0 0% 0% / 0.25), 0px 1px 2px -1px hsl(0 0% 0% / 0.15);\n' +
+    '  --shadow: 0px 2px 4px 0px hsl(0 0% 0% / 0.25), 0px 1px 2px -1px hsl(0 0% 0% / 0.15);\n' +
+    '  --shadow-md: 0px 4px 8px 0px hsl(0 0% 0% / 0.25), 0px 2px 4px -1px hsl(0 0% 0% / 0.15);\n' +
+    '  --shadow-lg: 0px 8px 16px 0px hsl(0 0% 0% / 0.25), 0px 4px 6px -1px hsl(0 0% 0% / 0.15);\n' +
+    '  --shadow-xl: 0px 16px 32px 0px hsl(0 0% 0% / 0.25), 0px 8px 10px -1px hsl(0 0% 0% / 0.15);\n' +
+    '  --shadow-2xl: 0px 24px 48px 0px hsl(0 0% 0% / 0.30);\n' +
+    '  --tracking-normal: 0em;\n' +
+    '  --spacing: 0.25rem;\n' +
+    '  --neon-cyan: 200 80% 55%;\n' +
+    '  --neon-purple: 270 70% 60%;\n' +
+    '  --neon-blue: 220 80% 60%;\n' +
+    '\n' +
+    '/* Fallback for older browsers */\n' +
+    '  --sidebar-primary-border: hsl(var(--sidebar-primary));\n' +
+    '  --sidebar-primary-border: hsl(from hsl(var(--sidebar-primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);\n' +
+    '\n' +
+    '  /* Fallback for older browsers */\n' +
+    '  --sidebar-accent-border: hsl(var(--sidebar-accent));\n' +
+    '  --sidebar-accent-border: hsl(from hsl(var(--sidebar-accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);\n' +
+    '\n' +
+    '  /* Fallback for older browsers */\n' +
+    '  --primary-border: hsl(var(--primary));\n' +
+    '  --primary-border: hsl(from hsl(var(--primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);\n' +
+    '\n' +
+    '  /* Fallback for older browsers */\n' +
+    '  --secondary-border: hsl(var(--secondary));\n' +
+    '  --secondary-border: hsl(from hsl(var(--secondary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);\n' +
+    '\n' +
+    '  /* Fallback for older browsers */\n' +
+    '  --muted-border: hsl(var(--muted));\n' +
+    '  --muted-border: hsl(from hsl(var(--muted)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);\n' +
+    '\n' +
+    '  /* Fallback for older browsers */\n' +
+    '  --accent-border: hsl(var(--accent));\n' +
+    '  --accent-border: hsl(from hsl(var(--accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);\n' +
+    '\n' +
+    '  /* Fallback for older browsers */\n' +
+    '  --destructive-border: hsl(var(--destructive));\n' +
+    '  --destructive-border: hsl(from hsl(var(--destructive)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);\n' +
+    '}\n' +
+    '\n' +
+    '.dark {\n' +
+    '  --button-outline: rgba(255,255,255, .10);\n' +
+    '  --badge-outline: rgba(255,255,255, .05);\n' +
+    '  --opaque-button-border-intensity: 9;\n' +
+    '  --elevate-1: rgba(255,255,255, .04);\n' +
+    '  --elevate-2: rgba(255,255,255, .09);\n' +
+    '  --background: 220 15% 6%;\n' +
+    '  --foreground: 220 10% 95%;\n' +
+    '  --border: 220 12% 18%;\n' +
+    '  --card: 220 15% 10%;\n' +
+    '  --card-foreground: 220 10% 95%;\n' +
+    '  --card-border: 220 12% 15%;\n' +
+    '  --sidebar: 220 15% 8%;\n' +
+    '  --sidebar-foreground: 220 10% 95%;\n' +
+    '  --sidebar-border: 220 12% 14%;\n' +
+    '  --sidebar-primary: 200 80% 55%;\n' +
+    '  --sidebar-primary-foreground: 200 80% 98%;\n' +
+    '  --sidebar-accent: 220 15% 14%;\n' +
+    '  --sidebar-accent-foreground: 220 10% 95%;\n' +
+    '  --sidebar-ring: 200 80% 55%;\n' +
+    '  --popover: 220 15% 12%;\n' +
+    '  --popover-foreground: 220 10% 95%;\n' +
+    '  --popover-border: 220 12% 18%;\n' +
+    '  --primary: 200 80% 55%;\n' +
+    '  --primary-foreground: 220 15% 6%;\n' +
+    '  --secondary: 220 12% 18%;\n' +
+    '  --secondary-foreground: 220 10% 95%;\n' +
+    '  --muted: 220 12% 16%;\n' +
+    '  --muted-foreground: 220 10% 65%;\n' +
+    '  --accent: 270 70% 55%;\n' +
+    '  --accent-foreground: 270 70% 98%;\n' +
+    '  --destructive: 0 62% 48%;\n' +
+    '  --destructive-foreground: 0 62% 98%;\n' +
+    '  --input: 220 12% 30%;\n' +
+    '  --ring: 200 80% 55%;\n' +
+    '  --chart-1: 200 80% 55%;\n' +
+    '  --chart-2: 270 70% 60%;\n' +
+    '  --chart-3: 190 75% 50%;\n' +
+    '  --chart-4: 310 65% 55%;\n' +
+    '  --chart-5: 32 75% 55%;\n' +
+    '  --shadow-2xs: 0px 2px 4px 0px hsl(0 0% 0% / 0.25);\n' +
+    '  --shadow-xs: 0px 2px 4px 0px hsl(0 0% 0% / 0.25);\n' +
+    '  --shadow-sm: 0px 2px 4px 0px hsl(0 0% 0% / 0.25), 0px 1px 2px -1px hsl(0 0% 0% / 0.15);\n' +
+    '  --shadow: 0px 2px 4px 0px hsl(0 0% 0% / 0.25), 0px 1px 2px -1px hsl(0 0% 0% / 0.15);\n' +
+    '  --shadow-md: 0px 4px 8px 0px hsl(0 0% 0% / 0.25), 0px 2px 4px -1px hsl(0 0% 0% / 0.15);\n' +
+    '  --shadow-lg: 0px 8px 16px 0px hsl(0 0% 0% / 0.25), 0px 4px 6px -1px hsl(0 0% 0% / 0.15);\n' +
+    '  --shadow-xl: 0px 16px 32px 0px hsl(0 0% 0% / 0.25), 0px 8px 10px -1px hsl(0 0% 0% / 0.15);\n' +
+    '  --shadow-2xl: 0px 24px 48px 0px hsl(0 0% 0% / 0.30);\n' +
+    '  --neon-cyan: 200 80% 55%;\n' +
+    '  --neon-purple: 270 70% 60%;\n' +
+    '  --neon-blue: 220 80% 60%;\n' +
+    '\n' +
+    '/* Fallback for older browsers */\n' +
+    '  --sidebar-primary-border: hsl(var(--sidebar-primary));\n' +
+    '  --sidebar-primary-border: hsl(from hsl(var(--sidebar-primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);\n' +
+    '\n' +
+    '  /* Fallback for older browsers */\n' +
+    '  --sidebar-accent-border: hsl(var(--sidebar-accent));\n' +
+    '  --sidebar-accent-border: hsl(from hsl(var(--sidebar-accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);\n' +
+    '\n' +
+    '  /* Fallback for older browsers */\n' +
+    '  --primary-border: hsl(var(--primary));\n' +
+    '  --primary-border: hsl(from hsl(var(--primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);\n' +
+    '\n' +
+    '  /* Fallback for older browsers */\n' +
+    '  --secondary-border: hsl(var(--secondary));\n' +
+    '  --secondary-border: hsl(from hsl(var(--secondary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);\n' +
+    '\n' +
+    '  /* Fallback for older browsers */\n' +
+    '  --muted-border: hsl(var(--muted));\n' +
+    '  --muted-border: hsl(from hsl(var(--muted)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);\n' +
+    '\n' +
+    '  /* Fallback for older browsers */\n' +
+    '  --accent-border: hsl(var(--accent));\n' +
+    '  --accent-border: hsl(from hsl(var(--accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);\n' +
+    '\n' +
+    '  /* Fallback for older browsers */\n' +
+    '  --destructive-border: hsl(var(--destructive));\n' +
+    '  --destructive-border: hsl(from hsl(var(--destructive)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);\n' +
+    '}\n' +
+    '\n' +
+    '@layer base {\n' +
+    '  * {\n' +
+    '    @apply border-border;\n' +
+    '  }\n' +
+    '\n' +
+    '  body {\n' +
+    '    @apply font-sans antialiased bg-background text-foreground;\n' +
+    '  }\n' +
+    '}\n' +
+    '\n' +
+    '/**\n' +
+    ' * Using the elevate system.\n' +
+    ' * Automatic contrast adjustment.\n' +
+    ' *\n' +
+    ' * <element className="hover-elevate" />\n' +
+    ' * <element className="active-elevate-2" />\n' +
+    ' *\n' +
+    ' * // Using the tailwind utility when a data attribute is "on"\n' +
+    ' * <element className="toggle-elevate data-[state=on]:toggle-elevated" />\n' +
+    ' * // Or manually controlling the toggle state\n' +
+    ' * <element className="toggle-elevate toggle-elevated" />\n' +
+    ' *\n' +
+    ' * Elevation systems have to handle many states.\n' +
+    ' * - not-hovered, vs. hovered vs. active  (three mutually exclusive states)\n' +
+    ' * - toggled or not\n' +
+    ' * - focused or not (this is not handled with these utilities)\n' +
+    ' *\n' +
+    ' * Even without handling focused or not, this is six possible combinations that\n' +
+    ' * need to be distinguished from eachother visually.\n' +
+    ' */\n' +
+    '@layer utilities {\n' +
+    '\n' +
+    '  /* Hide ugly search cancel button in Chrome until we can style it properly */\n' +
+    '  input[type="search"]::-webkit-search-cancel-button {\n' +
+    '    @apply hidden;\n' +
+    '  }\n' +
+    '\n' +
+    '  /* Placeholder styling for contentEditable div */\n' +
+    '  [contenteditable][data-placeholder]:empty::before {\n' +
+    '    content: attr(data-placeholder);\n' +
+    '    color: hsl(var(--muted-foreground));\n' +
+    '    pointer-events: none;\n' +
+    '  }\n' +
+    '\n' +
+    '  /* .no-default-hover-elevate/no-default-active-elevate is an escape hatch so consumers of\n' +
+    '   * buttons/badges can remove the automatic brightness adjustment on interactions\n' +
+    '   * and program their own. */\n' +
+    '  .no-default-hover-elevate {}\n' +
+    '\n' +
+    '  .no-default-active-elevate {}\n' +
+    '\n' +
+    '\n' +
+    '  /**\n' +
+    '   * Toggleable backgrounds go behind the content. Hoverable/active goes on top.\n' +
+    "   * This way they can stack/compound. Both will overlap the parent's borders!\n" +
+    '   * So borders will be automatically adjusted both on toggle, and hover/active,\n' +
+    '   * and they will be compounded.\n' +
+    '   */\n' +
+    '  .toggle-elevate::before,\n' +
+    '  .toggle-elevate-2::before {\n' +
+    '    content: "";\n' +
+    '    pointer-events: none;\n' +
+    '    position: absolute;\n' +
+    '    inset: 0px;\n' +
+    '    /*border-radius: inherit;   match rounded corners */\n' +
+    '    border-radius: inherit;\n' +
+    '    z-index: -1;\n' +
+    '    /* sits behind content but above backdrop */\n' +
+    '  }\n' +
+    '\n' +
+    '  .toggle-elevate.toggle-elevated::before {\n' +
+    '    background-color: var(--elevate-2);\n' +
+    '  }\n' +
+    '\n' +
+    "  /* If there's a 1px border, adjust the inset so that it covers that parent's border */\n" +
+    '  .border.toggle-elevate::before {\n' +
+    '    inset: -1px;\n' +
+    '  }\n' +
+    '\n' +
+    '  /* Does not work on elements with overflow:hidden! */\n' +
+    '  .hover-elevate:not(.no-default-hover-elevate),\n' +
+    '  .active-elevate:not(.no-default-active-elevate),\n' +
+    '  .hover-elevate-2:not(.no-default-hover-elevate),\n' +
+    '  .active-elevate-2:not(.no-default-active-elevate) {\n' +
+    '    position: relative;\n' +
+    '    z-index: 0;\n' +
+    '  }\n' +
+    '\n' +
+    '  .hover-elevate:not(.no-default-hover-elevate)::after,\n' +
+    '  .active-elevate:not(.no-default-active-elevate)::after,\n' +
+    '  .hover-elevate-2:not(.no-default-hover-elevate)::after,\n' +
+    '  .active-elevate-2:not(.no-default-active-elevate)::after {\n' +
+    '    content: "";\n' +
+    '    pointer-events: none;\n' +
+    '    position: absolute;\n' +
+    '    inset: 0px;\n' +
+    '    /*border-radius: inh'... 2715 more characters,
+  plugin: 'vite:css',
+  hook: 'transform',
+  id: 'C:/Users/POSITIVE/OneDrive/Рабочий стол/Web-Forge/client/src/index.css',
+  watchFiles: [
+    'C:/Users/POSITIVE/OneDrive/Рабочий стол/Web-Forge/client/index.html',
+    'C:/Users/POSITIVE/OneDrive/Рабочий стол/Web-Forge/client/src/main.tsx',
+    'C:\\Users\\POSITIVE\\OneDrive\\Рабочий стол\\Web-Forge\\package.json',
+    'C:/Users/POSITIVE/OneDrive/Рабочий стол/Web-Forge/node_modules/react/jsx-runtime.js',
+    'C:/Users/POSITIVE/OneDrive/Рабочий стол/Web-Forge/node_modules/react-dom/client.js',
+    'C:/Users/POSITIVE/OneDrive/Рабочий стол/Web-Forge/client/src/App.tsx',
+    'C:/Users/POSITIVE/OneDrive/Рабочий стол/Web-Forge/client/src/index.css'
+  ]
