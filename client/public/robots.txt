@@ -1,0 +1,23 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://mp-webstudio.ru/sitemap.xml
+
+# Crawl-delay for polite bots
+Crawl-delay: 1
+
+# Block admin pages if any
+Disallow: /admin
+
+# Allow all demo pages
+Allow: /demo/
+
+# Yandex-specific
+User-agent: Yandex
+Allow: /
+Crawl-delay: 2
+
+# Google-specific
+User-agent: Googlebot
+Allow: /
