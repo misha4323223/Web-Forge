@@ -109,6 +109,10 @@ module.exports.handler = async function (event, context) {
             return await handlePayRemaining(body, headers);
         }
 
+        if ((action === 'additional-invoices' || path.includes('/additional-invoices')) && method === 'POST') {
+            return await handleAdditionalInvoice(body, headers);
+        }
+
         // GET /api/orders/:orderId - получить заказ по ID
         const orderMatch = path.match(/\/orders\/([a-zA-Z0-9_-]+)$/);
         if (orderMatch && method === 'GET') {
@@ -800,6 +804,99 @@ function generateRemainingPaymentUrl(orderId, amount) {
     });
     
     return `${baseUrl}?${params.toString()}`;
+}
+
+async function handleAdditionalInvoice(data, headers) {
+    const { orderId, amount, description } = data;
+    
+    if (!orderId || !amount) {
+        return {
+            statusCode: 400,
+            headers,
+            body: JSON.stringify({ success: false, message: 'Требуются orderId и amount' }),
+        };
+    }
+
+    let order = null;
+    try {
+        order = await getOrderFromYdb(orderId);
+    } catch (error) {
+        console.error('Error fetching order from YDB:', error.message);
+    }
+
+    if (!order) {
+        return {
+            statusCode: 404,
+            headers,
+            body: JSON.stringify({ success: false, message: 'Заказ не найден' }),
+        };
+    }
+
+    const numericAmount = parseFloat(amount) || 0;
+    if (numericAmount <= 0) {
+        return {
+            statusCode: 400,
+            headers,
+            body: JSON.stringify({ success: false, message: 'Сумма должна быть больше 0' }),
+        };
+    }
+
+    const merchantLogin = process.env.ROBOKASSA_MERCHANT_LOGIN;
+    const password1 = process.env.ROBOKASSA_PASSWORD1;
+    const isTestMode = process.env.ROBOKASSA_TEST_MODE === 'true';
+    
+    if (!merchantLogin || !password1) {
+        console.error('Robokassa not configured');
+        return {
+            statusCode: 500,
+            headers,
+            body: JSON.stringify({ success: false, message: 'Сервис платежей не настроен' }),
+        };
+    }
+
+    const invId = Date.now() % 1000000;
+    const signatureString = `${merchantLogin}:${numericAmount}:${invId}:${password1}:shp_orderId=${orderId}`;
+    const signature = crypto.createHash('md5').update(signatureString).digest('hex');
+    
+    const baseUrl = 'https://auth.robokassa.ru/Merchant/Index.aspx';
+    
+    const params = new URLSearchParams({
+        MerchantLogin: merchantLogin,
+        OutSum: numericAmount.toString(),
+        InvId: invId.toString(),
+        Description: description || 'Дополнительный счет за разработку сайта',
+        SignatureValue: signature,
+        shp_orderId: orderId,
+        IsTest: isTestMode ? '1' : '0',
+    });
+    
+    const paymentUrl = `${baseUrl}?${params.toString()}`;
+
+    try {
+        await sendTelegramNotification(`📄 Выставлен дополнительный счет!
+👤 Клиент: ${order.clientName}
+📧 Email: ${order.clientEmail}
+💰 Сумма: ${numericAmount} ₽
+📝 Описание: ${description || 'Разработка сайта'}
+📋 Заказ: ${orderId.toUpperCase().substring(0, 8)}
+
+🔗 Ссылка для оплаты:
+${paymentUrl}`);
+    } catch (notifyError) {
+        console.error('Failed to send Telegram notification:', notifyError.message);
+    }
+
+    return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({
+            success: true,
+            message: 'Счет выставлен успешно',
+            orderId: order.id,
+            amount: numericAmount.toString(),
+            paymentUrl,
+        }),
+    };
 }
 
 // ============ PDF Generation ============

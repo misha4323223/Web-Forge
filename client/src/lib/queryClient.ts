@@ -15,17 +15,26 @@ export async function apiRequest(
   data?: unknown | undefined,
 ): Promise<Response> {
   let fullUrl = url;
+  let useYandex = false;
+  
+  // Endpoints that should go to Yandex Cloud (for forms and public operations)
+  const yandexEndpoints = ["/api/contact", "/api/orders"];
   
   if (url.startsWith("/api") && API_BASE_URL) {
-    const endpoint = url.replace("/api/", "");
-    fullUrl = `${API_BASE_URL}?action=${endpoint}`;
+    const shouldUseYandex = yandexEndpoints.some(endpoint => url.startsWith(endpoint));
+    
+    if (shouldUseYandex) {
+      useYandex = true;
+      const endpoint = url.replace("/api/", "");
+      fullUrl = `${API_BASE_URL}?action=${endpoint}`;
+    }
   }
     
   const res = await fetch(fullUrl, {
     method,
     headers: data ? { "Content-Type": "application/json" } : {},
     body: data ? JSON.stringify(data) : undefined,
-    credentials: API_BASE_URL ? "omit" : "include",
+    credentials: useYandex ? "omit" : "include",
   });
 
   await throwIfResNotOk(res);
