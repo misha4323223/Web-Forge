@@ -71,7 +71,10 @@ export async function registerRoutes(
       await sendTelegramMessage(
         `📩 <b>Новая заявка с сайта!</b>\n\n` +
         `👤 Имя: ${contactRequest.name}\n` +
+        `📞 Телефон: ${contactRequest.phone}\n` +
         `📧 Email: ${contactRequest.email}\n` +
+        `📋 Тип проекта: ${contactRequest.projectType || 'Не указан'}\n` +
+        `💰 Бюджет: ${contactRequest.budget || 'Не указан'}\n` +
         `💬 Сообщение:\n${contactRequest.message}`
       );
 

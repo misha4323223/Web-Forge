@@ -1943,7 +1943,17 @@ function getProjectTypeName(type) {
 }
 
 function formatContactMessage(data) {
-    return `Новая заявка с сайта\n\nИмя: ${data.name}\nEmail: ${data.email}\nТелефон: ${data.phone || 'не указан'}\n\nСообщение:\n${data.message}`;
+    const projectTypes = {
+        landing: 'Лендинг',
+        corporate: 'Корпоративный сайт',
+        shop: 'Интернет-магазин',
+        webapp: 'Веб-приложение',
+        redesign: 'Редизайн сайта',
+        support: 'Техподдержка',
+        other: 'Другое',
+    };
+    const projectTypeName = data.projectType ? (projectTypes[data.projectType] || data.projectType) : 'Не указан';
+    return `📩 Новая заявка с сайта!\n\n👤 Имя: ${data.name}\n📞 Телефон: ${data.phone || 'Не указан'}\n📧 Email: ${data.email}\n📋 Тип проекта: ${projectTypeName}\n💰 Бюджет: ${data.budget || 'Не указан'}\n\n💬 Сообщение:\n${data.message}`;
 }
 
 function formatOrderMessage(order) {

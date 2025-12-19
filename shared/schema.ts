@@ -12,7 +12,10 @@ export const users = pgTable("users", {
 export const contactRequests = pgTable("contact_requests", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   name: text("name").notNull(),
+  phone: text("phone").notNull(),
   email: text("email").notNull(),
+  projectType: text("project_type"),
+  budget: text("budget"),
   message: text("message").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 });
@@ -24,11 +27,17 @@ export const insertUserSchema = createInsertSchema(users).pick({
 
 export const insertContactRequestSchema = createInsertSchema(contactRequests).pick({
   name: true,
+  phone: true,
   email: true,
+  projectType: true,
+  budget: true,
   message: true,
 }).extend({
   name: z.string().min(2, "Имя должно содержать минимум 2 символа"),
+  phone: z.string().min(10, "Введите корректный номер телефона"),
   email: z.string().email("Введите корректный email"),
+  projectType: z.string().optional(),
+  budget: z.string().optional(),
   message: z.string().min(10, "Сообщение должно содержать минимум 10 символов"),
 });
 
