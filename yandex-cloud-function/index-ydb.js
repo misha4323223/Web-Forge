@@ -347,7 +347,7 @@ async function getOrderFromYdb(orderId) {
 
 // ============ Additional Invoices YDB Functions ============
 
-async function saveAdditionalInvoiceToYdb(invoiceId, orderId, description, amount) {
+async function saveAdditionalInvoiceToYdb(invoiceId, orderId, description, amount, status = 'pending') {
     const driver = await getYdbDriver();
     const now = new Date().toISOString();
     
@@ -370,13 +370,40 @@ async function saveAdditionalInvoiceToYdb(invoiceId, orderId, description, amoun
             '$id': TypedValues.utf8(invoiceId),
             '$order_id': TypedValues.utf8(orderId),
             '$description': TypedValues.utf8(description || 'Дополнительные услуги'),
-            '$amount': TypedValues.utf8(amount),
-            '$status': TypedValues.utf8('paid'),
-            '$paid_at': TypedValues.utf8(now),
+            '$amount': TypedValues.utf8(String(amount)),
+            '$status': TypedValues.utf8(status),
+            '$paid_at': TypedValues.utf8(status === 'paid' ? now : ''),
         });
     });
     
-    console.log('Additional invoice saved to YDB:', invoiceId);
+    console.log('Additional invoice saved to YDB:', invoiceId, 'status:', status);
+}
+
+async function updateAdditionalInvoiceStatusInYdb(invoiceId, status) {
+    const driver = await getYdbDriver();
+    const now = new Date().toISOString();
+    
+    await driver.tableClient.withSession(async (session) => {
+        const queryText = `
+            DECLARE $id AS Utf8;
+            DECLARE $status AS Utf8;
+            DECLARE $paid_at AS Utf8;
+            
+            UPDATE additional_invoices
+            SET status = $status, paid_at = $paid_at
+            WHERE id = $id;
+        `;
+        
+        const preparedQuery = await session.prepareQuery(queryText);
+        
+        await session.executeQuery(preparedQuery, {
+            '$id': TypedValues.utf8(invoiceId),
+            '$status': TypedValues.utf8(status),
+            '$paid_at': TypedValues.utf8(status === 'paid' ? now : ''),
+        });
+    });
+    
+    console.log('Additional invoice status updated in YDB:', invoiceId, 'to:', status);
 }
 
 async function getAdditionalInvoicesFromYdb(orderId) {
@@ -710,14 +737,12 @@ async function handleRobokassaResult(data, headers) {
             console.error('Error fetching order for additional invoice:', error.message);
         }
         
-        // Сохраняем оплаченный дополнительный счёт в YDB
+        // Обновляем статус счёта на "paid" в YDB (описание уже сохранено при создании)
         try {
-            // Описание берём из комментария или используем стандартное
-            const invoiceDescription = 'Дополнительные услуги по разработке сайта';
-            await saveAdditionalInvoiceToYdb(shp_orderId, realOrderId, invoiceDescription, OutSum);
-            console.log('Additional invoice saved to YDB');
+            await updateAdditionalInvoiceStatusInYdb(shp_orderId, 'paid');
+            console.log('Additional invoice status updated to paid in YDB');
         } catch (saveError) {
-            console.error('Error saving additional invoice to YDB:', saveError.message);
+            console.error('Error updating additional invoice status in YDB:', saveError.message);
         }
         
         // Отправляем уведомление в Telegram
@@ -1305,6 +1330,15 @@ async function handleAdditionalInvoice(data, headers) {
     console.log('  SignatureString:', signatureString);
     console.log('  Signature:', signature);
     console.log('  Full URL:', paymentUrl);
+
+    // Сохраняем счёт в YDB сразу со статусом pending и реальным описанием
+    try {
+        await saveAdditionalInvoiceToYdb(addInvUniqueId, normalizedOrderId, description || 'Дополнительные услуги', numericAmount, 'pending');
+        console.log('Additional invoice saved to YDB with pending status');
+    } catch (saveError) {
+        console.error('Error saving additional invoice to YDB:', saveError.message);
+        // Продолжаем даже если сохранение не удалось
+    }
 
     try {
         await sendTelegramNotification(`📄 Выставлен дополнительный счет!
