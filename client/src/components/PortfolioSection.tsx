@@ -646,7 +646,7 @@ export function PortfolioSection() {
   const line2 = "наших работ";
 
   return (
-    <section id="portfolio" className="py-24 md:py-32 relative overflow-hidden">
+    <section id="portfolio" className="relative overflow-hidden" style={{ height: "100vh", minHeight: "800px" }}>
       <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-background">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(168,85,247,0.1),transparent_60%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(56,189,248,0.08),transparent_50%)]" />
@@ -668,7 +668,7 @@ export function PortfolioSection() {
       <div className="absolute top-1/4 left-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl animate-float" />
       <div className="absolute bottom-1/4 right-10 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl animate-float-slow" />
 
-      <div className="max-w-7xl mx-auto px-6 relative z-10" ref={ref}>
+      <div className="max-w-7xl mx-auto px-6 relative z-10 h-full flex flex-col py-12" ref={ref}>
         <div className="text-center mb-8">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -697,9 +697,8 @@ export function PortfolioSection() {
 
         {/* Созвездие */}
         <div 
-          className="relative w-full rounded-2xl overflow-hidden"
+          className="relative w-full rounded-2xl overflow-hidden flex-1"
           style={{ 
-            height: "min(1200px, 95vh)",
             background: "radial-gradient(ellipse at center, rgba(15, 10, 30, 0.95) 0%, rgba(5, 5, 15, 0.98) 100%)",
           }}
         >
