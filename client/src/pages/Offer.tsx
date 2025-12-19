@@ -25,12 +25,26 @@ export default function Offer() {
               Дата последнего обновления: 18 декабря 2024 г.
             </p>
 
+            <section className="mb-8 p-4 rounded-md bg-card/50 border border-border">
+              <h2 className="text-xl font-semibold mb-4 text-foreground">Реквизиты Исполнителя</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-muted-foreground">
+                <p><span className="text-foreground">ФИО:</span> Пимашин Михаил Игоревич</p>
+                <p><span className="text-foreground">Статус:</span> Самозанятый (НПД)</p>
+                <p><span className="text-foreground">ИНН:</span> 711612442203</p>
+                <p><span className="text-foreground">Адрес:</span> 301766, Тульская обл., г. Донской, ул. Новая, 49</p>
+                <p><span className="text-foreground">Email:</span> mpwebstudio1@gmail.com</p>
+                <p><span className="text-foreground">Телефон:</span> +7 (953) 181-41-36</p>
+                <p><span className="text-foreground">График работы:</span> Ежедневно 9:00–20:00</p>
+              </div>
+            </section>
+
             <section className="mb-8">
               <h2 className="text-xl font-semibold mb-4 text-foreground">1. Предмет договора</h2>
               <p className="text-muted-foreground mb-4">
-                Настоящая публичная оферта (далее — «Оферта») является предложением от компании 
-                MP.WebStudio (далее — «Исполнитель») заключить договор оказания услуг по разработке 
-                веб-сайтов, интернет-магазинов, лендингов и услуг веб-разработки (далее — «Услуги»).
+                Настоящая публичная оферта (далее — «Оферта») является предложением от 
+                Пимашина Михаила Игоревича, самозанятого (НПД), ИНН 711612442203 (далее — «Исполнитель»), 
+                заключить договор оказания услуг по разработке веб-сайтов, интернет-магазинов, 
+                лендингов и услуг веб-разработки (далее — «Услуги»).
               </p>
               <p className="text-muted-foreground">
                 Исполнитель готов оказывать Услуги на условиях, изложенных в настоящей Оферте, 

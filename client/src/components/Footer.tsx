@@ -70,17 +70,26 @@ export function Footer() {
 
         <div className="mt-8 pt-8 border-t border-border">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-4">
-            <div className="flex flex-col gap-2 text-sm">
-              <p className="font-semibold text-foreground">Контакты:</p>
-              <p className="text-muted-foreground">
-                Email: <a href="mailto:mpwebstudio1@gmail.com" className="text-primary hover:underline">mpwebstudio1@gmail.com</a>
-              </p>
-              <p className="text-muted-foreground">
-                Телефон: <a href="tel:+79531814136" className="text-primary hover:underline">+7 (953) 181-41-36</a>
-              </p>
-              <p className="text-muted-foreground">
-                Город: Тула, Россия
-              </p>
+            <div className="flex flex-col md:flex-row gap-8 text-sm">
+              <div className="flex flex-col gap-2">
+                <p className="font-semibold text-foreground">Контакты:</p>
+                <p className="text-muted-foreground">
+                  Email: <a href="mailto:mpwebstudio1@gmail.com" className="text-primary hover:underline">mpwebstudio1@gmail.com</a>
+                </p>
+                <p className="text-muted-foreground">
+                  Телефон: <a href="tel:+79531814136" className="text-primary hover:underline">+7 (953) 181-41-36</a>
+                </p>
+                <p className="text-muted-foreground">
+                  График: Ежедневно 9:00–20:00
+                </p>
+              </div>
+              <div className="flex flex-col gap-2">
+                <p className="font-semibold text-foreground">Реквизиты:</p>
+                <p className="text-muted-foreground">Пимашин Михаил Игоревич</p>
+                <p className="text-muted-foreground">ИНН: 711612442203</p>
+                <p className="text-muted-foreground">Самозанятый (НПД)</p>
+                <p className="text-muted-foreground">301766, Тульская обл., г. Донской, ул. Новая, 49</p>
+              </div>
             </div>
           </div>
           <p className="text-center text-sm text-muted-foreground">
