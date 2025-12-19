@@ -91,6 +91,11 @@ module.exports.handler = async function (event, context) {
         
         console.log('Incoming request:', { method, action, path });
 
+        // Telegram Bot Webhook
+        if ((action === 'telegram-webhook' || path.includes('/telegram-webhook')) && method === 'POST') {
+            return await handleTelegramWebhook(body, headers);
+        }
+
         if ((action === 'contact' || path.includes('/contact')) && method === 'POST') {
             return await handleContact(body, headers);
         }
@@ -227,6 +232,50 @@ module.exports.handler = async function (event, context) {
         };
     }
 };
+
+// ============ Telegram Bot Webhook ============
+
+async function handleTelegramWebhook(body, headers) {
+    try {
+        const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+        
+        if (!TELEGRAM_BOT_TOKEN) {
+            console.error('TELEGRAM_BOT_TOKEN not configured');
+            return { statusCode: 200, headers, body: JSON.stringify({ ok: true }) };
+        }
+
+        // Обработка команды /start
+        if (body.message?.text === '/start') {
+            const chatId = body.message.chat.id;
+            const firstName = body.message.from?.first_name || 'Клиент';
+            
+            const text = `Привет, ${firstName}! 👋\n\nДобро пожаловать в MP.WebStudio — веб-студию, где сайты создаёт искусственный интеллект.\n\nВыберите действие:`;
+            
+            const keyboard = {
+                inline_keyboard: [
+                    [{ text: '📋 Мои заказы', web_app: { url: 'https://mp-webstudio.ru/?tg=1' } }],
+                    [{ text: '🌐 Перейти на сайт', url: 'https://mp-webstudio.ru' }],
+                    [{ text: '📞 Связаться с нами', url: 'https://t.me/pimashkin' }]
+                ]
+            };
+
+            await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: chatId,
+                    text: text,
+                    reply_markup: keyboard
+                })
+            });
+        }
+
+        return { statusCode: 200, headers, body: JSON.stringify({ ok: true }) };
+    } catch (error) {
+        console.error('Telegram webhook error:', error.message);
+        return { statusCode: 200, headers, body: JSON.stringify({ ok: true }) };
+    }
+}
 
 // ============ YDB Operations ============
 
