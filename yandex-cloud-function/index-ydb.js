@@ -1610,23 +1610,21 @@ async function handleConfirmBankPayment(data, headers) {
 
         if (paymentType === 'prepayment') {
             newStatus = 'in_progress';
-            updateField = 'prepayment_paid_at';
         } else if (paymentType === 'remaining') {
             newStatus = 'completed';
-            updateField = 'remaining_paid_at';
         }
 
         await driver.tableClient.withSession(async (session) => {
             const queryText = paymentType === 'prepayment' 
                 ? `DECLARE $id AS Utf8;
                    DECLARE $status AS Utf8;
-                   DECLARE $prepayment_paid_at AS Utf8;
-                   UPDATE orders SET status = $status, prepayment_paid_at = $prepayment_paid_at WHERE id = $id;`
+                   DECLARE $prepayment_confirmed_at AS Utf8;
+                   UPDATE orders SET status = $status, prepayment_confirmed_at = $prepayment_confirmed_at WHERE id = $id;`
                 : `DECLARE $id AS Utf8;
                    DECLARE $status AS Utf8;
-                   DECLARE $remaining_paid_at AS Utf8;
+                   DECLARE $remaining_confirmed_at AS Utf8;
                    DECLARE $paid_at AS Utf8;
-                   UPDATE orders SET status = $status, remaining_paid_at = $remaining_paid_at, paid_at = $paid_at WHERE id = $id;`;
+                   UPDATE orders SET status = $status, remaining_confirmed_at = $remaining_confirmed_at, paid_at = $paid_at WHERE id = $id;`;
             
             const preparedQuery = await session.prepareQuery(queryText);
             
@@ -1634,12 +1632,12 @@ async function handleConfirmBankPayment(data, headers) {
                 ? {
                     '$id': TypedValues.utf8(orderId),
                     '$status': TypedValues.utf8(newStatus),
-                    '$prepayment_paid_at': TypedValues.utf8(now),
+                    '$prepayment_confirmed_at': TypedValues.utf8(now),
                 }
                 : {
                     '$id': TypedValues.utf8(orderId),
                     '$status': TypedValues.utf8(newStatus),
-                    '$remaining_paid_at': TypedValues.utf8(now),
+                    '$remaining_confirmed_at': TypedValues.utf8(now),
                     '$paid_at': TypedValues.utf8(now),
                 };
             

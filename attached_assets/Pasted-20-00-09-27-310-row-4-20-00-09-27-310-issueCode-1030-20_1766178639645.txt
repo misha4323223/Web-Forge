@@ -1,0 +1,653 @@
+20 дек. 00:09:27.310
+"row": 4,
+
+20 дек. 00:09:27.310
+"issueCode": 1030,
+
+20 дек. 00:09:27.310
+"message": "Type annotation",
+
+20 дек. 00:09:27.310
+{
+
+20 дек. 00:09:27.310
+Error confirming bank payment: BadRequest (code 400010): [
+
+20 дек. 00:09:27.229
+Order fetched from YDB: {"id":"ord_mjdcpijd0l7piljmq","clientName":"Миша","clientEmail":"pimashin2015@gmail.com","clientPhone":"89531814136","projectType":"shop","projectDescription":"jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj","amount":"60000","status":"pending_bank_payment","createdAt":"2025-12-19T20:58:00.601Z","paidAt":"","paymentMethod":"invoice","companyName":"ИП Пимашин","companyInn":"111111111111","companyKpp":"22222222222","companyAddress":"Ул Кирова 16А","totalAmount":"120000","selectedFeatures":"","prepaymentConfirmedAt":"","remainingInvoiceSentAt":"","remainingConfirmedAt":"","internalNote":""}
+
+20 дек. 00:09:27.229
+Parsed order: {"id":"ord_mjdcpijd0l7piljmq","clientName":"Миша","clientEmail":"pimashin2015@gmail.com","clientPhone":"89531814136","projectType":"shop","projectDescription":"jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj","amount":"60000","status":"pending_bank_payment","createdAt":"2025-12-19T20:58:00.601Z","paidAt":"","paymentMethod":"invoice","companyName":"ИП Пимашин","companyInn":"111111111111","companyKpp":"22222222222","companyAddress":"Ул Кирова 16А","totalAmount":"120000","selectedFeatures":"","prepaymentConfirmedAt":"","remainingInvoiceSentAt":"","remainingConfirmedAt":"","internalNote":""}
+
+20 дек. 00:09:27.229
+Column [21] total_amount: {"textValue":"120000"} -> "120000"
+
+20 дек. 00:09:27.229
+Column [20] status: {"textValue":"pending_bank_payment"} -> "pending_bank_payment"
+
+20 дек. 00:09:27.229
+Column [19] selected_features: {"textValue":""} -> ""
+
+20 дек. 00:09:27.229
+Column [18] remaining_invoice_sent_at: {"nullFlagValue":"NULL_VALUE"} -> ""
+
+20 дек. 00:09:27.229
+Column [17] remaining_confirmed_at: {"nullFlagValue":"NULL_VALUE"} -> ""
+
+20 дек. 00:09:27.229
+Column [16] project_type: {"textValue":"shop"} -> "shop"
+
+20 дек. 00:09:27.229
+Column [15] project_description: {"textValue":"jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj"} -> "jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj"
+
+20 дек. 00:09:27.229
+Column [14] prepayment_confirmed_at: {"nullFlagValue":"NULL_VALUE"} -> ""
+
+20 дек. 00:09:27.229
+Column [13] payment_method: {"textValue":"invoice"} -> "invoice"
+
+20 дек. 00:09:27.229
+Column [12] paid_at: {"nullFlagValue":"NULL_VALUE"} -> ""
+
+20 дек. 00:09:27.229
+Column [11] internal_note: {"nullFlagValue":"NULL_VALUE"} -> ""
+
+20 дек. 00:09:27.229
+Column [10] id: {"textValue":"ord_mjdcpijd0l7piljmq"} -> "ord_mjdcpijd0l7piljmq"
+
+20 дек. 00:09:27.229
+Column [9] deleted_at: {"nullFlagValue":"NULL_VALUE"} -> ""
+
+20 дек. 00:09:27.228
+Column [8] created_at: {"textValue":"2025-12-19T20:58:00.601Z"} -> "2025-12-19T20:58:00.601Z"
+
+20 дек. 00:09:27.228
+Column [7] company_name: {"textValue":"ИП Пимашин"} -> "ИП Пимашин"
+
+20 дек. 00:09:27.228
+Column [6] company_kpp: {"textValue":"22222222222"} -> "22222222222"
+
+20 дек. 00:09:27.228
+Column [5] company_inn: {"textValue":"111111111111"} -> "111111111111"
+
+20 дек. 00:09:27.228
+Column [4] company_address: {"textValue":"Ул Кирова 16А"} -> "Ул Кирова 16А"
+
+20 дек. 00:09:27.228
+Column [3] client_phone: {"textValue":"89531814136"} -> "89531814136"
+
+20 дек. 00:09:27.228
+Column [2] client_name: {"textValue":"Миша"} -> "Миша"
+
+20 дек. 00:09:27.228
+Column [1] client_email: {"textValue":"pimashin2015@gmail.com"} -> "pimashin2015@gmail.com"
+
+20 дек. 00:09:27.228
+Column [0] amount: {"textValue":"60000"} -> "60000"
+
+20 дек. 00:09:27.228
+Column mapping: {"amount":0,"client_email":1,"client_name":2,"client_phone":3,"company_address":4,"company_inn":5,"company_kpp":6,"company_name":7,"created_at":8,"deleted_at":9,"id":10,"internal_note":11,"paid_at":12,"payment_method":13,"prepayment_confirmed_at":14,"project_description":15,"project_type":16,"remaining_confirmed_at":17,"remaining_invoice_sent_at":18,"selected_features":19,"status":20,"total_amount":21}
+
+20 дек. 00:09:27.228
+}
+
+20 дек. 00:09:27.228
+]
+
+20 дек. 00:09:27.228
+}
+
+20 дек. 00:09:27.228
+"textValue": "120000"
+
+20 дек. 00:09:27.228
+{
+
+20 дек. 00:09:27.227
+},
+
+20 дек. 00:09:27.227
+"textValue": "pending_bank_payment"
+
+20 дек. 00:09:27.227
+{
+
+20 дек. 00:09:27.227
+},
+
+20 дек. 00:09:27.227
+"textValue": ""
+
+20 дек. 00:09:27.227
+{
+
+20 дек. 00:09:27.227
+},
+
+20 дек. 00:09:27.227
+"nullFlagValue": "NULL_VALUE"
+
+20 дек. 00:09:27.227
+{
+
+20 дек. 00:09:27.227
+},
+
+20 дек. 00:09:27.227
+"nullFlagValue": "NULL_VALUE"
+
+20 дек. 00:09:27.227
+{
+
+20 дек. 00:09:27.227
+},
+
+20 дек. 00:09:27.227
+"textValue": "shop"
+
+20 дек. 00:09:27.227
+{
+
+20 дек. 00:09:27.227
+},
+
+20 дек. 00:09:27.227
+"textValue": "jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj"
+
+20 дек. 00:09:27.227
+{
+
+20 дек. 00:09:27.227
+},
+
+20 дек. 00:09:27.227
+"nullFlagValue": "NULL_VALUE"
+
+20 дек. 00:09:27.227
+{
+
+20 дек. 00:09:27.227
+},
+
+20 дек. 00:09:27.227
+"textValue": "invoice"
+
+20 дек. 00:09:27.227
+{
+
+20 дек. 00:09:27.227
+},
+
+20 дек. 00:09:27.227
+"nullFlagValue": "NULL_VALUE"
+
+20 дек. 00:09:27.227
+{
+
+20 дек. 00:09:27.227
+},
+
+20 дек. 00:09:27.227
+"nullFlagValue": "NULL_VALUE"
+
+20 дек. 00:09:27.227
+{
+
+20 дек. 00:09:27.227
+},
+
+20 дек. 00:09:27.227
+"textValue": "ord_mjdcpijd0l7piljmq"
+
+20 дек. 00:09:27.227
+{
+
+20 дек. 00:09:27.227
+},
+
+20 дек. 00:09:27.227
+"nullFlagValue": "NULL_VALUE"
+
+20 дек. 00:09:27.227
+{
+
+20 дек. 00:09:27.227
+},
+
+20 дек. 00:09:27.227
+"textValue": "2025-12-19T20:58:00.601Z"
+
+20 дек. 00:09:27.227
+{
+
+20 дек. 00:09:27.227
+},
+
+20 дек. 00:09:27.227
+"textValue": "ИП Пимашин"
+
+20 дек. 00:09:27.227
+{
+
+20 дек. 00:09:27.227
+},
+
+20 дек. 00:09:27.227
+"textValue": "22222222222"
+
+20 дек. 00:09:27.227
+{
+
+20 дек. 00:09:27.227
+},
+
+20 дек. 00:09:27.227
+"textValue": "111111111111"
+
+20 дек. 00:09:27.227
+{
+
+20 дек. 00:09:27.227
+},
+
+20 дек. 00:09:27.227
+"textValue": "Ул Кирова 16А"
+
+20 дек. 00:09:27.227
+{
+
+20 дек. 00:09:27.227
+},
+
+20 дек. 00:09:27.227
+"textValue": "89531814136"
+
+20 дек. 00:09:27.227
+{
+
+20 дек. 00:09:27.227
+},
+
+20 дек. 00:09:27.227
+"textValue": "Миша"
+
+20 дек. 00:09:27.227
+{
+
+20 дек. 00:09:27.227
+},
+
+20 дек. 00:09:27.227
+"textValue": "pimashin2015@gmail.com"
+
+20 дек. 00:09:27.227
+{
+
+20 дек. 00:09:27.227
+},
+
+20 дек. 00:09:27.227
+"textValue": "60000"
+
+20 дек. 00:09:27.227
+{
+
+20 дек. 00:09:27.227
+"items": [
+
+20 дек. 00:09:27.227
+YDB row structure: {
+
+20 дек. 00:09:27.226
+YDB columns: ["amount","client_email","client_name","client_phone","company_address","company_inn","company_kpp","company_name","created_at","deleted_at","id","internal_note","paid_at","payment_method","prepayment_confirmed_at","project_description","project_type","remaining_confirmed_at","remaining_invoice_sent_at","selected_features","status","total_amount"]
+
+20 дек. 00:09:27.226
+YDB rows count: 1
+
+20 дек. 00:09:27.226
+}
+
+20 дек. 00:09:27.226
+"txMeta": {}
+
+20 дек. 00:09:27.226
+],
+
+20 дек. 00:09:27.226
+}
+
+20 дек. 00:09:27.226
+]
+
+20 дек. 00:09:27.226
+}
+
+20 дек. 00:09:27.226
+]
+
+20 дек. 00:09:27.226
+}
+
+20 дек. 00:09:27.226
+"textValue": "120000"
+
+20 дек. 00:09:27.226
+{
+
+20 дек. 00:09:27.226
+},
+
+20 дек. 00:09:27.226
+"textValue": "pending_bank_payment"
+
+20 дек. 00:09:27.226
+{
+
+20 дек. 00:09:27.226
+},
+
+20 дек. 00:09:27.226
+"textValue": ""
+
+20 дек. 00:09:27.226
+{
+
+20 дек. 00:09:27.226
+},
+
+20 дек. 00:09:27.226
+"nullFlagValue": "NULL_VALUE"
+
+20 дек. 00:09:27.226
+{
+
+20 дек. 00:09:27.226
+},
+
+20 дек. 00:09:27.226
+"nullFlagValue": "NULL_VALUE"
+
+20 дек. 00:09:27.226
+{
+
+20 дек. 00:09:27.226
+},
+
+20 дек. 00:09:27.226
+"textValue": "shop"
+
+20 дек. 00:09:27.226
+{
+
+20 дек. 00:09:27.226
+},
+
+20 дек. 00:09:27.226
+"textValue": "jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj"
+
+20 дек. 00:09:27.226
+{
+
+20 дек. 00:09:27.226
+},
+
+20 дек. 00:09:27.226
+"nullFlagValue": "NULL_VALUE"
+
+20 дек. 00:09:27.226
+{
+
+20 дек. 00:09:27.226
+},
+
+20 дек. 00:09:27.226
+"textValue": "invoice"
+
+20 дек. 00:09:27.226
+{
+
+20 дек. 00:09:27.226
+},
+
+20 дек. 00:09:27.226
+"nullFlagValue": "NULL_VALUE"
+
+20 дек. 00:09:27.226
+{
+
+20 дек. 00:09:27.226
+},
+
+20 дек. 00:09:27.226
+"nullFlagValue": "NULL_VALUE"
+
+20 дек. 00:09:27.226
+{
+
+20 дек. 00:09:27.226
+},
+
+20 дек. 00:09:27.226
+"textValue": "ord_mjdcpijd0l7piljmq"
+
+20 дек. 00:09:27.226
+{
+
+20 дек. 00:09:27.226
+},
+
+20 дек. 00:09:27.226
+"nullFlagValue": "NULL_VALUE"
+
+20 дек. 00:09:27.226
+{
+
+20 дек. 00:09:27.226
+},
+
+20 дек. 00:09:27.226
+"textValue": "2025-12-19T20:58:00.601Z"
+
+20 дек. 00:09:27.226
+{
+
+20 дек. 00:09:27.226
+},
+
+20 дек. 00:09:27.226
+"textValue": "ИП Пимашин"
+
+20 дек. 00:09:27.226
+{
+
+20 дек. 00:09:27.226
+},
+
+20 дек. 00:09:27.226
+"textValue": "22222222222"
+
+20 дек. 00:09:27.226
+{
+
+20 дек. 00:09:27.226
+},
+
+20 дек. 00:09:27.226
+"textValue": "111111111111"
+
+20 дек. 00:09:27.226
+{
+
+20 дек. 00:09:27.225
+},
+
+20 дек. 00:09:27.225
+"textValue": "Ул Кирова 16А"
+
+20 дек. 00:09:27.225
+{
+
+20 дек. 00:09:27.225
+},
+
+20 дек. 00:09:27.225
+"textValue": "89531814136"
+
+20 дек. 00:09:27.225
+{
+
+20 дек. 00:09:27.225
+},
+
+20 дек. 00:09:27.225
+"textValue": "Миша"
+
+20 дек. 00:09:27.225
+{
+
+20 дек. 00:09:27.225
+},
+
+20 дек. 00:09:27.225
+"textValue": "pimashin2015@gmail.com"
+
+20 дек. 00:09:27.225
+{
+
+20 дек. 00:09:27.225
+},
+
+20 дек. 00:09:27.225
+"textValue": "60000"
+
+20 дек. 00:09:27.225
+{
+
+20 дек. 00:09:27.225
+"items": [
+
+20 дек. 00:09:27.225
+{
+
+20 дек. 00:09:27.225
+"rows": [
+
+20 дек. 00:09:27.225
+],
+
+20 дек. 00:09:27.225
+}
+
+20 дек. 00:09:27.225
+}
+
+20 дек. 00:09:27.225
+}
+
+20 дек. 00:09:27.225
+}
+
+20 дек. 00:09:27.225
+"typeId": "UTF8"
+
+20 дек. 00:09:27.225
+"item": {
+
+20 дек. 00:09:27.225
+"optionalType": {
+
+20 дек. 00:09:27.225
+"type": {
+
+20 дек. 00:09:27.225
+"name": "total_amount",
+
+20 дек. 00:09:27.225
+{
+
+20 дек. 00:09:27.225
+},
+
+20 дек. 00:09:27.225
+}
+
+20 дек. 00:09:27.225
+}
+
+20 дек. 00:09:27.225
+}
+
+20 дек. 00:09:27.225
+"typeId": "UTF8"
+
+20 дек. 00:09:27.225
+"item": {
+
+20 дек. 00:09:27.225
+"optionalType": {
+
+20 дек. 00:09:27.225
+"type": {
+
+20 дек. 00:09:27.225
+"name": "status",
+
+20 дек. 00:09:27.225
+{
+
+20 дек. 00:09:27.225
+},
+
+20 дек. 00:09:27.225
+}
+
+20 дек. 00:09:27.225
+}
+
+20 дек. 00:09:27.225
+}
+
+20 дек. 00:09:27.225
+"typeId": "UTF8"
+
+20 дек. 00:09:27.225
+"item": {
+
+20 дек. 00:09:27.225
+"optionalType": {
+
+20 дек. 00:09:27.225
+"type": {
+
+20 дек. 00:09:27.225
+"name": "selected_features",
+
+20 дек. 00:09:27.225
+{
+
+20 дек. 00:09:27.225
+},
+
+20 дек. 00:09:27.225
+}
+
+20 дек. 00:09:27.225
+}
+
+20 дек. 00:09:27.225
+}
+
+20 дек. 00:09:27.225
+"typeId": "UTF8"
+
+20 дек. 00:09:27.225
+"item": {
+
+20 дек. 00:09:27.225
+"optionalType": {
+
+20 дек. 00:09:27.225
+"type": {
+
+20 дек. 00:09:27.225
+"name": "remaining_invoice_sent_at",
