@@ -163,10 +163,63 @@ export async function registerRoutes(
 
   app.get("/api/orders", async (req, res) => {
     try {
-      const orders = await storage.getOrders();
+      const showAll = req.query.all === "true";
+      const orders = showAll ? await storage.getOrders() : await storage.getActiveOrders();
       res.json(orders);
     } catch (error) {
       console.error("Error fetching orders:", error);
+      res.status(500).json({
+        success: false,
+        message: "Внутренняя ошибка сервера",
+      });
+    }
+  });
+
+  app.patch("/api/orders/:id/note", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { note } = req.body;
+      
+      if (typeof note !== "string") {
+        return res.status(400).json({
+          success: false,
+          message: "Заметка должна быть текстом",
+        });
+      }
+      
+      const order = await storage.updateOrderNote(id, note);
+      if (!order) {
+        return res.status(404).json({
+          success: false,
+          message: "Заказ не найден",
+        });
+      }
+      
+      res.json({ success: true, order });
+    } catch (error) {
+      console.error("Error updating order note:", error);
+      res.status(500).json({
+        success: false,
+        message: "Внутренняя ошибка сервера",
+      });
+    }
+  });
+
+  app.delete("/api/orders/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      
+      const order = await storage.softDeleteOrder(id);
+      if (!order) {
+        return res.status(404).json({
+          success: false,
+          message: "Заказ не найден",
+        });
+      }
+      
+      res.json({ success: true, message: "Заказ удалён" });
+    } catch (error) {
+      console.error("Error deleting order:", error);
       res.status(500).json({
         success: false,
         message: "Внутренняя ошибка сервера",
