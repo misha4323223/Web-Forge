@@ -220,6 +220,18 @@ export async function registerRoutes(
         await storage.updateOrderStatus(shp_orderId, "completed", new Date());
         console.log("Order fully paid (remaining):", shp_orderId);
         
+        // Получаем все дополнительные счета для этого заказа
+        const additionalInvoices = await storage.getAdditionalInvoicesByOrderId(shp_orderId);
+        const paidAdditionalInvoices = additionalInvoices.filter(inv => inv.status === "paid");
+        
+        let invoicesList = "";
+        if (paidAdditionalInvoices.length > 0) {
+          invoicesList = "\n\n📋 <b>Дополнительные работы (оплачены):</b>\n";
+          paidAdditionalInvoices.forEach((inv, index) => {
+            invoicesList += `${index + 1}. ${inv.description} - ${inv.amount} ₽\n`;
+          });
+        }
+        
         await sendTelegramMessage(
           `✅ <b>Заказ полностью оплачен!</b>\n\n` +
           `👤 Клиент: ${order.clientName}\n` +
@@ -227,7 +239,8 @@ export async function registerRoutes(
           `📱 Телефон: ${order.clientPhone}\n` +
           `🌐 Тип: ${projectTypeLabel}\n` +
           `💰 Сумма: ${OutSum} ₽ (остаток)\n` +
-          `📋 Заказ: ${shp_orderId.substring(0, 8).toUpperCase()}`
+          `📋 Заказ: ${shp_orderId.substring(0, 8).toUpperCase()}` +
+          invoicesList
         );
       } else {
         await storage.updateOrderStatus(shp_orderId, "paid", new Date());
