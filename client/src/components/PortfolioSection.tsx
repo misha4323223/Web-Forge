@@ -668,8 +668,8 @@ export function PortfolioSection() {
       <div className="absolute top-1/4 left-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl animate-float" />
       <div className="absolute bottom-1/4 right-10 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl animate-float-slow" />
 
-      <div className="max-w-7xl mx-auto px-6 relative z-10 h-full flex flex-col py-12" ref={ref}>
-        <div className="text-center mb-8">
+      <div className="relative z-10 h-full flex flex-col py-12" ref={ref}>
+        <div className="text-center mb-8 max-w-7xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={isInView ? { opacity: 1, scale: 1 } : {}}
@@ -697,7 +697,7 @@ export function PortfolioSection() {
 
         {/* Созвездие */}
         <div 
-          className="relative w-full rounded-2xl overflow-hidden flex-1"
+          className="relative w-full overflow-hidden flex-1"
           style={{ 
             background: "radial-gradient(ellipse at center, rgba(15, 10, 30, 0.95) 0%, rgba(5, 5, 15, 0.98) 100%)",
           }}
