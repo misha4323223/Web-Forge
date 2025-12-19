@@ -960,7 +960,8 @@ async function generateContractPDF(order) {
             return new Intl.NumberFormat('ru-RU').format(num);
         };
         const amount = parseFloat(order.amount) || 0;
-        const prepayment = Math.round(amount / 2);
+        const totalAmount = amount * 2;
+        const prepayment = amount;
         const projectTypeLabel = getProjectTypeName(order.projectType);
         const date = new Date().toLocaleDateString('ru-RU', {
             day: 'numeric',
@@ -991,7 +992,7 @@ async function generateContractPDF(order) {
         doc.moveDown(1);
 
         doc.font('Roboto-Bold').text('2. СТОИМОСТЬ И ПОРЯДОК ОПЛАТЫ');
-        doc.font('Roboto').text(`2.1. Стоимость услуг: ${formatPrice(amount)} рублей`);
+        doc.font('Roboto').text(`2.1. Стоимость услуг: ${formatPrice(totalAmount)} рублей`);
         doc.text('2.2. НДС не облагается (п. 8 ст. 2 ФЗ от 27.11.2018 N 422-ФЗ)');
         doc.text(`2.3. Предоплата 50%: ${formatPrice(prepayment)} руб. - ОПЛАЧЕНО`);
         doc.text(`2.4. Остаток 50%: ${formatPrice(prepayment)} руб. - после подписания Акта`);
@@ -1146,7 +1147,8 @@ async function sendContractEmail(order, pdfBuffer) {
         return new Intl.NumberFormat('ru-RU').format(num);
     };
     const amount = parseFloat(order.amount) || 0;
-    const prepayment = Math.round(amount / 2);
+    const totalAmount = amount * 2;
+    const prepayment = amount;
     
     const emailHtml = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -1156,7 +1158,7 @@ async function sendContractEmail(order, pdfBuffer) {
             <div style="background: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
                 <h3 style="margin-top: 0;">Детали заказа:</h3>
                 <p><strong>Тип проекта:</strong> ${getProjectTypeName(order.projectType)}</p>
-                <p><strong>Стоимость:</strong> ${formatPrice(amount)} руб.</p>
+                <p><strong>Стоимость:</strong> ${formatPrice(totalAmount)} руб.</p>
                 <p><strong>Предоплата:</strong> ${formatPrice(prepayment)} руб.</p>
                 <p><strong>ID заказа:</strong> ${order.id}</p>
             </div>
