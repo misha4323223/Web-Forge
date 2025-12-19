@@ -546,7 +546,7 @@ export async function registerRoutes(
 
         console.log("Additional invoice payment email sent to:", order.clientEmail);
       } catch (emailError) {
-        console.error("Failed to send additional invoice email:", emailError.message);
+        console.error("Failed to send additional invoice email:", emailError instanceof Error ? emailError.message : emailError);
         // Не прерываем процесс если email не отправился
       }
 
