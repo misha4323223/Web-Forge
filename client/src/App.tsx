@@ -33,6 +33,7 @@ function Router() {
       <Route path="/pay-remaining" component={PayRemaining} />
       <Route path="/privacy" component={Privacy} />
       <Route path="/offer" component={Offer} />
+      <Route path="/admin" component={Admin} />
       <Route path="/admin/invoices" component={Admin} />
       <Route path="/demo/food-delivery" component={FoodDelivery} />
       <Route path="/demo/fitness" component={FitnessStudio} />
