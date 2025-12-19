@@ -191,7 +191,7 @@ export default function BarberShop() {
               </div>
               <div className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-amber-400" />
-                <span className="text-neutral-400">+7 (999) 123-45-67</span>
+                <a href="tel:+79991234567" className="text-neutral-400 hover:text-amber-400 transition-colors">+7 (999) 123-45-67</a>
               </div>
             </div>
           </motion.div>
@@ -499,7 +499,7 @@ export default function BarberShop() {
               <ul className="space-y-2 text-sm text-neutral-400">
                 <li className="flex items-center gap-2">
                   <Phone className="w-4 h-4" />
-                  +7 (999) 123-45-67
+                  <a href="tel:+79991234567" className="hover:text-amber-400 transition-colors">+7 (999) 123-45-67</a>
                 </li>
                 <li className="flex items-center gap-2">
                   <MapPin className="w-4 h-4" />

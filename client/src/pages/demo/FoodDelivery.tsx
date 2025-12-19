@@ -2,9 +2,12 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Clock, MapPin, Phone, Star, Flame, Leaf, ChefHat, Truck, ArrowLeft, ShoppingCart, Plus } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Clock, MapPin, Phone, Star, Flame, Leaf, ChefHat, Truck, ArrowLeft, ShoppingCart, Plus, Minus, X, Check } from "lucide-react";
 import { Link } from "wouter";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import foodHeroImg from "@assets/generated_images/asian_food_arrangement_table.png";
 import tomYumImg from "@assets/generated_images/tom_yum_shrimp_soup.png";
 import padThaiImg from "@assets/generated_images/pad_thai_chicken_noodles.png";
@@ -57,20 +60,63 @@ const features = [
 ];
 
 export default function FoodDelivery() {
-  const [cart, setCart] = useState<number[]>([]);
+  const [cart, setCart] = useState<Record<number, number>>({});
+  const [cartOpen, setCartOpen] = useState(false);
+  const [orderSuccess, setOrderSuccess] = useState(false);
+  const [orderForm, setOrderForm] = useState({ name: "", phone: "", address: "" });
+  const menuRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   const addToCart = (id: number) => {
-    setCart(prev => [...prev, id]);
+    setCart(prev => ({ ...prev, [id]: (prev[id] || 0) + 1 }));
   };
 
-  const cartTotal = cart.reduce((sum, id) => {
-    const item = menuItems.find(m => m.id === id);
-    return sum + (item?.price || 0);
-  }, 0);
+  const removeFromCart = (id: number) => {
+    setCart(prev => {
+      const newCart = { ...prev };
+      if (newCart[id] > 1) {
+        newCart[id]--;
+      } else {
+        delete newCart[id];
+      }
+      return newCart;
+    });
+  };
+
+  const clearItem = (id: number) => {
+    setCart(prev => {
+      const newCart = { ...prev };
+      delete newCart[id];
+      return newCart;
+    });
+  };
+
+  const cartItems = Object.entries(cart).map(([id, qty]) => ({
+    item: menuItems.find(m => m.id === Number(id))!,
+    quantity: qty
+  })).filter(c => c.item);
+
+  const cartTotal = cartItems.reduce((sum, { item, quantity }) => sum + item.price * quantity, 0);
+  const cartCount = Object.values(cart).reduce((a, b) => a + b, 0);
+
+  const scrollToMenu = () => {
+    menuRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const handleOrder = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!orderForm.name || !orderForm.phone || !orderForm.address) return;
+    setOrderSuccess(true);
+    setTimeout(() => {
+      setCartOpen(false);
+      setOrderSuccess(false);
+      setCart({});
+      setOrderForm({ name: "", phone: "", address: "" });
+    }, 2000);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-orange-50 to-amber-50 dark:from-neutral-950 dark:to-neutral-900">
@@ -85,14 +131,116 @@ export default function FoodDelivery() {
         </Button>
       </Link>
 
-      {cart.length > 0 && (
+      {cartCount > 0 && (
         <div className="fixed bottom-4 right-4 z-50">
-          <Button size="lg" className="bg-orange-500 hover:bg-orange-600 shadow-lg" data-testid="button-view-cart">
+          <Button size="lg" className="bg-orange-500 hover:bg-orange-600 shadow-lg" onClick={() => setCartOpen(true)} data-testid="button-view-cart">
             <ShoppingCart className="w-5 h-5 mr-2" />
-            Корзина ({cart.length}) — {cartTotal} р
+            Корзина ({cartCount}) — {cartTotal} р
           </Button>
         </div>
       )}
+
+      <Dialog open={cartOpen} onOpenChange={setCartOpen}>
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <ShoppingCart className="w-5 h-5" />
+              Ваш заказ
+            </DialogTitle>
+          </DialogHeader>
+          
+          {orderSuccess ? (
+            <div className="py-8 text-center">
+              <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mx-auto mb-4">
+                <Check className="w-8 h-8 text-green-500" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Заказ принят!</h3>
+              <p className="text-muted-foreground">Мы свяжемся с вами в ближайшее время</p>
+            </div>
+          ) : (
+            <>
+              {cartItems.length === 0 ? (
+                <p className="text-center text-muted-foreground py-8">Корзина пуста</p>
+              ) : (
+                <>
+                  <div className="space-y-3 mb-4">
+                    {cartItems.map(({ item, quantity }) => (
+                      <div key={item.id} className="flex items-center gap-3 p-2 rounded-md bg-muted/50">
+                        <img src={item.image} alt={item.name} className="w-12 h-12 rounded-md object-cover" />
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-sm truncate">{item.name}</p>
+                          <p className="text-sm text-orange-500">{item.price * quantity} р</p>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => removeFromCart(item.id)}>
+                            <Minus className="w-3 h-3" />
+                          </Button>
+                          <span className="w-6 text-center text-sm">{quantity}</span>
+                          <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => addToCart(item.id)}>
+                            <Plus className="w-3 h-3" />
+                          </Button>
+                          <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => clearItem(item.id)}>
+                            <X className="w-3 h-3" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div className="border-t pt-4 mb-4">
+                    <div className="flex justify-between text-lg font-semibold">
+                      <span>Итого:</span>
+                      <span className="text-orange-500">{cartTotal} р</span>
+                    </div>
+                    {cartTotal < 1000 && (
+                      <p className="text-xs text-muted-foreground mt-1">
+                        До бесплатной доставки: {1000 - cartTotal} р
+                      </p>
+                    )}
+                  </div>
+
+                  <form onSubmit={handleOrder} className="space-y-3">
+                    <div>
+                      <Label htmlFor="name">Ваше имя</Label>
+                      <Input 
+                        id="name" 
+                        value={orderForm.name} 
+                        onChange={(e) => setOrderForm(f => ({ ...f, name: e.target.value }))}
+                        placeholder="Иван"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="phone">Телефон</Label>
+                      <Input 
+                        id="phone" 
+                        type="tel"
+                        value={orderForm.phone} 
+                        onChange={(e) => setOrderForm(f => ({ ...f, phone: e.target.value }))}
+                        placeholder="+7 (999) 123-45-67"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="address">Адрес доставки</Label>
+                      <Input 
+                        id="address" 
+                        value={orderForm.address} 
+                        onChange={(e) => setOrderForm(f => ({ ...f, address: e.target.value }))}
+                        placeholder="ул. Примерная, д. 1, кв. 10"
+                        required
+                      />
+                    </div>
+                    <Button type="submit" className="w-full bg-orange-500 hover:bg-orange-600">
+                      Оформить заказ
+                    </Button>
+                  </form>
+                </>
+              )}
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
 
       <header className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-orange-500/90 to-red-500/90" />
@@ -138,10 +286,10 @@ export default function FoodDelivery() {
               Свежие блюда тайской и вьетнамской кухни. Готовим с любовью, доставляем с заботой.
             </p>
             <div className="flex flex-wrap gap-4">
-              <Button size="lg" variant="secondary" data-testid="button-order">
+              <Button size="lg" variant="secondary" onClick={scrollToMenu} data-testid="button-order">
                 Заказать сейчас
               </Button>
-              <Button size="lg" variant="outline" className="text-white border-white/50 hover:bg-white/10" data-testid="button-menu">
+              <Button size="lg" variant="outline" className="text-white border-white/50 hover:bg-white/10" onClick={scrollToMenu} data-testid="button-menu">
                 Смотреть меню
               </Button>
             </div>
@@ -176,7 +324,7 @@ export default function FoodDelivery() {
         </div>
       </section>
 
-      <section className="py-16 md:py-24">
+      <section ref={menuRef} className="py-16 md:py-24">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0 }}
@@ -223,10 +371,10 @@ export default function FoodDelivery() {
                         </Badge>
                       ))}
                     </div>
-                    {cart.filter(id => id === item.id).length > 0 && (
+                    {cart[item.id] > 0 && (
                       <div className="absolute top-3 right-3">
                         <Badge className="bg-orange-500 text-white border-0">
-                          x{cart.filter(id => id === item.id).length}
+                          x{cart[item.id]}
                         </Badge>
                       </div>
                     )}
@@ -262,9 +410,11 @@ export default function FoodDelivery() {
               <p className="text-white/80">Доставка от 30 минут в любую точку города</p>
             </div>
             <div className="flex flex-wrap gap-4">
-              <Button size="lg" variant="secondary" data-testid="button-call">
-                <Phone className="w-4 h-4 mr-2" />
-                Позвонить
+              <Button size="lg" variant="secondary" asChild data-testid="button-call">
+                <a href="tel:+79991234567">
+                  <Phone className="w-4 h-4 mr-2" />
+                  Позвонить
+                </a>
               </Button>
             </div>
           </div>
@@ -284,7 +434,7 @@ export default function FoodDelivery() {
             <div>
               <h4 className="font-semibold mb-4">Контакты</h4>
               <div className="space-y-2 text-neutral-400">
-                <p className="flex items-center gap-2"><Phone className="w-4 h-4" /> +7 (999) 123-45-67</p>
+                <a href="tel:+79991234567" className="flex items-center gap-2 hover:text-white transition-colors"><Phone className="w-4 h-4" /> +7 (999) 123-45-67</a>
                 <p className="flex items-center gap-2"><MapPin className="w-4 h-4" /> ул. Примерная, 1</p>
                 <p className="flex items-center gap-2"><Clock className="w-4 h-4" /> 10:00 - 23:00</p>
               </div>

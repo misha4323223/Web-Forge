@@ -5,8 +5,11 @@ import { Badge } from "@/components/ui/badge";
 import { Plane, MapPin, Calendar, Star, Users, Sun, Palmtree, Mountain, Ship, ArrowLeft, Clock, Heart } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Link } from "wouter";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Check } from "lucide-react";
 import travelHeroImg from "@assets/generated_images/tropical_beach_travel_destination.webp";
 import maldivesImg from "@assets/generated_images/maldives_beach_paradise_resort.png";
 import parisImg from "@assets/generated_images/paris_eiffel_tower_sunset.png";
@@ -101,7 +104,13 @@ const stats = [
 export default function TravelAgency() {
   const [favorites, setFavorites] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [bookingOpen, setBookingOpen] = useState(false);
+  const [selectedDestination, setSelectedDestination] = useState<typeof destinations[0] | null>(null);
+  const [bookingSuccess, setBookingSuccess] = useState(false);
+  const [bookingForm, setBookingForm] = useState({ name: "", phone: "", email: "" });
+  const [consultPhone, setConsultPhone] = useState("");
   const { toast } = useToast();
+  const destinationsRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -119,6 +128,31 @@ export default function TravelAgency() {
       });
     }
   };
+
+  const openBooking = (dest: typeof destinations[0]) => {
+    setSelectedDestination(dest);
+    setBookingOpen(true);
+  };
+
+  const handleBooking = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!bookingForm.name || !bookingForm.phone) return;
+    setBookingSuccess(true);
+    setTimeout(() => {
+      setBookingOpen(false);
+      setBookingSuccess(false);
+      setSelectedDestination(null);
+      setBookingForm({ name: "", phone: "", email: "" });
+    }, 2000);
+  };
+
+  const handleConsultation = () => {
+    if (!consultPhone) return;
+    toast({ title: "Заявка принята!", description: "Менеджер свяжется с вами в ближайшее время" });
+    setConsultPhone("");
+  };
+
+  const scrollToDestinations = () => destinationsRef.current?.scrollIntoView({ behavior: "smooth" });
 
   const formatPrice = (price: number) => new Intl.NumberFormat("ru-RU").format(price);
 
@@ -143,6 +177,75 @@ export default function TravelAgency() {
           </Badge>
         </div>
       )}
+
+      <Dialog open={bookingOpen} onOpenChange={setBookingOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Plane className="w-5 h-5 text-sky-500" />
+              Заявка на тур
+            </DialogTitle>
+          </DialogHeader>
+          
+          {bookingSuccess ? (
+            <div className="py-8 text-center">
+              <div className="w-16 h-16 rounded-full bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center mx-auto mb-4">
+                <Check className="w-8 h-8 text-teal-500" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Заявка отправлена!</h3>
+              <p className="text-muted-foreground">Менеджер свяжется с вами в ближайшее время</p>
+            </div>
+          ) : (
+            <>
+              {selectedDestination && (
+                <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg mb-4">
+                  <img src={selectedDestination.image} alt={selectedDestination.name} className="w-16 h-12 rounded object-cover" />
+                  <div>
+                    <p className="font-semibold">{selectedDestination.name}</p>
+                    <p className="text-sm text-muted-foreground">{selectedDestination.duration} | от {formatPrice(selectedDestination.price)} р</p>
+                  </div>
+                </div>
+              )}
+              <form onSubmit={handleBooking} className="space-y-4">
+                <div>
+                  <Label htmlFor="book-name">Ваше имя</Label>
+                  <Input 
+                    id="book-name"
+                    value={bookingForm.name} 
+                    onChange={(e) => setBookingForm(f => ({ ...f, name: e.target.value }))}
+                    placeholder="Иван Иванов"
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="book-phone">Телефон</Label>
+                  <Input 
+                    id="book-phone"
+                    type="tel"
+                    value={bookingForm.phone} 
+                    onChange={(e) => setBookingForm(f => ({ ...f, phone: e.target.value }))}
+                    placeholder="+7 (999) 123-45-67"
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="book-email">Email</Label>
+                  <Input 
+                    id="book-email"
+                    type="email"
+                    value={bookingForm.email} 
+                    onChange={(e) => setBookingForm(f => ({ ...f, email: e.target.value }))}
+                    placeholder="ivan@mail.ru"
+                  />
+                </div>
+                <Button type="submit" className="w-full bg-gradient-to-r from-sky-500 to-teal-500">
+                  Отправить заявку
+                </Button>
+              </form>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
 
       <header className="relative min-h-[90vh] flex items-center overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-sky-400 via-sky-500 to-teal-500" />
@@ -206,7 +309,7 @@ export default function TravelAgency() {
                     data-testid="input-date"
                   />
                 </div>
-                <Button className="h-12 px-8 bg-gradient-to-r from-sky-500 to-teal-500 hover:from-sky-600 hover:to-teal-600" data-testid="button-search">
+                <Button className="h-12 px-8 bg-gradient-to-r from-sky-500 to-teal-500 hover:from-sky-600 hover:to-teal-600" onClick={scrollToDestinations} data-testid="button-search">
                   Найти туры
                 </Button>
               </div>
@@ -275,7 +378,7 @@ export default function TravelAgency() {
         </div>
       </section>
 
-      <section id="destinations" className="py-20 bg-white dark:bg-slate-900">
+      <section ref={destinationsRef} id="destinations" className="py-20 bg-white dark:bg-slate-900">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -343,7 +446,7 @@ export default function TravelAgency() {
                         <p className="text-xs text-muted-foreground">от</p>
                         <p className="text-2xl font-bold text-sky-600">{formatPrice(dest.price)} ₽</p>
                       </div>
-                      <Button className="bg-gradient-to-r from-sky-500 to-teal-500" data-testid={`button-book-${dest.id}`}>
+                      <Button className="bg-gradient-to-r from-sky-500 to-teal-500" onClick={() => openBooking(dest)} data-testid={`button-book-${dest.id}`}>
                         Подробнее
                       </Button>
                     </div>
@@ -371,10 +474,12 @@ export default function TravelAgency() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Input 
                 placeholder="Ваш телефон" 
+                value={consultPhone}
+                onChange={(e) => setConsultPhone(e.target.value)}
                 className="h-12 bg-white/20 border-white/30 text-white placeholder:text-white/60"
                 data-testid="input-phone"
               />
-              <Button className="h-12 px-8 bg-white text-sky-600 hover:bg-white/90" data-testid="button-request">
+              <Button className="h-12 px-8 bg-white text-sky-600 hover:bg-white/90" onClick={handleConsultation} data-testid="button-request">
                 Получить консультацию
               </Button>
             </div>
@@ -417,7 +522,7 @@ export default function TravelAgency() {
             <div>
               <h4 className="font-semibold mb-4">Контакты</h4>
               <ul className="space-y-2 text-sm text-slate-400">
-                <li>+7 (495) 123-45-67</li>
+                <li><a href="tel:+74951234567" className="hover:text-sky-400 transition-colors">+7 (495) 123-45-67</a></li>
                 <li>info@traveldream.ru</li>
                 <li>Москва, ул. Тверская, 1</li>
               </ul>

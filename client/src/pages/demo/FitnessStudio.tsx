@@ -4,8 +4,10 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Clock, MapPin, Phone, Dumbbell, Users, Calendar, Zap, Heart, Trophy, ArrowLeft, Check } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Link } from "wouter";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import fitnessHeroImg from "@assets/generated_images/modern_gym_interior_purple.png";
 
@@ -33,11 +35,37 @@ const plans = [
 export default function FitnessStudio() {
   const [bookedClasses, setBookedClasses] = useState<number[]>([]);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+  const [trialOpen, setTrialOpen] = useState(false);
+  const [trialForm, setTrialForm] = useState({ name: "", phone: "" });
+  const [trialSuccess, setTrialSuccess] = useState(false);
+  const [email, setEmail] = useState("");
   const { toast } = useToast();
+  const scheduleRef = useRef<HTMLElement>(null);
+  const pricingRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  const scrollToSchedule = () => scheduleRef.current?.scrollIntoView({ behavior: "smooth" });
+  const scrollToPricing = () => pricingRef.current?.scrollIntoView({ behavior: "smooth" });
+
+  const handleTrialSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!trialForm.name || !trialForm.phone) return;
+    setTrialSuccess(true);
+    setTimeout(() => {
+      setTrialOpen(false);
+      setTrialSuccess(false);
+      setTrialForm({ name: "", phone: "" });
+    }, 2000);
+  };
+
+  const handleSubscribe = () => {
+    if (!email) return;
+    toast({ title: "Подписка оформлена!", description: `Письма будут приходить на ${email}` });
+    setEmail("");
+  };
 
   const bookClass = (id: number) => {
     if (bookedClasses.includes(id)) {
@@ -86,6 +114,50 @@ export default function FitnessStudio() {
         </div>
       )}
 
+      <Dialog open={trialOpen} onOpenChange={setTrialOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Запись на пробное занятие</DialogTitle>
+          </DialogHeader>
+          {trialSuccess ? (
+            <div className="py-8 text-center">
+              <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mx-auto mb-4">
+                <Check className="w-8 h-8 text-green-500" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Заявка отправлена!</h3>
+              <p className="text-muted-foreground">Мы свяжемся с вами для подтверждения</p>
+            </div>
+          ) : (
+            <form onSubmit={handleTrialSubmit} className="space-y-4">
+              <div>
+                <Label htmlFor="trial-name">Ваше имя</Label>
+                <Input 
+                  id="trial-name" 
+                  value={trialForm.name} 
+                  onChange={(e) => setTrialForm(f => ({ ...f, name: e.target.value }))}
+                  placeholder="Иван"
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="trial-phone">Телефон</Label>
+                <Input 
+                  id="trial-phone" 
+                  type="tel"
+                  value={trialForm.phone} 
+                  onChange={(e) => setTrialForm(f => ({ ...f, phone: e.target.value }))}
+                  placeholder="+7 (999) 123-45-67"
+                  required
+                />
+              </div>
+              <Button type="submit" className="w-full bg-violet-600 hover:bg-violet-700">
+                Записаться
+              </Button>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
+
       <header className="relative min-h-screen flex items-center overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-violet-900/50 via-neutral-950 to-neutral-950" />
         <img 
@@ -107,7 +179,7 @@ export default function FitnessStudio() {
             <a href="#pricing" className="hover:text-white transition-colors">Абонементы</a>
             <a href="#contact" className="hover:text-white transition-colors">Контакты</a>
           </div>
-          <Button className="bg-violet-600 hover:bg-violet-700" data-testid="button-trial">
+          <Button className="bg-violet-600 hover:bg-violet-700" onClick={() => setTrialOpen(true)} data-testid="button-trial">
             Пробное занятие
           </Button>
         </nav>
@@ -132,11 +204,11 @@ export default function FitnessStudio() {
               Современный фитнес-клуб с профессиональными тренерами и новейшим оборудованием
             </p>
             <div className="flex flex-wrap gap-4">
-              <Button size="lg" className="bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700" data-testid="button-start">
+              <Button size="lg" className="bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700" onClick={scrollToSchedule} data-testid="button-start">
                 Начать тренировки
               </Button>
-              <Button size="lg" variant="outline" className="border-neutral-700 text-white hover:bg-white/5" data-testid="button-tour">
-                Виртуальный тур
+              <Button size="lg" variant="outline" className="border-neutral-700 text-white hover:bg-white/5" onClick={scrollToPricing} data-testid="button-tour">
+                Выбрать абонемент
               </Button>
             </div>
           </motion.div>
@@ -181,7 +253,7 @@ export default function FitnessStudio() {
         </div>
       </section>
 
-      <section id="schedule" className="py-20 bg-neutral-900/50">
+      <section ref={scheduleRef} id="schedule" className="py-20 bg-neutral-900/50">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0 }}
@@ -244,7 +316,7 @@ export default function FitnessStudio() {
         </div>
       </section>
 
-      <section id="pricing" className="py-20">
+      <section ref={pricingRef} id="pricing" className="py-20">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0 }}
@@ -318,7 +390,7 @@ export default function FitnessStudio() {
             <div>
               <h4 className="font-semibold mb-4">Контакты</h4>
               <div className="space-y-2 text-neutral-400">
-                <p className="flex items-center gap-2"><Phone className="w-4 h-4" /> +7 (999) 123-45-67</p>
+                <a href="tel:+79991234567" className="flex items-center gap-2 hover:text-white transition-colors"><Phone className="w-4 h-4" /> +7 (999) 123-45-67</a>
                 <p className="flex items-center gap-2"><MapPin className="w-4 h-4" /> ул. Спортивная, 10</p>
                 <p className="flex items-center gap-2"><Clock className="w-4 h-4" /> 06:00 - 24:00</p>
               </div>
@@ -330,10 +402,12 @@ export default function FitnessStudio() {
                 <Input
                   type="email"
                   placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="flex-1 bg-neutral-800 border-neutral-700"
                   data-testid="input-email-subscribe"
                 />
-                <Button className="bg-violet-600 hover:bg-violet-700" data-testid="button-subscribe">
+                <Button className="bg-violet-600 hover:bg-violet-700" onClick={handleSubscribe} data-testid="button-subscribe">
                   OK
                 </Button>
               </div>

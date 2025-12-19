@@ -9,8 +9,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Link } from "wouter";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 
 import heroImg from "@assets/generated_images/dental_clinic_modern_reception.png";
 import treatmentImg from "@assets/generated_images/dental_treatment_room_interior.png";
@@ -100,11 +102,18 @@ const advantages = [
 
 export default function DentalClinic() {
   const [formData, setFormData] = useState({ name: "", phone: "", service: "" });
+  const [bookingOpen, setBookingOpen] = useState(false);
+  const [bookingSuccess, setBookingSuccess] = useState(false);
   const { toast } = useToast();
+  const servicesRef = useRef<HTMLElement>(null);
+  const contactRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  const scrollToServices = () => servicesRef.current?.scrollIntoView({ behavior: "smooth" });
+  const scrollToContact = () => contactRef.current?.scrollIntoView({ behavior: "smooth" });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -113,6 +122,17 @@ export default function DentalClinic() {
       description: "Мы перезвоним вам в течение 15 минут",
     });
     setFormData({ name: "", phone: "", service: "" });
+  };
+
+  const handleBooking = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.name || !formData.phone) return;
+    setBookingSuccess(true);
+    setTimeout(() => {
+      setBookingOpen(false);
+      setBookingSuccess(false);
+      setFormData({ name: "", phone: "", service: "" });
+    }, 2000);
   };
 
   const formatPrice = (price: number) => new Intl.NumberFormat("ru-RU").format(price);
@@ -129,6 +149,63 @@ export default function DentalClinic() {
           Назад
         </Button>
       </Link>
+
+      <Dialog open={bookingOpen} onOpenChange={setBookingOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Calendar className="w-5 h-5 text-teal-500" />
+              Запись на приём
+            </DialogTitle>
+          </DialogHeader>
+          
+          {bookingSuccess ? (
+            <div className="py-8 text-center">
+              <div className="w-16 h-16 rounded-full bg-teal-100 flex items-center justify-center mx-auto mb-4">
+                <Check className="w-8 h-8 text-teal-500" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Заявка отправлена!</h3>
+              <p className="text-muted-foreground">Мы перезвоним вам в течение 15 минут</p>
+            </div>
+          ) : (
+            <form onSubmit={handleBooking} className="space-y-4">
+              <div>
+                <Label htmlFor="book-name">Ваше имя</Label>
+                <Input 
+                  id="book-name"
+                  value={formData.name} 
+                  onChange={(e) => setFormData(f => ({ ...f, name: e.target.value }))}
+                  placeholder="Иван Иванов"
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="book-phone">Телефон</Label>
+                <Input 
+                  id="book-phone"
+                  type="tel"
+                  value={formData.phone} 
+                  onChange={(e) => setFormData(f => ({ ...f, phone: e.target.value }))}
+                  placeholder="+7 (999) 123-45-67"
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="book-service">Какая услуга интересует?</Label>
+                <Input 
+                  id="book-service"
+                  value={formData.service} 
+                  onChange={(e) => setFormData(f => ({ ...f, service: e.target.value }))}
+                  placeholder="Профессиональная чистка"
+                />
+              </div>
+              <Button type="submit" className="w-full bg-teal-500 hover:bg-teal-600">
+                Записаться
+              </Button>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Hero Section */}
       <header className="relative min-h-screen flex items-center overflow-hidden">
@@ -152,7 +229,7 @@ export default function DentalClinic() {
             <a href="#about" className="hover:text-teal-600 transition-colors">О клинике</a>
             <a href="#contact" className="hover:text-teal-600 transition-colors">Контакты</a>
           </div>
-          <Button className="bg-teal-500 hover:bg-teal-600 text-white" data-testid="button-book-header">
+          <Button className="bg-teal-500 hover:bg-teal-600 text-white" onClick={() => setBookingOpen(true)} data-testid="button-book-header">
             <Phone className="w-4 h-4 mr-2" />
             Записаться
           </Button>
@@ -178,11 +255,11 @@ export default function DentalClinic() {
               Безболезненное лечение и гарантия на все работы.
             </p>
             <div className="flex flex-wrap gap-4">
-              <Button size="lg" className="bg-teal-500 hover:bg-teal-600 text-white" data-testid="button-book-hero">
+              <Button size="lg" className="bg-teal-500 hover:bg-teal-600 text-white" onClick={() => setBookingOpen(true)} data-testid="button-book-hero">
                 <Calendar className="w-5 h-5 mr-2" />
                 Записаться на приём
               </Button>
-              <Button size="lg" variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50" data-testid="button-prices">
+              <Button size="lg" variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50" onClick={scrollToServices} data-testid="button-prices">
                 Узнать цены
               </Button>
             </div>
@@ -197,7 +274,7 @@ export default function DentalClinic() {
               </div>
               <div className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-teal-500" />
-                <span className="text-gray-600">+7 (495) 123-45-67</span>
+                <a href="tel:+74951234567" className="text-gray-600 hover:text-teal-600 transition-colors">+7 (495) 123-45-67</a>
               </div>
             </div>
           </motion.div>
@@ -254,7 +331,7 @@ export default function DentalClinic() {
       </section>
 
       {/* Services */}
-      <section id="services" className="py-20 bg-gray-50">
+      <section ref={servicesRef} id="services" className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -424,7 +501,7 @@ export default function DentalClinic() {
       </section>
 
       {/* Contact Form */}
-      <section id="contact" className="py-20 bg-gradient-to-br from-teal-500 to-cyan-600">
+      <section ref={contactRef} id="contact" className="py-20 bg-gradient-to-br from-teal-500 to-cyan-600">
         <div className="max-w-4xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -514,7 +591,7 @@ export default function DentalClinic() {
               <div className="space-y-2 text-sm">
                 <div className="flex items-center gap-2">
                   <Phone className="w-4 h-4" />
-                  +7 (495) 123-45-67
+                  <a href="tel:+74951234567" className="hover:text-white transition-colors">+7 (495) 123-45-67</a>
                 </div>
                 <div className="flex items-center gap-2">
                   <MapPin className="w-4 h-4" />

@@ -2,9 +2,13 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ShoppingCart, Gift, Menu, Truck, CreditCard, RefreshCw, ArrowLeft, Plus, X } from "lucide-react";
+import { ShoppingCart, Gift, Menu, Truck, CreditCard, RefreshCw, ArrowLeft, Plus, X, Minus, Check } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Link } from "wouter";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 import giftBoxImg from "@assets/generated_images/gift_box_socks_set.webp";
 import businessImg from "@assets/generated_images/business_socks_gift_box.webp";
@@ -124,15 +128,59 @@ const heroCategories = [
 
 export default function SocksShop() {
   const [activeCategory, setActiveCategory] = useState("Все");
-  const [cart, setCart] = useState<number[]>([]);
+  const [cart, setCart] = useState<Record<number, number>>({});
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
+  const [orderSuccess, setOrderSuccess] = useState(false);
+  const [orderForm, setOrderForm] = useState({ name: "", phone: "", email: "" });
+  const { toast } = useToast();
+  const productsRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   const addToCart = (id: number) => {
-    setCart(prev => [...prev, id]);
+    setCart(prev => ({ ...prev, [id]: (prev[id] || 0) + 1 }));
+  };
+
+  const removeFromCart = (id: number) => {
+    setCart(prev => {
+      const newCart = { ...prev };
+      if (newCart[id] > 1) newCart[id]--;
+      else delete newCart[id];
+      return newCart;
+    });
+  };
+
+  const clearItem = (id: number) => {
+    setCart(prev => {
+      const newCart = { ...prev };
+      delete newCart[id];
+      return newCart;
+    });
+  };
+
+  const cartItems = Object.entries(cart).map(([id, qty]) => ({
+    product: products.find(p => p.id === Number(id))!,
+    quantity: qty
+  })).filter(c => c.product);
+
+  const cartTotal = cartItems.reduce((sum, { product, quantity }) => sum + product.price * quantity, 0);
+  const cartCount = Object.values(cart).reduce((a, b) => a + b, 0);
+
+  const scrollToProducts = () => productsRef.current?.scrollIntoView({ behavior: "smooth" });
+
+  const handleOrder = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!orderForm.name || !orderForm.phone) return;
+    setOrderSuccess(true);
+    setTimeout(() => {
+      setCartOpen(false);
+      setOrderSuccess(false);
+      setCart({});
+      setOrderForm({ name: "", phone: "", email: "" });
+    }, 2000);
   };
 
   const filteredProducts = activeCategory === "Все" 
@@ -151,6 +199,93 @@ export default function SocksShop() {
           Назад
         </Button>
       </Link>
+
+      <Dialog open={cartOpen} onOpenChange={setCartOpen}>
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <ShoppingCart className="w-5 h-5 text-rose-500" />
+              Корзина
+            </DialogTitle>
+          </DialogHeader>
+          
+          {orderSuccess ? (
+            <div className="py-8 text-center">
+              <div className="w-16 h-16 rounded-full bg-rose-100 flex items-center justify-center mx-auto mb-4">
+                <Check className="w-8 h-8 text-rose-500" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Заказ оформлен!</h3>
+              <p className="text-muted-foreground">Мы свяжемся с вами для подтверждения</p>
+            </div>
+          ) : (
+            <>
+              {cartItems.length === 0 ? (
+                <p className="text-center text-muted-foreground py-8">Корзина пуста</p>
+              ) : (
+                <>
+                  <div className="space-y-3 mb-4">
+                    {cartItems.map(({ product, quantity }) => (
+                      <div key={product.id} className="flex items-center gap-3 p-2 rounded-md bg-muted/50">
+                        <img src={product.image} alt={product.name} className="w-12 h-12 rounded-md object-cover" />
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-sm truncate">{product.name}</p>
+                          <p className="text-sm text-rose-500">{product.price * quantity} р</p>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => removeFromCart(product.id)}>
+                            <Minus className="w-3 h-3" />
+                          </Button>
+                          <span className="w-6 text-center text-sm">{quantity}</span>
+                          <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => addToCart(product.id)}>
+                            <Plus className="w-3 h-3" />
+                          </Button>
+                          <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => clearItem(product.id)}>
+                            <X className="w-3 h-3" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div className="border-t pt-4 mb-4">
+                    <div className="flex justify-between text-lg font-semibold">
+                      <span>Итого:</span>
+                      <span className="text-rose-500">{cartTotal} р</span>
+                    </div>
+                  </div>
+
+                  <form onSubmit={handleOrder} className="space-y-3">
+                    <div>
+                      <Label htmlFor="name">Ваше имя</Label>
+                      <Input 
+                        id="name" 
+                        value={orderForm.name} 
+                        onChange={(e) => setOrderForm(f => ({ ...f, name: e.target.value }))}
+                        placeholder="Иван"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="phone">Телефон</Label>
+                      <Input 
+                        id="phone" 
+                        type="tel"
+                        value={orderForm.phone} 
+                        onChange={(e) => setOrderForm(f => ({ ...f, phone: e.target.value }))}
+                        placeholder="+7 (999) 123-45-67"
+                        required
+                      />
+                    </div>
+                    <Button type="submit" className="w-full bg-rose-500 hover:bg-rose-600">
+                      Оформить заказ
+                    </Button>
+                  </form>
+                </>
+              )}
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
 
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-neutral-200">
         <div className="max-w-6xl mx-auto px-4 py-4">
@@ -173,11 +308,11 @@ export default function SocksShop() {
             </nav>
 
             <div className="flex items-center gap-3">
-              <Button variant="ghost" size="icon" className="relative text-neutral-600 hover:text-neutral-900" data-testid="button-cart">
+              <Button variant="ghost" size="icon" className="relative text-neutral-600 hover:text-neutral-900" onClick={() => setCartOpen(true)} data-testid="button-cart">
                 <ShoppingCart className="w-5 h-5" />
-                {cart.length > 0 && (
+                {cartCount > 0 && (
                   <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-rose-500 text-white text-xs font-bold flex items-center justify-center">
-                    {cart.length}
+                    {cartCount}
                   </span>
                 )}
               </Button>
@@ -288,7 +423,7 @@ export default function SocksShop() {
         </div>
       </section>
 
-      <section className="py-16">
+      <section ref={productsRef} className="py-16">
         <div className="max-w-6xl mx-auto px-4">
           <div className="flex flex-col md:flex-row gap-8">
             <aside className="md:w-48 flex-shrink-0">

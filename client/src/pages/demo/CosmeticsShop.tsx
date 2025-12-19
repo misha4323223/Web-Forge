@@ -2,10 +2,13 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ShoppingBag, Heart, Search, Star, Sparkles, Leaf, Droplet, ArrowLeft, Plus } from "lucide-react";
+import { ShoppingBag, Heart, Search, Star, Sparkles, Leaf, Droplet, ArrowLeft, Plus, Minus, X, Check } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Link } from "wouter";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useToast } from "@/hooks/use-toast";
 import heroImg from "@assets/stock_images/cosmetics_skincare_p_2775c0e7.webp";
 import moisturizerImg from "@assets/stock_images/face_moisturizer_cre_59e07cda.webp";
 import serumImg from "@assets/stock_images/vitamin_c_serum_drop_c449b45e.webp";
@@ -87,8 +90,14 @@ const features = [
 
 export default function CosmeticsShop() {
   const [activeCategory, setActiveCategory] = useState("Все");
-  const [cart, setCart] = useState<number[]>([]);
+  const [cart, setCart] = useState<Record<number, number>>({});
   const [favorites, setFavorites] = useState<number[]>([]);
+  const [cartOpen, setCartOpen] = useState(false);
+  const [orderSuccess, setOrderSuccess] = useState(false);
+  const [orderForm, setOrderForm] = useState({ name: "", phone: "", email: "" });
+  const [newsletterEmail, setNewsletterEmail] = useState("");
+  const { toast } = useToast();
+  const productsRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -99,7 +108,55 @@ export default function CosmeticsShop() {
   };
 
   const addToCart = (id: number) => {
-    setCart(prev => [...prev, id]);
+    setCart(prev => ({ ...prev, [id]: (prev[id] || 0) + 1 }));
+  };
+
+  const removeFromCart = (id: number) => {
+    setCart(prev => {
+      const newCart = { ...prev };
+      if (newCart[id] > 1) {
+        newCart[id]--;
+      } else {
+        delete newCart[id];
+      }
+      return newCart;
+    });
+  };
+
+  const clearItem = (id: number) => {
+    setCart(prev => {
+      const newCart = { ...prev };
+      delete newCart[id];
+      return newCart;
+    });
+  };
+
+  const cartItems = Object.entries(cart).map(([id, qty]) => ({
+    product: products.find(p => p.id === Number(id))!,
+    quantity: qty
+  })).filter(c => c.product);
+
+  const cartTotal = cartItems.reduce((sum, { product, quantity }) => sum + product.price * quantity, 0);
+  const cartCount = Object.values(cart).reduce((a, b) => a + b, 0);
+
+  const scrollToProducts = () => productsRef.current?.scrollIntoView({ behavior: "smooth" });
+
+  const handleOrder = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!orderForm.name || !orderForm.phone) return;
+    setOrderSuccess(true);
+    setTimeout(() => {
+      setCartOpen(false);
+      setOrderSuccess(false);
+      setCart({});
+      setOrderForm({ name: "", phone: "", email: "" });
+    }, 2000);
+  };
+
+  const handleNewsletter = () => {
+    if (!newsletterEmail) return;
+    toast({ title: "Подписка оформлена!", description: "Скидка 15% отправлена на вашу почту" });
+    setNewsletterEmail("");
   };
 
   return (
@@ -114,6 +171,103 @@ export default function CosmeticsShop() {
           Назад
         </Button>
       </Link>
+
+      <Dialog open={cartOpen} onOpenChange={setCartOpen}>
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <ShoppingBag className="w-5 h-5" />
+              Корзина
+            </DialogTitle>
+          </DialogHeader>
+          
+          {orderSuccess ? (
+            <div className="py-8 text-center">
+              <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mx-auto mb-4">
+                <Check className="w-8 h-8 text-green-500" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Заказ оформлен!</h3>
+              <p className="text-muted-foreground">Мы свяжемся с вами для подтверждения</p>
+            </div>
+          ) : (
+            <>
+              {cartItems.length === 0 ? (
+                <p className="text-center text-muted-foreground py-8">Корзина пуста</p>
+              ) : (
+                <>
+                  <div className="space-y-3 mb-4">
+                    {cartItems.map(({ product, quantity }) => (
+                      <div key={product.id} className="flex items-center gap-3 p-2 rounded-md bg-muted/50">
+                        <img src={product.image} alt={product.name} className="w-12 h-12 rounded-md object-cover" />
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-sm truncate">{product.name}</p>
+                          <p className="text-sm text-rose-500">{product.price * quantity} р</p>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => removeFromCart(product.id)}>
+                            <Minus className="w-3 h-3" />
+                          </Button>
+                          <span className="w-6 text-center text-sm">{quantity}</span>
+                          <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => addToCart(product.id)}>
+                            <Plus className="w-3 h-3" />
+                          </Button>
+                          <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => clearItem(product.id)}>
+                            <X className="w-3 h-3" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div className="border-t pt-4 mb-4">
+                    <div className="flex justify-between text-lg font-semibold">
+                      <span>Итого:</span>
+                      <span className="text-rose-500">{cartTotal} р</span>
+                    </div>
+                  </div>
+
+                  <form onSubmit={handleOrder} className="space-y-3">
+                    <div>
+                      <Label htmlFor="name">Ваше имя</Label>
+                      <Input 
+                        id="name" 
+                        value={orderForm.name} 
+                        onChange={(e) => setOrderForm(f => ({ ...f, name: e.target.value }))}
+                        placeholder="Анна"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="phone">Телефон</Label>
+                      <Input 
+                        id="phone" 
+                        type="tel"
+                        value={orderForm.phone} 
+                        onChange={(e) => setOrderForm(f => ({ ...f, phone: e.target.value }))}
+                        placeholder="+7 (999) 123-45-67"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="email">Email</Label>
+                      <Input 
+                        id="email" 
+                        type="email"
+                        value={orderForm.email} 
+                        onChange={(e) => setOrderForm(f => ({ ...f, email: e.target.value }))}
+                        placeholder="anna@mail.ru"
+                      />
+                    </div>
+                    <Button type="submit" className="w-full bg-rose-500 hover:bg-rose-600 rounded-full">
+                      Оформить заказ
+                    </Button>
+                  </form>
+                </>
+              )}
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
 
       <header className="sticky top-0 z-40 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-md border-b border-stone-200 dark:border-neutral-800">
         <div className="max-w-7xl mx-auto px-6 py-4">
@@ -143,11 +297,11 @@ export default function CosmeticsShop() {
                   </span>
                 )}
               </Button>
-              <Button variant="ghost" size="icon" className="relative" data-testid="button-cart">
+              <Button variant="ghost" size="icon" className="relative" onClick={() => setCartOpen(true)} data-testid="button-cart">
                 <ShoppingBag className="w-5 h-5" />
-                {cart.length > 0 && (
+                {cartCount > 0 && (
                   <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-rose-500 text-white text-xs flex items-center justify-center">
-                    {cart.length}
+                    {cartCount}
                   </span>
                 )}
               </Button>
@@ -181,7 +335,7 @@ export default function CosmeticsShop() {
               <p className="text-lg text-stone-600 dark:text-neutral-400 mb-8">
                 Корейская косметика с натуральным составом для вашей ежедневной заботы о коже
               </p>
-              <Button size="lg" className="bg-rose-500 hover:bg-rose-600 text-white rounded-full px-8" data-testid="button-shop-now">
+              <Button size="lg" className="bg-rose-500 hover:bg-rose-600 text-white rounded-full px-8" onClick={scrollToProducts} data-testid="button-shop-now">
                 Смотреть каталог
               </Button>
             </motion.div>
@@ -226,7 +380,7 @@ export default function CosmeticsShop() {
         </div>
       </section>
 
-      <section className="py-16 md:py-24">
+      <section ref={productsRef} className="py-16 md:py-24">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
             <h2 className="text-2xl md:text-3xl font-light text-stone-800 dark:text-white">
@@ -334,10 +488,12 @@ export default function CosmeticsShop() {
             <Input
               type="email"
               placeholder="Ваш email"
+              value={newsletterEmail}
+              onChange={(e) => setNewsletterEmail(e.target.value)}
               className="flex-1 rounded-full"
               data-testid="input-newsletter"
             />
-            <Button className="bg-rose-500 hover:bg-rose-600 rounded-full px-8" data-testid="button-newsletter">
+            <Button className="bg-rose-500 hover:bg-rose-600 rounded-full px-8" onClick={handleNewsletter} data-testid="button-newsletter">
               Подписаться
             </Button>
           </div>

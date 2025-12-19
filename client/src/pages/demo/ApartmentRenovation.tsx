@@ -9,8 +9,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Link } from "wouter";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 
 import livingRoomImg from "@assets/generated_images/modern_living_room_renovation.png";
 import kitchenImg from "@assets/generated_images/modern_kitchen_renovation_result.png";
@@ -126,11 +128,20 @@ const steps = [
 
 export default function ApartmentRenovation() {
   const [formData, setFormData] = useState({ name: "", phone: "", area: "", description: "" });
+  const [callbackOpen, setCallbackOpen] = useState(false);
+  const [callbackSuccess, setCallbackSuccess] = useState(false);
   const { toast } = useToast();
+  const servicesRef = useRef<HTMLElement>(null);
+  const portfolioRef = useRef<HTMLElement>(null);
+  const contactRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  const scrollToServices = () => servicesRef.current?.scrollIntoView({ behavior: "smooth" });
+  const scrollToPortfolio = () => portfolioRef.current?.scrollIntoView({ behavior: "smooth" });
+  const scrollToContact = () => contactRef.current?.scrollIntoView({ behavior: "smooth" });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -139,6 +150,17 @@ export default function ApartmentRenovation() {
       description: "Мы перезвоним вам для бесплатной консультации",
     });
     setFormData({ name: "", phone: "", area: "", description: "" });
+  };
+
+  const handleCallback = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.name || !formData.phone) return;
+    setCallbackSuccess(true);
+    setTimeout(() => {
+      setCallbackOpen(false);
+      setCallbackSuccess(false);
+      setFormData({ name: "", phone: "", area: "", description: "" });
+    }, 2000);
   };
 
   const formatPrice = (price: number) => new Intl.NumberFormat("ru-RU").format(price);
@@ -155,6 +177,54 @@ export default function ApartmentRenovation() {
           Назад
         </Button>
       </Link>
+
+      <Dialog open={callbackOpen} onOpenChange={setCallbackOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Phone className="w-5 h-5 text-amber-500" />
+              Заказать звонок
+            </DialogTitle>
+          </DialogHeader>
+          
+          {callbackSuccess ? (
+            <div className="py-8 text-center">
+              <div className="w-16 h-16 rounded-full bg-amber-100 flex items-center justify-center mx-auto mb-4">
+                <Check className="w-8 h-8 text-amber-500" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Заявка принята!</h3>
+              <p className="text-muted-foreground">Мы перезвоним вам в течение 30 минут</p>
+            </div>
+          ) : (
+            <form onSubmit={handleCallback} className="space-y-4">
+              <div>
+                <Label htmlFor="cb-name">Ваше имя</Label>
+                <Input 
+                  id="cb-name"
+                  value={formData.name} 
+                  onChange={(e) => setFormData(f => ({ ...f, name: e.target.value }))}
+                  placeholder="Иван"
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="cb-phone">Телефон</Label>
+                <Input 
+                  id="cb-phone"
+                  type="tel"
+                  value={formData.phone} 
+                  onChange={(e) => setFormData(f => ({ ...f, phone: e.target.value }))}
+                  placeholder="+7 (999) 123-45-67"
+                  required
+                />
+              </div>
+              <Button type="submit" className="w-full bg-amber-500 hover:bg-amber-600">
+                Перезвоните мне
+              </Button>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Hero Section */}
       <header className="relative min-h-screen flex items-center overflow-hidden">
@@ -178,7 +248,7 @@ export default function ApartmentRenovation() {
             <a href="#process" className="hover:text-amber-600 transition-colors">Как мы работаем</a>
             <a href="#contact" className="hover:text-amber-600 transition-colors">Контакты</a>
           </div>
-          <Button className="bg-amber-500 hover:bg-amber-600 text-white" data-testid="button-call-header">
+          <Button className="bg-amber-500 hover:bg-amber-600 text-white" onClick={() => setCallbackOpen(true)} data-testid="button-call-header">
             <Phone className="w-4 h-4 mr-2" />
             Вызвать замерщика
           </Button>
@@ -204,11 +274,11 @@ export default function ApartmentRenovation() {
               Фиксированная цена, точные сроки, гарантия 3 года.
             </p>
             <div className="flex flex-wrap gap-4">
-              <Button size="lg" className="bg-amber-500 hover:bg-amber-600 text-white" data-testid="button-calculate">
+              <Button size="lg" className="bg-amber-500 hover:bg-amber-600 text-white" onClick={scrollToContact} data-testid="button-calculate">
                 <Ruler className="w-5 h-5 mr-2" />
                 Рассчитать стоимость
               </Button>
-              <Button size="lg" variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50" data-testid="button-portfolio">
+              <Button size="lg" variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50" onClick={scrollToPortfolio} data-testid="button-portfolio">
                 Смотреть работы
               </Button>
             </div>
@@ -280,7 +350,7 @@ export default function ApartmentRenovation() {
       </section>
 
       {/* Services */}
-      <section id="services" className="py-20 bg-gray-50">
+      <section ref={servicesRef} id="services" className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -336,7 +406,7 @@ export default function ApartmentRenovation() {
       </section>
 
       {/* Portfolio */}
-      <section id="portfolio" className="py-20 bg-white">
+      <section ref={portfolioRef} id="portfolio" className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -434,7 +504,7 @@ export default function ApartmentRenovation() {
       </section>
 
       {/* Contact Form */}
-      <section id="contact" className="py-20 bg-gradient-to-br from-amber-500 to-orange-600">
+      <section ref={contactRef} id="contact" className="py-20 bg-gradient-to-br from-amber-500 to-orange-600">
         <div className="max-w-4xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -536,7 +606,7 @@ export default function ApartmentRenovation() {
               <div className="space-y-2 text-sm">
                 <div className="flex items-center gap-2">
                   <Phone className="w-4 h-4" />
-                  +7 (495) 987-65-43
+                  <a href="tel:+74959876543" className="hover:text-white transition-colors">+7 (495) 987-65-43</a>
                 </div>
                 <div className="flex items-center gap-2">
                   <MapPin className="w-4 h-4" />
