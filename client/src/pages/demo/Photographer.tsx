@@ -45,14 +45,14 @@ export default function Photographer() {
 
   return (
     <div className="min-h-screen bg-neutral-950 text-white">
-      <Link href="/#portfolio">
+      <Link href="/#portfolio" className="fixed top-4 left-4 z-[100]">
         <Button 
           variant="ghost" 
           size="icon"
-          className="fixed top-4 left-4 z-50 bg-black/50 backdrop-blur-sm border border-white/10"
+          className="bg-black/70 backdrop-blur-sm border border-white/20 hover:bg-black/90"
           data-testid="button-back-home"
         >
-          <ArrowLeft className="w-5 h-5" />
+          <ArrowLeft className="w-5 h-5 text-white" />
         </Button>
       </Link>
 
