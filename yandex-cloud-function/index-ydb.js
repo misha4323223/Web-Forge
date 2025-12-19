@@ -958,9 +958,18 @@ async function handleAdditionalInvoice(data, headers) {
     const timestamp = Date.now().toString(36); // base36 для компактности
     const addInvUniqueId = `addinv_${orderIdSuffix}_${timestamp}`;
     
-    // Используем фиксированное латинское описание для Robokassa
-    // Русский текст и спецсимволы могут вызывать ошибку "Оплата счетов недоступна"
-    const safeDescription = 'Dopolnitelnye uslugi po razrabotke sayta';
+    // Санитизируем описание для Robokassa:
+    // - Русский текст OK, но переносы строк и скобки вызывают ошибку
+    // - Заменяем \n на "; ", скобки на точки
+    // - Ограничиваем до 100 символов
+    const safeDescription = (description || 'Дополнительные услуги')
+        .replace(/\r?\n/g, '; ')           // переносы -> точка с запятой
+        .replace(/\)\s*/g, '. ')           // "1) " -> "1. "
+        .replace(/\(\s*/g, '')             // убираем открывающие скобки
+        .replace(/[<>\"\'\\]/g, '')        // убираем опасные символы
+        .replace(/\s+/g, ' ')              // множественные пробелы -> один
+        .trim()
+        .substring(0, 100);
     
     const signatureString = `${merchantLogin}:${numericAmount}:${invId}:${password1}:shp_orderId=${addInvUniqueId}`;
     const signature = crypto.createHash('md5').update(signatureString).digest('hex');
