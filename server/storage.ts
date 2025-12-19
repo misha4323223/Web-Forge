@@ -1,6 +1,6 @@
 import { type User, type InsertUser, type ContactRequest, type InsertContactRequest, type Order, type InsertOrder, type AdditionalInvoice, type InsertAdditionalInvoice, users, contactRequests, orders, additionalInvoices } from "@shared/schema";
 import { db } from "./db";
-import { eq } from "drizzle-orm";
+import { eq, isNull, desc } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
@@ -12,6 +12,9 @@ export interface IStorage {
   getOrder(id: string): Promise<Order | undefined>;
   updateOrderStatus(id: string, status: string, paidAt?: Date): Promise<Order | undefined>;
   getOrders(): Promise<Order[]>;
+  getActiveOrders(): Promise<Order[]>;
+  updateOrderNote(id: string, note: string): Promise<Order | undefined>;
+  softDeleteOrder(id: string): Promise<Order | undefined>;
   createAdditionalInvoice(invoice: InsertAdditionalInvoice): Promise<AdditionalInvoice>;
   getAdditionalInvoice(id: string): Promise<AdditionalInvoice | undefined>;
   getAdditionalInvoicesByOrderId(orderId: string): Promise<AdditionalInvoice[]>;
@@ -66,7 +69,29 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getOrders(): Promise<Order[]> {
-    return db.select().from(orders);
+    return db.select().from(orders).orderBy(desc(orders.createdAt));
+  }
+
+  async getActiveOrders(): Promise<Order[]> {
+    return db.select().from(orders).where(isNull(orders.deletedAt)).orderBy(desc(orders.createdAt));
+  }
+
+  async updateOrderNote(id: string, note: string): Promise<Order | undefined> {
+    const [order] = await db
+      .update(orders)
+      .set({ internalNote: note })
+      .where(eq(orders.id, id))
+      .returning();
+    return order;
+  }
+
+  async softDeleteOrder(id: string): Promise<Order | undefined> {
+    const [order] = await db
+      .update(orders)
+      .set({ deletedAt: new Date() })
+      .where(eq(orders.id, id))
+      .returning();
+    return order;
   }
 
   async createAdditionalInvoice(insertInvoice: InsertAdditionalInvoice): Promise<AdditionalInvoice> {

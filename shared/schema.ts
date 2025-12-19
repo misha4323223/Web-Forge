@@ -51,6 +51,8 @@ export const orders = pgTable("orders", {
   contractAccepted: timestamp("contract_accepted"),
   paidAt: timestamp("paid_at"),
   createdAt: timestamp("created_at").defaultNow(),
+  internalNote: text("internal_note"),
+  deletedAt: timestamp("deleted_at"),
 });
 
 export const insertOrderSchema = createInsertSchema(orders).pick({
