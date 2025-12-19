@@ -367,6 +367,17 @@ async function getOrderFromYdb(orderId) {
                         status: getValue('status'),
                         createdAt: getValue('created_at'),
                         paidAt: getValue('paid_at'),
+                        paymentMethod: getValue('payment_method') || 'card',
+                        companyName: getValue('company_name'),
+                        companyInn: getValue('company_inn'),
+                        companyKpp: getValue('company_kpp'),
+                        companyAddress: getValue('company_address'),
+                        totalAmount: getValue('total_amount'),
+                        selectedFeatures: getValue('selected_features'),
+                        prepaymentConfirmedAt: getValue('prepayment_confirmed_at'),
+                        remainingInvoiceSentAt: getValue('remaining_invoice_sent_at'),
+                        remainingConfirmedAt: getValue('remaining_confirmed_at'),
+                        internalNote: getValue('internal_note'),
                     };
                 } else {
                     // Формат с именованными полями (на всякий случай)
@@ -381,6 +392,17 @@ async function getOrderFromYdb(orderId) {
                         status: getStringValue(row.status),
                         createdAt: getStringValue(row.created_at),
                         paidAt: getStringValue(row.paid_at),
+                        paymentMethod: getStringValue(row.payment_method) || 'card',
+                        companyName: getStringValue(row.company_name),
+                        companyInn: getStringValue(row.company_inn),
+                        companyKpp: getStringValue(row.company_kpp),
+                        companyAddress: getStringValue(row.company_address),
+                        totalAmount: getStringValue(row.total_amount),
+                        selectedFeatures: getStringValue(row.selected_features),
+                        prepaymentConfirmedAt: getStringValue(row.prepayment_confirmed_at),
+                        remainingInvoiceSentAt: getStringValue(row.remaining_invoice_sent_at),
+                        remainingConfirmedAt: getStringValue(row.remaining_confirmed_at),
+                        internalNote: getStringValue(row.internal_note),
                     };
                 }
                 
@@ -1163,6 +1185,16 @@ async function getAllOrdersFromYdb(includeDeleted = false) {
                     invId: getValue('inv_id'),
                     internalNote: getValue('internal_note'),
                     deletedAt: getValue('deleted_at'),
+                    paymentMethod: getValue('payment_method') || 'card',
+                    companyName: getValue('company_name'),
+                    companyInn: getValue('company_inn'),
+                    companyKpp: getValue('company_kpp'),
+                    companyAddress: getValue('company_address'),
+                    totalAmount: getValue('total_amount'),
+                    selectedFeatures: getValue('selected_features'),
+                    prepaymentConfirmedAt: getValue('prepayment_confirmed_at'),
+                    remainingInvoiceSentAt: getValue('remaining_invoice_sent_at'),
+                    remainingConfirmedAt: getValue('remaining_confirmed_at'),
                 };
             }).filter(Boolean);
         }
