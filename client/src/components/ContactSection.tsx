@@ -123,9 +123,9 @@ const contactSchema = z.object({
 type ContactFormData = z.infer<typeof contactSchema>;
 
 const contactInfo = [
-  { icon: Mail, label: "Email", value: "hello@webstudio.ru" },
-  { icon: Phone, label: "Телефон", value: "+7 (999) 123-45-67" },
-  { icon: MapPin, label: "Адрес", value: "Москва, Россия" },
+  { icon: Mail, label: "Email", value: "mpwebstudio1@gmail.com" },
+  { icon: Phone, label: "Телефон", value: "+7 (953) 181-41-36" },
+  { icon: MapPin, label: "Город", value: "Тула, Россия" },
 ];
 
 const projectTypes = [

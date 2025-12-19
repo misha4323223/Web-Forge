@@ -73,10 +73,13 @@ export function Footer() {
             <div className="flex flex-col gap-2 text-sm">
               <p className="font-semibold text-foreground">Контакты:</p>
               <p className="text-muted-foreground">
-                Email: <a href="mailto:info@mp-webstudio.ru" className="text-primary hover:underline">info@mp-webstudio.ru</a>
+                Email: <a href="mailto:mpwebstudio1@gmail.com" className="text-primary hover:underline">mpwebstudio1@gmail.com</a>
               </p>
               <p className="text-muted-foreground">
-                Сайт: <a href="https://mp-webstudio.ru" className="text-primary hover:underline">mp-webstudio.ru</a>
+                Телефон: <a href="tel:+79531814136" className="text-primary hover:underline">+7 (953) 181-41-36</a>
+              </p>
+              <p className="text-muted-foreground">
+                Город: Тула, Россия
               </p>
             </div>
           </div>
