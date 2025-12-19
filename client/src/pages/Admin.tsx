@@ -57,8 +57,15 @@ export default function Admin() {
   const [orderToDelete, setOrderToDelete] = useState<Order | null>(null);
   const [noteText, setNoteText] = useState("");
 
+  const API_BASE_URL = import.meta.env.VITE_API_URL || "https://functions.yandexcloud.net/d4ed08qj9rekklj8b100";
+  
   const { data: orders = [], isLoading: ordersLoading } = useQuery<Order[]>({
     queryKey: ["/api/orders"],
+    queryFn: async () => {
+      const res = await fetch(`${API_BASE_URL}?action=orders`);
+      if (!res.ok) throw new Error("Failed to fetch orders");
+      return res.json();
+    },
   });
 
   const form = useForm<AdditionalInvoiceFormData>({

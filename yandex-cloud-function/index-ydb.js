@@ -113,6 +113,11 @@ module.exports.handler = async function (event, context) {
             return await handleAdditionalInvoice(body, headers);
         }
 
+        // GET /api/orders - получить список всех заказов
+        if ((action === 'orders' || path.endsWith('/orders')) && method === 'GET') {
+            return await handleListOrders(query, headers);
+        }
+
         // GET /api/orders/:orderId - получить заказ по ID
         const orderMatch = path.match(/\/orders\/([a-zA-Z0-9_-]+)$/);
         if (orderMatch && method === 'GET') {
@@ -882,6 +887,89 @@ async function handleGetOrder(orderId, headers) {
             body: JSON.stringify({ error: 'Ошибка получения заказа' }),
         };
     }
+}
+
+// GET /api/orders - получить список всех заказов
+async function handleListOrders(query, headers) {
+    try {
+        const showDeleted = query.all === 'true';
+        const orders = await getAllOrdersFromYdb(showDeleted);
+        
+        return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify(orders),
+        };
+    } catch (error) {
+        console.error('Error listing orders:', error.message);
+        return {
+            statusCode: 500,
+            headers,
+            body: JSON.stringify({ error: 'Ошибка получения списка заказов' }),
+        };
+    }
+}
+
+// Получение всех заказов из YDB
+async function getAllOrdersFromYdb(includeDeleted = false) {
+    const driver = await getYdbDriver();
+    let orders = [];
+    
+    await driver.tableClient.withSession(async (session) => {
+        let queryText;
+        if (includeDeleted) {
+            queryText = `SELECT * FROM orders ORDER BY created_at DESC;`;
+        } else {
+            queryText = `SELECT * FROM orders WHERE deleted_at IS NULL OR deleted_at = '' ORDER BY created_at DESC;`;
+        }
+        
+        const result = await session.executeQuery(queryText);
+        
+        if (result.resultSets && result.resultSets.length > 0) {
+            const resultSet = result.resultSets[0];
+            const rows = resultSet.rows || [];
+            const columns = resultSet.columns || [];
+            
+            // Строим маппинг имени колонки -> индекс
+            const columnMap = {};
+            columns.forEach((col, idx) => {
+                columnMap[col.name] = idx;
+            });
+            
+            orders = rows.map(row => {
+                if (!row.items || !Array.isArray(row.items)) {
+                    return null;
+                }
+                
+                // Извлекаем значения по имени колонки
+                const getValue = (colName) => {
+                    const idx = columnMap[colName];
+                    if (idx !== undefined && row.items[idx]) {
+                        return getStringValue(row.items[idx]);
+                    }
+                    return '';
+                };
+                
+                return {
+                    id: getValue('id'),
+                    clientName: getValue('client_name'),
+                    clientEmail: getValue('client_email'),
+                    clientPhone: getValue('client_phone'),
+                    projectType: getValue('project_type'),
+                    projectDescription: getValue('project_description'),
+                    amount: getValue('amount'),
+                    status: getValue('status'),
+                    createdAt: getValue('created_at'),
+                    paidAt: getValue('paid_at'),
+                    invId: getValue('inv_id'),
+                    internalNote: getValue('internal_note'),
+                    deletedAt: getValue('deleted_at'),
+                };
+            }).filter(Boolean);
+        }
+    });
+    
+    return orders;
 }
 
 async function handlePayRemaining(data, headers) {
