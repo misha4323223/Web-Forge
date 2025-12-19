@@ -458,22 +458,26 @@ export function ContactSection() {
             <div className="mt-auto p-6 rounded-md bg-card/50 border border-border">
               <h4 className="font-bold mb-4">Мессенджеры</h4>
               <div className="flex gap-3">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="w-12 h-12"
-                  data-testid="button-telegram"
-                >
-                  <SiTelegram className="w-5 h-5" />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="w-12 h-12"
-                  data-testid="button-whatsapp"
-                >
-                  <SiWhatsapp className="w-5 h-5" />
-                </Button>
+                <a href="https://t.me/MPWebStudio_ru" target="_blank" rel="noopener noreferrer">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="w-12 h-12"
+                    data-testid="button-telegram"
+                  >
+                    <SiTelegram className="w-5 h-5" />
+                  </Button>
+                </a>
+                <a href="https://wa.me/79531814136" target="_blank" rel="noopener noreferrer">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="w-12 h-12"
+                    data-testid="button-whatsapp"
+                  >
+                    <SiWhatsapp className="w-5 h-5" />
+                  </Button>
+                </a>
               </div>
             </div>
           </motion.div>

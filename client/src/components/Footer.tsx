@@ -51,13 +51,15 @@ export function Footer() {
           </nav>
 
           <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              data-testid="button-footer-telegram"
-            >
-              <SiTelegram className="w-5 h-5" />
-            </Button>
+            <a href="https://t.me/MPWebStudio_ru" target="_blank" rel="noopener noreferrer">
+              <Button
+                variant="ghost"
+                size="icon"
+                data-testid="button-footer-telegram"
+              >
+                <SiTelegram className="w-5 h-5" />
+              </Button>
+            </a>
             <Button
               variant="ghost"
               size="icon"
