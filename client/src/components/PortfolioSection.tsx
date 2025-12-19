@@ -112,8 +112,21 @@ import cosmeticsHeroImg from "@assets/stock_images/cosmetics_skincare_p_2775c0e7
 import streetwearHeroImg from "@assets/generated_images/streetwear_hero_banner_dark.png";
 import dentalHeroImg from "@assets/generated_images/dental_clinic_modern_reception.png";
 import renovationHeroImg from "@assets/generated_images/modern_living_room_renovation.png";
+import mpWebstudioImg from "@assets/generated_images/web_studio_portfolio_showcase.png";
 
 const portfolioItems = [
+  {
+    id: 0,
+    title: "MP.WebStudio",
+    subtitle: "Сайт веб-студии",
+    description: "Портфолио-сайт веб-студии с ИИ-разработкой. Калькулятор стоимости, онлайн-оплата, Telegram-бот, админ-панель.",
+    tags: ["React", "TypeScript", "Yandex Cloud", "Telegram", "AI"],
+    image: mpWebstudioImg,
+    externalUrl: "https://www.mp-webstudio.ru/",
+    badgeType: "live" as const,
+    category: "Dark Theme",
+    featured: true,
+  },
   {
     id: 1,
     title: "Сладкие наслаждения",
