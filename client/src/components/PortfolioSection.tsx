@@ -113,6 +113,7 @@ import streetwearHeroImg from "@assets/generated_images/streetwear_hero_banner_d
 import dentalHeroImg from "@assets/generated_images/dental_clinic_modern_reception.png";
 import renovationHeroImg from "@assets/generated_images/modern_living_room_renovation.png";
 import mpWebstudioImg from "@assets/generated_images/web_studio_portfolio_showcase.png";
+import photographerHeroImg from "@assets/generated_images/photographer_workspace_studio_aesthetic.png";
 
 const portfolioItems = [
   {
@@ -237,21 +238,33 @@ const portfolioItems = [
     badgeType: "concept" as const,
     category: "Services",
   },
+  {
+    id: 11,
+    title: "Андрей Соколов",
+    subtitle: "Сайт-визитка фотографа",
+    description: "Концепт сайта-визитки фотографа. Минималистичный дизайн, портфолио, услуги, контакты.",
+    tags: ["React", "Minimalist", "Portfolio"],
+    image: photographerHeroImg,
+    demoUrl: "/demo/photographer",
+    badgeType: "concept" as const,
+    category: "Portfolio",
+  },
 ];
 
 // Позиции звёзд в созвездии (в процентах)
 const starPositions = [
   { x: 50, y: 5 },    // 0 - MP.WebStudio - главная звезда (центр самый верх)
-  { x: 50, y: 20 },   // 1 - центр верх
-  { x: 20, y: 25 },   // 2 - левый верх
-  { x: 80, y: 20 },   // 3 - правый верх
-  { x: 35, y: 45 },   // 4 - левый центр
-  { x: 65, y: 40 },   // 5 - правый центр
-  { x: 25, y: 60 },   // 6 - левый низ (сдвинут правее)
-  { x: 50, y: 55 },   // 7 - центр
-  { x: 80, y: 55 },   // 8 - правый (сдвинут левее)
-  { x: 30, y: 75 },   // 9 - левый низ
-  { x: 70, y: 80 },   // 10 - правый низ
+  { x: 50, y: 18 },   // 1 - центр верх
+  { x: 20, y: 22 },   // 2 - левый верх
+  { x: 80, y: 18 },   // 3 - правый верх
+  { x: 35, y: 38 },   // 4 - левый центр
+  { x: 65, y: 35 },   // 5 - правый центр
+  { x: 22, y: 52 },   // 6 - левый низ
+  { x: 50, y: 48 },   // 7 - центр
+  { x: 78, y: 50 },   // 8 - правый
+  { x: 28, y: 68 },   // 9 - левый низ
+  { x: 68, y: 72 },   // 10 - правый низ
+  { x: 50, y: 85 },   // 11 - центр низ (Фотограф)
 ];
 
 // Связи между проектами по категориям
@@ -261,6 +274,7 @@ const connections: [number, number][] = [
   [4, 5], [4, 6], [5, 6],
   [3, 5], [3, 8], // Dark Theme связи (Фитнес клуб, Streetwear, Barbershop)
   [7, 8], // Booking связи (Дримтур, Barbershop)
+  [9, 11], [10, 11], // Фотограф связи с соседними
 ];
 
 function Nebulae() {
