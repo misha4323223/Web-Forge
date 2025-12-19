@@ -62,6 +62,13 @@ export const orders = pgTable("orders", {
   createdAt: timestamp("created_at").defaultNow(),
   internalNote: text("internal_note"),
   deletedAt: timestamp("deleted_at"),
+  paymentMethod: text("payment_method").default("card"),
+  companyName: text("company_name"),
+  companyInn: text("company_inn"),
+  companyKpp: text("company_kpp"),
+  companyAddress: text("company_address"),
+  prepaymentPaidAt: timestamp("prepayment_paid_at"),
+  remainingPaidAt: timestamp("remaining_paid_at"),
 });
 
 export const insertOrderSchema = createInsertSchema(orders).pick({
@@ -80,6 +87,11 @@ export const insertOrderSchema = createInsertSchema(orders).pick({
   amount: z.string(),
   totalAmount: z.string().optional(),
   selectedFeatures: z.string().optional(),
+  paymentMethod: z.enum(["card", "invoice"]).optional(),
+  companyName: z.string().optional(),
+  companyInn: z.string().optional(),
+  companyKpp: z.string().optional(),
+  companyAddress: z.string().optional(),
 });
 
 export type InsertOrder = z.infer<typeof insertOrderSchema>;
@@ -92,6 +104,8 @@ export const additionalInvoices = pgTable("additional_invoices", {
   amount: text("amount").notNull(),
   status: text("status").notNull().default("pending"),
   invId: text("inv_id"),
+  invoiceNumber: text("invoice_number"),
+  paymentMethod: text("payment_method").default("card"),
   createdAt: timestamp("created_at").defaultNow(),
   paidAt: timestamp("paid_at"),
 });

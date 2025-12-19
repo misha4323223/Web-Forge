@@ -15,7 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Loader2, Copy, Check, Trash2, Edit2, Mail, Phone, Calendar, StickyNote } from "lucide-react";
+import { Loader2, Copy, Check, Trash2, Edit2, Mail, Phone, Calendar, StickyNote, Building2, CreditCard, FileText, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 type AdditionalInvoiceFormData = {
@@ -25,8 +25,10 @@ type AdditionalInvoiceFormData = {
 };
 
 const statusLabels: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
-  pending: { label: "Ожидает", variant: "secondary" },
-  paid: { label: "Оплачено", variant: "default" },
+  pending: { label: "Ожидает оплаты", variant: "secondary" },
+  pending_bank_payment: { label: "Ожидает оплаты счёта", variant: "secondary" },
+  paid: { label: "Предоплата получена", variant: "default" },
+  in_progress: { label: "В работе", variant: "default" },
   completed: { label: "Завершён", variant: "default" },
   cancelled: { label: "Отменён", variant: "destructive" },
 };
@@ -148,8 +150,70 @@ export default function Admin() {
     },
   });
 
+  const confirmBankPaymentMutation = useMutation({
+    mutationFn: async ({ orderId, paymentType }: { orderId: string; paymentType: 'prepayment' | 'remaining' }) => {
+      const res = await fetch(`${API_BASE_URL}?action=confirm-bank-payment`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId, paymentType }),
+      });
+      if (!res.ok) throw new Error("Failed to confirm payment");
+      return res.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
+      toast({ title: "Оплата подтверждена", description: data.message });
+    },
+    onError: () => {
+      toast({ title: "Ошибка", description: "Не удалось подтвердить оплату", variant: "destructive" });
+    },
+  });
+
+  const issueRemainingInvoiceMutation = useMutation({
+    mutationFn: async (orderId: string) => {
+      const res = await fetch(`${API_BASE_URL}?action=bank-invoice-remaining`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId }),
+      });
+      if (!res.ok) throw new Error("Failed to issue remaining invoice");
+      return res.json();
+    },
+    onSuccess: (data) => {
+      toast({ title: "Счёт на остаток отправлен", description: `Счёт №${data.invoiceNumber}` });
+    },
+    onError: () => {
+      toast({ title: "Ошибка", description: "Не удалось выставить счёт", variant: "destructive" });
+    },
+  });
+
+  const issueBankAddonInvoiceMutation = useMutation({
+    mutationFn: async ({ orderId, description, amount }: { orderId: string; description: string; amount: string }) => {
+      const res = await fetch(`${API_BASE_URL}?action=bank-invoice-addon`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId, description, amount }),
+      });
+      if (!res.ok) throw new Error("Failed to issue addon invoice");
+      return res.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
+      toast({ title: "Доп. счёт отправлен", description: `Счёт №${data.invoiceNumber}` });
+      form.reset();
+    },
+    onError: () => {
+      toast({ title: "Ошибка", description: "Не удалось выставить счёт", variant: "destructive" });
+    },
+  });
+
   const handleSubmit = (values: AdditionalInvoiceFormData) => {
-    createInvoiceMutation.mutate(values);
+    const order = orders.find(o => o.id === values.orderId);
+    if (order?.paymentMethod === 'invoice') {
+      issueBankAddonInvoiceMutation.mutate(values);
+    } else {
+      createInvoiceMutation.mutate(values);
+    }
   };
 
   const openNoteDialog = (order: Order) => {
@@ -205,6 +269,17 @@ export default function Admin() {
                               <Badge variant="outline">
                                 {projectTypeLabels[order.projectType] || order.projectType}
                               </Badge>
+                              {order.paymentMethod === 'invoice' ? (
+                                <Badge variant="outline" className="gap-1 border-blue-500 text-blue-600 dark:text-blue-400">
+                                  <Building2 className="w-3 h-3" />
+                                  Счёт
+                                </Badge>
+                              ) : (
+                                <Badge variant="outline" className="gap-1">
+                                  <CreditCard className="w-3 h-3" />
+                                  Карта
+                                </Badge>
+                              )}
                               {order.internalNote && (
                                 <Badge variant="secondary" className="gap-1">
                                   <StickyNote className="w-3 h-3" />
@@ -212,6 +287,13 @@ export default function Admin() {
                                 </Badge>
                               )}
                             </div>
+                            
+                            {order.paymentMethod === 'invoice' && order.companyName && (
+                              <div className="text-sm text-blue-600 dark:text-blue-400 flex items-center gap-1">
+                                <Building2 className="w-4 h-4" />
+                                {order.companyName} (ИНН: {order.companyInn})
+                              </div>
+                            )}
 
                             <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
                               <span className="flex items-center gap-1">
@@ -263,6 +345,63 @@ export default function Admin() {
                               <Edit2 className="w-4 h-4 mr-1" />
                               Заметка
                             </Button>
+                            
+                            {order.paymentMethod === 'invoice' && order.status === 'pending_bank_payment' && (
+                              <Button
+                                size="sm"
+                                variant="default"
+                                onClick={() => confirmBankPaymentMutation.mutate({ orderId: order.id, paymentType: 'prepayment' })}
+                                disabled={confirmBankPaymentMutation.isPending}
+                                data-testid={`button-confirm-prepayment-${order.id}`}
+                              >
+                                {confirmBankPaymentMutation.isPending ? (
+                                  <Loader2 className="w-4 h-4 animate-spin" />
+                                ) : (
+                                  <>
+                                    <CheckCircle className="w-4 h-4 mr-1" />
+                                    Предоплата получена
+                                  </>
+                                )}
+                              </Button>
+                            )}
+                            
+                            {order.paymentMethod === 'invoice' && order.status === 'in_progress' && (
+                              <>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => issueRemainingInvoiceMutation.mutate(order.id)}
+                                  disabled={issueRemainingInvoiceMutation.isPending}
+                                  data-testid={`button-remaining-invoice-${order.id}`}
+                                >
+                                  {issueRemainingInvoiceMutation.isPending ? (
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                  ) : (
+                                    <>
+                                      <FileText className="w-4 h-4 mr-1" />
+                                      Счёт на остаток
+                                    </>
+                                  )}
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="default"
+                                  onClick={() => confirmBankPaymentMutation.mutate({ orderId: order.id, paymentType: 'remaining' })}
+                                  disabled={confirmBankPaymentMutation.isPending}
+                                  data-testid={`button-confirm-remaining-${order.id}`}
+                                >
+                                  {confirmBankPaymentMutation.isPending ? (
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                  ) : (
+                                    <>
+                                      <CheckCircle className="w-4 h-4 mr-1" />
+                                      Остаток получен
+                                    </>
+                                  )}
+                                </Button>
+                              </>
+                            )}
+                            
                             <Button
                               size="sm"
                               variant="outline"
@@ -272,7 +411,7 @@ export default function Admin() {
                               }}
                               data-testid={`button-invoice-${order.id}`}
                             >
-                              Выставить счёт
+                              Доп. счёт
                             </Button>
                             <Button
                               size="sm"
@@ -355,11 +494,11 @@ export default function Admin() {
 
                       <Button
                         type="submit"
-                        disabled={createInvoiceMutation.isPending}
+                        disabled={createInvoiceMutation.isPending || issueBankAddonInvoiceMutation.isPending}
                         className="w-full"
                         data-testid="button-create-invoice"
                       >
-                        {createInvoiceMutation.isPending ? (
+                        {(createInvoiceMutation.isPending || issueBankAddonInvoiceMutation.isPending) ? (
                           <>
                             <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                             Создание счёта...
@@ -388,8 +527,8 @@ export default function Admin() {
                     <li>Опишите дополнительную функцию/услугу</li>
                     <li>Укажите стоимость</li>
                     <li>Нажмите "Создать счёт"</li>
-                    <li>Ссылка на оплату автоматически скопируется</li>
-                    <li>Отправьте ссылку клиенту (например, через Telegram)</li>
+                    <li><strong>Физлицо (карта):</strong> ссылка на Robokassa скопируется</li>
+                    <li><strong>Юрлицо (счёт):</strong> PDF-счёт отправится на email клиента</li>
                   </ol>
                 </div>
               </div>

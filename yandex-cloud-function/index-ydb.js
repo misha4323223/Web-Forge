@@ -119,9 +119,24 @@ module.exports.handler = async function (event, context) {
             return await handleAdditionalInvoice(body, headers);
         }
 
-        // POST /api/bank-invoice - создать счёт на оплату для юрлиц
-        if ((action === 'bank-invoice' || path.includes('/bank-invoice')) && method === 'POST') {
+        // POST /api/bank-invoice - создать счёт на оплату для юрлиц (предоплата)
+        if ((action === 'bank-invoice' || path.endsWith('/bank-invoice')) && method === 'POST') {
             return await handleBankInvoice(body, headers);
+        }
+
+        // POST /api/bank-invoice/remaining - выставить счёт на остаток для юрлиц
+        if ((action === 'bank-invoice-remaining' || path.includes('/bank-invoice/remaining')) && method === 'POST') {
+            return await handleBankInvoiceRemaining(body, headers);
+        }
+
+        // POST /api/bank-invoice/addon - выставить доп. счёт для юрлиц
+        if ((action === 'bank-invoice-addon' || path.includes('/bank-invoice/addon')) && method === 'POST') {
+            return await handleBankInvoiceAddon(body, headers);
+        }
+
+        // POST /api/confirm-bank-payment - подтвердить оплату по счёту
+        if ((action === 'confirm-bank-payment' || path.includes('/confirm-bank-payment')) && method === 'POST') {
+            return await handleConfirmBankPayment(body, headers);
         }
 
         // POST ?action=delete-order - мягкое удаление заказа
@@ -222,6 +237,14 @@ async function createOrderInYdb(orderData) {
     const projectType = String(orderData.projectType || '').trim();
     const projectDescription = String(orderData.projectDescription || '').trim();
     const amount = String(orderData.amount || '0').trim();
+    const totalAmount = String(orderData.totalAmount || amount).trim();
+    const selectedFeatures = String(orderData.selectedFeatures || '').trim();
+    const status = String(orderData.status || 'pending').trim();
+    const paymentMethod = String(orderData.paymentMethod || 'card').trim();
+    const companyName = String(orderData.companyName || '').trim();
+    const companyInn = String(orderData.companyInn || '').trim();
+    const companyKpp = String(orderData.companyKpp || '').trim();
+    const companyAddress = String(orderData.companyAddress || '').trim();
     
     if (!clientName || !clientEmail) {
         throw new Error('clientName and clientEmail are required');
@@ -236,11 +259,18 @@ async function createOrderInYdb(orderData) {
             DECLARE $project_type AS Utf8;
             DECLARE $project_description AS Utf8;
             DECLARE $amount AS Utf8;
+            DECLARE $total_amount AS Utf8;
+            DECLARE $selected_features AS Utf8;
             DECLARE $status AS Utf8;
             DECLARE $created_at AS Utf8;
+            DECLARE $payment_method AS Utf8;
+            DECLARE $company_name AS Utf8;
+            DECLARE $company_inn AS Utf8;
+            DECLARE $company_kpp AS Utf8;
+            DECLARE $company_address AS Utf8;
             
-            UPSERT INTO orders (id, client_name, client_email, client_phone, project_type, project_description, amount, status, created_at)
-            VALUES ($id, $client_name, $client_email, $client_phone, $project_type, $project_description, $amount, $status, $created_at);
+            UPSERT INTO orders (id, client_name, client_email, client_phone, project_type, project_description, amount, total_amount, selected_features, status, created_at, payment_method, company_name, company_inn, company_kpp, company_address)
+            VALUES ($id, $client_name, $client_email, $client_phone, $project_type, $project_description, $amount, $total_amount, $selected_features, $status, $created_at, $payment_method, $company_name, $company_inn, $company_kpp, $company_address);
         `;
         
         const preparedQuery = await session.prepareQuery(queryText);
@@ -253,8 +283,15 @@ async function createOrderInYdb(orderData) {
             '$project_type': TypedValues.utf8(projectType),
             '$project_description': TypedValues.utf8(projectDescription),
             '$amount': TypedValues.utf8(amount),
-            '$status': TypedValues.utf8('pending'),
+            '$total_amount': TypedValues.utf8(totalAmount),
+            '$selected_features': TypedValues.utf8(selectedFeatures),
+            '$status': TypedValues.utf8(status),
             '$created_at': TypedValues.utf8(now),
+            '$payment_method': TypedValues.utf8(paymentMethod),
+            '$company_name': TypedValues.utf8(companyName),
+            '$company_inn': TypedValues.utf8(companyInn),
+            '$company_kpp': TypedValues.utf8(companyKpp),
+            '$company_address': TypedValues.utf8(companyAddress),
         });
     });
     
@@ -1430,6 +1467,7 @@ async function handleBankInvoice(data, headers) {
             totalAmount: totalAmount || amount || '0',
             selectedFeatures: selectedFeatures || '',
             status: 'pending_bank_payment',
+            paymentMethod: 'invoice',
             companyName,
             companyInn,
             companyKpp: companyKpp || '',
@@ -1506,6 +1544,337 @@ ${companyKpp ? `КПП: ${companyKpp}` : ''}
                 success: false, 
                 message: 'Ошибка создания счёта: ' + error.message 
             }),
+        };
+    }
+}
+
+// ============ Confirm Bank Payment ============
+
+async function handleConfirmBankPayment(data, headers) {
+    try {
+        const { orderId, paymentType } = data; // paymentType: 'prepayment' | 'remaining'
+        
+        if (!orderId) {
+            return {
+                statusCode: 400,
+                headers,
+                body: JSON.stringify({ success: false, message: 'orderId обязателен' }),
+            };
+        }
+
+        const order = await getOrderFromYdb(orderId);
+        if (!order) {
+            return {
+                statusCode: 404,
+                headers,
+                body: JSON.stringify({ success: false, message: 'Заказ не найден' }),
+            };
+        }
+
+        const driver = await getYdbDriver();
+        const now = new Date().toISOString();
+        let newStatus = order.status;
+        let updateField = '';
+
+        if (paymentType === 'prepayment') {
+            newStatus = 'in_progress';
+            updateField = 'prepayment_paid_at';
+        } else if (paymentType === 'remaining') {
+            newStatus = 'completed';
+            updateField = 'remaining_paid_at';
+        }
+
+        await driver.tableClient.withSession(async (session) => {
+            const queryText = paymentType === 'prepayment' 
+                ? `DECLARE $id AS Utf8;
+                   DECLARE $status AS Utf8;
+                   DECLARE $prepayment_paid_at AS Utf8;
+                   UPDATE orders SET status = $status, prepayment_paid_at = $prepayment_paid_at WHERE id = $id;`
+                : `DECLARE $id AS Utf8;
+                   DECLARE $status AS Utf8;
+                   DECLARE $remaining_paid_at AS Utf8;
+                   DECLARE $paid_at AS Utf8;
+                   UPDATE orders SET status = $status, remaining_paid_at = $remaining_paid_at, paid_at = $paid_at WHERE id = $id;`;
+            
+            const preparedQuery = await session.prepareQuery(queryText);
+            
+            const params = paymentType === 'prepayment'
+                ? {
+                    '$id': TypedValues.utf8(orderId),
+                    '$status': TypedValues.utf8(newStatus),
+                    '$prepayment_paid_at': TypedValues.utf8(now),
+                }
+                : {
+                    '$id': TypedValues.utf8(orderId),
+                    '$status': TypedValues.utf8(newStatus),
+                    '$remaining_paid_at': TypedValues.utf8(now),
+                    '$paid_at': TypedValues.utf8(now),
+                };
+            
+            await session.executeQuery(preparedQuery, params);
+        });
+
+        // Уведомление в Telegram
+        const paymentTypeText = paymentType === 'prepayment' ? 'предоплаты' : 'остатка';
+        await sendTelegramNotification(`✅ Подтверждена оплата ${paymentTypeText}!
+
+🆔 Заказ: ${orderId}
+👤 Клиент: ${order.clientName}
+🏛️ Компания: ${order.companyName || 'Физлицо'}
+💰 Статус: ${newStatus === 'in_progress' ? 'В работе' : 'Завершён'}`);
+
+        // Если это оплата остатка — генерируем Акт
+        if (paymentType === 'remaining') {
+            try {
+                const actPdf = await generateCompletionActPDF(order);
+                await sendCompletionActEmail(order, actPdf);
+            } catch (actError) {
+                console.error('Error generating act:', actError.message);
+            }
+        }
+
+        return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({
+                success: true,
+                message: `Оплата ${paymentTypeText} подтверждена`,
+                newStatus,
+            }),
+        };
+
+    } catch (error) {
+        console.error('Error confirming bank payment:', error.message);
+        return {
+            statusCode: 500,
+            headers,
+            body: JSON.stringify({ success: false, message: error.message }),
+        };
+    }
+}
+
+// ============ Bank Invoice Remaining (for legal entities) ============
+
+async function handleBankInvoiceRemaining(data, headers) {
+    try {
+        const { orderId } = data;
+        
+        if (!orderId) {
+            return {
+                statusCode: 400,
+                headers,
+                body: JSON.stringify({ success: false, message: 'orderId обязателен' }),
+            };
+        }
+
+        const order = await getOrderFromYdb(orderId);
+        if (!order) {
+            return {
+                statusCode: 404,
+                headers,
+                body: JSON.stringify({ success: false, message: 'Заказ не найден' }),
+            };
+        }
+
+        if (order.paymentMethod !== 'invoice') {
+            return {
+                statusCode: 400,
+                headers,
+                body: JSON.stringify({ success: false, message: 'Заказ не с оплатой по счёту' }),
+            };
+        }
+
+        // Сумма остатка = предоплата (50%)
+        const remainingAmount = parseFloat(order.amount) || 0;
+        const invoiceNumber = Date.now().toString().slice(-8);
+
+        // Генерируем PDF счёта на остаток
+        const pdfBuffer = await generateBankInvoicePDF({
+            invoiceNumber,
+            orderId,
+            clientName: order.clientName,
+            clientEmail: order.clientEmail,
+            clientPhone: order.clientPhone,
+            companyName: order.companyName,
+            companyInn: order.companyInn,
+            companyKpp: order.companyKpp,
+            companyAddress: order.companyAddress,
+            projectType: order.projectType,
+            projectDescription: 'Оплата остатка за разработку сайта',
+            amount: remainingAmount,
+            bankName: process.env.BANK_NAME,
+            bankBik: process.env.BANK_BIK,
+            bankAccount: process.env.BANK_ACCOUNT,
+            bankCorrAccount: process.env.BANK_CORR_ACCOUNT || '',
+        });
+
+        // Отправляем email
+        await sendBankInvoiceEmail({
+            clientName: order.clientName,
+            clientEmail: order.clientEmail,
+            companyName: order.companyName,
+            orderId,
+            invoiceNumber,
+            amount: remainingAmount,
+            isRemaining: true,
+        }, pdfBuffer);
+
+        // Уведомление в Telegram
+        await sendTelegramNotification(`📄 Выставлен счёт на ОСТАТОК!
+
+🆔 Заказ: ${orderId}
+👤 Клиент: ${order.clientName}
+🏛️ Компания: ${order.companyName}
+💰 Сумма: ${new Intl.NumberFormat('ru-RU').format(remainingAmount)} ₽
+📄 Счёт №${invoiceNumber} отправлен на email`);
+
+        return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({
+                success: true,
+                message: 'Счёт на остаток отправлен',
+                invoiceNumber,
+            }),
+        };
+
+    } catch (error) {
+        console.error('Error creating remaining invoice:', error.message);
+        return {
+            statusCode: 500,
+            headers,
+            body: JSON.stringify({ success: false, message: error.message }),
+        };
+    }
+}
+
+// ============ Bank Invoice Addon (for legal entities) ============
+
+async function handleBankInvoiceAddon(data, headers) {
+    try {
+        const { orderId, description, amount } = data;
+        
+        if (!orderId || !description || !amount) {
+            return {
+                statusCode: 400,
+                headers,
+                body: JSON.stringify({ success: false, message: 'orderId, description и amount обязательны' }),
+            };
+        }
+
+        const order = await getOrderFromYdb(orderId);
+        if (!order) {
+            return {
+                statusCode: 404,
+                headers,
+                body: JSON.stringify({ success: false, message: 'Заказ не найден' }),
+            };
+        }
+
+        if (order.paymentMethod !== 'invoice') {
+            return {
+                statusCode: 400,
+                headers,
+                body: JSON.stringify({ success: false, message: 'Заказ не с оплатой по счёту' }),
+            };
+        }
+
+        const numericAmount = parseFloat(amount) || 0;
+        const invoiceNumber = Date.now().toString().slice(-8);
+
+        // Сохраняем доп. счёт в YDB
+        const driver = await getYdbDriver();
+        const invoiceId = 'addinv_' + generateOrderId().slice(4);
+        const now = new Date().toISOString();
+
+        await driver.tableClient.withSession(async (session) => {
+            const queryText = `
+                DECLARE $id AS Utf8;
+                DECLARE $order_id AS Utf8;
+                DECLARE $description AS Utf8;
+                DECLARE $amount AS Utf8;
+                DECLARE $status AS Utf8;
+                DECLARE $invoice_number AS Utf8;
+                DECLARE $payment_method AS Utf8;
+                DECLARE $created_at AS Utf8;
+                
+                UPSERT INTO additional_invoices (id, order_id, description, amount, status, invoice_number, payment_method, created_at)
+                VALUES ($id, $order_id, $description, $amount, $status, $invoice_number, $payment_method, $created_at);
+            `;
+            
+            const preparedQuery = await session.prepareQuery(queryText);
+            
+            await session.executeQuery(preparedQuery, {
+                '$id': TypedValues.utf8(invoiceId),
+                '$order_id': TypedValues.utf8(orderId),
+                '$description': TypedValues.utf8(description),
+                '$amount': TypedValues.utf8(numericAmount.toString()),
+                '$status': TypedValues.utf8('pending'),
+                '$invoice_number': TypedValues.utf8(invoiceNumber),
+                '$payment_method': TypedValues.utf8('invoice'),
+                '$created_at': TypedValues.utf8(now),
+            });
+        });
+
+        // Генерируем PDF счёта
+        const pdfBuffer = await generateBankInvoicePDF({
+            invoiceNumber,
+            orderId,
+            clientName: order.clientName,
+            clientEmail: order.clientEmail,
+            clientPhone: order.clientPhone,
+            companyName: order.companyName,
+            companyInn: order.companyInn,
+            companyKpp: order.companyKpp,
+            companyAddress: order.companyAddress,
+            projectType: order.projectType,
+            projectDescription: description,
+            amount: numericAmount,
+            bankName: process.env.BANK_NAME,
+            bankBik: process.env.BANK_BIK,
+            bankAccount: process.env.BANK_ACCOUNT,
+            bankCorrAccount: process.env.BANK_CORR_ACCOUNT || '',
+        });
+
+        // Отправляем email
+        await sendBankInvoiceEmail({
+            clientName: order.clientName,
+            clientEmail: order.clientEmail,
+            companyName: order.companyName,
+            orderId,
+            invoiceNumber,
+            amount: numericAmount,
+            isAddon: true,
+            addonDescription: description,
+        }, pdfBuffer);
+
+        // Уведомление в Telegram
+        await sendTelegramNotification(`📄 Выставлен ДОП. СЧЁТ!
+
+🆔 Заказ: ${orderId}
+👤 Клиент: ${order.clientName}
+🏛️ Компания: ${order.companyName}
+📝 Описание: ${description}
+💰 Сумма: ${new Intl.NumberFormat('ru-RU').format(numericAmount)} ₽
+📄 Счёт №${invoiceNumber} отправлен на email`);
+
+        return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({
+                success: true,
+                message: 'Дополнительный счёт отправлен',
+                invoiceId,
+                invoiceNumber,
+            }),
+        };
+
+    } catch (error) {
+        console.error('Error creating addon invoice:', error.message);
+        return {
+            statusCode: 500,
+            headers,
+            body: JSON.stringify({ success: false, message: error.message }),
         };
     }
 }
@@ -1689,13 +2058,24 @@ function numberToWords(num) {
 
 async function sendBankInvoiceEmail(orderData, pdfBuffer) {
     const formatPrice = (price) => new Intl.NumberFormat('ru-RU').format(price);
+    
+    let invoiceType = 'Счёт на оплату (предоплата)';
+    let actionText = 'После оплаты, пожалуйста, сообщите нам — мы начнём работу над вашим проектом.';
+    
+    if (orderData.isRemaining) {
+        invoiceType = 'Счёт на остаток оплаты';
+        actionText = 'Проект завершён. После оплаты остатка вы получите Акт выполненных работ.';
+    } else if (orderData.isAddon) {
+        invoiceType = 'Дополнительный счёт';
+        actionText = `Услуга: ${orderData.addonDescription || 'Дополнительные работы'}`;
+    }
 
     const emailHtml = `
     <!DOCTYPE html>
     <html>
     <head><meta charset="utf-8"></head>
     <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <h2 style="color: #0891b2;">Счёт на оплату</h2>
+        <h2 style="color: #0891b2;">${invoiceType}</h2>
         <p>Здравствуйте, ${orderData.clientName}!</p>
         <p>Счёт на оплату для <strong>${orderData.companyName}</strong> прикреплён к этому письму.</p>
         
@@ -1705,7 +2085,7 @@ async function sendBankInvoiceEmail(orderData, pdfBuffer) {
             <p style="margin: 5px 0;"><strong>ID заказа:</strong> ${orderData.orderId}</p>
         </div>
         
-        <p>После оплаты, пожалуйста, сообщите нам — мы начнём работу над вашим проектом.</p>
+        <p>${actionText}</p>
         
         <p style="margin-top: 30px; color: #6b7280;">С уважением,<br><strong>MP.WebStudio</strong><br>
         Телефон: +7 (953) 181-41-36<br>
@@ -1736,7 +2116,12 @@ async function sendBankInvoiceEmail(orderData, pdfBuffer) {
         const pdfBase64 = wrapBase64(pdfBuffer.toString('base64'));
         const htmlBase64 = wrapBase64(Buffer.from(emailHtml).toString('base64'));
         
-        const subjectText = `Счёт на оплату №${orderData.invoiceNumber} - MP.WebStudio`;
+        let subjectText = `Счёт на оплату №${orderData.invoiceNumber} - MP.WebStudio`;
+        if (orderData.isRemaining) {
+            subjectText = `Счёт на остаток №${orderData.invoiceNumber} - MP.WebStudio`;
+        } else if (orderData.isAddon) {
+            subjectText = `Дополнительный счёт №${orderData.invoiceNumber} - MP.WebStudio`;
+        }
         const fileName = `Invoice_${orderData.invoiceNumber}.pdf`;
         
         const rawEmail = [
@@ -1855,8 +2240,16 @@ async function generateContractPDF(order) {
         doc.text('Телефон: +7 (953) 181-41-36, Email: mpwebstudio1@gmail.com');
         doc.moveDown(0.5);
 
-        doc.font('Roboto-Bold').text('ЗАКАЗЧИК: ', { continued: true });
-        doc.font('Roboto').text(order.clientName || 'Клиент');
+        doc.font('Roboto-Bold').text('ЗАКАЗЧИК:');
+        if (order.paymentMethod === 'invoice' && order.companyName) {
+            doc.font('Roboto').text(order.companyName);
+            doc.text(`ИНН: ${order.companyInn || '-'}`);
+            if (order.companyKpp) doc.text(`КПП: ${order.companyKpp}`);
+            if (order.companyAddress) doc.text(`Адрес: ${order.companyAddress}`);
+            doc.text(`Контактное лицо: ${order.clientName || 'Не указано'}`);
+        } else {
+            doc.font('Roboto').text(order.clientName || 'Клиент');
+        }
         if (order.clientPhone) doc.text(`Телефон: ${order.clientPhone}`);
         if (order.clientEmail) doc.text(`Email: ${order.clientEmail}`);
         doc.moveDown(1);
@@ -1949,7 +2342,15 @@ async function generateCompletionActPDF(order, additionalInvoices = []) {
         doc.moveDown(0.5);
 
         doc.font('Roboto-Bold').text('ЗАКАЗЧИК:');
-        doc.font('Roboto').text(order.clientName || 'Клиент');
+        if (order.paymentMethod === 'invoice' && order.companyName) {
+            doc.font('Roboto').text(order.companyName);
+            doc.text(`ИНН: ${order.companyInn || '-'}`);
+            if (order.companyKpp) doc.text(`КПП: ${order.companyKpp}`);
+            if (order.companyAddress) doc.text(`Адрес: ${order.companyAddress}`);
+            doc.text(`Контактное лицо: ${order.clientName || 'Не указано'}`);
+        } else {
+            doc.font('Roboto').text(order.clientName || 'Клиент');
+        }
         if (order.clientPhone) doc.text(`Телефон: ${order.clientPhone}`);
         if (order.clientEmail) doc.text(`Email: ${order.clientEmail}`);
         doc.moveDown(1);
