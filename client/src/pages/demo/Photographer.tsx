@@ -58,7 +58,7 @@ export default function Photographer() {
 
       <header className="fixed top-0 left-0 right-0 z-40 bg-neutral-950/80 backdrop-blur-md border-b border-white/5">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 pl-12">
             <Camera className="w-6 h-6 text-amber-400" />
             <span className="text-xl font-light tracking-wide">Андрей Соколов</span>
           </div>
