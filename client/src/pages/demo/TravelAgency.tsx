@@ -256,7 +256,7 @@ export default function TravelAgency() {
         <div className="absolute inset-0 bg-cover bg-center mix-blend-overlay opacity-40 pointer-events-none" style={{ backgroundImage: `url(${travelHeroImg})` }} />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none" />
         
-        <nav className="absolute top-0 left-0 right-0 z-10 max-w-7xl mx-auto px-6 py-6 flex items-center justify-between gap-4">
+        <nav className="absolute top-0 left-0 right-0 z-50 max-w-7xl mx-auto px-6 py-6 flex items-center justify-between gap-4 pointer-events-auto">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
               <Plane className="w-5 h-5 text-white" />
