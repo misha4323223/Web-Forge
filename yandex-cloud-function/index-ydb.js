@@ -958,6 +958,12 @@ async function handleAdditionalInvoice(data, headers) {
     const timestamp = Date.now().toString(36); // base36 для компактности
     const addInvUniqueId = `addinv_${orderIdSuffix}_${timestamp}`;
     
+    // Санитизируем описание - Robokassa принимает только буквы, цифры и знаки препинания
+    // Ограничиваем до 100 символов
+    const safeDescription = (description || 'Дополнительный счет за разработку сайта')
+        .replace(/[^\w\sа-яА-ЯёЁ.,!?()-]/g, '')
+        .substring(0, 100);
+    
     const signatureString = `${merchantLogin}:${numericAmount}:${invId}:${password1}:shp_orderId=${addInvUniqueId}`;
     const signature = crypto.createHash('md5').update(signatureString).digest('hex');
     
@@ -967,13 +973,24 @@ async function handleAdditionalInvoice(data, headers) {
         MerchantLogin: merchantLogin,
         OutSum: numericAmount.toString(),
         InvId: invId.toString(),
-        Description: description || 'Дополнительный счет за разработку сайта',
+        Description: safeDescription,
         SignatureValue: signature,
         shp_orderId: addInvUniqueId,
         IsTest: isTestMode ? '1' : '0',
     });
     
     const paymentUrl = `${baseUrl}?${params.toString()}`;
+    
+    console.log('Additional invoice payment URL generated:');
+    console.log('  MerchantLogin:', merchantLogin);
+    console.log('  OutSum:', numericAmount);
+    console.log('  InvId:', invId);
+    console.log('  Description:', safeDescription);
+    console.log('  shp_orderId:', addInvUniqueId);
+    console.log('  IsTest:', isTestMode ? '1' : '0');
+    console.log('  SignatureString:', signatureString);
+    console.log('  Signature:', signature);
+    console.log('  Full URL:', paymentUrl);
 
     try {
         await sendTelegramNotification(`📄 Выставлен дополнительный счет!
