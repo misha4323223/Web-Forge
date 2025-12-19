@@ -125,7 +125,7 @@ export function AboutSection() {
             className="mb-6"
           >
             <span className="neon-badge">
-              <span className="neon-badge-text">Нейроядро</span>
+              <span className="neon-badge-text">О студии</span>
             </span>
           </motion.div>
           

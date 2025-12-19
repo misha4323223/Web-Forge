@@ -677,7 +677,7 @@ export function PortfolioSection() {
             className="mb-4"
           >
             <span className="neon-badge">
-              <span className="neon-badge-text">Датасет проектов</span>
+              <span className="neon-badge-text">Портфолио</span>
             </span>
           </motion.div>
           <h2 className="text-3xl md:text-5xl font-bold mb-4">

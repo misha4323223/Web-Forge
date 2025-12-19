@@ -167,7 +167,7 @@ export function ProcessSection() {
             className="mb-4"
           >
             <span className="neon-badge">
-              <span className="neon-badge-text">Pipeline разработки</span>
+              <span className="neon-badge-text">Процесс</span>
             </span>
           </motion.div>
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4">
