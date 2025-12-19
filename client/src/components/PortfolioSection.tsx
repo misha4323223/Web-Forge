@@ -241,7 +241,8 @@ const portfolioItems = [
 
 // Позиции звёзд в созвездии (в процентах)
 const starPositions = [
-  { x: 50, y: 15 },   // 1 - центр верх
+  { x: 50, y: 5 },    // 0 - MP.WebStudio - главная звезда (центр самый верх)
+  { x: 50, y: 20 },   // 1 - центр верх
   { x: 20, y: 25 },   // 2 - левый верх
   { x: 80, y: 20 },   // 3 - правый верх
   { x: 35, y: 45 },   // 4 - левый центр
@@ -255,10 +256,11 @@ const starPositions = [
 
 // Связи между проектами по категориям
 const connections: [number, number][] = [
-  [0, 3], [0, 4], [0, 5], // E-commerce связи (Сладкие наслаждения, Natura, Streetwear, Sockstyle)
-  [3, 4], [3, 5], [4, 5],
-  [2, 4], [2, 7], // Dark Theme связи (Фитнес клуб, Streetwear, Barbershop)
-  [6, 7], // Booking связи (Дримтур, Barbershop)
+  [0, 1], [0, 3], // MP.WebStudio связи с ближайшими
+  [1, 4], [1, 5], [1, 6], // E-commerce связи (Сладкие наслаждения, Natura, Streetwear, Sockstyle)
+  [4, 5], [4, 6], [5, 6],
+  [3, 5], [3, 8], // Dark Theme связи (Фитнес клуб, Streetwear, Barbershop)
+  [7, 8], // Booking связи (Дримтур, Barbershop)
 ];
 
 function Nebulae() {
