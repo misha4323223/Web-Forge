@@ -28,6 +28,7 @@
  */
 
 const crypto = require('crypto');
+const https = require('https');
 const nodemailer = require('nodemailer');
 const PDFDocument = require('pdfkit');
 const { Driver, getCredentialsFromEnv, TypedValues, Types } = require('ydb-sdk');
@@ -58,6 +59,43 @@ async function getYdbDriver() {
         console.log('YDB driver connected to:', database);
     }
     return ydbDriver;
+}
+
+async function httpsRequest(urlString, options) {
+    return new Promise((resolve, reject) => {
+        const url = new URL(urlString);
+        const timeout = setTimeout(() => {
+            req.destroy();
+            reject(new Error('Request timeout'));
+        }, 25000);
+        
+        const reqOptions = {
+            method: options.method,
+            headers: options.headers,
+            rejectUnauthorized: false,
+        };
+        
+        const req = https.request(url, reqOptions, (res) => {
+            let data = '';
+            res.on('data', (chunk) => {
+                data += chunk;
+            });
+            res.on('end', () => {
+                clearTimeout(timeout);
+                resolve({ statusCode: res.statusCode || 500, data, headers: res.headers });
+            });
+        });
+        
+        req.on('error', (err) => {
+            clearTimeout(timeout);
+            reject(err);
+        });
+        
+        if (options.body) {
+            req.write(options.body);
+        }
+        req.end();
+    });
 }
 
 module.exports.handler = async function (event, context) {
@@ -3207,10 +3245,8 @@ async function handleGigaChat(body, headers) {
             for (let attempt = 1; attempt <= 2; attempt++) {
                 try {
                     console.log(`     Attempt ${attempt}/2...`);
-                    const controller = new AbortController();
-                    const timeout = setTimeout(() => controller.abort(), 20000); // 20 сек timeout
                     
-                    authResponse = await fetch(oauthUrl, {
+                    authResponse = await httpsRequest(oauthUrl, {
                         method: 'POST',
                         headers: { 
                             'Content-Type': 'application/x-www-form-urlencoded',
@@ -3220,9 +3256,7 @@ async function handleGigaChat(body, headers) {
                             'User-Agent': 'WebStudioBot/1.0',
                         },
                         body: authBody,
-                        signal: controller.signal,
                     });
-                    clearTimeout(timeout);
                     console.log(`   ✅ OAuth succeeded with ${oauthUrl}`);
                     break; // Success, exit retry loop
                 } catch (fetchErr) {
@@ -3246,18 +3280,17 @@ async function handleGigaChat(body, headers) {
             throw new Error(`OAuth network error: ${errMsg}`);
         }
 
-        console.log("4️⃣ Auth response status:", authResponse.status);
+        console.log("4️⃣ Auth response status:", authResponse.statusCode);
 
-        if (!authResponse.ok) {
-            const errorText = await authResponse.text();
-            console.error('❌ Auth failed. Status:', authResponse.status);
-            console.error('Response:', errorText.substring(0, 500));
-            throw new Error(`Auth error: ${authResponse.status} - ${errorText.substring(0, 100)}`);
+        if (authResponse.statusCode !== 200) {
+            console.error('❌ Auth failed. Status:', authResponse.statusCode);
+            console.error('Response:', authResponse.data.substring(0, 500));
+            throw new Error(`Auth error: ${authResponse.statusCode} - ${authResponse.data.substring(0, 100)}`);
         }
 
         let authData;
         try {
-            authData = await authResponse.json();
+            authData = JSON.parse(authResponse.data);
         } catch (parseErr) {
             console.error('❌ Failed to parse auth response');
             throw new Error('Invalid auth response format');
@@ -3279,10 +3312,8 @@ async function handleGigaChat(body, headers) {
         for (let attempt = 1; attempt <= 3; attempt++) {
             try {
                 console.log(`   Chat attempt ${attempt}/3...`);
-                const controller = new AbortController();
-                const timeout = setTimeout(() => controller.abort(), 30000); // 30 сек timeout для чата
                 
-                chatResponse = await fetch('https://gigachat.devices.sberbank.ru/api/v1/chat/completions', {
+                chatResponse = await httpsRequest('https://gigachat.devices.sberbank.ru/api/v1/chat/completions', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -3300,9 +3331,7 @@ async function handleGigaChat(body, headers) {
                         temperature: 0.7,
                         max_tokens: 1000,
                     }),
-                    signal: controller.signal,
                 });
-                clearTimeout(timeout);
                 console.log(`   Chat attempt ${attempt} succeeded`);
                 break; // Success, exit retry loop
             } catch (fetchErr) {
@@ -3324,18 +3353,17 @@ async function handleGigaChat(body, headers) {
             throw new Error(`Chat network error after 3 retries: ${errMsg}`);
         }
 
-        console.log("7️⃣ Chat response status:", chatResponse.status);
+        console.log("7️⃣ Chat response status:", chatResponse.statusCode);
 
-        if (!chatResponse.ok) {
-            const errorText = await chatResponse.text();
-            console.error('❌ Chat API error. Status:', chatResponse.status);
-            console.error('Response:', errorText.substring(0, 500));
-            throw new Error(`Chat error: ${chatResponse.status} - ${errorText.substring(0, 100)}`);
+        if (chatResponse.statusCode !== 200) {
+            console.error('❌ Chat API error. Status:', chatResponse.statusCode);
+            console.error('Response:', chatResponse.data.substring(0, 500));
+            throw new Error(`Chat error: ${chatResponse.statusCode} - ${chatResponse.data.substring(0, 100)}`);
         }
 
         let chatData;
         try {
-            chatData = await chatResponse.json();
+            chatData = JSON.parse(chatResponse.data);
         } catch (parseErr) {
             console.error('❌ Failed to parse chat response');
             throw new Error('Invalid chat response format');
