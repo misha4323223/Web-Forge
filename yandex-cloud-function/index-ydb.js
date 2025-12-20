@@ -61,6 +61,8 @@ async function getYdbDriver() {
 }
 
 module.exports.handler = async function (event, context) {
+    console.log('[HANDLER START]', { method: event.httpMethod, path: event.path, timestamp: new Date().toISOString() });
+    
     const headers = {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
@@ -70,6 +72,7 @@ module.exports.handler = async function (event, context) {
     };
 
     if (event.httpMethod === 'OPTIONS') {
+        console.log('[OPTIONS] Returning 200');
         return { 
             statusCode: 200, 
             headers,
@@ -99,7 +102,7 @@ module.exports.handler = async function (event, context) {
             }
         }
         
-        console.log('Incoming request:', { method, action, path });
+        console.log('[REQUEST]', { method, action, path, bodyKeys: Object.keys(body) });
 
         // Telegram Bot Webhook
         if ((action === 'telegram-webhook' || path.includes('/telegram-webhook')) && method === 'POST') {
@@ -161,6 +164,7 @@ module.exports.handler = async function (event, context) {
 
         // POST /api/giga-chat - AI чат через Giga Chat
         if ((action === 'giga-chat' || path.includes('/giga-chat')) && method === 'POST') {
+            console.log('[GIGA-CHAT] Handler called');
             return await handleGigaChat(body, headers);
         }
 

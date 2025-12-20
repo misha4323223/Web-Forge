@@ -772,7 +772,17 @@ export async function registerRoutes(
         });
       }
 
+      if (message.length > 2000) {
+        console.log("❌ Message too long");
+        return res.status(400).json({
+          success: false,
+          response: 'Сообщение слишком длинное (макс 2000 символов)',
+        });
+      }
+
       const gigachatKey = process.env.GIGACHAT_KEY;
+      const gigachatScope = process.env.GIGACHAT_SCOPE || 'GIGACHAT_API_PERS';
+      
       console.log("2️⃣ GIGACHAT_KEY exists:", !!gigachatKey);
       console.log("   Key length:", gigachatKey?.length);
       
@@ -780,18 +790,17 @@ export async function registerRoutes(
         console.error('❌ GIGACHAT_KEY not configured');
         return res.status(500).json({
           success: false,
-          response: 'GigaChat не настроен',
+          response: 'GigaChat не настроен на сервере',
         });
       }
 
-      const gigachatScope = process.env.GIGACHAT_SCOPE || 'GIGACHAT_API_PERS';
       const authBody = `scope=${encodeURIComponent(gigachatScope)}`;
       
-      console.log("3️⃣ Requesting OAuth token...");
+      console.log("3️⃣ Requesting OAuth token from Sberbank...");
       
       let authResponse;
       try {
-        authResponse = await httpsRequest('https://ngw.devices.sberbank.ru:9443/api/v2/oauth', {
+        authResponse = await fetch('https://ngw.devices.sberbank.ru:9443/api/v2/oauth', {
           method: 'POST',
           headers: { 
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -803,32 +812,40 @@ export async function registerRoutes(
         });
       } catch (fetchErr) {
         const errMsg = fetchErr instanceof Error ? fetchErr.message : String(fetchErr);
-        console.error('❌ HTTPS error during OAuth:', errMsg);
+        console.error('❌ Fetch error during OAuth:', errMsg);
         throw new Error(`OAuth network error: ${errMsg}`);
       }
 
-      console.log("4️⃣ Auth response status:", authResponse.statusCode);
-      
-      if (authResponse.statusCode !== 200) {
-        console.error('❌ Auth failed. Status:', authResponse.statusCode);
-        console.error('Response:', authResponse.data.substring(0, 500));
-        throw new Error(`Auth error: ${authResponse.statusCode} - ${authResponse.data.substring(0, 100)}`);
+      console.log("4️⃣ Auth response status:", authResponse.status);
+
+      if (!authResponse.ok) {
+        const errorText = await authResponse.text();
+        console.error('❌ Auth failed. Status:', authResponse.status);
+        console.error('Response:', errorText.substring(0, 500));
+        throw new Error(`Auth error: ${authResponse.status} - ${errorText.substring(0, 100)}`);
       }
 
-      const authData = JSON.parse(authResponse.data);
+      let authData;
+      try {
+        authData = await authResponse.json();
+      } catch (parseErr) {
+        console.error('❌ Failed to parse auth response');
+        throw new Error('Invalid auth response format');
+      }
+
       const accessToken = authData.access_token;
       console.log("5️⃣ Got access token. Length:", accessToken?.length);
 
       if (!accessToken) {
-        console.error('❌ No token in response');
-        throw new Error('No access token');
+        console.error('❌ No access token in auth response');
+        throw new Error('No access token in response');
       }
 
-      console.log("6️⃣ Sending chat request...");
+      console.log("6️⃣ Sending chat request to GigaChat...");
       
       let chatResponse;
       try {
-        chatResponse = await httpsRequest('https://gigachat.devices.sbercloud.ru/api/v1/chat/completions', {
+        chatResponse = await fetch('https://gigachat.devices.sbercloud.ru/api/v1/chat/completions', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -843,23 +860,31 @@ export async function registerRoutes(
         });
       } catch (fetchErr) {
         const errMsg = fetchErr instanceof Error ? fetchErr.message : String(fetchErr);
-        console.error('❌ Chat HTTPS error:', errMsg);
+        console.error('❌ Fetch error during chat request:', errMsg);
         throw new Error(`Chat network error: ${errMsg}`);
       }
 
-      console.log("7️⃣ Chat response status:", chatResponse.statusCode);
-      
-      if (chatResponse.statusCode !== 200) {
-        console.error('❌ Chat API error. Status:', chatResponse.statusCode);
-        console.error('Response:', chatResponse.data.substring(0, 500));
-        throw new Error(`Chat error: ${chatResponse.statusCode}`);
+      console.log("7️⃣ Chat response status:", chatResponse.status);
+
+      if (!chatResponse.ok) {
+        const errorText = await chatResponse.text();
+        console.error('❌ Chat API error. Status:', chatResponse.status);
+        console.error('Response:', errorText.substring(0, 500));
+        throw new Error(`Chat error: ${chatResponse.status} - ${errorText.substring(0, 100)}`);
       }
 
-      const chatData = JSON.parse(chatResponse.data);
+      let chatData;
+      try {
+        chatData = await chatResponse.json();
+      } catch (parseErr) {
+        console.error('❌ Failed to parse chat response');
+        throw new Error('Invalid chat response format');
+      }
+
       const assistantMessage = chatData.choices?.[0]?.message?.content || 'Нет ответа';
 
       console.log("8️⃣ Success! Response length:", assistantMessage.length);
-      console.log("=== GIGACHAT REQUEST END ===\n");
+      console.log("=== GIGACHAT REQUEST END (SUCCESS) ===\n");
       
       return res.json({
         success: true,
