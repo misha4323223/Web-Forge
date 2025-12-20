@@ -147,6 +147,12 @@ export default function ApartmentRenovation() {
     ogUrl: "https://mp-webstudio.ru/demo/renovation"
   });
 
+  useBreadcrumbSchema([
+    { name: "MP.WebStudio", url: "https://mp-webstudio.ru/" },
+    { name: "Портфолио", url: "https://mp-webstudio.ru/#portfolio" },
+    { name: "RenoMaster", url: "https://mp-webstudio.ru/demo/renovation" }
+  ]);
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);

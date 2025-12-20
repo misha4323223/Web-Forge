@@ -46,6 +46,12 @@ export default function Photographer() {
     ogUrl: "https://mp-webstudio.ru/demo/photographer"
   });
 
+  useBreadcrumbSchema([
+    { name: "MP.WebStudio", url: "https://mp-webstudio.ru/" },
+    { name: "Портфолио", url: "https://mp-webstudio.ru/#portfolio" },
+    { name: "Андрей Соколов", url: "https://mp-webstudio.ru/demo/photographer" }
+  ]);
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);

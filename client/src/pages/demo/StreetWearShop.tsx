@@ -10,6 +10,7 @@ import { Link } from "wouter";
 import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useDocumentMeta } from "@/lib/useDocumentMeta";
+import { useBreadcrumbSchema } from "@/lib/useBreadcrumbSchema";
 import heroImg from "@assets/generated_images/streetwear_hero_banner_dark.png";
 import hoodieImg from "@assets/generated_images/black_oversized_hoodie_product.png";
 import tshirtImg from "@assets/generated_images/black_t-shirt_product_photo.png";
@@ -114,6 +115,12 @@ export default function StreetWearShop() {
     ogImage: "https://mp-webstudio.ru/og-image.png",
     ogUrl: "https://mp-webstudio.ru/demo/streetwear"
   });
+
+  useBreadcrumbSchema([
+    { name: "MP.WebStudio", url: "https://mp-webstudio.ru/" },
+    { name: "Портфолио", url: "https://mp-webstudio.ru/#portfolio" },
+    { name: "SHADOWSTREET", url: "https://mp-webstudio.ru/demo/streetwear" }
+  ]);
 
   useEffect(() => {
     window.scrollTo(0, 0);

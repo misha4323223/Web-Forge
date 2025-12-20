@@ -8,6 +8,7 @@ import { Link } from "wouter";
 import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useDocumentMeta } from "@/lib/useDocumentMeta";
+import { useBreadcrumbSchema } from "@/lib/useBreadcrumbSchema";
 import barberHeroImg from "@assets/generated_images/stylish_barbershop_interior.webp";
 import alexeyImg from "@assets/generated_images/russian_barber_alexey_portrait.webp";
 import dmitryImg from "@assets/generated_images/russian_barber_dmitry_portrait.webp";
@@ -88,6 +89,12 @@ export default function BarberShop() {
     ogImage: "https://mp-webstudio.ru/og-image.png",
     ogUrl: "https://mp-webstudio.ru/demo/barber"
   });
+
+  useBreadcrumbSchema([
+    { name: "MP.WebStudio", url: "https://mp-webstudio.ru/" },
+    { name: "Портфолио", url: "https://mp-webstudio.ru/#portfolio" },
+    { name: "KingsCut", url: "https://mp-webstudio.ru/demo/barber" }
+  ]);
 
   useEffect(() => {
     window.scrollTo(0, 0);

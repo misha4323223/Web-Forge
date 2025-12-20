@@ -9,6 +9,7 @@ import { Clock, MapPin, Phone, Star, Flame, Leaf, ChefHat, Truck, ArrowLeft, Sho
 import { Link } from "wouter";
 import { useState, useEffect, useRef } from "react";
 import { useDocumentMeta } from "@/lib/useDocumentMeta";
+import { useBreadcrumbSchema } from "@/lib/useBreadcrumbSchema";
 import foodHeroImg from "@assets/generated_images/asian_food_arrangement_table.png";
 import tomYumImg from "@assets/generated_images/tom_yum_shrimp_soup.png";
 import padThaiImg from "@assets/generated_images/pad_thai_chicken_noodles.png";
@@ -76,6 +77,12 @@ export default function FoodDelivery() {
     ogImage: "https://mp-webstudio.ru/og-image.png",
     ogUrl: "https://mp-webstudio.ru/demo/food-delivery"
   });
+
+  useBreadcrumbSchema([
+    { name: "MP.WebStudio", url: "https://mp-webstudio.ru/" },
+    { name: "Портфолио", url: "https://mp-webstudio.ru/#portfolio" },
+    { name: "FoodFlow", url: "https://mp-webstudio.ru/demo/food-delivery" }
+  ]);
 
   useEffect(() => {
     window.scrollTo(0, 0);

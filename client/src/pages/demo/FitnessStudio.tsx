@@ -10,6 +10,7 @@ import { Link } from "wouter";
 import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useDocumentMeta } from "@/lib/useDocumentMeta";
+import { useBreadcrumbSchema } from "@/lib/useBreadcrumbSchema";
 import fitnessHeroImg from "@assets/generated_images/modern_gym_interior_purple.png";
 
 const classes = [
@@ -54,6 +55,12 @@ export default function FitnessStudio() {
     ogImage: "https://mp-webstudio.ru/og-image.png",
     ogUrl: "https://mp-webstudio.ru/demo/fitness-studio"
   });
+
+  useBreadcrumbSchema([
+    { name: "MP.WebStudio", url: "https://mp-webstudio.ru/" },
+    { name: "Портфолио", url: "https://mp-webstudio.ru/#portfolio" },
+    { name: "PowerFlex", url: "https://mp-webstudio.ru/demo/fitness" }
+  ]);
 
   useEffect(() => {
     window.scrollTo(0, 0);

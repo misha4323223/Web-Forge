@@ -14,6 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { useDocumentMeta } from "@/lib/useDocumentMeta";
+import { useBreadcrumbSchema } from "@/lib/useBreadcrumbSchema";
 
 import heroImg from "@assets/generated_images/dental_clinic_modern_reception.png";
 import treatmentImg from "@assets/generated_images/dental_treatment_room_interior.png";
@@ -120,6 +121,12 @@ export default function DentalClinic() {
     ogImage: "https://mp-webstudio.ru/og-image.png",
     ogUrl: "https://mp-webstudio.ru/demo/dental"
   });
+
+  useBreadcrumbSchema([
+    { name: "MP.WebStudio", url: "https://mp-webstudio.ru/" },
+    { name: "Портфолио", url: "https://mp-webstudio.ru/#portfolio" },
+    { name: "SmileCare", url: "https://mp-webstudio.ru/demo/dental" }
+  ]);
 
   useEffect(() => {
     window.scrollTo(0, 0);

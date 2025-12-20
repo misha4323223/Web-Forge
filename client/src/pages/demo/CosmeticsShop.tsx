@@ -10,6 +10,7 @@ import { Link } from "wouter";
 import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useDocumentMeta } from "@/lib/useDocumentMeta";
+import { useBreadcrumbSchema } from "@/lib/useBreadcrumbSchema";
 import heroImg from "@assets/stock_images/cosmetics_skincare_p_2775c0e7.webp";
 import moisturizerImg from "@assets/stock_images/face_moisturizer_cre_59e07cda.webp";
 import serumImg from "@assets/stock_images/vitamin_c_serum_drop_c449b45e.webp";
@@ -115,6 +116,12 @@ export default function CosmeticsShop() {
     ogImage: "https://mp-webstudio.ru/og-image.png",
     ogUrl: "https://mp-webstudio.ru/demo/cosmetics-shop"
   });
+
+  useBreadcrumbSchema([
+    { name: "MP.WebStudio", url: "https://mp-webstudio.ru/" },
+    { name: "Портфолио", url: "https://mp-webstudio.ru/#portfolio" },
+    { name: "BeautyLab", url: "https://mp-webstudio.ru/demo/cosmetics" }
+  ]);
 
   useEffect(() => {
     window.scrollTo(0, 0);

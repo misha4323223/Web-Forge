@@ -149,6 +149,12 @@ export default function SocksShop() {
     ogUrl: "https://mp-webstudio.ru/demo/socks"
   });
 
+  useBreadcrumbSchema([
+    { name: "MP.WebStudio", url: "https://mp-webstudio.ru/" },
+    { name: "Портфолио", url: "https://mp-webstudio.ru/#portfolio" },
+    { name: "SockLove", url: "https://mp-webstudio.ru/demo/socks" }
+  ]);
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);

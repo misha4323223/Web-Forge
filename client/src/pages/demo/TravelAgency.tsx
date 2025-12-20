@@ -125,6 +125,12 @@ export default function TravelAgency() {
     ogUrl: "https://mp-webstudio.ru/demo/travel"
   });
 
+  useBreadcrumbSchema([
+    { name: "MP.WebStudio", url: "https://mp-webstudio.ru/" },
+    { name: "Портфолио", url: "https://mp-webstudio.ru/#portfolio" },
+    { name: "WayToTravel", url: "https://mp-webstudio.ru/demo/travel" }
+  ]);
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
