@@ -112,7 +112,7 @@ export function Navigation() {
           </Button>
           <a href={orderPagePath}>
             <Button
-              className="bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0"
+              className="bg-gradient-to-r from-cyan-500 to-purple-500 text-white border-0"
               data-testid="button-nav-cta"
             >
               Заказать сайт
@@ -174,7 +174,7 @@ export function Navigation() {
                 </Button>
                 <a href={orderPagePath} className="w-full">
                   <Button
-                    className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0"
+                    className="w-full bg-gradient-to-r from-cyan-500 to-purple-500 text-white border-0"
                     data-testid="button-mobile-cta"
                   >
                     Заказать сайт
