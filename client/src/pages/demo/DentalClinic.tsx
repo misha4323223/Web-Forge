@@ -13,6 +13,7 @@ import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { useDocumentMeta } from "@/lib/useDocumentMeta";
 
 import heroImg from "@assets/generated_images/dental_clinic_modern_reception.png";
 import treatmentImg from "@assets/generated_images/dental_treatment_room_interior.png";
@@ -109,6 +110,16 @@ export default function DentalClinic() {
   const doctorsRef = useRef<HTMLElement>(null);
   const aboutRef = useRef<HTMLElement>(null);
   const contactRef = useRef<HTMLElement>(null);
+
+  useDocumentMeta({
+    title: "SmileCare — Стоматология в Туле | Лечение, имплантация, отбеливание",
+    description: "Современная стоматологическая клиника. Профессиональное лечение кариеса, имплантация, отбеливание ZOOM 4. Европейское оборудование, гарантия 5 лет.",
+    keywords: "стоматолог, клиника, лечение зубов, имплантация, отбеливание, Тула, зубной врач",
+    ogTitle: "SmileCare — Стоматология | Дизайн от MP.WebStudio",
+    ogDescription: "Профессиональные врачи, современное оборудование, гарантия на все работы",
+    ogImage: "https://mp-webstudio.ru/og-image.png",
+    ogUrl: "https://mp-webstudio.ru/demo/dental"
+  });
 
   useEffect(() => {
     window.scrollTo(0, 0);

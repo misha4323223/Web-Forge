@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Link } from "wouter";
 import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useDocumentMeta } from "@/lib/useDocumentMeta";
 
 import giftBoxImg from "@assets/generated_images/classic_socks_gift_box.png";
 import businessImg from "@assets/generated_images/business_socks_gift_set.png";
@@ -137,6 +138,16 @@ export default function SocksShop() {
   const productsRef = useRef<HTMLElement>(null);
   const featuresRef = useRef<HTMLElement>(null);
   const footerRef = useRef<HTMLElement>(null);
+
+  useDocumentMeta({
+    title: "SockLove — Интернет-магазин носков | Подарочные наборы, спорт",
+    description: "Магазин необычных носков. Подарочные наборы, носки с надписями, спортивные. Бесплатная доставка от 1500 ₽. Красивая упаковка и обмен за 14 дней.",
+    keywords: "носки, подарок, спортивные носки, интернет-магазин, наборы подарков",
+    ogTitle: "SockLove — Магазин носков | Дизайн от MP.WebStudio",
+    ogDescription: "Огромный выбор носков для подарков и спорта. Быстрая доставка, красивая упаковка",
+    ogImage: "https://mp-webstudio.ru/og-image.png",
+    ogUrl: "https://mp-webstudio.ru/demo/socks"
+  });
 
   useEffect(() => {
     window.scrollTo(0, 0);

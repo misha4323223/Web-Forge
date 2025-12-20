@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Camera, Mail, Phone, MapPin, Instagram, ArrowLeft, Play, ExternalLink } from "lucide-react";
 import { Link } from "wouter";
 import { useState, useEffect } from "react";
+import { useDocumentMeta } from "@/lib/useDocumentMeta";
 import photographerHeroImg from "@assets/generated_images/photographer_workspace_studio_aesthetic.png";
 import portraitWomanImg from "@assets/generated_images/professional_woman_portrait_photography.png";
 import weddingSunsetImg from "@assets/generated_images/romantic_wedding_couple_sunset.png";
@@ -34,6 +35,16 @@ const categories = ["Все", "Портреты", "Свадьбы", "Предм�
 export default function Photographer() {
   const [activeCategory, setActiveCategory] = useState("Все");
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+
+  useDocumentMeta({
+    title: "Андрей Соколов — Фотограф в Туле | Свадьбы, портреты, предметка",
+    description: "Профессиональная фотография: свадьбы, портреты, предметная съёмка, видеосъёмка. Создаю визуальные истории, которые остаются в памяти.",
+    keywords: "фотограф, свадебная фотография, портреты, предметная съёмка, фото Тула, видеограф",
+    ogTitle: "Андрей Соколов — Фотограф | Дизайн от MP.WebStudio",
+    ogDescription: "Профессиональная фотосъёмка свадеб, портретов и предметов. Видеосъёмка и монтаж.",
+    ogImage: "https://mp-webstudio.ru/og-image.png",
+    ogUrl: "https://mp-webstudio.ru/demo/photographer"
+  });
 
   useEffect(() => {
     window.scrollTo(0, 0);

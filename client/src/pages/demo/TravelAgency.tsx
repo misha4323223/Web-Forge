@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Link } from "wouter";
 import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useDocumentMeta } from "@/lib/useDocumentMeta";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Check } from "lucide-react";
@@ -113,6 +114,16 @@ export default function TravelAgency() {
   const destinationsRef = useRef<HTMLElement>(null);
   const categoriesRef = useRef<HTMLElement>(null);
   const contactRef = useRef<HTMLElement>(null);
+
+  useDocumentMeta({
+    title: "WayToTravel — Туристическое агентство | Туры по миру",
+    description: "Подберём идеальный тур для вас. Мальдивы, Париж, Бали, Дубай, Санторини. 15+ лет опыта, 50K+ довольных клиентов. Консультация и бронирование онлайн.",
+    keywords: "туризм, туры, путешествия, агентство, Мальдивы, Бали, Дубай, горячие туры",
+    ogTitle: "WayToTravel — Туристическое агентство | Дизайн от MP.WebStudio",
+    ogDescription: "Незабываемые путешествия по всему миру. Консультация и бронирование онлайн",
+    ogImage: "https://mp-webstudio.ru/og-image.png",
+    ogUrl: "https://mp-webstudio.ru/demo/travel"
+  });
 
   useEffect(() => {
     window.scrollTo(0, 0);

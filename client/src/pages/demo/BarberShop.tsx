@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Link } from "wouter";
 import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useDocumentMeta } from "@/lib/useDocumentMeta";
 import barberHeroImg from "@assets/generated_images/stylish_barbershop_interior.webp";
 import alexeyImg from "@assets/generated_images/russian_barber_alexey_portrait.webp";
 import dmitryImg from "@assets/generated_images/russian_barber_dmitry_portrait.webp";
@@ -77,6 +78,16 @@ export default function BarberShop() {
   const barbersRef = useRef<HTMLElement>(null);
   const bookingRef = useRef<HTMLElement>(null);
   const contactRef = useRef<HTMLElement>(null);
+
+  useDocumentMeta({
+    title: "KingsCut — Барбершоп в Туле | Мужские стрижки и борода",
+    description: "Профессиональная барбершоп с 3 мастерами. Мужские стрижки, королевское бритьё, моделирование бороды. Запись онлайн, опытные барберы.",
+    keywords: "барбершоп, мужские стрижки, борода, укладка волос, барбер Тула, стрижка машинкой",
+    ogTitle: "KingsCut — Барбершоп | Дизайн от MP.WebStudio",
+    ogDescription: "Профессиональные барберы, качественное обслуживание, современный дизайн",
+    ogImage: "https://mp-webstudio.ru/og-image.png",
+    ogUrl: "https://mp-webstudio.ru/demo/barber"
+  });
 
   useEffect(() => {
     window.scrollTo(0, 0);

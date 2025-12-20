@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Link } from "wouter";
 import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useDocumentMeta } from "@/lib/useDocumentMeta";
 import heroImg from "@assets/generated_images/streetwear_hero_banner_dark.png";
 import hoodieImg from "@assets/generated_images/black_oversized_hoodie_product.png";
 import tshirtImg from "@assets/generated_images/black_t-shirt_product_photo.png";
@@ -103,6 +104,16 @@ export default function StreetWearShop() {
   const productsRef = useRef<HTMLElement>(null);
   const brandsRef = useRef<HTMLElement>(null);
   const footerRef = useRef<HTMLElement>(null);
+
+  useDocumentMeta({
+    title: "SHADOWSTREET — Streetwear магазин | Худи, бомберы, карго",
+    description: "Интернет-магазин уличной моды. Худи, футболки, карго, бомберы, аксессуары. Доставка по России, оплата частями, возврат 14 дней.",
+    keywords: "streetwear, худи, одежда, бомбер, карго, интернет-магазин, уличная мода",
+    ogTitle: "SHADOWSTREET — Streetwear магазин | Дизайн от MP.WebStudio",
+    ogDescription: "Современная уличная мода, качественные материалы, быстрая доставка",
+    ogImage: "https://mp-webstudio.ru/og-image.png",
+    ogUrl: "https://mp-webstudio.ru/demo/streetwear"
+  });
 
   useEffect(() => {
     window.scrollTo(0, 0);

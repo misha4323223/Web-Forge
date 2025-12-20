@@ -13,6 +13,7 @@ import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { useDocumentMeta } from "@/lib/useDocumentMeta";
 
 import livingRoomImg from "@assets/generated_images/modern_living_room_renovation.png";
 import kitchenImg from "@assets/generated_images/modern_kitchen_renovation_result.png";
@@ -135,6 +136,16 @@ export default function ApartmentRenovation() {
   const portfolioRef = useRef<HTMLElement>(null);
   const processRef = useRef<HTMLElement>(null);
   const contactRef = useRef<HTMLElement>(null);
+
+  useDocumentMeta({
+    title: "RenoMaster — Ремонт квартир в Туле | Капитальный, косметический, под ключ",
+    description: "Компания по ремонту квартир. Косметический, капитальный, ремонт под ключ. 500+ объектов, гарантия 3 года, фиксированная цена.",
+    keywords: "ремонт квартиры, капитальный ремонт, косметический ремонт, дизайн, ремонт под ключ, Тула",
+    ogTitle: "RenoMaster — Ремонт квартир | Дизайн от MP.WebStudio",
+    ogDescription: "Профессиональный ремонт квартир под ключ. Фиксированная цена, гарантия качества",
+    ogImage: "https://mp-webstudio.ru/og-image.png",
+    ogUrl: "https://mp-webstudio.ru/demo/renovation"
+  });
 
   useEffect(() => {
     window.scrollTo(0, 0);
