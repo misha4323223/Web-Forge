@@ -1,11 +1,21 @@
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { useRef, useState, useMemo } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { z } from "zod";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Calculator, ArrowRight, Check, ChevronDown, Plus } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
+import { Calculator, ArrowRight, Check, ChevronDown, Plus, X } from "lucide-react";
 import { ParticleBackground } from "./ParticleBackground";
 
 interface FlyingLetterProps {
@@ -211,12 +221,72 @@ const features: Feature[] = [
   { id: "custom", label: "Другое / Индивидуальная функция", price: 0, description: "Обсудим отдельно", availableFor: ["bizcard", "landing", "corporate", "shop"] },
 ];
 
+type CalculatorFormData = {
+  name: string;
+  phone: string;
+  email: string;
+  description: string;
+};
+
 export function CalculatorSection() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   const [projectType, setProjectType] = useState<ProjectType>("bizcard");
   const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
   const [expandedType, setExpandedType] = useState<ProjectType | null>("bizcard");
+  const [openOrderModal, setOpenOrderModal] = useState(false);
+  const { toast } = useToast();
+
+  const form = useForm<CalculatorFormData>({
+    resolver: zodResolver(z.object({
+      name: z.string().min(2, "Имя должно содержать минимум 2 символа"),
+      phone: z.string().min(10, "Введите корректный номер телефона"),
+      email: z.string().email("Введите корректный email"),
+      description: z.string().min(10, "Описание должно содержать минимум 10 символов"),
+    })),
+    defaultValues: {
+      name: "",
+      phone: "",
+      email: "",
+      description: "",
+    },
+  });
+
+  const mutation = useMutation({
+    mutationFn: async (data: CalculatorFormData) => {
+      const currentProjectType = projectTypes.find((p) => p.value === projectType)!;
+      const selectedFeaturesList = selectedFeatures
+        .map((fId) => {
+          const feature = features.find((f) => f.id === fId);
+          return feature ? `${feature.label} (+${feature.price} ₽)` : null;
+        })
+        .filter(Boolean);
+
+      const response = await apiRequest("POST", "/api/send-calculator-order", {
+        ...data,
+        projectType,
+        selectedFeatures: selectedFeaturesList,
+        basePrice,
+        totalPrice,
+      });
+      return response.json();
+    },
+    onSuccess: () => {
+      setOpenOrderModal(false);
+      form.reset();
+      toast({
+        title: "Заказ отправлен!",
+        description: "Мы получили вашу заявку и свяжемся с вами вскоре.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Ошибка",
+        description: "Не удалось отправить заказ. Попробуйте позже.",
+        variant: "destructive",
+      });
+    },
+  });
 
   const currentProjectType = projectTypes.find((p) => p.value === projectType);
   const basePrice = currentProjectType?.basePrice || 0;
@@ -496,23 +566,178 @@ export function CalculatorSection() {
                 </div>
               </div>
 
-              <p className="text-xs text-muted-foreground mb-6">
+              <p className="text-xs text-muted-foreground mb-4">
                 * Окончательная стоимость определяется после обсуждения деталей проекта
               </p>
 
-              <a href="/order">
+              <div className="space-y-3">
                 <Button
+                  onClick={() => setOpenOrderModal(true)}
                   className="w-full bg-gradient-to-r from-cyan-500 to-purple-500 text-white border-0"
-                  data-testid="button-calculator-cta"
+                  data-testid="button-send-order"
                 >
-                  Заказать сайт
+                  Отправить заказ
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
-              </a>
+                <a href="/order" className="block">
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    data-testid="button-calculator-cta"
+                  >
+                    Оформить отдельно
+                  </Button>
+                </a>
+              </div>
             </Card>
           </motion.div>
         </div>
       </div>
+
+      <Dialog open={openOrderModal} onOpenChange={setOpenOrderModal}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" data-testid="dialog-order-modal">
+          <DialogHeader>
+            <DialogTitle>Оформить заказ</DialogTitle>
+          </DialogHeader>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <div className="p-4 bg-card/50 rounded-md border border-border">
+                <h3 className="font-bold mb-3 text-sm">Состав заказа</h3>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">
+                      {projectTypes.find((p) => p.value === projectType)?.label}
+                    </span>
+                    <span className="font-mono">{formatPrice(basePrice)} ₽</span>
+                  </div>
+                  {selectedFeatures.length > 0 && (
+                    <>
+                      <div className="h-px bg-border" />
+                      {selectedFeatures.map((featureId) => {
+                        const feature = features.find((f) => f.id === featureId);
+                        if (!feature || !feature.availableFor.includes(projectType)) return null;
+                        return (
+                          <div key={featureId} className="flex justify-between">
+                            <span className="text-muted-foreground truncate mr-2">{feature.label}</span>
+                            <span className="font-mono whitespace-nowrap">+{formatPrice(feature.price)} ₽</span>
+                          </div>
+                        );
+                      })}
+                    </>
+                  )}
+                  <div className="h-px bg-border" />
+                  <div className="flex justify-between font-bold text-base">
+                    <span>Итого:</span>
+                    <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
+                      {formatPrice(totalPrice)} ₽
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit((data) => mutation.mutate(data))} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Ваше имя *</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Иван Иванов"
+                          {...field}
+                          className="bg-background/50"
+                          data-testid="input-order-name"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="phone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Телефон *</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="tel"
+                          placeholder="+7 (999) 123-45-67"
+                          {...field}
+                          className="bg-background/50"
+                          data-testid="input-order-phone"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email *</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="email"
+                          placeholder="ivan@example.com"
+                          {...field}
+                          className="bg-background/50"
+                          data-testid="input-order-email"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Описание проекта *</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Расскажите о вашем проекте..."
+                          rows={4}
+                          {...field}
+                          className="bg-background/50 resize-none"
+                          data-testid="input-order-description"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <Button
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-cyan-500 to-purple-500 text-white border-0"
+                  disabled={mutation.isPending}
+                  data-testid="button-submit-order"
+                >
+                  {mutation.isPending ? (
+                    <span className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      Отправляем...
+                    </span>
+                  ) : (
+                    "Заказать"
+                  )}
+                </Button>
+              </form>
+            </Form>
+          </div>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }

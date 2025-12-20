@@ -648,5 +648,57 @@ export async function registerRoutes(
     res.json({ valid });
   });
 
+  app.post("/api/send-calculator-order", async (req, res) => {
+    try {
+      const { name, phone, email, projectType, selectedFeatures, basePrice, totalPrice, description } = req.body;
+
+      if (!name || !phone || !email || !projectType || !description) {
+        return res.status(400).json({
+          success: false,
+          message: "Заполните все обязательные поля",
+        });
+      }
+
+      console.log("Calculator order received:", { name, email, projectType });
+
+      const projectTypeLabel = projectType === "bizcard" ? "Сайт-визитка" :
+                              projectType === "landing" ? "Лендинг" :
+                              projectType === "corporate" ? "Корпоративный сайт" : "Интернет-магазин";
+
+      let featuresList = "";
+      if (selectedFeatures && selectedFeatures.length > 0) {
+        featuresList = "\n📋 <b>Выбранные опции:</b>\n";
+        selectedFeatures.forEach((feature: string, index: number) => {
+          featuresList += `${index + 1}. ${feature}\n`;
+        });
+      }
+
+      await sendTelegramMessage(
+        `🎯 <b>НОВЫЙ ЗАКАЗ ИЗ КАЛЬКУЛЯТОРА</b>\n\n` +
+        `📋 <b>Проект:</b>\n` +
+        `• База: ${projectTypeLabel}\n` +
+        `• Стоимость базы: ${basePrice.toLocaleString('ru-RU')} ₽` +
+        featuresList +
+        `\n💰 <b>Итого: ${totalPrice.toLocaleString('ru-RU')} ₽</b>\n\n` +
+        `👤 <b>Контакты:</b>\n` +
+        `• Имя: ${name}\n` +
+        `• Телефон: ${phone}\n` +
+        `• Email: ${email}\n\n` +
+        `📝 <b>Описание:</b>\n${description}`
+      );
+
+      res.status(201).json({
+        success: true,
+        message: "Заказ успешно отправлен",
+      });
+    } catch (error) {
+      console.error("Error sending calculator order:", error);
+      res.status(500).json({
+        success: false,
+        message: "Внутренняя ошибка сервера",
+      });
+    }
+  });
+
   return httpServer;
 }

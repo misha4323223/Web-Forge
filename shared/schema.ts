@@ -122,3 +122,16 @@ export const insertAdditionalInvoiceSchema = createInsertSchema(additionalInvoic
 
 export type InsertAdditionalInvoice = z.infer<typeof insertAdditionalInvoiceSchema>;
 export type AdditionalInvoice = typeof additionalInvoices.$inferSelect;
+
+export const insertCalculatorOrderSchema = z.object({
+  name: z.string().min(2, "Имя должно содержать минимум 2 символа"),
+  phone: z.string().min(10, "Введите корректный номер телефона"),
+  email: z.string().email("Введите корректный email"),
+  projectType: z.string().min(1, "Выберите основу"),
+  selectedFeatures: z.array(z.string()).default([]),
+  basePrice: z.number().positive(),
+  totalPrice: z.number().positive(),
+  description: z.string().min(10, "Описание должно содержать минимум 10 символов"),
+});
+
+export type InsertCalculatorOrder = z.infer<typeof insertCalculatorOrderSchema>;
