@@ -3193,6 +3193,19 @@ async function handleGigaChat(body, headers) {
         const authBody = `scope=${encodeURIComponent(gigachatScope)}`;
         
         console.log("3️⃣ Requesting OAuth token...");
+        console.log("   Testing network connectivity first...");
+        
+        // Диагностика сети - проверяем может ли облако вообще делать external requests
+        try {
+            const diagnostic = await fetch('https://www.google.com', { 
+                signal: AbortSignal.timeout(5000),
+                redirect: 'follow'
+            }).catch(() => ({ ok: false, status: 'unknown' }));
+            console.log(`   Network test: ${diagnostic.ok ? '✅ OK' : '❌ FAILED'}`);
+        } catch (e) {
+            console.log(`   Network diagnostic failed: ${e.message}`);
+        }
+        
         let authResponse;
         
         // Fallback URLs для OAuth (9443 может быть заблокирован на облаке)
@@ -3208,7 +3221,13 @@ async function handleGigaChat(body, headers) {
                 try {
                     console.log(`     Attempt ${attempt}/2...`);
                     const controller = new AbortController();
-                    const timeout = setTimeout(() => controller.abort(), 20000); // 20 сек timeout
+                    const timeout = setTimeout(() => controller.abort(), 25000); // 25 сек timeout
+                    
+                    console.log(`     Sending request with headers:`, {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Authorization': `Basic ${gigachatKey.substring(0, 20)}...`,
+                        'RqUID': 'generated'
+                    });
                     
                     authResponse = await fetch(oauthUrl, {
                         method: 'POST',
@@ -3217,21 +3236,24 @@ async function handleGigaChat(body, headers) {
                             'Accept': 'application/json',
                             'Authorization': `Basic ${gigachatKey}`,
                             'RqUID': crypto.randomUUID(),
-                            'User-Agent': 'WebStudioBot/1.0',
+                            'User-Agent': 'Mozilla/5.0 (WebStudio/1.0)',
+                            'Connection': 'keep-alive',
                         },
                         body: authBody,
                         signal: controller.signal,
                     });
                     clearTimeout(timeout);
-                    console.log(`   ✅ OAuth succeeded with ${oauthUrl}`);
+                    console.log(`   ✅ OAuth succeeded with ${oauthUrl}. Status: ${authResponse.status}`);
                     break; // Success, exit retry loop
                 } catch (fetchErr) {
                     lastError = fetchErr;
                     const errMsg = fetchErr instanceof Error ? fetchErr.message : String(fetchErr);
-                    console.error(`     ❌ Attempt ${attempt} failed: ${errMsg}`);
+                    const errName = fetchErr?.name || 'Unknown';
+                    console.error(`     ❌ Attempt ${attempt} failed: ${errName}: ${errMsg}`);
+                    console.error(`     Error stack:`, fetchErr);
                     
                     if (attempt < 2) {
-                        const delayMs = 2000;
+                        const delayMs = 3000;
                         console.log(`     Waiting ${delayMs}ms before retry...`);
                         await new Promise(resolve => setTimeout(resolve, delayMs));
                     }
@@ -3243,7 +3265,16 @@ async function handleGigaChat(body, headers) {
         if (!authResponse) {
             const errMsg = lastError instanceof Error ? lastError.message : String(lastError);
             console.error('❌ All OAuth attempts failed:', errMsg);
-            throw new Error(`OAuth network error: ${errMsg}`);
+            // Возвращаем ошибку но не падаем, чтобы сообщить клиенту
+            return {
+                statusCode: 503,
+                headers,
+                body: JSON.stringify({
+                    success: false,
+                    response: 'GigaChat недоступен. Проблема с подключением к сервисам Сбербанка. Попробуйте позже.',
+                    debug: process.env.NODE_ENV === 'development' ? errMsg : undefined,
+                }),
+            };
         }
 
         console.log("4️⃣ Auth response status:", authResponse.status);

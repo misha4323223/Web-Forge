@@ -1,0 +1,212 @@
+Время (UTC +3)
+Сообщение
+
+21 дек. 01:25:11.088
+REPORT RequestID: 28374a8c-b487-4877-9ad7-d00d8f642857 Duration: 25025.890 ms Billed Duration: 25100 ms Memory Size: 256 MB Max Memory Used: 172 MB Queuing Duration: 0.068 ms CPU Usage: 0.391 %
+
+21 дек. 01:25:11.088
+END RequestID: 28374a8c-b487-4877-9ad7-d00d8f642857
+
+21 дек. 01:25:11.087
+=== GIGACHAT REQUEST FAILED ===
+
+21 дек. 01:25:11.087
+❌ ERROR: OAuth network error: fetch failed
+
+21 дек. 01:25:11.087
+❌ All OAuth attempts failed: fetch failed
+
+21 дек. 01:25:11.087
+❌ Attempt 2 failed: fetch failed
+
+21 дек. 01:25:00.594
+Attempt 2/2...
+
+21 дек. 01:24:58.591
+Waiting 2000ms before retry...
+
+21 дек. 01:24:58.591
+❌ Attempt 1 failed: fetch failed
+
+21 дек. 01:24:48.133
+Attempt 1/2...
+
+21 дек. 01:24:48.133
+Trying OAuth endpoint: https://ngw.devices.sberbank.ru/api/v2/oauth
+
+21 дек. 01:24:48.133
+❌ Attempt 2 failed: fetch failed
+
+21 дек. 01:24:48.095
+Attempt 2/2...
+
+21 дек. 01:24:46.093
+Waiting 2000ms before retry...
+
+21 дек. 01:24:46.093
+❌ Attempt 1 failed: fetch failed
+
+21 дек. 01:24:46.067
+Attempt 1/2...
+
+21 дек. 01:24:46.067
+Trying OAuth endpoint: https://ngw.devices.sberbank.ru:9443/api/v2/oauth
+
+21 дек. 01:24:46.067
+3️⃣ Requesting OAuth token...
+
+21 дек. 01:24:46.067
+Key length: 100
+
+21 дек. 01:24:46.067
+2️⃣ GIGACHAT_KEY exists: true
+
+21 дек. 01:24:46.067
+1️⃣ Received message: привет...
+
+21 дек. 01:24:46.067
+=== GIGACHAT REQUEST START (Yandex Cloud) ===
+
+21 дек. 01:24:46.067
+[GIGA-CHAT] Handler called
+
+21 дек. 01:24:46.067
+}
+
+21 дек. 01:24:46.067
+bodyKeys: [ 'message' ]
+
+21 дек. 01:24:46.067
+path: '',
+
+21 дек. 01:24:46.067
+action: 'giga-chat',
+
+21 дек. 01:24:46.067
+method: 'POST',
+
+21 дек. 01:24:46.067
+[REQUEST] {
+
+21 дек. 01:24:46.066
+}
+
+21 дек. 01:24:46.066
+timestamp: '2025-12-20T22:24:46.063Z'
+
+21 дек. 01:24:46.066
+path: undefined,
+
+21 дек. 01:24:46.066
+method: 'POST',
+
+21 дек. 01:24:46.066
+[HANDLER START] {
+
+21 дек. 01:24:46.060
+START RequestID: 28374a8c-b487-4877-9ad7-d00d8f642857 Version: d4ec530dbv5tgcvsup5k
+
+21 дек. 01:24:35.836
+REPORT RequestID: 3438b71e-b04f-471a-b5e5-720eb0a690e3 Duration: 18282.509 ms Billed Duration: 18300 ms Memory Size: 256 MB Max Memory Used: 172 MB Queuing Duration: 0.061 ms Function Init Duration: 833.364 ms
+
+21 дек. 01:24:35.836
+END RequestID: 3438b71e-b04f-471a-b5e5-720eb0a690e3
+
+21 дек. 01:24:35.833
+=== GIGACHAT REQUEST FAILED ===
+
+21 дек. 01:24:35.833
+❌ ERROR: OAuth network error: fetch failed
+
+21 дек. 01:24:35.833
+❌ All OAuth attempts failed: fetch failed
+
+21 дек. 01:24:35.833
+❌ Attempt 2 failed: fetch failed
+
+21 дек. 01:24:29.132
+Attempt 2/2...
+
+21 дек. 01:24:27.130
+Waiting 2000ms before retry...
+
+21 дек. 01:24:27.130
+❌ Attempt 1 failed: fetch failed
+
+21 дек. 01:24:20.522
+Attempt 1/2...
+
+21 дек. 01:24:20.522
+Trying OAuth endpoint: https://ngw.devices.sberbank.ru/api/v2/oauth
+
+21 дек. 01:24:20.522
+❌ Attempt 2 failed: fetch failed
+
+21 дек. 01:24:20.486
+Attempt 2/2...
+
+21 дек. 01:24:18.484
+Waiting 2000ms before retry...
+
+21 дек. 01:24:18.484
+❌ Attempt 1 failed: fetch failed
+
+21 дек. 01:24:18.403
+Attempt 1/2...
+
+21 дек. 01:24:18.403
+Trying OAuth endpoint: https://ngw.devices.sberbank.ru:9443/api/v2/oauth
+
+21 дек. 01:24:18.403
+3️⃣ Requesting OAuth token...
+
+21 дек. 01:24:18.402
+Key length: 100
+
+21 дек. 01:24:18.402
+2️⃣ GIGACHAT_KEY exists: true
+
+21 дек. 01:24:18.402
+1️⃣ Received message: привет...
+
+21 дек. 01:24:18.402
+=== GIGACHAT REQUEST START (Yandex Cloud) ===
+
+21 дек. 01:24:18.401
+[GIGA-CHAT] Handler called
+
+21 дек. 01:24:18.401
+}
+
+21 дек. 01:24:18.401
+bodyKeys: [ 'message' ]
+
+21 дек. 01:24:18.401
+path: '',
+
+21 дек. 01:24:18.401
+action: 'giga-chat',
+
+21 дек. 01:24:18.401
+method: 'POST',
+
+21 дек. 01:24:18.401
+[REQUEST] {
+
+21 дек. 01:24:18.401
+}
+
+21 дек. 01:24:18.401
+timestamp: '2025-12-20T22:24:18.395Z'
+
+21 дек. 01:24:18.401
+path: undefined,
+
+21 дек. 01:24:18.401
+method: 'POST',
+
+21 дек. 01:24:18.401
+[HANDLER START] {
+
+21 дек. 01:24:17.550
+START RequestID: 3438b71e-b04f-471a-b5e5-720eb0a690e3 Version: d4ec530dbv5tgcvsup5k
