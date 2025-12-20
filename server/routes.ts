@@ -810,19 +810,32 @@ export async function registerRoutes(
       }
 
       console.log("6️⃣ Sending chat request...");
-      const chatResponse = await fetch('https://gigachat.devices.sbercloud.ru/api/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify({
-          model: 'GigaChat',
-          messages: [{ role: 'user', content: message }],
-          temperature: 0.7,
-          max_tokens: 1000,
-        }),
-      });
+      const controller = new AbortController();
+      const timeoutHandle = setTimeout(() => controller.abort(), 30000);
+      
+      let chatResponse;
+      try {
+        chatResponse = await fetch('https://gigachat.devices.sbercloud.ru/api/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({
+            model: 'GigaChat',
+            messages: [{ role: 'user', content: message }],
+            temperature: 0.7,
+            max_tokens: 1000,
+          }),
+          signal: controller.signal,
+        });
+      } catch (fetchErr) {
+        clearTimeout(timeoutHandle);
+        const errMsg = fetchErr instanceof Error ? fetchErr.message : String(fetchErr);
+        console.error('❌ Chat fetch error:', errMsg);
+        throw new Error(`Chat network error: ${errMsg}`);
+      }
+      clearTimeout(timeoutHandle);
 
       console.log("7️⃣ Chat response status:", chatResponse.status);
       
