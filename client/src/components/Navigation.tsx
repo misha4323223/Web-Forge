@@ -102,10 +102,17 @@ export function Navigation() {
           </div>
         </div>
 
-        <div className="hidden md:block">
+        <div className="hidden md:flex items-center gap-2">
+          <Button
+            onClick={() => scrollToSection("#calculator")}
+            className="bg-gradient-to-r from-cyan-500 to-purple-500 text-white border-0"
+            data-testid="button-nav-send-request"
+          >
+            Отправить заявку
+          </Button>
           <a href={orderPagePath}>
             <Button
-              className="bg-gradient-to-r from-cyan-500 to-purple-500 text-white border-0"
+              variant="outline"
               data-testid="button-nav-cta"
             >
               Заказать сайт
@@ -157,14 +164,24 @@ export function Navigation() {
                   </a>
                 ))}
               </div>
-              <a href={orderPagePath}>
+              <div className="mt-2 flex flex-col gap-2">
                 <Button
-                  className="mt-2 w-full bg-gradient-to-r from-cyan-500 to-purple-500 text-white border-0"
-                  data-testid="button-mobile-cta"
+                  onClick={() => scrollToSection("#calculator")}
+                  className="w-full bg-gradient-to-r from-cyan-500 to-purple-500 text-white border-0"
+                  data-testid="button-mobile-send-request"
                 >
-                  Заказать сайт
+                  Отправить заявку
                 </Button>
-              </a>
+                <a href={orderPagePath}>
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    data-testid="button-mobile-cta"
+                  >
+                    Заказать сайт
+                  </Button>
+                </a>
+              </div>
             </div>
           </motion.div>
         )}
