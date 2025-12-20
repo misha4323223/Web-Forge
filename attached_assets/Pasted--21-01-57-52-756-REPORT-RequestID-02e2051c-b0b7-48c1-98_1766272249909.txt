@@ -1,0 +1,100 @@
+
+
+21 дек. 01:57:52.756
+REPORT RequestID: 02e2051c-b0b7-48c1-98a0-f393d4ecce07 Duration: 10958.328 ms Billed Duration: 11000 ms Memory Size: 256 MB Max Memory Used: 171 MB Queuing Duration: 0.063 ms Function Init Duration: 843.684 ms CPU Usage: 1.953 %
+
+21 дек. 01:57:52.756
+END RequestID: 02e2051c-b0b7-48c1-98a0-f393d4ecce07
+
+21 дек. 01:57:52.754
+=== GIGACHAT REQUEST FAILED ===
+=== GIGACHAT REQUEST FAILED ===
+"request_id""02e2051c-b0b7-48c1-98a0-f393d4ecce07"
+"source""user"
+"version_id""d4e7o8ulithrdbdn0o18"
+
+21 дек. 01:57:52.754
+❌ ERROR: Chat request error: Request timeout
+❌ ERROR: Chat request error: Request timeout
+"request_id""02e2051c-b0b7-48c1-98a0-f393d4ecce07"
+"source""user"
+"version_id""d4e7o8ulithrdbdn0o18"
+
+21 дек. 01:57:52.754
+❌ Chat request failed: Request timeout
+❌ Chat request failed: Request timeout
+"request_id""02e2051c-b0b7-48c1-98a0-f393d4ecce07"
+"source""user"
+"version_id""d4e7o8ulithrdbdn0o18"
+
+21 дек. 01:57:42.750
+6️⃣ Sending chat request (single attempt, aggressive timeout)...
+
+21 дек. 01:57:42.750
+5️⃣ Got access token. Length: 1233
+
+21 дек. 01:57:42.750
+4️⃣ Auth response status: 200
+
+21 дек. 01:57:42.750
+✅ OAuth succeeded with https://ngw.devices.sberbank.ru:9443/api/v2/oauth
+
+21 дек. 01:57:42.659
+Attempt 1/2...
+
+21 дек. 01:57:42.659
+Trying OAuth endpoint: https://ngw.devices.sberbank.ru:9443/api/v2/oauth
+
+21 дек. 01:57:42.659
+3️⃣ Requesting OAuth token...
+
+21 дек. 01:57:42.659
+Key length: 100
+
+21 дек. 01:57:42.659
+2️⃣ GIGACHAT_KEY exists: true
+
+21 дек. 01:57:42.659
+1️⃣ Received message: привет...
+
+21 дек. 01:57:42.659
+=== GIGACHAT REQUEST START (Yandex Cloud) ===
+
+21 дек. 01:57:42.658
+[GIGA-CHAT] Handler called
+
+21 дек. 01:57:42.658
+}
+
+21 дек. 01:57:42.658
+bodyKeys: [ 'message' ]
+
+21 дек. 01:57:42.658
+path: '',
+
+21 дек. 01:57:42.658
+action: 'giga-chat',
+
+21 дек. 01:57:42.658
+method: 'POST',
+
+21 дек. 01:57:42.658
+[REQUEST] {
+
+21 дек. 01:57:42.658
+}
+
+21 дек. 01:57:42.658
+timestamp: '2025-12-20T22:57:42.651Z'
+
+21 дек. 01:57:42.658
+path: undefined,
+
+21 дек. 01:57:42.658
+method: 'POST',
+
+21 дек. 01:57:42.658
+[HANDLER START] {
+
+21 дек. 01:57:41.795
+START RequestID: 02e2051c-b0b7-48c1-98a0-f393d4ecce07 Version: d4e7o8ulithrdbdn0o18
