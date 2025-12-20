@@ -14,6 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { useDocumentMeta } from "@/lib/useDocumentMeta";
+import { useBreadcrumbSchema } from "@/lib/useBreadcrumbSchema";
 
 import livingRoomImg from "@assets/generated_images/modern_living_room_renovation.png";
 import kitchenImg from "@assets/generated_images/modern_kitchen_renovation_result.png";
