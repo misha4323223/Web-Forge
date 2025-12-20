@@ -351,4 +351,28 @@
     background-clip: text;
     color: transparent;
   }
+
+  /* Floating Effect with Relief for Premium Service Cards */
+  .floating-service-card {
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                box-shadow 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .floating-service-card:hover {
+    transform: translateY(-16px);
+    box-shadow: 
+      0 2px 8px rgba(0, 0, 0, 0.3),
+      0 8px 24px rgba(56, 189, 248, 0.15),
+      0 16px 40px rgba(56, 189, 248, 0.08),
+      0 24px 64px rgba(0, 0, 0, 0.4);
+  }
+
+  @media (max-width: 768px) {
+    .floating-service-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 
+        0 2px 4px rgba(0, 0, 0, 0.3),
+        0 4px 12px rgba(56, 189, 248, 0.1);
+    }
+  }
 }
