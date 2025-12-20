@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -15,7 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Loader2, Copy, Check, Trash2, Edit2, Mail, Phone, Calendar, StickyNote, Building2, CreditCard, FileText, CheckCircle } from "lucide-react";
+import { Loader2, Copy, Check, Trash2, Edit2, Mail, Phone, Calendar, StickyNote, Building2, CreditCard, FileText, CheckCircle, Lock, LogOut, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 type AdditionalInvoiceFormData = {
@@ -59,8 +59,85 @@ export default function Admin() {
   const [orderToDelete, setOrderToDelete] = useState<Order | null>(null);
   const [noteText, setNoteText] = useState("");
   const [activeTab, setActiveTab] = useState("orders");
+  
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [authChecking, setAuthChecking] = useState(true);
 
   const API_BASE_URL = import.meta.env.VITE_API_URL || "https://functions.yandexcloud.net/d4ed08qj9rekklj8b100";
+  
+  useEffect(() => {
+    const token = sessionStorage.getItem("adminToken");
+    if (token) {
+      verifyToken(token);
+    } else {
+      setAuthChecking(false);
+    }
+  }, []);
+  
+  const isProduction = !!import.meta.env.VITE_API_URL;
+  
+  const verifyToken = async (token: string) => {
+    try {
+      const url = isProduction 
+        ? `${API_BASE_URL}?action=verify-admin`
+        : "/api/verify-admin";
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token }),
+      });
+      const data = await res.json();
+      if (data.valid) {
+        setIsAuthenticated(true);
+      } else {
+        sessionStorage.removeItem("adminToken");
+      }
+    } catch {
+      sessionStorage.removeItem("adminToken");
+    }
+    setAuthChecking(false);
+  };
+  
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoginLoading(true);
+    
+    try {
+      const url = isProduction 
+        ? `${API_BASE_URL}?action=admin-login`
+        : "/api/admin-login";
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: loginEmail, password: loginPassword }),
+      });
+      const data = await res.json();
+      
+      if (data.success && data.token) {
+        sessionStorage.setItem("adminToken", data.token);
+        setIsAuthenticated(true);
+        toast({ title: "Добро пожаловать!" });
+      } else {
+        toast({ title: "Ошибка входа", description: "Неверный email или пароль", variant: "destructive" });
+      }
+    } catch {
+      toast({ title: "Ошибка", description: "Не удалось подключиться к серверу", variant: "destructive" });
+    }
+    
+    setLoginLoading(false);
+  };
+  
+  const handleLogout = () => {
+    sessionStorage.removeItem("adminToken");
+    setIsAuthenticated(false);
+    setLoginEmail("");
+    setLoginPassword("");
+    toast({ title: "Вы вышли из системы" });
+  };
   
   const { data: orders = [], isLoading: ordersLoading } = useQuery<Order[]>({
     queryKey: ["/api/orders"],
@@ -232,12 +309,105 @@ export default function Admin() {
     toast({ title: "ID скопирован!", description: orderId });
   };
 
+  if (authChecking) {
+    return (
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-cyan-400" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-background text-foreground">
+        <Navigation />
+        <main className="pt-24 pb-16">
+          <div className="max-w-md mx-auto px-6">
+            <Card className="p-8">
+              <div className="flex flex-col items-center gap-4 mb-6">
+                <div className="w-16 h-16 rounded-full bg-gradient-to-r from-cyan-500 to-purple-500 flex items-center justify-center">
+                  <Lock className="w-8 h-8 text-white" />
+                </div>
+                <h1 className="text-2xl font-bold">Вход в админку</h1>
+                <p className="text-muted-foreground text-center">
+                  Введите учётные данные для доступа к панели управления
+                </p>
+              </div>
+              
+              <form onSubmit={handleLogin} className="space-y-4">
+                <div className="space-y-2">
+                  <label htmlFor="email" className="text-sm font-medium">Email</label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="admin@example.com"
+                    value={loginEmail}
+                    onChange={(e) => setLoginEmail(e.target.value)}
+                    required
+                    data-testid="input-admin-email"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <label htmlFor="password" className="text-sm font-medium">Пароль</label>
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Введите пароль"
+                      value={loginPassword}
+                      onChange={(e) => setLoginPassword(e.target.value)}
+                      required
+                      data-testid="input-admin-password"
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="absolute right-1 top-1/2 -translate-y-1/2"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </Button>
+                  </div>
+                </div>
+                
+                <Button 
+                  type="submit" 
+                  className="w-full bg-gradient-to-r from-cyan-500 to-purple-500"
+                  disabled={loginLoading}
+                  data-testid="button-admin-login"
+                >
+                  {loginLoading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Вход...
+                    </>
+                  ) : (
+                    "Войти"
+                  )}
+                </Button>
+              </form>
+            </Card>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navigation />
       <main className="pt-24 pb-16">
         <div className="max-w-6xl mx-auto px-6">
-          <h1 className="text-3xl font-bold mb-8">Панель управления</h1>
+          <div className="flex items-center justify-between gap-4 mb-8">
+            <h1 className="text-3xl font-bold">Панель управления</h1>
+            <Button variant="outline" onClick={handleLogout} data-testid="button-admin-logout">
+              <LogOut className="w-4 h-4 mr-2" />
+              Выйти
+            </Button>
+          </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
             <TabsList className="grid w-full grid-cols-2 max-w-md">

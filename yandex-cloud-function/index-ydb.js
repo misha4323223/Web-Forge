@@ -184,6 +184,15 @@ module.exports.handler = async function (event, context) {
         if (actionOrderMatch && method === 'GET') {
             return await handleGetOrder(actionOrderMatch[1], headers);
         }
+        
+        // Admin authentication
+        if (action === 'admin-login' && method === 'POST') {
+            return await handleAdminLogin(body, headers);
+        }
+        
+        if (action === 'verify-admin' && method === 'POST') {
+            return await handleVerifyAdmin(body, headers);
+        }
 
         // DELETE /api/orders/:orderId - мягкое удаление заказа
         if (method === 'DELETE') {
@@ -1997,6 +2006,103 @@ async function handleBankInvoiceAddon(data, headers) {
             body: JSON.stringify({ success: false, message: error.message }),
         };
     }
+}
+
+// Admin Authentication with HMAC-signed tokens
+const ADMIN_TOKEN_SECRET = process.env.ADMIN_TOKEN_SECRET || 'mp-webstudio-admin-secret-2024';
+const TOKEN_EXPIRY_HOURS = 24;
+
+function generateAdminToken() {
+    const now = Date.now();
+    const expiry = now + (TOKEN_EXPIRY_HOURS * 60 * 60 * 1000);
+    const payload = JSON.stringify({ exp: expiry, iat: now, role: 'admin' });
+    const payloadBase64 = Buffer.from(payload).toString('base64url');
+    const signature = crypto.createHmac('sha256', ADMIN_TOKEN_SECRET)
+        .update(payloadBase64)
+        .digest('base64url');
+    return `${payloadBase64}.${signature}`;
+}
+
+function verifyAdminToken(token) {
+    if (!token || typeof token !== 'string') return false;
+    
+    const parts = token.split('.');
+    if (parts.length !== 2) return false;
+    
+    const [payloadBase64, signature] = parts;
+    
+    // Verify signature
+    const expectedSignature = crypto.createHmac('sha256', ADMIN_TOKEN_SECRET)
+        .update(payloadBase64)
+        .digest('base64url');
+    
+    if (signature !== expectedSignature) return false;
+    
+    // Verify expiry
+    try {
+        const payload = JSON.parse(Buffer.from(payloadBase64, 'base64url').toString());
+        if (payload.exp < Date.now()) return false;
+        return true;
+    } catch {
+        return false;
+    }
+}
+
+async function handleAdminLogin(data, headers) {
+    const { email, password } = data;
+    
+    const adminEmail = process.env.ADMIN_EMAIL;
+    const adminPassword = process.env.ADMIN_PASSWORD;
+    
+    if (!adminEmail || !adminPassword) {
+        console.error('ADMIN_EMAIL or ADMIN_PASSWORD not configured');
+        return {
+            statusCode: 500,
+            headers,
+            body: JSON.stringify({ success: false, message: 'Admin not configured' }),
+        };
+    }
+    
+    // Constant-time comparison to prevent timing attacks
+    const safeCompare = (a, b) => {
+        if (!a || !b) return false;
+        const bufA = Buffer.from(a);
+        const bufB = Buffer.from(b);
+        if (bufA.length !== bufB.length) return false;
+        return crypto.timingSafeEqual(bufA, bufB);
+    };
+    
+    const emailMatch = safeCompare(email?.toLowerCase(), adminEmail?.toLowerCase());
+    const passwordMatch = safeCompare(password, adminPassword);
+    
+    if (emailMatch && passwordMatch) {
+        const token = generateAdminToken();
+        console.log('Admin login successful');
+        
+        return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({ success: true, token }),
+        };
+    }
+    
+    console.log('Admin login failed - invalid credentials');
+    return {
+        statusCode: 401,
+        headers,
+        body: JSON.stringify({ success: false, message: 'Invalid credentials' }),
+    };
+}
+
+async function handleVerifyAdmin(data, headers) {
+    const { token } = data;
+    const valid = verifyAdminToken(token);
+    
+    return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({ valid }),
+    };
 }
 
 async function generateBankInvoicePDF(data) {

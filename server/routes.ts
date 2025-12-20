@@ -568,5 +568,85 @@ export async function registerRoutes(
     }
   });
 
+  // Admin Authentication
+  const ADMIN_TOKEN_SECRET = process.env.ADMIN_TOKEN_SECRET || 'mp-webstudio-admin-secret-2024';
+  const TOKEN_EXPIRY_HOURS = 24;
+
+  function generateAdminToken(): string {
+    const now = Date.now();
+    const expiry = now + (TOKEN_EXPIRY_HOURS * 60 * 60 * 1000);
+    const payload = JSON.stringify({ exp: expiry, iat: now, role: 'admin' });
+    const payloadBase64 = Buffer.from(payload).toString('base64url');
+    const signature = crypto.createHmac('sha256', ADMIN_TOKEN_SECRET)
+      .update(payloadBase64)
+      .digest('base64url');
+    return `${payloadBase64}.${signature}`;
+  }
+
+  function verifyAdminToken(token: string): boolean {
+    if (!token || typeof token !== 'string') return false;
+    
+    const parts = token.split('.');
+    if (parts.length !== 2) return false;
+    
+    const [payloadBase64, signature] = parts;
+    
+    const expectedSignature = crypto.createHmac('sha256', ADMIN_TOKEN_SECRET)
+      .update(payloadBase64)
+      .digest('base64url');
+    
+    if (signature !== expectedSignature) return false;
+    
+    try {
+      const payload = JSON.parse(Buffer.from(payloadBase64, 'base64url').toString());
+      if (payload.exp < Date.now()) return false;
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  app.post("/api/admin-login", async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      
+      const adminEmail = process.env.ADMIN_EMAIL;
+      const adminPassword = process.env.ADMIN_PASSWORD;
+      
+      if (!adminEmail || !adminPassword) {
+        return res.status(500).json({ success: false, message: 'Admin not configured' });
+      }
+      
+      const safeCompare = (a: string | undefined, b: string | undefined): boolean => {
+        if (!a || !b) return false;
+        const bufA = Buffer.from(a);
+        const bufB = Buffer.from(b);
+        if (bufA.length !== bufB.length) return false;
+        return crypto.timingSafeEqual(bufA, bufB);
+      };
+      
+      const emailMatch = safeCompare(email?.toLowerCase(), adminEmail?.toLowerCase());
+      const passwordMatch = safeCompare(password, adminPassword);
+      
+      if (emailMatch && passwordMatch) {
+        const token = generateAdminToken();
+        console.log('Admin login successful');
+        return res.json({ success: true, token });
+      }
+      
+      console.log('Admin login failed - invalid credentials');
+      res.status(401).json({ success: false, message: 'Invalid credentials' });
+    } catch (error) {
+      console.error("Admin login error:", error);
+      res.status(500).json({ success: false, message: 'Server error' });
+    }
+  });
+
+  app.post("/api/verify-admin", async (req, res) => {
+    const { token } = req.body;
+    const valid = verifyAdminToken(token);
+    res.json({ valid });
+  });
+
   return httpServer;
 }
