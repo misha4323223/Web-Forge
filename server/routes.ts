@@ -728,6 +728,9 @@ export async function registerRoutes(
         });
       }
 
+      // Отключаем проверку SSL сертификата для dev режима
+      process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
       const giga = new GigaChat({
         credentials: GIGACHAT_KEY,
         model: "GigaChat",

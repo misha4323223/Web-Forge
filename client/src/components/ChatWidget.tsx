@@ -82,7 +82,7 @@ export function ChatWidget() {
 
       {/* Модалка чата */}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="w-full max-w-md h-[600px] flex flex-col p-0 border-cyan-500/20">
+        <DialogContent className="w-full max-w-md h-[600px] flex flex-col p-0 border-cyan-500/20" description="AI чат помощник для ответов на вопросы">
           <DialogHeader className="border-b border-cyan-500/10 p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
