@@ -896,7 +896,8 @@ export async function registerRoutes(
       console.log("8️⃣ Success! Response length:", assistantMessage.length);
       console.log("=== GIGACHAT REQUEST END (SUCCESS) ===\n");
       
-      return res.json({
+      res.set("Content-Type", "application/json");
+      return res.status(200).json({
         success: true,
         response: assistantMessage,
       });
@@ -905,6 +906,7 @@ export async function registerRoutes(
       console.error("❌ ERROR:", errorMsg);
       console.error("=== GIGACHAT REQUEST FAILED ===\n");
       
+      res.set("Content-Type", "application/json");
       return res.status(500).json({
         success: false,
         response: `Ошибка: ${errorMsg}`,
