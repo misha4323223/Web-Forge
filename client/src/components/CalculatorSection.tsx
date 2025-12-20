@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -598,6 +598,9 @@ export function CalculatorSection() {
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" data-testid="dialog-order-modal">
           <DialogHeader>
             <DialogTitle>Оформить заказ</DialogTitle>
+            <DialogDescription>
+              Заполните форму ниже, чтобы отправить заказ. Слева указаны выбранные услуги и итоговая стоимость.
+            </DialogDescription>
           </DialogHeader>
 
           <div className="grid md:grid-cols-2 gap-6">
