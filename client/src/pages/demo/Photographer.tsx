@@ -5,14 +5,14 @@ import { Camera, Mail, Phone, MapPin, Instagram, ArrowLeft, Play, ExternalLink }
 import { Link } from "wouter";
 import { useState, useEffect } from "react";
 import { useDocumentMeta } from "@/lib/useDocumentMeta";
-import photographerHeroImg from "@assets/generated_images/photographer_workspace_studio_aesthetic.png";
-import portraitWomanImg from "@assets/generated_images/professional_woman_portrait_photography.png";
-import weddingSunsetImg from "@assets/generated_images/romantic_wedding_couple_sunset.png";
-import watchProductImg from "@assets/generated_images/luxury_watch_product_photo.png";
-import portraitManImg from "@assets/generated_images/professional_businessman_portrait_photo.png";
-import weddingAisleImg from "@assets/generated_images/bride_walking_down_aisle.png";
-import perfumeProductImg from "@assets/generated_images/luxury_perfume_bottle_product.png";
-import photographerPortraitImg from "@assets/generated_images/russian_male_photographer_portrait.png";
+import photographerHeroImg from "@assets/generated_images/photographer_workspace_studio_aesthetic.webp";
+import portraitWomanImg from "@assets/generated_images/professional_woman_portrait_photography.webp";
+import weddingSunsetImg from "@assets/generated_images/romantic_wedding_couple_sunset.webp";
+import watchProductImg from "@assets/generated_images/luxury_watch_product_photo.webp";
+import portraitManImg from "@assets/generated_images/professional_businessman_portrait_photo.webp";
+import weddingAisleImg from "@assets/generated_images/bride_walking_down_aisle.webp";
+import perfumeProductImg from "@assets/generated_images/luxury_perfume_bottle_product.webp";
+import photographerPortraitImg from "@assets/generated_images/russian_male_photographer_portrait.webp";
 
 const portfolioImages = [
   { id: 1, category: "Портреты", src: portraitWomanImg },

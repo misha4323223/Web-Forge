@@ -11,7 +11,7 @@ import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useDocumentMeta } from "@/lib/useDocumentMeta";
 import { useBreadcrumbSchema } from "@/lib/useBreadcrumbSchema";
-import fitnessHeroImg from "@assets/generated_images/modern_gym_interior_purple.png";
+import fitnessHeroImg from "@assets/generated_images/modern_gym_interior_purple.webp";
 
 const classes = [
   { id: 1, name: "Силовая тренировка", time: "07:00", trainer: "Алексей", duration: "60 мин", spots: 8 },

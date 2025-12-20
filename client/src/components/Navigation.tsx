@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "wouter";
-import logoImg from "@assets/generated_images/mp_hexagonal_tech_logo.png";
+import logoImg from "@assets/generated_images/mp_hexagonal_tech_logo.webp";
 
 const navItems = [
   { label: "О студии", href: "#about" },

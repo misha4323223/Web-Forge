@@ -1,6 +1,6 @@
 import { SiTelegram, SiVk } from "react-icons/si";
 import { Button } from "@/components/ui/button";
-import logoImg from "@assets/generated_images/mp_hexagonal_tech_logo.png";
+import logoImg from "@assets/generated_images/mp_hexagonal_tech_logo.webp";
 
 const footerLinks = [
   { label: "О студии", href: "#about" },

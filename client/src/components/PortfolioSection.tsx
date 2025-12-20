@@ -103,17 +103,17 @@ function AnimatedText({ text, startIndex, isGradient, isInView }: AnimatedTextPr
 }
 
 import sweetDelightsImg from "@assets/image_1765623150824.webp";
-import socksHeroImg from "@assets/generated_images/classic_socks_gift_box.png";
+import socksHeroImg from "@assets/generated_images/classic_socks_gift_box.webp";
 import travelHeroImg from "@assets/generated_images/tropical_beach_travel_destination.webp";
 import barberHeroImg from "@assets/generated_images/stylish_barbershop_interior.webp";
-import foodHeroImg from "@assets/generated_images/asian_food_arrangement_table.png";
-import fitnessHeroImg from "@assets/generated_images/modern_gym_interior_purple.png";
+import foodHeroImg from "@assets/generated_images/asian_food_arrangement_table.webp";
+import fitnessHeroImg from "@assets/generated_images/modern_gym_interior_purple.webp";
 import cosmeticsHeroImg from "@assets/stock_images/cosmetics_skincare_p_2775c0e7.webp";
-import streetwearHeroImg from "@assets/generated_images/streetwear_hero_banner_dark.png";
-import dentalHeroImg from "@assets/generated_images/dental_clinic_modern_reception.png";
-import renovationHeroImg from "@assets/generated_images/modern_living_room_renovation.png";
-import mpWebstudioImg from "@assets/generated_images/web_studio_portfolio_showcase.png";
-import photographerHeroImg from "@assets/generated_images/photographer_workspace_studio_aesthetic.png";
+import streetwearHeroImg from "@assets/generated_images/streetwear_hero_banner_dark.webp";
+import dentalHeroImg from "@assets/generated_images/dental_clinic_modern_reception.webp";
+import renovationHeroImg from "@assets/generated_images/modern_living_room_renovation.webp";
+import mpWebstudioImg from "@assets/generated_images/web_studio_portfolio_showcase.webp";
+import photographerHeroImg from "@assets/generated_images/photographer_workspace_studio_aesthetic.webp";
 
 const portfolioItems = [
   {

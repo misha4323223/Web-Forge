@@ -11,12 +11,12 @@ import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useDocumentMeta } from "@/lib/useDocumentMeta";
 
-import giftBoxImg from "@assets/generated_images/classic_socks_gift_box.png";
-import businessImg from "@assets/generated_images/business_socks_gift_set.png";
-import noveltyImg from "@assets/generated_images/novelty_text_pattern_socks.png";
-import athleticImg from "@assets/generated_images/athletic_compression_running_socks.png";
-import colorfulImg from "@assets/generated_images/colorful_patterned_socks_set.png";
-import heroImg from "@assets/generated_images/socks_collection_hero_banner.png";
+import giftBoxImg from "@assets/generated_images/classic_socks_gift_box.webp";
+import businessImg from "@assets/generated_images/business_socks_gift_set.webp";
+import noveltyImg from "@assets/generated_images/novelty_text_pattern_socks.webp";
+import athleticImg from "@assets/generated_images/athletic_compression_running_socks.webp";
+import colorfulImg from "@assets/generated_images/colorful_patterned_socks_set.webp";
+import heroImg from "@assets/generated_images/socks_collection_hero_banner.webp";
 
 const products = [
   {

@@ -16,13 +16,13 @@ import { Label } from "@/components/ui/label";
 import { useDocumentMeta } from "@/lib/useDocumentMeta";
 import { useBreadcrumbSchema } from "@/lib/useBreadcrumbSchema";
 
-import livingRoomImg from "@assets/generated_images/modern_living_room_renovation.png";
-import kitchenImg from "@assets/generated_images/modern_kitchen_renovation_result.png";
-import bathroomImg from "@assets/generated_images/modern_bathroom_renovation_result.png";
-import bedroomImg from "@assets/generated_images/modern_bedroom_renovation_result.png";
-import workImg from "@assets/generated_images/renovation_work_in_progress.png";
-import beforeAfterImg from "@assets/generated_images/before_after_renovation_comparison.png";
-import planningImg from "@assets/generated_images/renovation_planning_blueprints_tools.png";
+import livingRoomImg from "@assets/generated_images/modern_living_room_renovation.webp";
+import kitchenImg from "@assets/generated_images/modern_kitchen_renovation_result.webp";
+import bathroomImg from "@assets/generated_images/modern_bathroom_renovation_result.webp";
+import bedroomImg from "@assets/generated_images/modern_bedroom_renovation_result.webp";
+import workImg from "@assets/generated_images/renovation_work_in_progress.webp";
+import beforeAfterImg from "@assets/generated_images/before_after_renovation_comparison.webp";
+import planningImg from "@assets/generated_images/renovation_planning_blueprints_tools.webp";
 
 const services = [
   { 

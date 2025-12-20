@@ -10,11 +10,11 @@ import { Link } from "wouter";
 import { useState, useEffect, useRef } from "react";
 import { useDocumentMeta } from "@/lib/useDocumentMeta";
 import { useBreadcrumbSchema } from "@/lib/useBreadcrumbSchema";
-import foodHeroImg from "@assets/generated_images/asian_food_arrangement_table.png";
-import tomYumImg from "@assets/generated_images/tom_yum_shrimp_soup.png";
-import padThaiImg from "@assets/generated_images/pad_thai_chicken_noodles.png";
-import greenCurryImg from "@assets/generated_images/green_curry_coconut_milk.png";
-import springRollsImg from "@assets/generated_images/spring_rolls_crispy_vietnamese.png";
+import foodHeroImg from "@assets/generated_images/asian_food_arrangement_table.webp";
+import tomYumImg from "@assets/generated_images/tom_yum_shrimp_soup.webp";
+import padThaiImg from "@assets/generated_images/pad_thai_chicken_noodles.webp";
+import greenCurryImg from "@assets/generated_images/green_curry_coconut_milk.webp";
+import springRollsImg from "@assets/generated_images/spring_rolls_crispy_vietnamese.webp";
 
 const menuItems = [
   {

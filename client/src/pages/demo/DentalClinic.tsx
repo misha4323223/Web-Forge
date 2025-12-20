@@ -17,13 +17,13 @@ import { useDocumentMeta } from "@/lib/useDocumentMeta";
 import { useBreadcrumbSchema } from "@/lib/useBreadcrumbSchema";
 import { useAggregateRatingSchema } from "@/lib/useAggregateRatingSchema";
 
-import heroImg from "@assets/generated_images/dental_clinic_modern_reception.png";
-import treatmentImg from "@assets/generated_images/dental_treatment_room_interior.png";
-import femaleDocImg from "@assets/generated_images/russian_female_dentist_portrait.png";
-import maleDocImg from "@assets/generated_images/russian_male_dentist_portrait.png";
-import instrumentsImg from "@assets/generated_images/dental_instruments_close-up.png";
-import smileImg from "@assets/generated_images/perfect_white_smile_close-up.png";
-import xrayImg from "@assets/generated_images/dental_x-ray_equipment_modern.png";
+import heroImg from "@assets/generated_images/dental_clinic_modern_reception.webp";
+import treatmentImg from "@assets/generated_images/dental_treatment_room_interior.webp";
+import femaleDocImg from "@assets/generated_images/russian_female_dentist_portrait.webp";
+import maleDocImg from "@assets/generated_images/russian_male_dentist_portrait.webp";
+import instrumentsImg from "@assets/generated_images/dental_instruments_close-up.webp";
+import smileImg from "@assets/generated_images/perfect_white_smile_close-up.webp";
+import xrayImg from "@assets/generated_images/dental_x-ray_equipment_modern.webp";
 
 const services = [
   { 

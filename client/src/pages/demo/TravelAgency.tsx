@@ -13,12 +13,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Label } from "@/components/ui/label";
 import { Check } from "lucide-react";
 import travelHeroImg from "@assets/generated_images/tropical_beach_travel_destination.webp";
-import maldivesImg from "@assets/generated_images/maldives_beach_paradise_resort.png";
-import parisImg from "@assets/generated_images/paris_eiffel_tower_sunset.png";
-import baliImg from "@assets/generated_images/bali_rice_terraces_tropical.png";
-import dubaiImg from "@assets/generated_images/dubai_skyline_night_burj.png";
-import santoriniImg from "@assets/generated_images/santorini_greece_blue_domes.png";
-import tokyoImg from "@assets/generated_images/tokyo_neon_cityscape_night.png";
+import maldivesImg from "@assets/generated_images/maldives_beach_paradise_resort.webp";
+import parisImg from "@assets/generated_images/paris_eiffel_tower_sunset.webp";
+import baliImg from "@assets/generated_images/bali_rice_terraces_tropical.webp";
+import dubaiImg from "@assets/generated_images/dubai_skyline_night_burj.webp";
+import santoriniImg from "@assets/generated_images/santorini_greece_blue_domes.webp";
+import tokyoImg from "@assets/generated_images/tokyo_neon_cityscape_night.webp";
 
 const destinations = [
   { 

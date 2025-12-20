@@ -14,10 +14,10 @@ import barberHeroImg from "@assets/generated_images/stylish_barbershop_interior.
 import alexeyImg from "@assets/generated_images/russian_barber_alexey_portrait.webp";
 import dmitryImg from "@assets/generated_images/russian_barber_dmitry_portrait.webp";
 import maximImg from "@assets/generated_images/russian_barber_maxim_portrait.webp";
-import galleryImg1 from "@assets/generated_images/modern_undercut_fade_haircut.png";
-import galleryImg2 from "@assets/generated_images/professional_beard_styling_result.png";
-import galleryImg3 from "@assets/generated_images/classic_gentleman_side_part.png";
-import galleryImg4 from "@assets/generated_images/trendy_textured_crop_fade.png";
+import galleryImg1 from "@assets/generated_images/modern_undercut_fade_haircut.webp";
+import galleryImg2 from "@assets/generated_images/professional_beard_styling_result.webp";
+import galleryImg3 from "@assets/generated_images/classic_gentleman_side_part.webp";
+import galleryImg4 from "@assets/generated_images/trendy_textured_crop_fade.webp";
 
 const services = [
   { id: 1, name: "Мужская стрижка", duration: "45 мин", price: 1500, icon: Scissors },
