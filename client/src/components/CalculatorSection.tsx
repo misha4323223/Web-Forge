@@ -401,6 +401,14 @@ export function CalculatorSection() {
           >
             Выберите тип сайта и добавьте нужные функции — цена рассчитается автоматически
           </motion.p>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.5 }}
+            className="text-muted-foreground text-base max-w-2xl mx-auto pt-2"
+          >
+            Оставьте заявку и мы свяжемся с вами для бесплатной консультации
+          </motion.p>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
