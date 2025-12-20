@@ -1,6 +1,9 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "https://functions.yandexcloud.net/d4ed08qj9rekklj8b100";
+// In production, VITE_API_URL points to Yandex Cloud Function
+// In development, if not set, use local relative paths
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+const IS_EXTERNAL_API = !!API_BASE_URL;
 
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
@@ -16,7 +19,8 @@ export async function apiRequest(
 ): Promise<Response> {
   let fullUrl = url;
   
-  if (url.startsWith("/api") && API_BASE_URL) {
+  // If external API is configured (production), transform the URL
+  if (url.startsWith("/api") && IS_EXTERNAL_API && API_BASE_URL) {
     const endpoint = url.replace("/api/", "");
     fullUrl = `${API_BASE_URL}?action=${endpoint}`;
   }
@@ -25,7 +29,7 @@ export async function apiRequest(
     method,
     headers: data ? { "Content-Type": "application/json" } : {},
     body: data ? JSON.stringify(data) : undefined,
-    credentials: API_BASE_URL ? "omit" : "include",
+    credentials: IS_EXTERNAL_API ? "omit" : "include",
   });
 
   await throwIfResNotOk(res);

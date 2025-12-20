@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { MessageCircle, Send, X } from "lucide-react";
+import { apiRequest } from "@/lib/queryClient";
 
 interface Message {
   role: "user" | "assistant";
@@ -33,19 +34,9 @@ export function ChatWidget() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/giga-chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: userMessage }),
-      });
+      const response = await apiRequest("POST", "/api/giga-chat", { message: userMessage });
 
       console.log("Chat API response status:", response.status);
-      
-      if (!response.ok) {
-        const text = await response.text();
-        console.error("Chat API error response:", response.status, text.substring(0, 500));
-        throw new Error(`HTTP ${response.status}: ${text.substring(0, 100)}`);
-      }
 
       const contentType = response.headers.get("content-type");
       console.log("Response content-type:", contentType);
