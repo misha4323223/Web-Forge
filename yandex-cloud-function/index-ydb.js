@@ -32,6 +32,7 @@ const nodemailer = require('nodemailer');
 const PDFDocument = require('pdfkit');
 const { Driver, getCredentialsFromEnv, TypedValues, Types } = require('ydb-sdk');
 const { SESv2Client, SendEmailCommand } = require('@aws-sdk/client-sesv2');
+const GigaChat = require('gigachat');
 
 const SITE_URL = process.env.SITE_URL || 'https://www.mp-webstudio.ru';
 
@@ -3177,54 +3178,23 @@ async function handleGigaChat(body, headers) {
             };
         }
 
-        // Получаем токен доступа
-        const authResponse = await fetch('https://auth.api.cloud.yandex.net/oauth/token', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({
-                grant_type: 'urn:ibm:params:oauth:grant-type:apikey',
-                apikey: gigachatKey,
-                scope: gigachatScope,
-            }).toString(),
+        // Отключаем проверку SSL сертификата для dev режима
+        process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
+        const giga = new GigaChat({
+            credentials: gigachatKey,
+            model: 'GigaChat',
+            scope: gigachatScope,
         });
 
-        if (!authResponse.ok) {
-            throw new Error(`Auth failed: ${authResponse.statusText}`);
-        }
-
-        const authData = await authResponse.json();
-        const accessToken = authData.access_token;
-
-        if (!accessToken) {
-            throw new Error('No access token in response');
-        }
-
-        // Отправляем сообщение в Giga Chat
-        const chatResponse = await fetch('https://gigachat.devices.sbercloud.ru/api/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${accessToken}`,
+        const response = await giga.chat([
+            {
+                role: 'user',
+                content: message,
             },
-            body: JSON.stringify({
-                model: 'GigaChat',
-                messages: [
-                    {
-                        role: 'user',
-                        content: message,
-                    },
-                ],
-                temperature: 0.7,
-                max_tokens: 1000,
-            }),
-        });
+        ]);
 
-        if (!chatResponse.ok) {
-            throw new Error(`Chat API failed: ${chatResponse.statusText}`);
-        }
-
-        const chatData = await chatResponse.json();
-        const responseText = chatData.choices?.[0]?.message?.content || 'Нет ответа';
+        const assistantMessage = response.choices[0]?.message?.content || 'Нет ответа';
 
         console.log('Giga Chat request processed successfully');
 
@@ -3233,7 +3203,7 @@ async function handleGigaChat(body, headers) {
             headers,
             body: JSON.stringify({
                 success: true,
-                response: responseText,
+                response: assistantMessage,
             }),
         };
     } catch (error) {

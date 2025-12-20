@@ -12,6 +12,7 @@
   "dependencies": {
     "@aws-sdk/client-ses": "^3.700.0",
     "nodemailer": "^6.9.0",
-    "pdfkit": "^0.15.0"
+    "pdfkit": "^0.15.0",
+    "gigachat": "^0.0.18"
   }
 }
