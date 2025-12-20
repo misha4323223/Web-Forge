@@ -3178,23 +3178,55 @@ async function handleGigaChat(body, headers) {
             };
         }
 
-        // Отключаем проверку SSL сертификата для dev режима
-        process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-
-        const giga = new GigaChat({
-            credentials: gigachatKey,
-            model: 'GigaChat',
-            scope: gigachatScope,
+        // Получаем токен доступа
+        const authResponse = await fetch('https://auth.api.cloud.yandex.net/oauth/token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+                grant_type: 'urn:ibm:params:oauth:grant-type:apikey',
+                apikey: gigachatKey,
+                scope: gigachatScope,
+            }).toString(),
         });
 
-        const response = await giga.chat([
-            {
-                role: 'user',
-                content: message,
-            },
-        ]);
+        if (!authResponse.ok) {
+            throw new Error(`Auth failed: ${authResponse.statusText}`);
+        }
 
-        const assistantMessage = response.choices[0]?.message?.content || 'Нет ответа';
+        const authData = await authResponse.json();
+        const accessToken = authData.access_token;
+
+        if (!accessToken) {
+            throw new Error('No access token in response');
+        }
+
+        // Отправляем сообщение в Giga Chat
+        const chatResponse = await fetch('https://gigachat.devices.sbercloud.ru/api/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`,
+            },
+            body: JSON.stringify({
+                model: 'GigaChat',
+                messages: [
+                    {
+                        role: 'user',
+                        content: message,
+                    },
+                ],
+                temperature: 0.7,
+                max_tokens: 1000,
+            }),
+        });
+
+        if (!chatResponse.ok) {
+            const errorData = await chatResponse.json().catch(() => ({}));
+            throw new Error(`Chat API failed: ${chatResponse.statusText} - ${JSON.stringify(errorData)}`);
+        }
+
+        const chatData = await chatResponse.json();
+        const assistantMessage = chatData.choices?.[0]?.message?.content || 'Нет ответа';
 
         console.log('Giga Chat request processed successfully');
 
@@ -3207,26 +3239,8 @@ async function handleGigaChat(body, headers) {
             }),
         };
     } catch (error) {
-        let errorMessage = 'Unknown error';
-        let errorDetails = '';
-        
-        if (error instanceof Error) {
-            errorMessage = error.message;
-            errorDetails = error.stack || '';
-        } else if (typeof error === 'object' && error !== null) {
-            errorDetails = JSON.stringify(error, null, 2);
-            if (error.response) {
-                errorMessage = `API Error: ${error.response.status}`;
-                errorDetails += `\nResponse: ${JSON.stringify(error.response.data || error.response.body, null, 2)}`;
-            } else if (error.body) {
-                errorMessage = `Body: ${error.body}`;
-            }
-        } else {
-            errorMessage = String(error);
-        }
-        
+        const errorMessage = error instanceof Error ? error.message : String(error);
         console.error('Giga Chat error:', errorMessage);
-        console.error('Details:', errorDetails);
         
         return {
             statusCode: 500,

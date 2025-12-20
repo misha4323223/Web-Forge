@@ -721,7 +721,10 @@ export async function registerRoutes(
     try {
       const validatedData = insertChatMessageSchema.parse(req.body);
       
-      if (!GIGACHAT_KEY) {
+      const gigachatKey = process.env.GIGACHAT_KEY;
+      const gigachatScope = process.env.GIGACHAT_SCOPE || 'GIGACHAT_API_PERS';
+      
+      if (!gigachatKey) {
         return res.status(400).json({
           success: false,
           response: "Giga Chat не настроен",
@@ -731,51 +734,63 @@ export async function registerRoutes(
       // Отключаем проверку SSL сертификата для dev режима
       process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
-      const giga = new GigaChat({
-        credentials: GIGACHAT_KEY,
-        model: "GigaChat",
-        scope: GIGACHAT_SCOPE,
+      // Получаем токен доступа
+      const authResponse = await fetch('https://auth.api.cloud.yandex.net/oauth/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          grant_type: 'urn:ibm:params:oauth:grant-type:apikey',
+          apikey: gigachatKey,
+          scope: gigachatScope,
+        }).toString(),
       });
 
-      const response = await giga.chat([
-        {
-          role: "user",
-          content: validatedData.message,
-        },
-      ]);
+      if (!authResponse.ok) {
+        throw new Error(`Auth failed: ${authResponse.statusText}`);
+      }
 
-      const assistantMessage =
-        response.choices[0]?.message?.content || "Нет ответа";
+      const authData = await authResponse.json();
+      const accessToken = authData.access_token;
+
+      if (!accessToken) {
+        throw new Error('No access token in response');
+      }
+
+      // Отправляем сообщение в Giga Chat
+      const chatResponse = await fetch('https://gigachat.devices.sbercloud.ru/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({
+          model: 'GigaChat',
+          messages: [
+            {
+              role: 'user',
+              content: validatedData.message,
+            },
+          ],
+          temperature: 0.7,
+          max_tokens: 1000,
+        }),
+      });
+
+      if (!chatResponse.ok) {
+        const errorData = await chatResponse.json().catch(() => ({}));
+        throw new Error(`Chat API failed: ${chatResponse.statusText} - ${JSON.stringify(errorData)}`);
+      }
+
+      const chatData = await chatResponse.json();
+      const assistantMessage = chatData.choices?.[0]?.message?.content || 'Нет ответа';
 
       res.json({
         success: true,
         response: assistantMessage,
       });
     } catch (error) {
-      let errorMessage = "Unknown error";
-      let errorDetails: Record<string, any> = {};
-      
-      if (error instanceof Error) {
-        errorMessage = error.message;
-        errorDetails = { message: error.message, stack: error.stack };
-      }
-      
-      if (typeof error === 'object' && error !== null) {
-        const err = error as Record<string, any>;
-        // Collect all properties from the error object
-        for (const key in err) {
-          try {
-            if (key !== 'stack') {
-              errorDetails[key] = err[key];
-            }
-          } catch (e) {
-            // Skip properties that can't be accessed
-          }
-        }
-      }
-      
+      const errorMessage = error instanceof Error ? error.message : String(error);
       console.error("Giga Chat error:", errorMessage);
-      console.error("Error object details:", errorDetails);
       
       res.status(500).json({
         success: false,
