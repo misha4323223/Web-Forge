@@ -1,0 +1,61 @@
+
+
+21 дек. 00:13:24.661
+runtime pid 89: exited with 1
+
+21 дек. 00:13:24.656
+Initialization exited with code: 1 Stack: at process.exit (/function/runtime/bootstrap:176:47) at ve.terminate (/function/runtime/bootstrap:1250:57) at ve.<anonymous> (/function/runtime/bootstrap:192:40) at Generator.next (<anonymous>) at i (/function/runtime/bootstrap:158:133) at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+21 дек. 00:13:24.143
+REPORT RequestID: d7c6a987-9a54-481a-8e26-e20260fbc0ed Duration: 368.254 ms Billed Duration: 400 ms Memory Size: 256 MB Max Memory Used: 108 MB Queuing Duration: 0.054 ms CPU Usage: 18.066 %
+
+21 дек. 00:13:24.143
+ERROR RequestID: d7c6a987-9a54-481a-8e26-e20260fbc0ed Code: 502 Message: Error during function invocation
+
+21 дек. 00:13:24.143
+END RequestID: d7c6a987-9a54-481a-8e26-e20260fbc0ed
+
+21 дек. 00:13:24.143
+{"errorMessage":"Unable to import index.handler module. Error: Cannot find module 'ydb-sdk'\nRequire stack:\n- /function/code/index.js","errorType":"Error","stackTrace":[{"line":"Require stack:"},{"line":"- /function/code/index.js"},{"function":"he.<anonymous>","file":"/function/runtime/bootstrap","line":178,"column":47},{"function":"Generator.throw","file":null,"line":null,"column":null},{"function":"a","file":"/function/runtime/bootstrap","line":158,"column":184}]}
+
+21 дек. 00:13:24.141
+Unable to import index.handler module. Error: Cannot find module 'ydb-sdk' Require stack: - /function/code/index.js Stack: Require stack: - /function/code/index.js at he.<anonymous> (/function/runtime/bootstrap:178:47) at Generator.throw (<anonymous>) at a (/function/runtime/bootstrap:158:184)
+
+21 дек. 00:13:23.685
+START RequestID: d7c6a987-9a54-481a-8e26-e20260fbc0ed Version: d4eik8sl3erpios2k709
+
+21 дек. 00:08:12.439
+REPORT RequestID: 8569f470-3ac9-4dbc-80d4-07ea58dcc440 Duration: 670.015 ms Billed Duration: 700 ms Memory Size: 256 MB Max Memory Used: 130 MB Queuing Duration: 0.081 ms CPU Usage: 99.902 %
+
+21 дек. 00:08:12.439
+ERROR RequestID: 8569f470-3ac9-4dbc-80d4-07ea58dcc440 Code: 502 Message: Error during function invocation
+
+21 дек. 00:08:12.439
+END RequestID: 8569f470-3ac9-4dbc-80d4-07ea58dcc440
+
+21 дек. 00:08:12.439
+{"errorMessage":"Unable to import index.handler module. Error: Cannot find module 'ydb-sdk'\nRequire stack:\n- /function/code/index.js","errorType":"Error","stackTrace":[{"line":"Require stack:"},{"line":"- /function/code/index.js"},{"function":"he.<anonymous>","file":"/function/runtime/bootstrap","line":178,"column":47},{"function":"Generator.throw","file":null,"line":null,"column":null},{"function":"a","file":"/function/runtime/bootstrap","line":158,"column":184}]}
+
+21 дек. 00:08:12.430
+Unable to import index.handler module. Error: Cannot find module 'ydb-sdk' Require stack: - /function/code/index.js Stack: Require stack: - /function/code/index.js at he.<anonymous> (/function/runtime/bootstrap:178:47) at Generator.throw (<anonymous>) at a (/function/runtime/bootstrap:158:184)
+
+21 дек. 00:08:11.766
+START RequestID: 8569f470-3ac9-4dbc-80d4-07ea58dcc440 Version: d4eik8sl3erpios2k709
+
+21 дек. 00:07:26.499
+REPORT RequestID: ff4eeea9-0f9c-4603-bf08-570e7c5ebdcf Duration: 378.493 ms Billed Duration: 400 ms Memory Size: 256 MB Max Memory Used: 107 MB Queuing Duration: 0.077 ms CPU Usage: 18.848 %
+
+21 дек. 00:07:26.499
+ERROR RequestID: ff4eeea9-0f9c-4603-bf08-570e7c5ebdcf Code: 502 Message: Error during function invocation
+
+21 дек. 00:07:26.499
+END RequestID: ff4eeea9-0f9c-4603-bf08-570e7c5ebdcf
+
+21 дек. 00:07:26.499
+{"errorMessage":"Unable to import index.handler module. Error: Cannot find module 'ydb-sdk'\nRequire stack:\n- /function/code/index.js","errorType":"Error","stackTrace":[{"line":"Require stack:"},{"line":"- /function/code/index.js"},{"function":"he.<anonymous>","file":"/function/runtime/bootstrap","line":178,"column":47},{"function":"Generator.throw","file":null,"line":null,"column":null},{"function":"a","file":"/function/runtime/bootstrap","line":158,"column":184}]}
+
+21 дек. 00:07:26.497
+Unable to import index.handler module. Error: Cannot find module 'ydb-sdk' Require stack: - /function/code/index.js Stack: Require stack: - /function/code/index.js at he.<anonymous> (/function/runtime/bootstrap:178:47) at Generator.throw (<anonymous>) at a (/function/runtime/bootstrap:158:184)
+
+21 дек. 00:07:26.026
+START RequestID: ff4eeea9-0f9c-4603-bf08-570e7c5ebdcf Version: d4eik8sl3erpios2k709
