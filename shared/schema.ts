@@ -135,3 +135,9 @@ export const insertCalculatorOrderSchema = z.object({
 });
 
 export type InsertCalculatorOrder = z.infer<typeof insertCalculatorOrderSchema>;
+
+export const insertChatMessageSchema = z.object({
+  message: z.string().min(1, "Сообщение не может быть пусто").max(2000, "Сообщение слишком длинное"),
+});
+
+export type InsertChatMessage = z.infer<typeof insertChatMessageSchema>;

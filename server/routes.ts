@@ -1,9 +1,10 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertContactRequestSchema, insertOrderSchema, insertAdditionalInvoiceSchema } from "@shared/schema";
+import { insertContactRequestSchema, insertOrderSchema, insertAdditionalInvoiceSchema, insertChatMessageSchema } from "@shared/schema";
 import { z } from "zod";
 import crypto from "crypto";
+import { GigaChat } from "gigachat";
 
 const ROBOKASSA_MERCHANT_LOGIN = process.env.ROBOKASSA_MERCHANT_LOGIN || "";
 const ROBOKASSA_PASSWORD1 = process.env.ROBOKASSA_PASSWORD1 || "";
@@ -13,6 +14,10 @@ const IS_TEST_MODE = true;
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || "";
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID || "";
 const SITE_URL = process.env.SITE_URL || "https://mp-webstudio.ru";
+
+const GIGACHAT_KEY = process.env.GIGACHAT_KEY || "";
+const GIGACHAT_ID = process.env.GIGACHAT_ID || "";
+const GIGACHAT_SCOPE = process.env.GIGACHAT_SCOPE || "GIGACHAT_API_PERS";
 
 async function sendTelegramMessage(message: string): Promise<void> {
   if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
@@ -707,6 +712,47 @@ export async function registerRoutes(
       res.status(500).json({
         success: false,
         message: "Внутренняя ошибка сервера",
+      });
+    }
+  });
+
+  // Giga Chat API endpoint
+  app.post("/api/giga-chat", async (req, res) => {
+    try {
+      const validatedData = insertChatMessageSchema.parse(req.body);
+      
+      if (!GIGACHAT_KEY) {
+        return res.status(400).json({
+          success: false,
+          response: "Giga Chat не настроен",
+        });
+      }
+
+      const giga = new GigaChat({
+        credentials: GIGACHAT_KEY,
+        model: "GigaChat",
+        scope: GIGACHAT_SCOPE,
+      });
+
+      const response = await giga.chat([
+        {
+          role: "user",
+          content: validatedData.message,
+        },
+      ]);
+
+      const assistantMessage =
+        response.choices[0]?.message?.content || "Нет ответа";
+
+      res.json({
+        success: true,
+        response: assistantMessage,
+      });
+    } catch (error) {
+      console.error("Giga Chat error:", error instanceof Error ? error.message : error);
+      res.status(500).json({
+        success: false,
+        response: "Ошибка при обработке запроса. Попробуйте позже.",
       });
     }
   });
