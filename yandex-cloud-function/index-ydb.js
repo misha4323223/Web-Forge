@@ -3207,10 +3207,27 @@ async function handleGigaChat(body, headers) {
             }),
         };
     } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : JSON.stringify(error);
-        const errorStack = error instanceof Error ? error.stack : '';
+        let errorMessage = 'Unknown error';
+        let errorDetails = '';
+        
+        if (error instanceof Error) {
+            errorMessage = error.message;
+            errorDetails = error.stack || '';
+        } else if (typeof error === 'object' && error !== null) {
+            errorDetails = JSON.stringify(error, null, 2);
+            if (error.response) {
+                errorMessage = `API Error: ${error.response.status}`;
+                errorDetails += `\nResponse: ${JSON.stringify(error.response.data || error.response.body, null, 2)}`;
+            } else if (error.body) {
+                errorMessage = `Body: ${error.body}`;
+            }
+        } else {
+            errorMessage = String(error);
+        }
+        
         console.error('Giga Chat error:', errorMessage);
-        if (errorStack) console.error('Stack:', errorStack);
+        console.error('Details:', errorDetails);
+        
         return {
             statusCode: 500,
             headers,

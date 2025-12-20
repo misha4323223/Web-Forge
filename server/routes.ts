@@ -752,10 +752,28 @@ export async function registerRoutes(
         response: assistantMessage,
       });
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : JSON.stringify(error);
-      const errorStack = error instanceof Error ? error.stack : "";
+      let errorMessage = "Unknown error";
+      let errorDetails = "";
+      
+      if (error instanceof Error) {
+        errorMessage = error.message;
+        errorDetails = error.stack || "";
+      } else if (typeof error === 'object' && error !== null) {
+        errorDetails = JSON.stringify(error, null, 2);
+        // Try to extract response body from error
+        if ((error as any).response) {
+          errorMessage = `API Error: ${(error as any).response.status}`;
+          errorDetails += `\nResponse: ${JSON.stringify((error as any).response.data || (error as any).response.body, null, 2)}`;
+        } else if ((error as any).body) {
+          errorMessage = `Body: ${(error as any).body}`;
+        }
+      } else {
+        errorMessage = String(error);
+      }
+      
       console.error("Giga Chat error:", errorMessage);
-      if (errorStack) console.error("Stack:", errorStack);
+      console.error("Details:", errorDetails);
+      
       res.status(500).json({
         success: false,
         response: "Ошибка при обработке запроса. Попробуйте позже.",
