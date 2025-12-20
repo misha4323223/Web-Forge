@@ -588,7 +588,7 @@ export function CalculatorSection() {
                   className="w-full bg-gradient-to-r from-cyan-500 to-purple-500 text-white border-0"
                   data-testid="button-send-order"
                 >
-                  Отправить заказ
+                  Отправить заявку
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
                 <a href="/order" className="block">
@@ -597,7 +597,7 @@ export function CalculatorSection() {
                     className="w-full"
                     data-testid="button-calculator-cta"
                   >
-                    Оформить отдельно
+                    Заказать сайта
                   </Button>
                 </a>
               </div>
