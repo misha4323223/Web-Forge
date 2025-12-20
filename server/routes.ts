@@ -753,26 +753,29 @@ export async function registerRoutes(
       });
     } catch (error) {
       let errorMessage = "Unknown error";
-      let errorDetails = "";
+      let errorDetails: Record<string, any> = {};
       
       if (error instanceof Error) {
         errorMessage = error.message;
-        errorDetails = error.stack || "";
-      } else if (typeof error === 'object' && error !== null) {
-        errorDetails = JSON.stringify(error, null, 2);
-        // Try to extract response body from error
-        if ((error as any).response) {
-          errorMessage = `API Error: ${(error as any).response.status}`;
-          errorDetails += `\nResponse: ${JSON.stringify((error as any).response.data || (error as any).response.body, null, 2)}`;
-        } else if ((error as any).body) {
-          errorMessage = `Body: ${(error as any).body}`;
+        errorDetails = { message: error.message, stack: error.stack };
+      }
+      
+      if (typeof error === 'object' && error !== null) {
+        const err = error as Record<string, any>;
+        // Collect all properties from the error object
+        for (const key in err) {
+          try {
+            if (key !== 'stack') {
+              errorDetails[key] = err[key];
+            }
+          } catch (e) {
+            // Skip properties that can't be accessed
+          }
         }
-      } else {
-        errorMessage = String(error);
       }
       
       console.error("Giga Chat error:", errorMessage);
-      console.error("Details:", errorDetails);
+      console.error("Error object details:", errorDetails);
       
       res.status(500).json({
         success: false,
