@@ -735,21 +735,21 @@ export async function registerRoutes(
       process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
       // Получаем токен доступа
+      const authBody = `grant_type=urn:ibm:params:oauth:grant-type:apikey&apikey=${encodeURIComponent(gigachatKey)}&scope=${encodeURIComponent(gigachatScope)}`;
       const authResponse = await fetch('https://auth.api.cloud.yandex.net/oauth/token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({
-          grant_type: 'urn:ibm:params:oauth:grant-type:apikey',
-          apikey: gigachatKey,
-          scope: gigachatScope,
-        }).toString(),
+        body: authBody,
       });
 
       if (!authResponse.ok) {
-        throw new Error(`Auth failed: ${authResponse.statusText}`);
+        const errorText = await authResponse.text();
+        console.error("Auth response error:", errorText);
+        throw new Error(`Auth failed: ${authResponse.statusText} - ${errorText}`);
       }
 
       const authData = await authResponse.json();
+      console.log("Auth token obtained successfully");
       const accessToken = authData.access_token;
 
       if (!accessToken) {
@@ -777,20 +777,25 @@ export async function registerRoutes(
       });
 
       if (!chatResponse.ok) {
-        const errorData = await chatResponse.json().catch(() => ({}));
-        throw new Error(`Chat API failed: ${chatResponse.statusText} - ${JSON.stringify(errorData)}`);
+        const errorText = await chatResponse.text();
+        console.error("Chat API error response:", errorText);
+        throw new Error(`Chat API failed: ${chatResponse.statusText} - ${errorText}`);
       }
 
       const chatData = await chatResponse.json();
+      console.log("Chat response received:", chatData);
       const assistantMessage = chatData.choices?.[0]?.message?.content || 'Нет ответа';
 
+      console.log("Chat response:", assistantMessage);
       res.json({
         success: true,
         response: assistantMessage,
       });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorStack = error instanceof Error ? error.stack : "";
       console.error("Giga Chat error:", errorMessage);
+      if (errorStack) console.error("Stack:", errorStack);
       
       res.status(500).json({
         success: false,
