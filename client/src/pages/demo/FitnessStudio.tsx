@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Link } from "wouter";
 import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useDocumentMeta } from "@/lib/useDocumentMeta";
 import fitnessHeroImg from "@assets/generated_images/modern_gym_interior_purple.png";
 
 const classes = [
@@ -43,6 +44,16 @@ export default function FitnessStudio() {
   const scheduleRef = useRef<HTMLElement>(null);
   const pricingRef = useRef<HTMLElement>(null);
   const contactRef = useRef<HTMLElement>(null);
+
+  useDocumentMeta({
+    title: "PowerFlex — Фитнес студия в Туле | Йога, HIIT, Пилатес",
+    description: "Современный фитнес-центр с 50+ тренажёрами и 15 профессиональными тренерами. Групповые занятия, персональный тренинг, сауна. Пробное занятие бесплатно!",
+    keywords: "фитнес клуб, тренажёрный зал, йога, HIIT, личный тренер, фитнес в Туле",
+    ogTitle: "PowerFlex — Фитнес клуб | Дизайн от MP.WebStudio",
+    ogDescription: "500+ активных членов, профессиональные тренеры, групповые занятия и персональный тренинг",
+    ogImage: "https://mp-webstudio.ru/og-image.png",
+    ogUrl: "https://mp-webstudio.ru/demo/fitness-studio"
+  });
 
   useEffect(() => {
     window.scrollTo(0, 0);

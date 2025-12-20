@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Link } from "wouter";
 import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useDocumentMeta } from "@/lib/useDocumentMeta";
 import heroImg from "@assets/stock_images/cosmetics_skincare_p_2775c0e7.webp";
 import moisturizerImg from "@assets/stock_images/face_moisturizer_cre_59e07cda.webp";
 import serumImg from "@assets/stock_images/vitamin_c_serum_drop_c449b45e.webp";
@@ -104,6 +105,16 @@ export default function CosmeticsShop() {
   const [newsletterEmail, setNewsletterEmail] = useState("");
   const { toast } = useToast();
   const productsRef = useRef<HTMLElement>(null);
+
+  useDocumentMeta({
+    title: "BeautyLab — Косметика и уход за кожей | Натуральные средства",
+    description: "Премиум косметика и средства по уходу за кожей. Натуральный состав, гипоаллергенно. Скидки до 30%. Доставка по России.",
+    keywords: "косметика, уход за кожей, натуральная косметика, сыворотки, кремы, маски для лица",
+    ogTitle: "BeautyLab — Косметика | Дизайн от MP.WebStudio",
+    ogDescription: "Натуральная косметика без парабенов. Видимый результат за 14 дней. Гипоаллергенно.",
+    ogImage: "https://mp-webstudio.ru/og-image.png",
+    ogUrl: "https://mp-webstudio.ru/demo/cosmetics-shop"
+  });
 
   useEffect(() => {
     window.scrollTo(0, 0);

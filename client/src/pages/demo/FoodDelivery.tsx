@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Clock, MapPin, Phone, Star, Flame, Leaf, ChefHat, Truck, ArrowLeft, ShoppingCart, Plus, Minus, X, Check } from "lucide-react";
 import { Link } from "wouter";
 import { useState, useEffect, useRef } from "react";
+import { useDocumentMeta } from "@/lib/useDocumentMeta";
 import foodHeroImg from "@assets/generated_images/asian_food_arrangement_table.png";
 import tomYumImg from "@assets/generated_images/tom_yum_shrimp_soup.png";
 import padThaiImg from "@assets/generated_images/pad_thai_chicken_noodles.png";
@@ -65,6 +66,16 @@ export default function FoodDelivery() {
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [orderForm, setOrderForm] = useState({ name: "", phone: "", address: "" });
   const menuRef = useRef<HTMLElement>(null);
+
+  useDocumentMeta({
+    title: "FoodFlow — Доставка тайской еды в Туле | Быстро и вкусно",
+    description: "Заказывайте свежую тайскую еду с доставкой за 30 минут. Том Ям, Пад Тай, Карри. Меню с калориями. Веган опции.",
+    keywords: "доставка еды, тайская кухня, доставка в Туле, суши, лапша, веган меню",
+    ogTitle: "FoodFlow — Доставка еды | Дизайн от MP.WebStudio",
+    ogDescription: "Быстрая доставка, свежие продукты, веган меню. Попробуйте тайскую кухню прямо сейчас!",
+    ogImage: "https://mp-webstudio.ru/og-image.png",
+    ogUrl: "https://mp-webstudio.ru/demo/food-delivery"
+  });
 
   useEffect(() => {
     window.scrollTo(0, 0);
