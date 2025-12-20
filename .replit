@@ -41,9 +41,9 @@ waitForPort = 5000
 [userenv]
 
 [userenv.production]
-VITE_API_URL = "https://functions.yandexcloud.net/d4ed08qj9rekklj8b100"
 
 [userenv.shared]
 GIGACHAT_KEY = "ZDY2ODkxYjUtZDBkNi00MTM4LWJjZDUtMzBkODc2N2NlNjk5OmM0YjkxZjNlLTM2YTYtNGEwNS1iODk5LWQyNGY1ODUxOGU1Yg=="
 GIGACHAT_ID = "d66891b5-d0d6-4138-bcd5-30d8767ce699"
 GIGACHAT_SCOPE = "GIGACHAT_API_PERS"
+VITE_API_URL = "https://functions.yandexcloud.net/d4e6da2bfvexxxxx0100"
