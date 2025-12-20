@@ -68,7 +68,7 @@ async function httpsRequest(urlString, options) {
         const timeout = setTimeout(() => {
             if (req) req.destroy();
             reject(new Error('Request timeout'));
-        }, 15000);
+        }, 10000);
         
         const reqOptions = {
             method: options.method,
@@ -3305,55 +3305,39 @@ async function handleGigaChat(body, headers) {
             throw new Error('No access token in response');
         }
 
-        // Отправляем сообщение в Giga Chat с retry логикой
-        console.log("6️⃣ Sending chat request...");
+        // Отправляем сообщение в Giga Chat - одна попытка, быстро!
+        console.log("6️⃣ Sending chat request (single attempt, aggressive timeout)...");
         let chatResponse;
-        let lastChatError;
         
-        for (let attempt = 1; attempt <= 3; attempt++) {
-            try {
-                console.log(`   Chat attempt ${attempt}/3...`);
-                
-                chatResponse = await httpsRequest('https://gigachat.devices.sberbank.ru/api/v1/chat/completions', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${accessToken}`,
-                        'User-Agent': 'WebStudioBot/1.0',
-                    },
-                    body: JSON.stringify({
-                        model: 'GigaChat',
-                        messages: [
-                            {
-                                role: 'user',
-                                content: message,
-                            },
-                        ],
-                        temperature: 0.7,
-                        max_tokens: 500,
-                    }),
-                });
-                console.log(`   Chat attempt ${attempt} succeeded`);
-                break; // Success, exit retry loop
-            } catch (fetchErr) {
-                lastChatError = fetchErr;
-                const errMsg = fetchErr instanceof Error ? fetchErr.message : String(fetchErr);
-                console.error(`❌ Chat attempt ${attempt} failed: ${errMsg}`);
-                
-                if (attempt < 3) {
-                    const delayMs = (attempt - 1) * 500; // 0ms, 500ms, 1000ms
-                    if (delayMs > 0) {
-                        console.log(`   Waiting ${delayMs}ms before retry...`);
-                        await new Promise(resolve => setTimeout(resolve, delayMs));
-                    }
-                }
-            }
+        try {
+            chatResponse = await httpsRequest('https://gigachat.devices.sberbank.ru/api/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`,
+                    'User-Agent': 'WebStudioBot/1.0',
+                },
+                body: JSON.stringify({
+                    model: 'GigaChat',
+                    messages: [
+                        {
+                            role: 'user',
+                            content: message,
+                        },
+                    ],
+                    temperature: 0.5,
+                    max_tokens: 200,
+                }),
+            });
+        } catch (chatErr) {
+            const errMsg = chatErr instanceof Error ? chatErr.message : String(chatErr);
+            console.error(`❌ Chat request failed: ${errMsg}`);
+            throw new Error(`Chat request error: ${errMsg}`);
         }
         
         if (!chatResponse) {
-            const errMsg = lastChatError instanceof Error ? lastChatError.message : String(lastChatError);
-            console.error('❌ All chat retry attempts failed:', errMsg);
-            throw new Error(`Chat network error after 3 retries: ${errMsg}`);
+            console.error('❌ No chat response');
+            throw new Error('No response from GigaChat');
         }
 
         console.log("7️⃣ Chat response status:", chatResponse.statusCode);
