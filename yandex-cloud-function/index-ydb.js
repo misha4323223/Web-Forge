@@ -1800,77 +1800,51 @@ async function handleCalculatorOrder(body, headers) {
     try {
         const { name, phone, email, projectType, selectedFeatures, basePrice, totalPrice, description } = body;
 
-        console.log("Calculator order request received:", { name, email, projectType, basePrice, totalPrice });
+        console.log("Calculator order request received");
 
         if (!name || !phone || !email || !projectType || !description) {
             return {
                 statusCode: 400,
                 headers,
-                body: JSON.stringify({
-                    success: false,
-                    message: "Заполните все обязательные поля",
-                }),
+                body: JSON.stringify({ success: false, message: "Заполните все обязательные поля" }),
             };
         }
 
         if (!basePrice || !totalPrice) {
-            console.error("Missing price information:", { basePrice, totalPrice });
             return {
                 statusCode: 400,
                 headers,
-                body: JSON.stringify({
-                    success: false,
-                    message: "Ошибка расчёта стоимости. Попробуйте снова",
-                }),
+                body: JSON.stringify({ success: false, message: "Ошибка расчёта стоимости" }),
             };
         }
 
-        console.log("Calculator order validated:", { name, email, projectType });
+        const projectTypeLabel = projectType === "bizcard" ? "Сайт-визитка" : projectType === "landing" ? "Лендинг" : projectType === "corporate" ? "Корпоративный сайт" : "Интернет-магазин";
 
-        const projectTypeLabel = projectType === "bizcard" ? "Сайт-визитка" :
-                                projectType === "landing" ? "Лендинг" :
-                                projectType === "corporate" ? "Корпоративный сайт" : "Интернет-магазин";
+        let msg = "🎯 НОВЫЙ ЗАКАЗ ИЗ КАЛЬКУЛЯТОРА\n\n" + "📋 Проект:\n" + "• База: " + projectTypeLabel + "\n" + "• Стоимость базы: " + basePrice + " руб\n";
 
-        let featuresList = "";
         if (selectedFeatures && selectedFeatures.length > 0) {
-            featuresList = "\n📋 <b>Выбранные опции:</b>\n";
-            selectedFeatures.forEach((feature, index) => {
-                featuresList += `${index + 1}. ${feature}\n`;
-            });
+            msg += "\n📋 Выбранные опции:\n";
+            for (let i = 0; i < selectedFeatures.length; i++) {
+                msg += (i + 1) + ". " + selectedFeatures[i] + "\n";
+            }
         }
 
-        await sendTelegramNotification(
-            `🎯 <b>НОВЫЙ ЗАКАЗ ИЗ КАЛЬКУЛЯТОРА</b>\n\n` +
-            `📋 <b>Проект:</b>\n` +
-            `• База: ${projectTypeLabel}\n` +
-            `• Стоимость базы: ${basePrice.toLocaleString('ru-RU')} ₽` +
-            featuresList +
-            `\n💰 <b>Итого: ${totalPrice.toLocaleString('ru-RU')} ₽</b>\n\n` +
-            `👤 <b>Контакты:</b>\n` +
-            `• Имя: ${name}\n` +
-            `• Телефон: ${phone}\n` +
-            `• Email: ${email}\n\n` +
-            `📝 <b>Описание:</b>\n${description}`
-        );
+        msg += "\n💰 Итого: " + totalPrice + " руб\n\n👤 Контакты:\n• Имя: " + name + "\n• Телефон: " + phone + "\n• Email: " + email + "\n\n📝 Описание:\n" + description;
+
+        await sendTelegramNotification(msg);
 
         console.log("Calculator order sent successfully");
         return {
             statusCode: 201,
             headers,
-            body: JSON.stringify({
-                success: true,
-                message: "Заказ успешно отправлен",
-            }),
+            body: JSON.stringify({ success: true, message: "Заказ успешно отправлен" }),
         };
     } catch (error) {
-        console.error("Error sending calculator order:", error instanceof Error ? error.message : error);
+        console.error("Error sending calculator order:", error.message);
         return {
             statusCode: 500,
             headers,
-            body: JSON.stringify({
-                success: false,
-                message: "Внутренняя ошибка сервера",
-            }),
+            body: JSON.stringify({ success: false, message: "Внутренняя ошибка сервера" }),
         };
     }
 }
