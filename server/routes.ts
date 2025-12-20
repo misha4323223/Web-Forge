@@ -1,5 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import https from "https";
 import { storage } from "./storage";
 import { insertContactRequestSchema, insertOrderSchema, insertAdditionalInvoiceSchema, insertChatMessageSchema } from "@shared/schema";
 import { z } from "zod";
@@ -19,25 +20,43 @@ const GIGACHAT_ID = process.env.GIGACHAT_ID || "";
 const GIGACHAT_SCOPE = process.env.GIGACHAT_SCOPE || "GIGACHAT_API_PERS";
 
 async function httpsRequest(
-  url: string,
+  urlString: string,
   options: { method: string; headers: Record<string, string>; body?: string }
 ): Promise<{ statusCode: number; data: string }> {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 15000); // 15 second timeout
-  
-  try {
-    const response = await fetch(url, {
+  return new Promise((resolve, reject) => {
+    const url = new URL(urlString);
+    const timeout = setTimeout(() => {
+      req.destroy();
+      reject(new Error('Request timeout'));
+    }, 15000);
+    
+    const reqOptions = {
       method: options.method,
       headers: options.headers,
-      body: options.body,
-      signal: controller.signal,
+      rejectUnauthorized: false, // Allow self-signed certificates
+    };
+    
+    const req = https.request(url, reqOptions, (res) => {
+      let data = '';
+      res.on('data', (chunk) => {
+        data += chunk;
+      });
+      res.on('end', () => {
+        clearTimeout(timeout);
+        resolve({ statusCode: res.statusCode || 500, data });
+      });
     });
-
-    const data = await response.text();
-    return { statusCode: response.status, data };
-  } finally {
-    clearTimeout(timeout);
-  }
+    
+    req.on('error', (err) => {
+      clearTimeout(timeout);
+      reject(err);
+    });
+    
+    if (options.body) {
+      req.write(options.body);
+    }
+    req.end();
+  });
 }
 
 async function sendTelegramMessage(message: string): Promise<void> {
@@ -770,12 +789,9 @@ export async function registerRoutes(
       
       console.log("3️⃣ Requesting OAuth token...");
       
-      // Отключим проверку SSL для dev
-      process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-      
       let authResponse;
       try {
-        authResponse = await fetch('https://ngw.devices.sberbank.ru:9443/api/v2/oauth', {
+        authResponse = await httpsRequest('https://ngw.devices.sberbank.ru:9443/api/v2/oauth', {
           method: 'POST',
           headers: { 
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -787,20 +803,19 @@ export async function registerRoutes(
         });
       } catch (fetchErr) {
         const errMsg = fetchErr instanceof Error ? fetchErr.message : String(fetchErr);
-        console.error('❌ Fetch error during OAuth:', errMsg);
+        console.error('❌ HTTPS error during OAuth:', errMsg);
         throw new Error(`OAuth network error: ${errMsg}`);
       }
 
-      console.log("4️⃣ Auth response status:", authResponse.status);
+      console.log("4️⃣ Auth response status:", authResponse.statusCode);
       
-      if (!authResponse.ok) {
-        const errorText = await authResponse.text();
-        console.error('❌ Auth failed. Status:', authResponse.status);
-        console.error('Response:', errorText.substring(0, 500));
-        throw new Error(`Auth error: ${authResponse.status} - ${errorText.substring(0, 100)}`);
+      if (authResponse.statusCode !== 200) {
+        console.error('❌ Auth failed. Status:', authResponse.statusCode);
+        console.error('Response:', authResponse.data.substring(0, 500));
+        throw new Error(`Auth error: ${authResponse.statusCode} - ${authResponse.data.substring(0, 100)}`);
       }
 
-      const authData = await authResponse.json();
+      const authData = JSON.parse(authResponse.data);
       const accessToken = authData.access_token;
       console.log("5️⃣ Got access token. Length:", accessToken?.length);
 
@@ -810,12 +825,10 @@ export async function registerRoutes(
       }
 
       console.log("6️⃣ Sending chat request...");
-      const controller = new AbortController();
-      const timeoutHandle = setTimeout(() => controller.abort(), 30000);
       
       let chatResponse;
       try {
-        chatResponse = await fetch('https://gigachat.devices.sbercloud.ru/api/v1/chat/completions', {
+        chatResponse = await httpsRequest('https://gigachat.devices.sbercloud.ru/api/v1/chat/completions', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -827,26 +840,22 @@ export async function registerRoutes(
             temperature: 0.7,
             max_tokens: 1000,
           }),
-          signal: controller.signal,
         });
       } catch (fetchErr) {
-        clearTimeout(timeoutHandle);
         const errMsg = fetchErr instanceof Error ? fetchErr.message : String(fetchErr);
-        console.error('❌ Chat fetch error:', errMsg);
+        console.error('❌ Chat HTTPS error:', errMsg);
         throw new Error(`Chat network error: ${errMsg}`);
       }
-      clearTimeout(timeoutHandle);
 
-      console.log("7️⃣ Chat response status:", chatResponse.status);
+      console.log("7️⃣ Chat response status:", chatResponse.statusCode);
       
-      if (!chatResponse.ok) {
-        const errorText = await chatResponse.text();
-        console.error('❌ Chat API error. Status:', chatResponse.status);
-        console.error('Response:', errorText.substring(0, 500));
-        throw new Error(`Chat error: ${chatResponse.status}`);
+      if (chatResponse.statusCode !== 200) {
+        console.error('❌ Chat API error. Status:', chatResponse.statusCode);
+        console.error('Response:', chatResponse.data.substring(0, 500));
+        throw new Error(`Chat error: ${chatResponse.statusCode}`);
       }
 
-      const chatData = await chatResponse.json();
+      const chatData = JSON.parse(chatResponse.data);
       const assistantMessage = chatData.choices?.[0]?.message?.content || 'Нет ответа';
 
       console.log("8️⃣ Success! Response length:", assistantMessage.length);
