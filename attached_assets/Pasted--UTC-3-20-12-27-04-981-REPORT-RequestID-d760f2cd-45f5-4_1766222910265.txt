@@ -1,0 +1,44 @@
+Время (UTC +3)
+Сообщение
+
+20 дек. 12:27:04.981
+REPORT RequestID: d760f2cd-45f5-4ca7-92ed-c0be0cf89f33 Duration: 77.655 ms Billed Duration: 100 ms Memory Size: 256 MB Max Memory Used: 108 MB Queuing Duration: 0.075 ms CPU Usage: 12.598 %
+REPORT RequestID: d760f2cd-45f5-4ca7-92ed-c0be0cf89f33 Duration: 77.655 ms Billed Duration: 100 ms Memory Size: 256 MB Max Memory Used: 108 MB Queuing Duration: 0.075 ms CPU Usage: 12.598 %
+"request_id""d760f2cd-45f5-4ca7-92ed-c0be0cf89f33"
+"source""system"
+"version_id""d4epq3773edm04mlb1t0"
+
+20 дек. 12:27:04.981
+ERROR RequestID: d760f2cd-45f5-4ca7-92ed-c0be0cf89f33 Code: 502 Message: Error during function invocation
+ERROR RequestID: d760f2cd-45f5-4ca7-92ed-c0be0cf89f33 Code: 502 Message: Error during function invocation
+"request_id""d760f2cd-45f5-4ca7-92ed-c0be0cf89f33"
+"source""system"
+"version_id""d4epq3773edm04mlb1t0"
+
+20 дек. 12:27:04.981
+END RequestID: d760f2cd-45f5-4ca7-92ed-c0be0cf89f33
+END RequestID: d760f2cd-45f5-4ca7-92ed-c0be0cf89f33
+"request_id""d760f2cd-45f5-4ca7-92ed-c0be0cf89f33"
+"source""system"
+"version_id""d4epq3773edm04mlb1t0"
+
+20 дек. 12:27:04.980
+{"errorMessage":"Unable to import index.handler module. Error: Identifier 'ADMIN_TOKEN_SECRET' has already been declared","errorType":"Error","stackTrace":[{"function":"he.<anonymous>","file":"/function/runtime/bootstrap","line":178,"column":47},{"function":"Generator.throw","file":null,"line":null,"column":null},{"function":"a","file":"/function/runtime/bootstrap","line":158,"column":184}]}
+{"errorMessage":"Unable to import index.handler module. Error: Identifier 'ADMIN_TOKEN_SECRET' has already been declared","errorType":"Error","stackTrace":[{"function":"he.<anonymous>","file":"/function/runtime/bootstrap","line":178,"column":47},{"function":"Generator.throw","file":null,"line":null,"column":null},{"function":"a","file":"/function/runtime/bootstrap","line":158,"column":184}]}
+"request_id""d760f2cd-45f5-4ca7-92ed-c0be0cf89f33"
+"source""system"
+"version_id""d4epq3773edm04mlb1t0"
+
+20 дек. 12:27:04.979
+Unable to import index.handler module. Error: Identifier 'ADMIN_TOKEN_SECRET' has already been declared Stack: at he.<anonymous> (/function/runtime/bootstrap:178:47) at Generator.throw (<anonymous>) at a (/function/runtime/bootstrap:158:184)
+Unable to import index.handler module. Error: Identifier 'ADMIN_TOKEN_SECRET' has already been declared
+Stack:     at he.<anonymous> (/function/runtime/bootstrap:178:47)
+    at Generator.throw (<anonymous>)
+    at a (/function/runtime/bootstrap:158:184)
+"category""default"
+"request_id""d760f2cd-45f5-4ca7-92ed-c0be0cf89f33"
+"source""user"
+"version_id""d4epq3773edm04mlb1t0"
+
+20 дек. 12:27:04.899
+START RequestID: d760f2cd-45f5-4ca7-92ed-c0be0cf89f33 Version: d4epq3773edm04mlb1t0
