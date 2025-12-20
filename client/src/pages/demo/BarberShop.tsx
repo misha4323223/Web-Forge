@@ -9,6 +9,7 @@ import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useDocumentMeta } from "@/lib/useDocumentMeta";
 import { useBreadcrumbSchema } from "@/lib/useBreadcrumbSchema";
+import { useAggregateRatingSchema } from "@/lib/useAggregateRatingSchema";
 import barberHeroImg from "@assets/generated_images/stylish_barbershop_interior.webp";
 import alexeyImg from "@assets/generated_images/russian_barber_alexey_portrait.webp";
 import dmitryImg from "@assets/generated_images/russian_barber_dmitry_portrait.webp";
@@ -87,7 +88,20 @@ export default function BarberShop() {
     ogTitle: "KingsCut — Барбершоп | Дизайн от MP.WebStudio",
     ogDescription: "Профессиональные барберы, качественное обслуживание, современный дизайн",
     ogImage: "https://mp-webstudio.ru/og-image.png",
-    ogUrl: "https://mp-webstudio.ru/demo/barber"
+    ogUrl: "https://mp-webstudio.ru/demo/barber",
+    canonical: "https://mp-webstudio.ru/demo/barber"
+  });
+
+  const avgRating = (barbers.reduce((sum, b) => sum + b.rating, 0) / barbers.length).toFixed(1);
+  const totalReviews = barbers.reduce((sum, b) => sum + b.reviews, 0);
+
+  useAggregateRatingSchema({
+    name: "KingsCut Барбершоп",
+    description: "Профессиональная барбершоп с опытными мастерами",
+    data: {
+      ratingValue: parseFloat(avgRating),
+      ratingCount: totalReviews
+    }
   });
 
   useBreadcrumbSchema([

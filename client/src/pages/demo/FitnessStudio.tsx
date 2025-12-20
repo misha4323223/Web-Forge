@@ -53,7 +53,8 @@ export default function FitnessStudio() {
     ogTitle: "PowerFlex — Фитнес клуб | Дизайн от MP.WebStudio",
     ogDescription: "500+ активных членов, профессиональные тренеры, групповые занятия и персональный тренинг",
     ogImage: "https://mp-webstudio.ru/og-image.png",
-    ogUrl: "https://mp-webstudio.ru/demo/fitness-studio"
+    ogUrl: "https://mp-webstudio.ru/demo/fitness-studio",
+    canonical: "https://mp-webstudio.ru/demo/fitness-studio"
   });
 
   useBreadcrumbSchema([

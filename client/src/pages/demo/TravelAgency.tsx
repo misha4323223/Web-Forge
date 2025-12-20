@@ -8,6 +8,7 @@ import { Link } from "wouter";
 import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useDocumentMeta } from "@/lib/useDocumentMeta";
+import { useAggregateRatingSchema } from "@/lib/useAggregateRatingSchema";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Check } from "lucide-react";
@@ -122,7 +123,20 @@ export default function TravelAgency() {
     ogTitle: "WayToTravel — Туристическое агентство | Дизайн от MP.WebStudio",
     ogDescription: "Незабываемые путешествия по всему миру. Консультация и бронирование онлайн",
     ogImage: "https://mp-webstudio.ru/og-image.png",
-    ogUrl: "https://mp-webstudio.ru/demo/travel"
+    ogUrl: "https://mp-webstudio.ru/demo/travel",
+    canonical: "https://mp-webstudio.ru/demo/travel"
+  });
+
+  const avgDestRating = (destinations.reduce((sum, d) => sum + d.rating, 0) / destinations.length).toFixed(1);
+  const totalDestReviews = destinations.reduce((sum, d) => sum + d.reviews, 0);
+
+  useAggregateRatingSchema({
+    name: "WayToTravel Туристическое агентство",
+    description: "Туристическое агентство с опытом 15+ лет и 50K+ довольных клиентов",
+    data: {
+      ratingValue: parseFloat(avgDestRating),
+      ratingCount: totalDestReviews
+    }
   });
 
   useBreadcrumbSchema([

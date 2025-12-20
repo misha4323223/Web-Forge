@@ -75,7 +75,8 @@ export default function FoodDelivery() {
     ogTitle: "FoodFlow — Доставка еды | Дизайн от MP.WebStudio",
     ogDescription: "Быстрая доставка, свежие продукты, веган меню. Попробуйте тайскую кухню прямо сейчас!",
     ogImage: "https://mp-webstudio.ru/og-image.png",
-    ogUrl: "https://mp-webstudio.ru/demo/food-delivery"
+    ogUrl: "https://mp-webstudio.ru/demo/food-delivery",
+    canonical: "https://mp-webstudio.ru/demo/food-delivery"
   });
 
   useBreadcrumbSchema([

@@ -15,6 +15,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Label } from "@/components/ui/label";
 import { useDocumentMeta } from "@/lib/useDocumentMeta";
 import { useBreadcrumbSchema } from "@/lib/useBreadcrumbSchema";
+import { useAggregateRatingSchema } from "@/lib/useAggregateRatingSchema";
 
 import heroImg from "@assets/generated_images/dental_clinic_modern_reception.png";
 import treatmentImg from "@assets/generated_images/dental_treatment_room_interior.png";
@@ -119,7 +120,17 @@ export default function DentalClinic() {
     ogTitle: "SmileCare — Стоматология | Дизайн от MP.WebStudio",
     ogDescription: "Профессиональные врачи, современное оборудование, гарантия на все работы",
     ogImage: "https://mp-webstudio.ru/og-image.png",
-    ogUrl: "https://mp-webstudio.ru/demo/dental"
+    ogUrl: "https://mp-webstudio.ru/demo/dental",
+    canonical: "https://mp-webstudio.ru/demo/dental"
+  });
+
+  useAggregateRatingSchema({
+    name: "SmileCare Стоматология",
+    description: "Современная стоматологическая клиника с профессиональными врачами",
+    data: {
+      ratingValue: 4.8,
+      ratingCount: 287
+    }
   });
 
   useBreadcrumbSchema([

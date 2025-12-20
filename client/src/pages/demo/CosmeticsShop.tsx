@@ -11,6 +11,7 @@ import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useDocumentMeta } from "@/lib/useDocumentMeta";
 import { useBreadcrumbSchema } from "@/lib/useBreadcrumbSchema";
+import { useAggregateRatingSchema } from "@/lib/useAggregateRatingSchema";
 import heroImg from "@assets/stock_images/cosmetics_skincare_p_2775c0e7.webp";
 import moisturizerImg from "@assets/stock_images/face_moisturizer_cre_59e07cda.webp";
 import serumImg from "@assets/stock_images/vitamin_c_serum_drop_c449b45e.webp";
@@ -114,7 +115,20 @@ export default function CosmeticsShop() {
     ogTitle: "BeautyLab — Косметика | Дизайн от MP.WebStudio",
     ogDescription: "Натуральная косметика без парабенов. Видимый результат за 14 дней. Гипоаллергенно.",
     ogImage: "https://mp-webstudio.ru/og-image.png",
-    ogUrl: "https://mp-webstudio.ru/demo/cosmetics-shop"
+    ogUrl: "https://mp-webstudio.ru/demo/cosmetics-shop",
+    canonical: "https://mp-webstudio.ru/demo/cosmetics-shop"
+  });
+
+  const avgProdRating = (products.reduce((sum, p) => sum + p.rating, 0) / products.length).toFixed(1);
+  const totalProdReviews = products.reduce((sum, p) => sum + p.reviews, 0);
+
+  useAggregateRatingSchema({
+    name: "BeautyLab Косметика",
+    description: "Натуральная косметика с видимым результатом",
+    data: {
+      ratingValue: parseFloat(avgProdRating),
+      ratingCount: totalProdReviews
+    }
   });
 
   useBreadcrumbSchema([

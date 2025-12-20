@@ -144,7 +144,8 @@ export default function ApartmentRenovation() {
     ogTitle: "RenoMaster — Ремонт квартир | Дизайн от MP.WebStudio",
     ogDescription: "Профессиональный ремонт квартир под ключ. Фиксированная цена, гарантия качества",
     ogImage: "https://mp-webstudio.ru/og-image.png",
-    ogUrl: "https://mp-webstudio.ru/demo/renovation"
+    ogUrl: "https://mp-webstudio.ru/demo/renovation",
+    canonical: "https://mp-webstudio.ru/demo/renovation"
   });
 
   useBreadcrumbSchema([

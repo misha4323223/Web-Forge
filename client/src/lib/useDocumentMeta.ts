@@ -7,6 +7,7 @@ interface MetaData {
   ogDescription?: string;
   ogImage?: string;
   ogUrl?: string;
+  canonical?: string;
   keywords?: string;
 }
 
@@ -35,6 +36,17 @@ export function useDocumentMeta(data: MetaData) {
     if (data.ogDescription) updateMetaTag('og:description', data.ogDescription, true);
     if (data.ogImage) updateMetaTag('og:image', data.ogImage, true);
     if (data.ogUrl) updateMetaTag('og:url', data.ogUrl, true);
+    
+    // Handle canonical URL
+    if (data.canonical) {
+      let linkElement = document.querySelector('link[rel="canonical"]');
+      if (!linkElement) {
+        linkElement = document.createElement('link');
+        linkElement.setAttribute('rel', 'canonical');
+        document.head.appendChild(linkElement);
+      }
+      linkElement.setAttribute('href', data.canonical);
+    }
 
     return () => {
       // Restore original meta tags if needed

@@ -146,7 +146,8 @@ export default function SocksShop() {
     ogTitle: "SockLove — Магазин носков | Дизайн от MP.WebStudio",
     ogDescription: "Огромный выбор носков для подарков и спорта. Быстрая доставка, красивая упаковка",
     ogImage: "https://mp-webstudio.ru/og-image.png",
-    ogUrl: "https://mp-webstudio.ru/demo/socks"
+    ogUrl: "https://mp-webstudio.ru/demo/socks",
+    canonical: "https://mp-webstudio.ru/demo/socks"
   });
 
   useBreadcrumbSchema([

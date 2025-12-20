@@ -43,7 +43,8 @@ export default function Photographer() {
     ogTitle: "Андрей Соколов — Фотограф | Дизайн от MP.WebStudio",
     ogDescription: "Профессиональная фотосъёмка свадеб, портретов и предметов. Видеосъёмка и монтаж.",
     ogImage: "https://mp-webstudio.ru/og-image.png",
-    ogUrl: "https://mp-webstudio.ru/demo/photographer"
+    ogUrl: "https://mp-webstudio.ru/demo/photographer",
+    canonical: "https://mp-webstudio.ru/demo/photographer"
   });
 
   useBreadcrumbSchema([

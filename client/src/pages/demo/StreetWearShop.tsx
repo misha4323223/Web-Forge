@@ -113,7 +113,8 @@ export default function StreetWearShop() {
     ogTitle: "SHADOWSTREET — Streetwear магазин | Дизайн от MP.WebStudio",
     ogDescription: "Современная уличная мода, качественные материалы, быстрая доставка",
     ogImage: "https://mp-webstudio.ru/og-image.png",
-    ogUrl: "https://mp-webstudio.ru/demo/streetwear"
+    ogUrl: "https://mp-webstudio.ru/demo/streetwear",
+    canonical: "https://mp-webstudio.ru/demo/streetwear"
   });
 
   useBreadcrumbSchema([
