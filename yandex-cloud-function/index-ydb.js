@@ -3138,10 +3138,13 @@ async function sendTelegramNotification(message) {
 // ============ Giga Chat Handler ============
 
 async function handleGigaChat(body, headers) {
+    console.log("\n\n=== GIGACHAT REQUEST START (Yandex Cloud) ===");
     try {
         const { message } = body;
+        console.log("1️⃣ Received message:", message.substring(0, 50) + "...");
         
         if (!message || typeof message !== 'string' || message.trim().length === 0) {
+            console.log("❌ Message validation failed");
             return {
                 statusCode: 400,
                 headers,
@@ -3153,6 +3156,7 @@ async function handleGigaChat(body, headers) {
         }
 
         if (message.length > 2000) {
+            console.log("❌ Message too long");
             return {
                 statusCode: 400,
                 headers,
@@ -3165,77 +3169,117 @@ async function handleGigaChat(body, headers) {
 
         const gigachatKey = process.env.GIGACHAT_KEY;
         const gigachatScope = process.env.GIGACHAT_SCOPE || 'GIGACHAT_API_PERS';
+        
+        console.log("2️⃣ GIGACHAT_KEY exists:", !!gigachatKey);
+        console.log("   Key length:", gigachatKey?.length);
 
         if (!gigachatKey) {
-            console.error('GIGACHAT_KEY not configured');
+            console.error('❌ GIGACHAT_KEY not configured');
             return {
                 statusCode: 500,
                 headers,
                 body: JSON.stringify({
                     success: false,
-                    response: 'Giga Chat не настроен',
+                    response: 'GigaChat не настроен на сервере',
                 }),
             };
         }
 
         // Получаем токен доступа используя правильный OAuth endpoint
         const authBody = `scope=${encodeURIComponent(gigachatScope)}`;
-        const authResponse = await fetch('https://ngw.devices.sberbank.ru:9443/api/v2/oauth', {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Accept': 'application/json',
-                'Authorization': `Basic ${gigachatKey}`,
-                'RqUID': crypto.randomUUID(),
-            },
-            body: authBody,
-        });
+        
+        console.log("3️⃣ Requesting OAuth token...");
+        let authResponse;
+        try {
+            authResponse = await fetch('https://ngw.devices.sberbank.ru:9443/api/v2/oauth', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Accept': 'application/json',
+                    'Authorization': `Basic ${gigachatKey}`,
+                    'RqUID': crypto.randomUUID(),
+                },
+                body: authBody,
+            });
+        } catch (fetchErr) {
+            const errMsg = fetchErr instanceof Error ? fetchErr.message : String(fetchErr);
+            console.error('❌ Fetch error during OAuth:', errMsg);
+            throw new Error(`OAuth network error: ${errMsg}`);
+        }
+
+        console.log("4️⃣ Auth response status:", authResponse.status);
 
         if (!authResponse.ok) {
             const errorText = await authResponse.text();
-            console.error('Auth response error:', errorText);
-            throw new Error(`Auth failed: ${authResponse.statusText} - ${errorText}`);
+            console.error('❌ Auth failed. Status:', authResponse.status);
+            console.error('Response:', errorText.substring(0, 500));
+            throw new Error(`Auth error: ${authResponse.status} - ${errorText.substring(0, 100)}`);
         }
 
-        const authData = await authResponse.json();
-        console.log('Auth token obtained successfully');
+        let authData;
+        try {
+            authData = await authResponse.json();
+        } catch (parseErr) {
+            console.error('❌ Failed to parse auth response');
+            throw new Error('Invalid auth response format');
+        }
+
         const accessToken = authData.access_token;
+        console.log("5️⃣ Got access token. Length:", accessToken?.length);
 
         if (!accessToken) {
+            console.error('❌ No access token in auth response');
             throw new Error('No access token in response');
         }
 
         // Отправляем сообщение в Giga Chat
-        const chatResponse = await fetch('https://gigachat.devices.sbercloud.ru/api/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${accessToken}`,
-            },
-            body: JSON.stringify({
-                model: 'GigaChat',
-                messages: [
-                    {
-                        role: 'user',
-                        content: message,
-                    },
-                ],
-                temperature: 0.7,
-                max_tokens: 1000,
-            }),
-        });
+        console.log("6️⃣ Sending chat request...");
+        let chatResponse;
+        try {
+            chatResponse = await fetch('https://gigachat.devices.sbercloud.ru/api/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`,
+                },
+                body: JSON.stringify({
+                    model: 'GigaChat',
+                    messages: [
+                        {
+                            role: 'user',
+                            content: message,
+                        },
+                    ],
+                    temperature: 0.7,
+                    max_tokens: 1000,
+                }),
+            });
+        } catch (fetchErr) {
+            const errMsg = fetchErr instanceof Error ? fetchErr.message : String(fetchErr);
+            console.error('❌ Fetch error during chat request:', errMsg);
+            throw new Error(`Chat network error: ${errMsg}`);
+        }
+
+        console.log("7️⃣ Chat response status:", chatResponse.status);
 
         if (!chatResponse.ok) {
             const errorText = await chatResponse.text();
-            console.error('Chat API error response:', errorText);
-            throw new Error(`Chat API failed: ${chatResponse.statusText} - ${errorText}`);
+            console.error('❌ Chat API error. Status:', chatResponse.status);
+            console.error('Response:', errorText.substring(0, 500));
+            throw new Error(`Chat error: ${chatResponse.status} - ${errorText.substring(0, 100)}`);
         }
 
-        const chatData = await chatResponse.json();
-        console.log('Chat response received:', JSON.stringify(chatData));
-        const assistantMessage = chatData.choices?.[0]?.message?.content || 'Нет ответа';
+        let chatData;
+        try {
+            chatData = await chatResponse.json();
+        } catch (parseErr) {
+            console.error('❌ Failed to parse chat response');
+            throw new Error('Invalid chat response format');
+        }
 
-        console.log('Giga Chat request processed successfully');
+        const assistantMessage = chatData.choices?.[0]?.message?.content || 'Нет ответа';
+        console.log("8️⃣ Success! Response length:", assistantMessage.length);
+        console.log("=== GIGACHAT REQUEST END (SUCCESS) ===\n");
 
         return {
             statusCode: 200,
@@ -3246,15 +3290,16 @@ async function handleGigaChat(body, headers) {
             }),
         };
     } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        console.error('Giga Chat error:', errorMessage);
+        const errorMsg = error instanceof Error ? error.message : String(error);
+        console.error("❌ ERROR:", errorMsg);
+        console.error("=== GIGACHAT REQUEST FAILED ===\n");
         
         return {
             statusCode: 500,
             headers,
             body: JSON.stringify({
                 success: false,
-                response: 'Ошибка при обработке запроса. Попробуйте позже.',
+                response: `Ошибка: ${errorMsg}`,
             }),
         };
     }
