@@ -12,7 +12,7 @@
 1. Откройте **Yandex Cloud Console** → **Cloud Functions**
 2. Выберите функцию `mp-webstudio-api` (или аналогичную)
 3. Нажмите **Редактировать**
-4. В редакторе кода замените содержимое на содержимое файла `yandex-cloud-function/index.js`
+4. В редакторе кода замените содержимое на содержимое файла `yandex-cloud-function/index-ydb.js` (новая версия с YDB)
 5. Нажмите **Сохранить версию**
 
 ### 2. Добавить переменные окружения
@@ -28,15 +28,26 @@ ADMIN_PASSWORD=119944Alisa
 ```
 
 ### 3. Проверить функцию
-```bash
-curl -X POST https://functions.yandexcloud.net/d4ed08qj9rekklj8b100?action=admin-login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"Pimashin2015@gmail.com","password":"119944Alisa"}'
+Проверить в консоли браузера разработчика при входе на https://www.mp-webstudio.ru/admin:
+
+```
+POST https://www.mp-webstudio.ru/api/admin-login?action=admin-login
+{
+  "email": "Pimashin2015@gmail.com",
+  "password": "119944Alisa"
+}
 ```
 
-Должно вернуться:
+Ответ:
 ```json
 {"success": true, "token": "..."}
+```
+
+Или через curl:
+```bash
+curl -X POST 'https://functions.yandexcloud.net/YOUR_FUNCTION_ID?action=admin-login' \
+  -H "Content-Type: application/json" \
+  -d '{"email":"Pimashin2015@gmail.com","password":"119944Alisa"}'
 ```
 
 ### 4. Вернуться на сайт
@@ -66,11 +77,15 @@ curl -X POST https://functions.yandexcloud.net/d4ed08qj9rekklj8b100?action=admin
 
 ## Переменные окружения (для документации)
 
-| Переменная | Где устанавливать | Значение |
-|------------|------------------|----------|
-| `ADMIN_EMAIL` | Cloud Function переменные | Email администратора |
-| `ADMIN_PASSWORD` | Cloud Function переменные | Пароль администратора |
-| `ADMIN_TOKEN_SECRET` | Cloud Function переменные (опционально) | Секретный ключ для подписи токенов |
+| Переменная | Где устанавливать | Значение | Обязательна |
+|------------|------------------|----------|------------|
+| `ADMIN_EMAIL` | Cloud Function переменные | Email администратора | ✅ ДА |
+| `ADMIN_PASSWORD` | Cloud Function переменные | Пароль администратора | ✅ ДА |
+| `ADMIN_TOKEN_SECRET` | Cloud Function переменные | Секретный ключ для подписи токенов | ❌ Опционально |
+
+**Текущие учётные данные:**
+- ADMIN_EMAIL: `Pimashin2015@gmail.com`
+- ADMIN_PASSWORD: `119944Alisa`
 
 ## Безопасность
 
