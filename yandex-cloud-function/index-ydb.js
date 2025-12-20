@@ -68,7 +68,7 @@ async function httpsRequest(urlString, options) {
         const timeout = setTimeout(() => {
             if (req) req.destroy();
             reject(new Error('Request timeout'));
-        }, 25000);
+        }, 15000);
         
         const reqOptions = {
             method: options.method,
@@ -3234,50 +3234,20 @@ async function handleGigaChat(body, headers) {
         console.log("3️⃣ Requesting OAuth token...");
         let authResponse;
         
-        // Fallback URLs для OAuth (9443 может быть заблокирован на облаке)
-        const oauthUrls = [
-            'https://ngw.devices.sberbank.ru:9443/api/v2/oauth',
-            'https://ngw.devices.sberbank.ru/api/v2/oauth', // Fallback на стандартный порт 443
-        ];
-        
-        let lastError;
-        for (const oauthUrl of oauthUrls) {
-            console.log(`   Trying OAuth endpoint: ${oauthUrl}`);
-            for (let attempt = 1; attempt <= 2; attempt++) {
-                try {
-                    console.log(`     Attempt ${attempt}/2...`);
-                    
-                    authResponse = await httpsRequest(oauthUrl, {
-                        method: 'POST',
-                        headers: { 
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                            'Accept': 'application/json',
-                            'Authorization': `Basic ${gigachatKey}`,
-                            'RqUID': crypto.randomUUID(),
-                            'User-Agent': 'WebStudioBot/1.0',
-                        },
-                        body: authBody,
-                    });
-                    console.log(`   ✅ OAuth succeeded with ${oauthUrl}`);
-                    break; // Success, exit retry loop
-                } catch (fetchErr) {
-                    lastError = fetchErr;
-                    const errMsg = fetchErr instanceof Error ? fetchErr.message : String(fetchErr);
-                    console.error(`     ❌ Attempt ${attempt} failed: ${errMsg}`);
-                    
-                    if (attempt < 2) {
-                        const delayMs = 2000;
-                        console.log(`     Waiting ${delayMs}ms before retry...`);
-                        await new Promise(resolve => setTimeout(resolve, delayMs));
-                    }
-                }
-            }
-            if (authResponse) break; // Success with this URL, exit outer loop
-        }
-        
-        if (!authResponse) {
-            const errMsg = lastError instanceof Error ? lastError.message : String(lastError);
-            console.error('❌ All OAuth attempts failed:', errMsg);
+        try {
+            authResponse = await httpsRequest('https://ngw.devices.sberbank.ru:9443/api/v2/oauth', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Accept': 'application/json',
+                    'Authorization': `Basic ${gigachatKey}`,
+                    'RqUID': crypto.randomUUID(),
+                },
+                body: authBody,
+            });
+        } catch (fetchErr) {
+            const errMsg = fetchErr instanceof Error ? fetchErr.message : String(fetchErr);
+            console.error('❌ OAuth failed:', errMsg);
             throw new Error(`OAuth network error: ${errMsg}`);
         }
 
@@ -3305,8 +3275,8 @@ async function handleGigaChat(body, headers) {
             throw new Error('No access token in response');
         }
 
-        // Отправляем сообщение в Giga Chat - одна попытка, быстро!
-        console.log("6️⃣ Sending chat request (single attempt, aggressive timeout)...");
+        // Отправляем сообщение в Giga Chat
+        console.log("6️⃣ Sending chat request...");
         let chatResponse;
         
         try {
@@ -3315,18 +3285,12 @@ async function handleGigaChat(body, headers) {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${accessToken}`,
-                    'User-Agent': 'WebStudioBot/1.0',
                 },
                 body: JSON.stringify({
                     model: 'GigaChat',
-                    messages: [
-                        {
-                            role: 'user',
-                            content: message,
-                        },
-                    ],
-                    temperature: 0.5,
-                    max_tokens: 200,
+                    messages: [{ role: 'user', content: message }],
+                    temperature: 0.7,
+                    max_tokens: 1000,
                 }),
             });
         } catch (chatErr) {
