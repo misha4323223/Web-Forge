@@ -64,10 +64,11 @@ async function getYdbDriver() {
 async function httpsRequest(urlString, options) {
     return new Promise((resolve, reject) => {
         const url = new URL(urlString);
+        let req;
         const timeout = setTimeout(() => {
-            req.destroy();
+            if (req) req.destroy();
             reject(new Error('Request timeout'));
-        }, 25000);
+        }, 15000);
         
         const reqOptions = {
             method: options.method,
@@ -75,7 +76,7 @@ async function httpsRequest(urlString, options) {
             rejectUnauthorized: false,
         };
         
-        const req = https.request(url, reqOptions, (res) => {
+        req = https.request(url, reqOptions, (res) => {
             let data = '';
             res.on('data', (chunk) => {
                 data += chunk;
@@ -328,15 +329,19 @@ async function handleTelegramWebhook(body, headers) {
                 ]
             };
 
-            await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    chat_id: chatId,
-                    text: text,
-                    reply_markup: keyboard
-                })
-            });
+            try {
+                await httpsRequest(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: chatId,
+                        text: text,
+                        reply_markup: keyboard
+                    })
+                });
+            } catch (e) {
+                console.error('Telegram send error:', e.message);
+            }
         }
 
         return { statusCode: 200, headers, body: JSON.stringify({ ok: true }) };
@@ -3166,7 +3171,7 @@ async function sendTelegramNotification(message) {
     }
 
     try {
-        await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+        await httpsRequest(`https://api.telegram.org/bot${botToken}/sendMessage`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ chat_id: chatId, text: message }),
@@ -3329,7 +3334,7 @@ async function handleGigaChat(body, headers) {
                             },
                         ],
                         temperature: 0.7,
-                        max_tokens: 1000,
+                        max_tokens: 500,
                     }),
                 });
                 console.log(`   Chat attempt ${attempt} succeeded`);
@@ -3340,9 +3345,11 @@ async function handleGigaChat(body, headers) {
                 console.error(`❌ Chat attempt ${attempt} failed: ${errMsg}`);
                 
                 if (attempt < 3) {
-                    const delayMs = Math.pow(2, attempt - 1) * 1000;
-                    console.log(`   Waiting ${delayMs}ms before retry...`);
-                    await new Promise(resolve => setTimeout(resolve, delayMs));
+                    const delayMs = (attempt - 1) * 500; // 0ms, 500ms, 1000ms
+                    if (delayMs > 0) {
+                        console.log(`   Waiting ${delayMs}ms before retry...`);
+                        await new Promise(resolve => setTimeout(resolve, delayMs));
+                    }
                 }
             }
         }
