@@ -64,6 +64,11 @@ async function buildAll() {
     console.log("Building client...");
     // Set environment for Vite
     process.env.NODE_ENV = "production";
+    // Ensure VITE_API_URL is set for production build
+    if (!process.env.VITE_API_URL) {
+      process.env.VITE_API_URL = "https://functions.yandexcloud.net/d4ed08qj9rekklj8b100";
+    }
+    console.log(`Using API URL: ${process.env.VITE_API_URL}`);
     await viteBuild({
       mode: "production",
       configFile: "vite.config.ts"
