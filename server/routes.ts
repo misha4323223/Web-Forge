@@ -843,9 +843,14 @@ export async function registerRoutes(
 
       console.log("6️⃣ Sending chat request to GigaChat...");
       
+      const chatUrl = 'https://gigachat.devices.sberbank.ru/api/v1/chat/completions';
+      console.log("   URL:", chatUrl);
+      console.log("   Access Token length:", accessToken.length);
+      console.log("   Headers: Content-Type=application/json, Authorization=Bearer [token]");
+      
       let chatResponse;
       try {
-        chatResponse = await fetch('https://gigachat.devices.sberbank.ru/api/v1/chat/completions', {
+        chatResponse = await fetch(chatUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -858,9 +863,14 @@ export async function registerRoutes(
             max_tokens: 1000,
           }),
         });
+        console.log("   Fetch succeeded, status:", chatResponse.status);
       } catch (fetchErr) {
         const errMsg = fetchErr instanceof Error ? fetchErr.message : String(fetchErr);
         console.error('❌ Fetch error during chat request:', errMsg);
+        console.error('   Error type:', fetchErr instanceof Error ? fetchErr.constructor.name : typeof fetchErr);
+        if (fetchErr instanceof Error && 'code' in fetchErr) {
+          console.error('   Error code:', (fetchErr as any).code);
+        }
         throw new Error(`Chat network error: ${errMsg}`);
       }
 
