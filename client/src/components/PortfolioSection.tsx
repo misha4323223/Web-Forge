@@ -599,6 +599,9 @@ function ProjectCard({
             <img 
               src={item.image} 
               alt={item.title}
+              loading="eager"
+              decoding="async"
+              fetchPriority="high"
               className="w-full h-full object-cover object-top"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-card to-transparent" />
