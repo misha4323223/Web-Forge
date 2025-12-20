@@ -800,7 +800,7 @@ export async function registerRoutes(
       
       let authResponse;
       try {
-        authResponse = await fetch('https://ngw.devices.sberbank.ru:9443/api/v2/oauth', {
+        authResponse = await httpsRequest('https://ngw.devices.sberbank.ru:9443/api/v2/oauth', {
           method: 'POST',
           headers: { 
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -812,22 +812,21 @@ export async function registerRoutes(
         });
       } catch (fetchErr) {
         const errMsg = fetchErr instanceof Error ? fetchErr.message : String(fetchErr);
-        console.error('❌ Fetch error during OAuth:', errMsg);
+        console.error('❌ HTTPS error during OAuth:', errMsg);
         throw new Error(`OAuth network error: ${errMsg}`);
       }
 
-      console.log("4️⃣ Auth response status:", authResponse.status);
+      console.log("4️⃣ Auth response status:", authResponse.statusCode);
 
-      if (!authResponse.ok) {
-        const errorText = await authResponse.text();
-        console.error('❌ Auth failed. Status:', authResponse.status);
-        console.error('Response:', errorText.substring(0, 500));
-        throw new Error(`Auth error: ${authResponse.status} - ${errorText.substring(0, 100)}`);
+      if (authResponse.statusCode !== 200) {
+        console.error('❌ Auth failed. Status:', authResponse.statusCode);
+        console.error('Response:', authResponse.data.substring(0, 500));
+        throw new Error(`Auth error: ${authResponse.statusCode} - ${authResponse.data.substring(0, 100)}`);
       }
 
       let authData;
       try {
-        authData = await authResponse.json();
+        authData = JSON.parse(authResponse.data);
       } catch (parseErr) {
         console.error('❌ Failed to parse auth response');
         throw new Error('Invalid auth response format');
@@ -844,29 +843,31 @@ export async function registerRoutes(
       console.log("6️⃣ Sending chat request to GigaChat...");
       
       const chatUrl = 'https://gigachat.devices.sberbank.ru/api/v1/chat/completions';
+      const chatBody = JSON.stringify({
+        model: 'GigaChat',
+        messages: [{ role: 'user', content: message }],
+        temperature: 0.7,
+        max_tokens: 1000,
+      });
+      
       console.log("   URL:", chatUrl);
       console.log("   Access Token length:", accessToken.length);
       console.log("   Headers: Content-Type=application/json, Authorization=Bearer [token]");
       
       let chatResponse;
       try {
-        chatResponse = await fetch(chatUrl, {
+        chatResponse = await httpsRequest(chatUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${accessToken}`,
           },
-          body: JSON.stringify({
-            model: 'GigaChat',
-            messages: [{ role: 'user', content: message }],
-            temperature: 0.7,
-            max_tokens: 1000,
-          }),
+          body: chatBody,
         });
-        console.log("   Fetch succeeded, status:", chatResponse.status);
+        console.log("   HTTPS request succeeded, status:", chatResponse.statusCode);
       } catch (fetchErr) {
         const errMsg = fetchErr instanceof Error ? fetchErr.message : String(fetchErr);
-        console.error('❌ Fetch error during chat request:', errMsg);
+        console.error('❌ HTTPS error during chat request:', errMsg);
         console.error('   Error type:', fetchErr instanceof Error ? fetchErr.constructor.name : typeof fetchErr);
         if (fetchErr instanceof Error && 'code' in fetchErr) {
           console.error('   Error code:', (fetchErr as any).code);
@@ -874,18 +875,17 @@ export async function registerRoutes(
         throw new Error(`Chat network error: ${errMsg}`);
       }
 
-      console.log("7️⃣ Chat response status:", chatResponse.status);
+      console.log("7️⃣ Chat response status:", chatResponse.statusCode);
 
-      if (!chatResponse.ok) {
-        const errorText = await chatResponse.text();
-        console.error('❌ Chat API error. Status:', chatResponse.status);
-        console.error('Response:', errorText.substring(0, 500));
-        throw new Error(`Chat error: ${chatResponse.status} - ${errorText.substring(0, 100)}`);
+      if (chatResponse.statusCode !== 200) {
+        console.error('❌ Chat API error. Status:', chatResponse.statusCode);
+        console.error('Response:', chatResponse.data.substring(0, 500));
+        throw new Error(`Chat error: ${chatResponse.statusCode} - ${chatResponse.data.substring(0, 100)}`);
       }
 
       let chatData;
       try {
-        chatData = await chatResponse.json();
+        chatData = JSON.parse(chatResponse.data);
       } catch (parseErr) {
         console.error('❌ Failed to parse chat response');
         throw new Error('Invalid chat response format');
