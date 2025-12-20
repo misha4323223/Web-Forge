@@ -26,15 +26,21 @@ const { SESClient, SendRawEmailCommand } = require('@aws-sdk/client-ses');
 const SITE_API_URL = process.env.SITE_API_URL || 'https://mp-webstudio.ru';
 
 module.exports.handler = async function (event, context) {
+    const origin = event.headers?.origin || event.headers?.referer || '*';
     const headers = {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        'Access-Control-Max-Age': '86400',
     };
 
     if (event.httpMethod === 'OPTIONS') {
-        return { statusCode: 200, headers, body: '' };
+        return { 
+            statusCode: 200, 
+            headers,
+            body: JSON.stringify({ ok: true })
+        };
     }
 
     const query = event.queryStringParameters || {};
