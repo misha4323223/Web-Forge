@@ -2,7 +2,7 @@
   "name": "webstudio-cloud-function-ydb",
   "version": "1.0.0",
   "description": "WebStudio Cloud Function with YDB Serverless",
-  "main": "index-ydb.js",
+  "main": "index.js",
   "dependencies": {
     "@aws-sdk/client-sesv2": "^3.700.0",
     "@yandex-cloud/nodejs-sdk": "^2.7.0",
