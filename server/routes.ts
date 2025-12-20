@@ -652,6 +652,8 @@ export async function registerRoutes(
     try {
       const { name, phone, email, projectType, selectedFeatures, basePrice, totalPrice, description } = req.body;
 
+      console.log("Calculator order request received:", { name, email, projectType, basePrice, totalPrice });
+
       if (!name || !phone || !email || !projectType || !description) {
         return res.status(400).json({
           success: false,
@@ -659,7 +661,15 @@ export async function registerRoutes(
         });
       }
 
-      console.log("Calculator order received:", { name, email, projectType });
+      if (!basePrice || !totalPrice) {
+        console.error("Missing price information:", { basePrice, totalPrice });
+        return res.status(400).json({
+          success: false,
+          message: "Ошибка расчёта стоимости. Попробуйте снова",
+        });
+      }
+
+      console.log("Calculator order validated:", { name, email, projectType });
 
       const projectTypeLabel = projectType === "bizcard" ? "Сайт-визитка" :
                               projectType === "landing" ? "Лендинг" :
@@ -687,12 +697,13 @@ export async function registerRoutes(
         `📝 <b>Описание:</b>\n${description}`
       );
 
+      console.log("Calculator order sent successfully");
       res.status(201).json({
         success: true,
         message: "Заказ успешно отправлен",
       });
     } catch (error) {
-      console.error("Error sending calculator order:", error);
+      console.error("Error sending calculator order:", error instanceof Error ? error.message : error);
       res.status(500).json({
         success: false,
         message: "Внутренняя ошибка сервера",
