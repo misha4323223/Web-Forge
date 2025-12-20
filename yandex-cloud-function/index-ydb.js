@@ -329,19 +329,15 @@ async function handleTelegramWebhook(body, headers) {
                 ]
             };
 
-            try {
-                await httpsRequest(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        chat_id: chatId,
-                        text: text,
-                        reply_markup: keyboard
-                    })
-                });
-            } catch (e) {
-                console.error('Telegram send error:', e.message);
-            }
+            await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: chatId,
+                    text: text,
+                    reply_markup: keyboard
+                })
+            });
         }
 
         return { statusCode: 200, headers, body: JSON.stringify({ ok: true }) };
@@ -3171,7 +3167,7 @@ async function sendTelegramNotification(message) {
     }
 
     try {
-        await httpsRequest(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+        await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ chat_id: chatId, text: message }),
