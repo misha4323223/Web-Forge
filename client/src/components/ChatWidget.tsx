@@ -39,7 +39,26 @@ export function ChatWidget() {
         body: JSON.stringify({ message: userMessage }),
       });
 
+      console.log("Chat API response status:", response.status);
+      
+      if (!response.ok) {
+        const text = await response.text();
+        console.error("Chat API error response:", response.status, text.substring(0, 500));
+        throw new Error(`HTTP ${response.status}: ${text.substring(0, 100)}`);
+      }
+
+      const contentType = response.headers.get("content-type");
+      console.log("Response content-type:", contentType);
+      
+      if (!contentType?.includes("application/json")) {
+        const text = await response.text();
+        console.error("Invalid content-type. Expected JSON, got:", contentType);
+        console.error("Response body:", text.substring(0, 500));
+        throw new Error("Сервер вернул невалидный ответ");
+      }
+
       const data = await response.json();
+      console.log("Chat response data:", data);
 
       if (data.success) {
         setMessages((prev) => [
@@ -51,17 +70,18 @@ export function ChatWidget() {
           ...prev,
           {
             role: "assistant",
-            content: "Ошибка при получении ответа. Попробуйте снова.",
+            content: data.response || "Ошибка при получении ответа. Попробуйте снова.",
           },
         ]);
       }
     } catch (error) {
       console.error("Error sending message:", error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
       setMessages((prev) => [
         ...prev,
         {
           role: "assistant",
-          content: "Ошибка подключения. Проверьте соединение.",
+          content: `Ошибка: ${errorMessage}`,
         },
       ]);
     } finally {
