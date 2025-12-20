@@ -68,7 +68,7 @@ async function httpsRequest(urlString, options) {
         const timeout = setTimeout(() => {
             if (req) req.destroy();
             reject(new Error('Request timeout'));
-        }, 10000);
+        }, 25000);
         
         const reqOptions = {
             method: options.method,
