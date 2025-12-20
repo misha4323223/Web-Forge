@@ -352,8 +352,8 @@ export function CalculatorSection() {
     }).length;
   };
 
-  const line1 = "Рассчитайте ";
-  const line2 = "стоимость проекта";
+  const line1 = "Готовы ";
+  const line2 = "начать проект?";
 
   return (
     <section id="calculator" className="py-24 md:py-32 relative overflow-hidden">
