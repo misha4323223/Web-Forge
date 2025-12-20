@@ -34,6 +34,12 @@ export async function setupVite(server: Server, app: Express) {
   app.use("*", async (req, res, next) => {
     const url = req.originalUrl;
 
+    // 👇 ДОБАВИТЬ ЭТИ СТРОКИ:
+    // Пропускаем API запросы - они обрабатываются Express обработчиками
+    if (url.startsWith("/api")) {
+      return next();
+    }
+
     try {
       const clientTemplate = path.resolve(
         import.meta.dirname,
