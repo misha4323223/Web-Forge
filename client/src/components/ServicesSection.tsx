@@ -210,9 +210,7 @@ export function ServicesSection() {
               transition={{ duration: 0.5, delay: 0.1 + index * 0.08 }}
             >
               <Card
-                className={`group relative overflow-visible h-full p-4 border-border bg-background/50 backdrop-blur-sm ${
-                  index < 2 ? "floating-service-card" : "hover-elevate"
-                }`}
+                className="group relative overflow-visible h-full p-4 border-border bg-background/50 backdrop-blur-sm floating-service-card"
                 data-testid={`card-service-${index}`}
               >
                 <div className={`w-10 h-10 rounded-md bg-gradient-to-br ${service.color} flex items-center justify-center mb-3`}>
