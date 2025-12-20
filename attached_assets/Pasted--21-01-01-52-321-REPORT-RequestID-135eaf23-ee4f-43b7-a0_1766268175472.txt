@@ -1,0 +1,97 @@
+
+
+21 дек. 01:01:52.321
+REPORT RequestID: 135eaf23-ee4f-43b7-a020-c77eb74d877b Duration: 70.763 ms Billed Duration: 100 ms Memory Size: 256 MB Max Memory Used: 157 MB Queuing Duration: 0.095 ms CPU Usage: 12.207 %
+
+21 дек. 01:01:52.321
+END RequestID: 135eaf23-ee4f-43b7-a020-c77eb74d877b
+
+21 дек. 01:01:52.320
+=== GIGACHAT REQUEST FAILED ===
+
+21 дек. 01:01:52.320
+❌ ERROR: OAuth network error: fetch failed
+
+21 дек. 01:01:52.320
+❌ Fetch error during OAuth: fetch failed
+
+21 дек. 01:01:52.253
+3️⃣ Requesting OAuth token...
+
+21 дек. 01:01:52.252
+Key length: 100
+
+21 дек. 01:01:52.252
+2️⃣ GIGACHAT_KEY exists: true
+
+21 дек. 01:01:52.252
+1️⃣ Received message: привет...
+
+21 дек. 01:01:52.252
+=== GIGACHAT REQUEST START (Yandex Cloud) ===
+
+21 дек. 01:01:52.252
+[GIGA-CHAT] Handler called
+
+21 дек. 01:01:52.252
+}
+
+21 дек. 01:01:52.252
+bodyKeys: [ 'message' ]
+
+21 дек. 01:01:52.252
+path: '',
+
+21 дек. 01:01:52.252
+action: 'giga-chat',
+
+21 дек. 01:01:52.252
+method: 'POST',
+
+21 дек. 01:01:52.252
+[REQUEST] {
+
+21 дек. 01:01:52.251
+}
+
+21 дек. 01:01:52.251
+timestamp: '2025-12-20T22:01:52.251Z'
+
+21 дек. 01:01:52.251
+path: undefined,
+
+21 дек. 01:01:52.251
+method: 'POST',
+
+21 дек. 01:01:52.251
+[HANDLER START] {
+
+21 дек. 01:01:52.247
+START RequestID: 135eaf23-ee4f-43b7-a020-c77eb74d877b Version: d4ehdhhdek1u44on9k6b
+
+21 дек. 01:01:52.218
+REPORT RequestID: 9bc3d33d-5b9e-464d-b04a-e533e39e3e15 Duration: 854.271 ms Billed Duration: 900 ms Memory Size: 256 MB Max Memory Used: 157 MB Queuing Duration: 0.069 ms Function Init Duration: 832.840 ms CPU Usage: 12.207 %
+
+21 дек. 01:01:52.218
+END RequestID: 9bc3d33d-5b9e-464d-b04a-e533e39e3e15
+
+21 дек. 01:01:52.216
+[OPTIONS] Returning 200
+
+21 дек. 01:01:52.216
+}
+
+21 дек. 01:01:52.216
+timestamp: '2025-12-20T22:01:52.208Z'
+
+21 дек. 01:01:52.216
+path: undefined,
+
+21 дек. 01:01:52.216
+method: 'OPTIONS',
+
+21 дек. 01:01:52.216
+[HANDLER START] {
+
+21 дек. 01:01:51.360
+START RequestID: 9bc3d33d-5b9e-464d-b04a-e533e39e3e15 Version: d4ehdhhdek1u44on9k6b

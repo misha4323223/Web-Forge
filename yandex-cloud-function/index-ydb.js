@@ -3194,21 +3194,48 @@ async function handleGigaChat(body, headers) {
         
         console.log("3️⃣ Requesting OAuth token...");
         let authResponse;
-        try {
-            authResponse = await fetch('https://ngw.devices.sberbank.ru:9443/api/v2/oauth', {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'Accept': 'application/json',
-                    'Authorization': `Basic ${gigachatKey}`,
-                    'RqUID': crypto.randomUUID(),
-                },
-                body: authBody,
-            });
-        } catch (fetchErr) {
-            const errMsg = fetchErr instanceof Error ? fetchErr.message : String(fetchErr);
-            console.error('❌ Fetch error during OAuth:', errMsg);
-            throw new Error(`OAuth network error: ${errMsg}`);
+        
+        // Retry логика для OAuth (Yandex Cloud может иметь проблемы с сетью)
+        let lastError;
+        for (let attempt = 1; attempt <= 3; attempt++) {
+            try {
+                console.log(`   Attempt ${attempt}/3 to get OAuth token...`);
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 15000); // 15 сек timeout
+                
+                authResponse = await fetch('https://ngw.devices.sberbank.ru:9443/api/v2/oauth', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Accept': 'application/json',
+                        'Authorization': `Basic ${gigachatKey}`,
+                        'RqUID': crypto.randomUUID(),
+                        'User-Agent': 'WebStudioBot/1.0',
+                    },
+                    body: authBody,
+                    signal: controller.signal,
+                });
+                clearTimeout(timeout);
+                console.log(`   OAuth attempt ${attempt} succeeded`);
+                break; // Success, exit retry loop
+            } catch (fetchErr) {
+                lastError = fetchErr;
+                const errMsg = fetchErr instanceof Error ? fetchErr.message : String(fetchErr);
+                console.error(`❌ OAuth attempt ${attempt} failed: ${errMsg}`);
+                
+                if (attempt < 3) {
+                    // Exponential backoff: 1s, 2s, 4s
+                    const delayMs = Math.pow(2, attempt - 1) * 1000;
+                    console.log(`   Waiting ${delayMs}ms before retry...`);
+                    await new Promise(resolve => setTimeout(resolve, delayMs));
+                }
+            }
+        }
+        
+        if (!authResponse) {
+            const errMsg = lastError instanceof Error ? lastError.message : String(lastError);
+            console.error('❌ All OAuth retry attempts failed:', errMsg);
+            throw new Error(`OAuth network error after 3 retries: ${errMsg}`);
         }
 
         console.log("4️⃣ Auth response status:", authResponse.status);
@@ -3236,32 +3263,57 @@ async function handleGigaChat(body, headers) {
             throw new Error('No access token in response');
         }
 
-        // Отправляем сообщение в Giga Chat
+        // Отправляем сообщение в Giga Chat с retry логикой
         console.log("6️⃣ Sending chat request...");
         let chatResponse;
-        try {
-            chatResponse = await fetch('https://gigachat.devices.sberbank.ru/api/v1/chat/completions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${accessToken}`,
-                },
-                body: JSON.stringify({
-                    model: 'GigaChat',
-                    messages: [
-                        {
-                            role: 'user',
-                            content: message,
-                        },
-                    ],
-                    temperature: 0.7,
-                    max_tokens: 1000,
-                }),
-            });
-        } catch (fetchErr) {
-            const errMsg = fetchErr instanceof Error ? fetchErr.message : String(fetchErr);
-            console.error('❌ Fetch error during chat request:', errMsg);
-            throw new Error(`Chat network error: ${errMsg}`);
+        let lastChatError;
+        
+        for (let attempt = 1; attempt <= 3; attempt++) {
+            try {
+                console.log(`   Chat attempt ${attempt}/3...`);
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 30000); // 30 сек timeout для чата
+                
+                chatResponse = await fetch('https://gigachat.devices.sberbank.ru/api/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${accessToken}`,
+                        'User-Agent': 'WebStudioBot/1.0',
+                    },
+                    body: JSON.stringify({
+                        model: 'GigaChat',
+                        messages: [
+                            {
+                                role: 'user',
+                                content: message,
+                            },
+                        ],
+                        temperature: 0.7,
+                        max_tokens: 1000,
+                    }),
+                    signal: controller.signal,
+                });
+                clearTimeout(timeout);
+                console.log(`   Chat attempt ${attempt} succeeded`);
+                break; // Success, exit retry loop
+            } catch (fetchErr) {
+                lastChatError = fetchErr;
+                const errMsg = fetchErr instanceof Error ? fetchErr.message : String(fetchErr);
+                console.error(`❌ Chat attempt ${attempt} failed: ${errMsg}`);
+                
+                if (attempt < 3) {
+                    const delayMs = Math.pow(2, attempt - 1) * 1000;
+                    console.log(`   Waiting ${delayMs}ms before retry...`);
+                    await new Promise(resolve => setTimeout(resolve, delayMs));
+                }
+            }
+        }
+        
+        if (!chatResponse) {
+            const errMsg = lastChatError instanceof Error ? lastChatError.message : String(lastChatError);
+            console.error('❌ All chat retry attempts failed:', errMsg);
+            throw new Error(`Chat network error after 3 retries: ${errMsg}`);
         }
 
         console.log("7️⃣ Chat response status:", chatResponse.status);
