@@ -752,7 +752,10 @@ export async function registerRoutes(
         response: assistantMessage,
       });
     } catch (error) {
-      console.error("Giga Chat error:", error instanceof Error ? error.message : error);
+      const errorMessage = error instanceof Error ? error.message : JSON.stringify(error);
+      const errorStack = error instanceof Error ? error.stack : "";
+      console.error("Giga Chat error:", errorMessage);
+      if (errorStack) console.error("Stack:", errorStack);
       res.status(500).json({
         success: false,
         response: "Ошибка при обработке запроса. Попробуйте позже.",

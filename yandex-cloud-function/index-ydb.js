@@ -3207,7 +3207,10 @@ async function handleGigaChat(body, headers) {
             }),
         };
     } catch (error) {
-        console.error('Giga Chat error:', error.message);
+        const errorMessage = error instanceof Error ? error.message : JSON.stringify(error);
+        const errorStack = error instanceof Error ? error.stack : '';
+        console.error('Giga Chat error:', errorMessage);
+        if (errorStack) console.error('Stack:', errorStack);
         return {
             statusCode: 500,
             headers,
