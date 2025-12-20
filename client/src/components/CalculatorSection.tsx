@@ -593,11 +593,10 @@ export function CalculatorSection() {
                 </Button>
                 <a href="/order" className="block">
                   <Button
-                    variant="outline"
-                    className="w-full"
+                    className="w-full bg-gradient-to-r from-cyan-500 to-purple-500 text-white border-0"
                     data-testid="button-calculator-cta"
                   >
-                    Заказать сайта
+                    Заказать сайт
                   </Button>
                 </a>
               </div>
