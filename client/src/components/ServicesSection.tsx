@@ -1,7 +1,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useMemo } from "react";
 import { Card } from "@/components/ui/card";
-import { Globe, ShoppingCart, Gauge, Palette, Code } from "lucide-react";
+import { Globe, ShoppingCart, Gauge, Palette, Code, FileText, Rocket } from "lucide-react";
 import { ParticleBackground } from "./ParticleBackground";
 
 interface FlyingLetterProps {
@@ -101,6 +101,18 @@ function AnimatedText({ text, startIndex, isGradient, isInView }: AnimatedTextPr
 }
 
 const services = [
+  {
+    icon: FileText,
+    title: "Сайт-визитка",
+    description: "Компактный одностраничный сайт для представления компании или специалиста.",
+    color: "from-blue-500 to-cyan-500",
+  },
+  {
+    icon: Rocket,
+    title: "Лендинг",
+    description: "Одностраничный продающий сайт с фокусом на конверсию и результат.",
+    color: "from-green-500 to-cyan-500",
+  },
   {
     icon: Globe,
     title: "Корпоративные сайты",
