@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { insertContactRequestSchema, insertOrderSchema, insertAdditionalInvoiceSchema, insertChatMessageSchema } from "@shared/schema";
 import { z } from "zod";
 import crypto from "crypto";
+import https from "https";
 import { GigaChat } from "gigachat";
 
 const ROBOKASSA_MERCHANT_LOGIN = process.env.ROBOKASSA_MERCHANT_LOGIN || "";
@@ -18,6 +19,43 @@ const SITE_URL = process.env.SITE_URL || "https://mp-webstudio.ru";
 const GIGACHAT_KEY = process.env.GIGACHAT_KEY || "";
 const GIGACHAT_ID = process.env.GIGACHAT_ID || "";
 const GIGACHAT_SCOPE = process.env.GIGACHAT_SCOPE || "GIGACHAT_API_PERS";
+
+function httpsRequest(
+  url: string,
+  options: { method: string; headers: Record<string, string>; body?: string }
+): Promise<{ statusCode: number; data: string }> {
+  return new Promise((resolve, reject) => {
+    try {
+      const urlObj = new URL(url);
+      const req = https.request(
+        {
+          hostname: urlObj.hostname,
+          path: urlObj.pathname + urlObj.search,
+          method: options.method,
+          headers: {
+            ...options.headers,
+            "Content-Length": options.body ? Buffer.byteLength(options.body) : 0,
+          },
+        },
+        (res) => {
+          let data = "";
+          res.on("data", (chunk) => (data += chunk));
+          res.on("end", () => {
+            resolve({ statusCode: res.statusCode || 500, data });
+          });
+        }
+      );
+
+      req.on("error", reject);
+      if (options.body) {
+        req.write(options.body);
+      }
+      req.end();
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
 
 async function sendTelegramMessage(message: string): Promise<void> {
   if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
@@ -731,59 +769,64 @@ export async function registerRoutes(
         });
       }
 
-      // Отключаем проверку SSL сертификата для dev режима
-      process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+      console.log("Starting Giga Chat request...");
 
-      // Получаем токен доступа
-      const authBody = `grant_type=urn:ibm:params:oauth:grant-type:apikey&apikey=${encodeURIComponent(gigachatKey)}&scope=${encodeURIComponent(gigachatScope)}`;
-      const authResponse = await fetch('https://auth.api.cloud.yandex.net/oauth/token', {
+      // Получаем токен доступа используя правильный OAuth endpoint
+      const authBody = `scope=${encodeURIComponent(gigachatScope)}`;
+      console.log("Requesting auth token from ngw.devices.sberbank.ru...");
+      
+      const authResult = await httpsRequest('https://ngw.devices.sberbank.ru:9443/api/v2/oauth', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        headers: { 
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Authorization': `Bearer ${gigachatKey}`,
+          'RqUID': crypto.randomUUID(),
+        },
         body: authBody,
       });
 
-      if (!authResponse.ok) {
-        const errorText = await authResponse.text();
-        console.error("Auth response error:", errorText);
-        throw new Error(`Auth failed: ${authResponse.statusText} - ${errorText}`);
+      if (authResult.statusCode !== 200) {
+        console.error("Auth failed:", authResult.statusCode, authResult.data);
+        throw new Error(`Auth failed: ${authResult.statusCode} - ${authResult.data}`);
       }
 
-      const authData = await authResponse.json();
-      console.log("Auth token obtained successfully");
+      const authData = JSON.parse(authResult.data);
       const accessToken = authData.access_token;
+      console.log("Auth token obtained successfully");
 
       if (!accessToken) {
         throw new Error('No access token in response');
       }
 
       // Отправляем сообщение в Giga Chat
-      const chatResponse = await fetch('https://gigachat.devices.sbercloud.ru/api/v1/chat/completions', {
+      const chatBody = JSON.stringify({
+        model: 'GigaChat',
+        messages: [
+          {
+            role: 'user',
+            content: validatedData.message,
+          },
+        ],
+        temperature: 0.7,
+        max_tokens: 1000,
+      });
+
+      console.log("Sending chat request...");
+      const chatResult = await httpsRequest('https://gigachat.devices.sbercloud.ru/api/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${accessToken}`,
         },
-        body: JSON.stringify({
-          model: 'GigaChat',
-          messages: [
-            {
-              role: 'user',
-              content: validatedData.message,
-            },
-          ],
-          temperature: 0.7,
-          max_tokens: 1000,
-        }),
+        body: chatBody,
       });
 
-      if (!chatResponse.ok) {
-        const errorText = await chatResponse.text();
-        console.error("Chat API error response:", errorText);
-        throw new Error(`Chat API failed: ${chatResponse.statusText} - ${errorText}`);
+      if (chatResult.statusCode !== 200) {
+        console.error("Chat API failed:", chatResult.statusCode, chatResult.data);
+        throw new Error(`Chat API failed: ${chatResult.statusCode} - ${chatResult.data}`);
       }
 
-      const chatData = await chatResponse.json();
-      console.log("Chat response received:", chatData);
+      const chatData = JSON.parse(chatResult.data);
       const assistantMessage = chatData.choices?.[0]?.message?.content || 'Нет ответа';
 
       console.log("Chat response:", assistantMessage);
@@ -793,9 +836,7 @@ export async function registerRoutes(
       });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
-      const errorStack = error instanceof Error ? error.stack : "";
       console.error("Giga Chat error:", errorMessage);
-      if (errorStack) console.error("Stack:", errorStack);
       
       res.status(500).json({
         success: false,

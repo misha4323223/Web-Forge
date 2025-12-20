@@ -3178,11 +3178,15 @@ async function handleGigaChat(body, headers) {
             };
         }
 
-        // Получаем токен доступа
-        const authBody = `grant_type=urn:ibm:params:oauth:grant-type:apikey&apikey=${encodeURIComponent(gigachatKey)}&scope=${encodeURIComponent(gigachatScope)}`;
-        const authResponse = await fetch('https://auth.api.cloud.yandex.net/oauth/token', {
+        // Получаем токен доступа используя правильный OAuth endpoint
+        const authBody = `scope=${encodeURIComponent(gigachatScope)}`;
+        const authResponse = await fetch('https://ngw.devices.sberbank.ru:9443/api/v2/oauth', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            headers: { 
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Authorization': `Bearer ${gigachatKey}`,
+                'RqUID': crypto.randomUUID(),
+            },
             body: authBody,
         });
 
