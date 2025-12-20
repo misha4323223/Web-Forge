@@ -4,7 +4,6 @@ import { storage } from "./storage";
 import { insertContactRequestSchema, insertOrderSchema, insertAdditionalInvoiceSchema, insertChatMessageSchema } from "@shared/schema";
 import { z } from "zod";
 import crypto from "crypto";
-import https from "https";
 import { GigaChat } from "gigachat";
 
 const ROBOKASSA_MERCHANT_LOGIN = process.env.ROBOKASSA_MERCHANT_LOGIN || "";
@@ -20,41 +19,26 @@ const GIGACHAT_KEY = process.env.GIGACHAT_KEY || "";
 const GIGACHAT_ID = process.env.GIGACHAT_ID || "";
 const GIGACHAT_SCOPE = process.env.GIGACHAT_SCOPE || "GIGACHAT_API_PERS";
 
-function httpsRequest(
+async function httpsRequest(
   url: string,
   options: { method: string; headers: Record<string, string>; body?: string }
 ): Promise<{ statusCode: number; data: string }> {
-  return new Promise((resolve, reject) => {
-    try {
-      const urlObj = new URL(url);
-      const req = https.request(
-        {
-          hostname: urlObj.hostname,
-          path: urlObj.pathname + urlObj.search,
-          method: options.method,
-          headers: {
-            ...options.headers,
-            "Content-Length": options.body ? Buffer.byteLength(options.body) : 0,
-          },
-        },
-        (res) => {
-          let data = "";
-          res.on("data", (chunk) => (data += chunk));
-          res.on("end", () => {
-            resolve({ statusCode: res.statusCode || 500, data });
-          });
-        }
-      );
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+  
+  try {
+    const response = await fetch(url, {
+      method: options.method,
+      headers: options.headers,
+      body: options.body,
+      signal: controller.signal,
+    });
 
-      req.on("error", reject);
-      if (options.body) {
-        req.write(options.body);
-      }
-      req.end();
-    } catch (error) {
-      reject(error);
-    }
-  });
+    const data = await response.text();
+    return { statusCode: response.status, data };
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 async function sendTelegramMessage(message: string): Promise<void> {
