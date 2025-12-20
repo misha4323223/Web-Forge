@@ -15,7 +15,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Calculator, ArrowRight, Check, ChevronDown, Plus, X } from "lucide-react";
+import { Calculator, ArrowRight, Check, ChevronDown, Plus, X, Mail, Phone, MapPin } from "lucide-react";
+import { SiTelegram, SiWhatsapp } from "react-icons/si";
 import { ParticleBackground } from "./ParticleBackground";
 
 interface FlyingLetterProps {
@@ -757,6 +758,67 @@ export function CalculatorSection() {
                 </Button>
               </form>
             </Form>
+          </div>
+
+          <div className="border-t border-border pt-6 mt-6">
+            <h3 className="font-bold mb-4 text-base">Свяжитесь с нами</h3>
+            <div className="space-y-4 mb-6">
+              <div className="flex items-center gap-3" data-testid="contact-info-email">
+                <div className="w-10 h-10 rounded-md bg-card border border-border flex items-center justify-center flex-shrink-0">
+                  <Mail className="w-4 h-4 text-primary" />
+                </div>
+                <div>
+                  <div className="text-xs text-muted-foreground">Email</div>
+                  <div className="text-sm text-foreground font-medium">mpwebstudio1@gmail.com</div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3" data-testid="contact-info-phone">
+                <div className="w-10 h-10 rounded-md bg-card border border-border flex items-center justify-center flex-shrink-0">
+                  <Phone className="w-4 h-4 text-primary" />
+                </div>
+                <div>
+                  <div className="text-xs text-muted-foreground">Телефон</div>
+                  <div className="text-sm text-foreground font-medium">+7 (953) 181-41-36</div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3" data-testid="contact-info-location">
+                <div className="w-10 h-10 rounded-md bg-card border border-border flex items-center justify-center flex-shrink-0">
+                  <MapPin className="w-4 h-4 text-primary" />
+                </div>
+                <div>
+                  <div className="text-xs text-muted-foreground">Город</div>
+                  <div className="text-sm text-foreground font-medium">Тула, Россия</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-4 rounded-md bg-card/50 border border-border">
+              <h4 className="font-bold mb-3 text-sm">Мессенджеры</h4>
+              <div className="flex gap-2">
+                <a href="https://t.me/MPWebStudio_ru" target="_blank" rel="noopener noreferrer">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="w-10 h-10"
+                    data-testid="button-modal-telegram"
+                  >
+                    <SiTelegram className="w-4 h-4" />
+                  </Button>
+                </a>
+                <a href="https://wa.me/79531814136" target="_blank" rel="noopener noreferrer">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="w-10 h-10"
+                    data-testid="button-modal-whatsapp"
+                  >
+                    <SiWhatsapp className="w-4 h-4" />
+                  </Button>
+                </a>
+              </div>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
