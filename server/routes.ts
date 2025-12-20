@@ -845,7 +845,7 @@ export async function registerRoutes(
       
       let chatResponse;
       try {
-        chatResponse = await fetch('https://gigachat.devices.sbercloud.ru/api/v1/chat/completions', {
+        chatResponse = await fetch('https://gigachat.devices.sberbank.ru/api/v1/chat/completions', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
