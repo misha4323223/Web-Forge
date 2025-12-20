@@ -255,6 +255,18 @@ export function CalculatorSection() {
   const mutation = useMutation({
     mutationFn: async (data: CalculatorFormData) => {
       const currentProjectType = projectTypes.find((p) => p.value === projectType)!;
+      const currentBasePrice = currentProjectType?.basePrice || 0;
+      
+      const currentFeaturesPrice = selectedFeatures.reduce((sum, featureId) => {
+        const feature = features.find((f) => f.id === featureId);
+        if (feature && feature.availableFor.includes(projectType)) {
+          return sum + feature.price;
+        }
+        return sum;
+      }, 0);
+      
+      const currentTotalPrice = currentBasePrice + currentFeaturesPrice;
+
       const selectedFeaturesList = selectedFeatures
         .map((fId) => {
           const feature = features.find((f) => f.id === fId);
@@ -266,8 +278,8 @@ export function CalculatorSection() {
         ...data,
         projectType,
         selectedFeatures: selectedFeaturesList,
-        basePrice,
-        totalPrice,
+        basePrice: currentBasePrice,
+        totalPrice: currentTotalPrice,
       });
       return response.json();
     },

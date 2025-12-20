@@ -151,6 +151,11 @@ module.exports.handler = async function (event, context) {
             return await handleConfirmBankPayment(body, headers);
         }
 
+        // POST /api/send-calculator-order - отправить заказ из калькулятора
+        if ((action === 'send-calculator-order' || path.includes('/send-calculator-order')) && method === 'POST') {
+            return await handleCalculatorOrder(body, headers);
+        }
+
         // POST ?action=delete-order - мягкое удаление заказа
         if (action === 'delete-order' && method === 'POST') {
             const orderIdToDelete = body.orderId;
@@ -1785,6 +1790,87 @@ async function handleConfirmBankPayment(data, headers) {
             statusCode: 500,
             headers,
             body: JSON.stringify({ success: false, message: error.message }),
+        };
+    }
+}
+
+// ============ Calculator Order ============
+
+async function handleCalculatorOrder(body, headers) {
+    try {
+        const { name, phone, email, projectType, selectedFeatures, basePrice, totalPrice, description } = body;
+
+        console.log("Calculator order request received:", { name, email, projectType, basePrice, totalPrice });
+
+        if (!name || !phone || !email || !projectType || !description) {
+            return {
+                statusCode: 400,
+                headers,
+                body: JSON.stringify({
+                    success: false,
+                    message: "Заполните все обязательные поля",
+                }),
+            };
+        }
+
+        if (!basePrice || !totalPrice) {
+            console.error("Missing price information:", { basePrice, totalPrice });
+            return {
+                statusCode: 400,
+                headers,
+                body: JSON.stringify({
+                    success: false,
+                    message: "Ошибка расчёта стоимости. Попробуйте снова",
+                }),
+            };
+        }
+
+        console.log("Calculator order validated:", { name, email, projectType });
+
+        const projectTypeLabel = projectType === "bizcard" ? "Сайт-визитка" :
+                                projectType === "landing" ? "Лендинг" :
+                                projectType === "corporate" ? "Корпоративный сайт" : "Интернет-магазин";
+
+        let featuresList = "";
+        if (selectedFeatures && selectedFeatures.length > 0) {
+            featuresList = "\n📋 <b>Выбранные опции:</b>\n";
+            selectedFeatures.forEach((feature, index) => {
+                featuresList += `${index + 1}. ${feature}\n`;
+            });
+        }
+
+        await sendTelegramNotification(
+            `🎯 <b>НОВЫЙ ЗАКАЗ ИЗ КАЛЬКУЛЯТОРА</b>\n\n` +
+            `📋 <b>Проект:</b>\n` +
+            `• База: ${projectTypeLabel}\n` +
+            `• Стоимость базы: ${basePrice.toLocaleString('ru-RU')} ₽` +
+            featuresList +
+            `\n💰 <b>Итого: ${totalPrice.toLocaleString('ru-RU')} ₽</b>\n\n` +
+            `👤 <b>Контакты:</b>\n` +
+            `• Имя: ${name}\n` +
+            `• Телефон: ${phone}\n` +
+            `• Email: ${email}\n\n` +
+            `📝 <b>Описание:</b>\n${description}`
+        );
+
+        console.log("Calculator order sent successfully");
+        return {
+            statusCode: 201,
+            headers,
+            body: JSON.stringify({
+                success: true,
+                message: "Заказ успешно отправлен",
+            }),
+        };
+    } catch (error) {
+        console.error("Error sending calculator order:", error instanceof Error ? error.message : error);
+        return {
+            statusCode: 500,
+            headers,
+            body: JSON.stringify({
+                success: false,
+                message: "Внутренняя ошибка сервера",
+            }),
         };
     }
 }
