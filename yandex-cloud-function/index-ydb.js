@@ -3195,47 +3195,55 @@ async function handleGigaChat(body, headers) {
         console.log("3️⃣ Requesting OAuth token...");
         let authResponse;
         
-        // Retry логика для OAuth (Yandex Cloud может иметь проблемы с сетью)
+        // Fallback URLs для OAuth (9443 может быть заблокирован на облаке)
+        const oauthUrls = [
+            'https://ngw.devices.sberbank.ru:9443/api/v2/oauth',
+            'https://ngw.devices.sberbank.ru/api/v2/oauth', // Fallback на стандартный порт 443
+        ];
+        
         let lastError;
-        for (let attempt = 1; attempt <= 3; attempt++) {
-            try {
-                console.log(`   Attempt ${attempt}/3 to get OAuth token...`);
-                const controller = new AbortController();
-                const timeout = setTimeout(() => controller.abort(), 15000); // 15 сек timeout
-                
-                authResponse = await fetch('https://ngw.devices.sberbank.ru:9443/api/v2/oauth', {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'Accept': 'application/json',
-                        'Authorization': `Basic ${gigachatKey}`,
-                        'RqUID': crypto.randomUUID(),
-                        'User-Agent': 'WebStudioBot/1.0',
-                    },
-                    body: authBody,
-                    signal: controller.signal,
-                });
-                clearTimeout(timeout);
-                console.log(`   OAuth attempt ${attempt} succeeded`);
-                break; // Success, exit retry loop
-            } catch (fetchErr) {
-                lastError = fetchErr;
-                const errMsg = fetchErr instanceof Error ? fetchErr.message : String(fetchErr);
-                console.error(`❌ OAuth attempt ${attempt} failed: ${errMsg}`);
-                
-                if (attempt < 3) {
-                    // Exponential backoff: 1s, 2s, 4s
-                    const delayMs = Math.pow(2, attempt - 1) * 1000;
-                    console.log(`   Waiting ${delayMs}ms before retry...`);
-                    await new Promise(resolve => setTimeout(resolve, delayMs));
+        for (const oauthUrl of oauthUrls) {
+            console.log(`   Trying OAuth endpoint: ${oauthUrl}`);
+            for (let attempt = 1; attempt <= 2; attempt++) {
+                try {
+                    console.log(`     Attempt ${attempt}/2...`);
+                    const controller = new AbortController();
+                    const timeout = setTimeout(() => controller.abort(), 20000); // 20 сек timeout
+                    
+                    authResponse = await fetch(oauthUrl, {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'Accept': 'application/json',
+                            'Authorization': `Basic ${gigachatKey}`,
+                            'RqUID': crypto.randomUUID(),
+                            'User-Agent': 'WebStudioBot/1.0',
+                        },
+                        body: authBody,
+                        signal: controller.signal,
+                    });
+                    clearTimeout(timeout);
+                    console.log(`   ✅ OAuth succeeded with ${oauthUrl}`);
+                    break; // Success, exit retry loop
+                } catch (fetchErr) {
+                    lastError = fetchErr;
+                    const errMsg = fetchErr instanceof Error ? fetchErr.message : String(fetchErr);
+                    console.error(`     ❌ Attempt ${attempt} failed: ${errMsg}`);
+                    
+                    if (attempt < 2) {
+                        const delayMs = 2000;
+                        console.log(`     Waiting ${delayMs}ms before retry...`);
+                        await new Promise(resolve => setTimeout(resolve, delayMs));
+                    }
                 }
             }
+            if (authResponse) break; // Success with this URL, exit outer loop
         }
         
         if (!authResponse) {
             const errMsg = lastError instanceof Error ? lastError.message : String(lastError);
-            console.error('❌ All OAuth retry attempts failed:', errMsg);
-            throw new Error(`OAuth network error after 3 retries: ${errMsg}`);
+            console.error('❌ All OAuth attempts failed:', errMsg);
+            throw new Error(`OAuth network error: ${errMsg}`);
         }
 
         console.log("4️⃣ Auth response status:", authResponse.status);
