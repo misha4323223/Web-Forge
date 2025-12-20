@@ -153,7 +153,7 @@ shared/
 
 **Для Yandex Cloud:** Добавить переменные ADMIN_EMAIL и ADMIN_PASSWORD в настройках Cloud Function.
 
-## Интеграция Giga Chat (20 декабря 2024) - НОВОЕ
+## Интеграция GigaChat (20 декабря 2024) - ИСПРАВЛЕНО
 
 ### ✅ Реализовано:
 1. **Плавающая кнопка AI чата** на всех страницах
@@ -170,47 +170,68 @@ shared/
 
 3. **Backend endpoint** `/api/giga-chat`
    - Принимает: `{ message: string }`
-   - Обращается к Giga Chat API
+   - Обращается к Giga Chat API (Sberbank)
    - Возвращает: `{ success: true, response: string }`
    - Валидация сообщений (1-2000 символов)
 
-4. **Переменные окружения (для Replit и Yandex Cloud):**
-   - `GIGACHAT_KEY` — полный ключ доступа (ZDY2ODkxYjUtZDBkNi00MTM4LWJjZDUtMzBkODc2N2NlNjk5OmM0YjkxZjNlLTM2YTYtNGEwNS1iODk5LWQyNGY1ODUxOGU1Yg==)
-   - `GIGACHAT_ID` — ID приложения (d66891b5-d0d6-4138-bcd5-30d8767ce699)
-   - `GIGACHAT_SCOPE` — scope (GIGACHAT_API_PERS)
+### 🔐 **КРИТИЧНО! Переменные окружения:**
+   - `GIGACHAT_KEY` — Authorization key в base64 формате (ZDY2ODkxYjUtZDBkNi00MTM4LWJjZDUtMzBkODc2N2NlNjk5OmM0YjkxZjNlLTM2YTYtNGEwNS1iODk5LWQyNGY1ODUxOGU1Yg==)
+   - `GIGACHAT_SCOPE` — scope для авторизации (GIGACHAT_API_PERS для индивидуальных пользователей)
 
-5. **Установлены пакеты:**
-   - `npm install gigachat` — SDK для работы с Giga Chat API
+**Источник ключа:**
+1. Зайти на https://developers.sber.ru/
+2. Создать проект GigaChat API
+3. Settings API → Получить ключ
+4. Скопировать Authorization key
 
 ### 📍 Где находится:
-- **Frontend компонент:** `client/src/components/ChatWidget.tsx`
-- **Backend endpoint:** `server/routes.ts` (строка ~720+)
-- **Подключен в:** `client/src/App.tsx` (строка 76)
-- **Типы:** `shared/schema.ts` (insertChatMessageSchema)
+- **Frontend:** `client/src/components/ChatWidget.tsx`
+- **Backend (Replit):** `server/routes.ts` (строка ~745)
+- **Backend (Cloud):** `yandex-cloud-function/index-ydb.js` (строка ~3140)
+- **App.tsx:** `client/src/App.tsx` (строка 73)
 
-### 🔧 Как использовать:
-1. На **Replit**: переменные окружения автоматически используются из `.env`
-2. На **Yandex Cloud Function**: добавить переменные в настройки функции
+### 🔧 **API Flow (правильно!):**
 
-### 🚀 На Yandex Cloud:
-✅ **ГОТОВО!** Endpoint `/api/giga-chat` уже добавлен в `yandex-cloud-function/index-ydb.js`.
+**1. OAuth Token Request** → `https://ngw.devices.sberbank.ru:9443/api/v2/oauth`
+```
+POST headers:
+- Content-Type: application/x-www-form-urlencoded
+- Accept: application/json ← ОБЯЗАТЕЛЬНО!
+- Authorization: Basic ${GIGACHAT_KEY} ← BASIC, не Bearer!
+- RqUID: ${uuid4()}
+Body: scope=GIGACHAT_API_PERS
+```
 
-**Что добавлено:**
-1. Handler `handleGigaChat()` (строка ~3150)
-2. Endpoint в main handler (строка ~160+)
-3. Документация переменных окружения в头е файла
+**2. Chat Completion Request** → `https://gigachat.devices.sbercloud.ru/api/v1/chat/completions`
+```
+POST headers:
+- Content-Type: application/json
+- Authorization: Bearer ${accessToken} ← токен из шага 1
+Body:
+{
+  "model": "GigaChat",
+  "messages": [{"role": "user", "content": "..."}],
+  "temperature": 0.7,
+  "max_tokens": 1000
+}
+```
+
+### 🚀 **На Yandex Cloud Function:**
+
+**✅ Endpoint готов!** `/api/giga-chat` в `yandex-cloud-function/index-ydb.js` (строка ~3140)
 
 **Как развернуть:**
-1. Загрузить обновленный `yandex-cloud-function/index-ydb.js` на Cloud Function
-2. Добавить переменные окружения в настройки функции:
+1. Загрузить обновленный файл на Cloud Function
+2. Добавить в Settings → Variables окружения:
    - `GIGACHAT_KEY` = `ZDY2ODkxYjUtZDBkNi00MTM4LWJjZDUtMzBkODc2N2NlNjk5OmM0YjkxZjNlLTM2YTYtNGEwNS1iODk5LWQyNGY1ODUxOGU1Yg==`
    - `GIGACHAT_SCOPE` = `GIGACHAT_API_PERS`
-3. Развернуть функцию
+3. Сохранить и развернуть функцию
 
-### 🐛 Исправления (20 декабря, обновление):
-- ✅ Отключена проверка SSL сертификата для dev режима (`NODE_TLS_REJECT_UNAUTHORIZED = '0'`)
-- ✅ Добавлен description атрибут в DialogContent (исправлены warnings)
-- ✅ Giga Chat теперь работает на Replit
+### 🐛 **Критические исправления (20 декабря):**
+- ✅ Изменён Authorization header: `Bearer` → `Basic` (документация Sber)
+- ✅ Добавлен `Accept: application/json` в OAuth request
+- ✅ Отключена SSL проверка для dev: `NODE_TLS_REJECT_UNAUTHORIZED = '0'`
+- ✅ Синхронизирован код на **обоих** местах (Replit + Yandex Cloud)
 
 ---
 

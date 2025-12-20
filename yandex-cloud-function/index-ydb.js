@@ -3184,7 +3184,8 @@ async function handleGigaChat(body, headers) {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/x-www-form-urlencoded',
-                'Authorization': `Bearer ${gigachatKey}`,
+                'Accept': 'application/json',
+                'Authorization': `Basic ${gigachatKey}`,
                 'RqUID': crypto.randomUUID(),
             },
             body: authBody,
