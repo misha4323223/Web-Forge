@@ -741,15 +741,31 @@ export async function registerRoutes(
   // Giga Chat API endpoint
   app.post("/api/giga-chat", async (req, res) => {
     try {
-      const validatedData = insertChatMessageSchema.parse(req.body);
+      const { message } = req.body;
       
+      // Валидация сообщения
+      if (!message || typeof message !== 'string' || message.trim().length === 0) {
+        return res.status(400).json({
+          success: false,
+          response: 'Сообщение не может быть пусто',
+        });
+      }
+
+      if (message.length > 2000) {
+        return res.status(400).json({
+          success: false,
+          response: 'Сообщение слишком длинное (макс 2000 символов)',
+        });
+      }
+
       const gigachatKey = process.env.GIGACHAT_KEY;
       const gigachatScope = process.env.GIGACHAT_SCOPE || 'GIGACHAT_API_PERS';
       
       if (!gigachatKey) {
-        return res.status(400).json({
+        console.error('GIGACHAT_KEY not configured');
+        return res.status(500).json({
           success: false,
-          response: "Giga Chat не настроен",
+          response: 'Giga Chat не настроен',
         });
       }
 
@@ -759,7 +775,7 @@ export async function registerRoutes(
       const authBody = `scope=${encodeURIComponent(gigachatScope)}`;
       console.log("Requesting auth token from ngw.devices.sberbank.ru...");
       
-      const authResult = await httpsRequest('https://ngw.devices.sberbank.ru:9443/api/v2/oauth', {
+      const authResponse = await fetch('https://ngw.devices.sberbank.ru:9443/api/v2/oauth', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -769,12 +785,13 @@ export async function registerRoutes(
         body: authBody,
       });
 
-      if (authResult.statusCode !== 200) {
-        console.error("Auth failed:", authResult.statusCode, authResult.data);
-        throw new Error(`Auth failed: ${authResult.statusCode} - ${authResult.data}`);
+      if (!authResponse.ok) {
+        const errorText = await authResponse.text();
+        console.error('Auth response error:', authResponse.status, errorText);
+        throw new Error(`Auth failed: ${authResponse.statusText} - ${errorText}`);
       }
 
-      const authData = JSON.parse(authResult.data);
+      const authData = await authResponse.json();
       const accessToken = authData.access_token;
       console.log("Auth token obtained successfully");
 
@@ -783,37 +800,36 @@ export async function registerRoutes(
       }
 
       // Отправляем сообщение в Giga Chat
-      const chatBody = JSON.stringify({
-        model: 'GigaChat',
-        messages: [
-          {
-            role: 'user',
-            content: validatedData.message,
-          },
-        ],
-        temperature: 0.7,
-        max_tokens: 1000,
-      });
-
       console.log("Sending chat request...");
-      const chatResult = await httpsRequest('https://gigachat.devices.sbercloud.ru/api/v1/chat/completions', {
+      const chatResponse = await fetch('https://gigachat.devices.sbercloud.ru/api/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${accessToken}`,
         },
-        body: chatBody,
+        body: JSON.stringify({
+          model: 'GigaChat',
+          messages: [
+            {
+              role: 'user',
+              content: message,
+            },
+          ],
+          temperature: 0.7,
+          max_tokens: 1000,
+        }),
       });
 
-      if (chatResult.statusCode !== 200) {
-        console.error("Chat API failed:", chatResult.statusCode, chatResult.data);
-        throw new Error(`Chat API failed: ${chatResult.statusCode} - ${chatResult.data}`);
+      if (!chatResponse.ok) {
+        const errorText = await chatResponse.text();
+        console.error('Chat API error response:', chatResponse.status, errorText);
+        throw new Error(`Chat API failed: ${chatResponse.statusText} - ${errorText}`);
       }
 
-      const chatData = JSON.parse(chatResult.data);
+      const chatData = await chatResponse.json();
       const assistantMessage = chatData.choices?.[0]?.message?.content || 'Нет ответа';
 
-      console.log("Chat response:", assistantMessage);
+      console.log("Chat response received successfully");
       res.json({
         success: true,
         response: assistantMessage,
