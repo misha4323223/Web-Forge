@@ -17,6 +17,8 @@
  * - SMTP_PASSWORD - пароль приложения Яндекс
  * - ADMIN_EMAIL - email администратора для входа в админ-панель
  * - ADMIN_PASSWORD - пароль администратора для входа в админ-панель
+ * - GIGACHAT_KEY - полный ключ доступа Giga Chat
+ * - GIGACHAT_SCOPE - scope для Giga Chat (GIGACHAT_API_PERS)
  * 
  * Банковские реквизиты (для оплаты по счёту):
  * - BANK_NAME - название банка (например: Сбербанк)
@@ -154,6 +156,11 @@ module.exports.handler = async function (event, context) {
         // POST /api/send-calculator-order - отправить заказ из калькулятора
         if ((action === 'send-calculator-order' || path.includes('/send-calculator-order')) && method === 'POST') {
             return await handleCalculatorOrder(body, headers);
+        }
+
+        // POST /api/giga-chat - AI чат через Giga Chat
+        if ((action === 'giga-chat' || path.includes('/giga-chat')) && method === 'POST') {
+            return await handleGigaChat(body, headers);
         }
 
         // POST ?action=delete-order - мягкое удаление заказа
@@ -3124,5 +3131,120 @@ async function sendTelegramNotification(message) {
         console.log('Telegram notification sent');
     } catch (error) {
         console.error('Telegram error:', error.message);
+    }
+}
+
+// ============ Giga Chat Handler ============
+
+async function handleGigaChat(body, headers) {
+    try {
+        const { message } = body;
+        
+        if (!message || typeof message !== 'string' || message.trim().length === 0) {
+            return {
+                statusCode: 400,
+                headers,
+                body: JSON.stringify({
+                    success: false,
+                    response: 'Сообщение не может быть пусто',
+                }),
+            };
+        }
+
+        if (message.length > 2000) {
+            return {
+                statusCode: 400,
+                headers,
+                body: JSON.stringify({
+                    success: false,
+                    response: 'Сообщение слишком длинное (макс 2000 символов)',
+                }),
+            };
+        }
+
+        const gigachatKey = process.env.GIGACHAT_KEY;
+        const gigachatScope = process.env.GIGACHAT_SCOPE || 'GIGACHAT_API_PERS';
+
+        if (!gigachatKey) {
+            console.error('GIGACHAT_KEY not configured');
+            return {
+                statusCode: 500,
+                headers,
+                body: JSON.stringify({
+                    success: false,
+                    response: 'Giga Chat не настроен',
+                }),
+            };
+        }
+
+        // Получаем токен доступа
+        const authResponse = await fetch('https://auth.api.cloud.yandex.net/oauth/token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+                grant_type: 'urn:ibm:params:oauth:grant-type:apikey',
+                apikey: gigachatKey,
+                scope: gigachatScope,
+            }).toString(),
+        });
+
+        if (!authResponse.ok) {
+            throw new Error(`Auth failed: ${authResponse.statusText}`);
+        }
+
+        const authData = await authResponse.json();
+        const accessToken = authData.access_token;
+
+        if (!accessToken) {
+            throw new Error('No access token in response');
+        }
+
+        // Отправляем сообщение в Giga Chat
+        const chatResponse = await fetch('https://gigachat.devices.sbercloud.ru/api/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`,
+            },
+            body: JSON.stringify({
+                model: 'GigaChat',
+                messages: [
+                    {
+                        role: 'user',
+                        content: message,
+                    },
+                ],
+                temperature: 0.7,
+                max_tokens: 1000,
+            }),
+        });
+
+        if (!chatResponse.ok) {
+            throw new Error(`Chat API failed: ${chatResponse.statusText}`);
+        }
+
+        const chatData = await chatResponse.json();
+        const responseText = chatData.choices?.[0]?.message?.content || 'Нет ответа';
+
+        console.log('Giga Chat request processed successfully');
+
+        return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({
+                success: true,
+                response: responseText,
+            }),
+        };
+    } catch (error) {
+        console.error('Giga Chat error:', error.message);
+        return {
+            statusCode: 500,
+            headers,
+            body: JSON.stringify({
+                success: false,
+                response: 'Ошибка при обработке запроса. Попробуйте позже.',
+            }),
+        };
     }
 }

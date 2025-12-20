@@ -193,7 +193,19 @@ shared/
 2. На **Yandex Cloud Function**: добавить переменные в настройки функции
 
 ### 🚀 На Yandex Cloud:
-Нужно добавить в `yandex-cloud-function/index-ydb.js` тот же endpoint (после успешной работы на Replit).
+✅ **ГОТОВО!** Endpoint `/api/giga-chat` уже добавлен в `yandex-cloud-function/index-ydb.js`.
+
+**Что добавлено:**
+1. Handler `handleGigaChat()` (строка ~3150)
+2. Endpoint в main handler (строка ~160+)
+3. Документация переменных окружения в头е файла
+
+**Как развернуть:**
+1. Загрузить обновленный `yandex-cloud-function/index-ydb.js` на Cloud Function
+2. Добавить переменные окружения в настройки функции:
+   - `GIGACHAT_KEY` = `ZDY2ODkxYjUtZDBkNi00MTM4LWJjZDUtMzBkODc2N2NlNjk5OmM0YjkxZjNlLTM2YTYtNGEwNS1iODk5LWQyNGY1ODUxOGU1Yg==`
+   - `GIGACHAT_SCOPE` = `GIGACHAT_API_PERS`
+3. Развернуть функцию
 
 ---
 
