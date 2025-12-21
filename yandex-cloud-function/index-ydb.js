@@ -75,12 +75,26 @@ async function httpsRequest(urlString, options) {
             reject(new Error(`Request timeout after ${elapsed}ms`));
         }, 60000);
         
+        // Prepare headers with Content-Length for better compatibility
+        const headersWithLength = { ...options.headers };
+        if (options.body) {
+            const bodyLength = Buffer.byteLength(options.body);
+            headersWithLength['Content-Length'] = bodyLength;
+        }
+        
         const reqOptions = {
             method: options.method,
-            headers: options.headers,
+            headers: headersWithLength,
             rejectUnauthorized: false,
             timeout: 28000, // Socket-level timeout
         };
+        
+        console.log(`[HTTP v2.0] Request headers:`, JSON.stringify(headersWithLength));
+        if (options.body && options.body.length < 1000) {
+            console.log(`[HTTP v2.0] Request body:`, options.body);
+        } else {
+            console.log(`[HTTP v2.0] Request body size: ${options.body?.length || 0} bytes`);
+        }
         
         req = https.request(url, reqOptions, (res) => {
             const elapsed = Date.now() - startTime;
