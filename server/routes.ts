@@ -25,36 +25,44 @@ async function httpsRequest(
 ): Promise<{ statusCode: number; data: string }> {
   return new Promise((resolve, reject) => {
     const url = new URL(urlString);
+    const startTime = Date.now();
     
-    // Timeout для GigaChat
-    // Replit: 45 сек (нет жесткого лимита на функцию)
-    // Yandex Cloud: используется 25 сек (60 сек лимит функции - запас на обработку)
+    console.log(`   [HTTPS] Starting request to ${url.hostname}`);
+    
     const TIMEOUT_MS = 45000;
     const SOCKET_TIMEOUT_MS = 50000;
     
     let socketTimeoutId: NodeJS.Timeout | null = null;
     let requestTimeoutId: NodeJS.Timeout | null = null;
+    let hasResponded = false;
     
     const cleanup = () => {
       if (requestTimeoutId) clearTimeout(requestTimeoutId);
       if (socketTimeoutId) clearTimeout(socketTimeoutId);
     };
     
+    const elapsed = () => Math.round((Date.now() - startTime) / 1000);
+    
     requestTimeoutId = setTimeout(() => {
       cleanup();
+      if (!hasResponded) {
+        console.log(`   [HTTPS] TIMEOUT: No response after ${elapsed()}s`);
+      }
       req.destroy();
-      reject(new Error(`Request timeout after ${TIMEOUT_MS}ms`));
+      reject(new Error(`Request timeout after ${elapsed()}s`));
     }, TIMEOUT_MS);
     
     const reqOptions = {
       method: options.method,
       headers: options.headers,
-      rejectUnauthorized: false, // Allow self-signed certificates
+      rejectUnauthorized: false,
       timeout: SOCKET_TIMEOUT_MS,
     };
     
     const req = https.request(url, reqOptions, (res) => {
-      // Reset socket timeout on response start
+      hasResponded = true;
+      console.log(`   [HTTPS] Response received after ${elapsed()}s, status: ${res.statusCode}`);
+      
       socketTimeoutId = setTimeout(() => {
         cleanup();
         req.destroy();
@@ -63,7 +71,7 @@ async function httpsRequest(
       
       let data = '';
       res.on('data', (chunk) => {
-        // Reset timeout on each data chunk
+        console.log(`   [HTTPS] Received ${chunk.length} bytes (total: ${data.length + chunk.length})`);
         if (socketTimeoutId) clearTimeout(socketTimeoutId);
         socketTimeoutId = setTimeout(() => {
           cleanup();
@@ -75,17 +83,30 @@ async function httpsRequest(
       });
       res.on('end', () => {
         cleanup();
+        console.log(`   [HTTPS] Request completed after ${elapsed()}s, data length: ${data.length}`);
         resolve({ statusCode: res.statusCode || 500, data });
+      });
+    });
+    
+    req.on('socket', (socket) => {
+      console.log(`   [HTTPS] Socket created`);
+      socket.on('connect', () => {
+        console.log(`   [HTTPS] Socket connected to ${url.hostname} after ${elapsed()}s`);
+      });
+      socket.on('secureConnect', () => {
+        console.log(`   [HTTPS] TLS handshake complete after ${elapsed()}s`);
       });
     });
     
     req.on('error', (err) => {
       cleanup();
+      console.log(`   [HTTPS] Error after ${elapsed()}s: ${(err as Error).message}`);
       reject(err);
     });
     
     req.on('timeout', () => {
       cleanup();
+      console.log(`   [HTTPS] Socket timeout after ${elapsed()}s`);
       req.destroy();
       reject(new Error('Socket timeout'));
     });
@@ -93,6 +114,7 @@ async function httpsRequest(
     if (options.body) {
       req.write(options.body);
     }
+    console.log(`   [HTTPS] Request sent (${options.method} ${url.pathname})`);
     req.end();
   });
 }
