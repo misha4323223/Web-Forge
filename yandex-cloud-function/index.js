@@ -3869,13 +3869,13 @@ async function handleGigaChat(body, headers) {
             };
         }
 
-        if (message.length > 2000) {
+        if (message.length > 15000) {
             return {
                 statusCode: 400,
                 headers,
                 body: JSON.stringify({
                     success: false,
-                    response: 'Сообщение слишком длинное (макс 2000 символов)',
+                    response: 'Сообщение слишком длинное (макс 15000 символов)',
                 }),
             };
         }
