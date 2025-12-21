@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Brain, Send, X } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
+import logoUrl from "@assets/mp_hexagonal_tech_logo_1766320057712.webp";
 
 interface Message {
   role: "user" | "assistant";
@@ -110,11 +111,12 @@ export function ChatWidget() {
           {/* История сообщений */}
           <div className="flex-1 overflow-y-auto p-3 space-y-3 bg-black font-mono text-xs chat-messages-scroll">
             {messages.length === 0 && (
-              <div className="h-full flex items-center justify-center text-center">
-                <div className="bg-gradient-to-r from-cyan-400/60 to-purple-400/60 bg-clip-text text-transparent">
-                  <p className="mb-2">&gt; SYSTEM READY</p>
-                  <p>&lt; INPUT YOUR QUERY</p>
-                </div>
+              <div className="h-full flex items-center justify-center">
+                <img 
+                  src={logoUrl} 
+                  alt="MP Logo" 
+                  className="w-32 h-32 opacity-60 hover:opacity-80 transition-opacity"
+                />
               </div>
             )}
             
