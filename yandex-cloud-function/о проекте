@@ -1,0 +1,186 @@
+🏗️ Архитектура
+Frontend (React + TypeScript)
+Framework: React с Vite
+Стили: Tailwind CSS + Shadcn UI components
+Анимации: Framer Motion + Canvas (Particle Background)
+Состояние: TanStack React Query для данных
+Роутинг: Wouter (легковесный)
+Темизация: Dark mode с CSS переменными (поддержка light/dark)
+Backend (Express.js)
+Language: TypeScript
+ORM: Drizzle ORM с PostgreSQL
+Логирование: Детальное логирование HTTPS запросов
+Криптография: HMAC-SHA256 для админ-токенов, MD5 для Robokassa
+Интеграции: GigaChat, Robokassa, Telegram, Yandex Cloud
+База данных
+├── users (админ-пользователи)
+├── contactRequests (контактные заявки)
+├── orders (основные заказы с историей платежей)
+└── additionalInvoices (доп. счета для дополнительной работы)
+🎨 Дизайн & UI
+Тема: Тёмная с неоновыми акцентами
+
+
+
+Основной фон: #0a0a0a → #0f172a
+Основные цвета:
+Cyan: #06b6d4 (neon)
+Purple: #a855f7 (accent)
+Blue: #3b82f6 (gradients)
+Компоненты:
+
+Particle background (матричная сетка)
+Gradient borders & glow effects
+Smooth transitions (300-500ms)
+Hover animations (scale, glow)
+Animated scroll indicator
+🔧 Основной функционал
+1️⃣ Главная страница (Home.tsx)
+Секции:
+
+Hero - полноэкранный с particle фоном, CTA "Обсудить проект"
+About - о студии с анимированными статистиками
+Portfolio - 2-колоночная сетка проектов
+Services - 3 услуги (Landing, Corporate, Shop) с ценами
+Technologies - облако технологий
+Process - 4-этапный процесс разработки
+Contact - контактная форма
+Footer
+2️⃣ Демо-сайты (10 примеров)
+/demo/food-delivery      → Food Delivery
+/demo/fitness            → Fitness Studio
+/demo/cosmetics          → Cosmetics Shop
+/demo/streetwear         → Streetwear Shop
+/demo/socks              → Socks Shop
+/demo/travel             → Travel Agency
+/demo/barber             → Barber Shop
+/demo/dental             → Dental Clinic
+/demo/renovation         → Apartment Renovation
+/demo/photographer       → Photographer Portfolio
+Каждый - полнофункциональный e-commerce/портфолио сайт
+
+3️⃣ AI Chat Widget 🤖
+Компонент: ChatWidget.tsx
+Модель: GigaChat API (Sberbank)
+Развёртывание: Yandex Cloud Function
+Технология: gRPC с SSL сертификатом
+RAG: Контекст из site-content.json (Knowledge Base)
+UI: Floating кнопка с градиентом, 640x600px модальное окно
+Поток:
+
+Пользователь пишет сообщение
+Cloud Function получает запрос
+Загружает Knowledge Base из Object Storage (кэш 1 час)
+Ищет релевантный контекст по ключевым словам
+Отправляет обогащённое сообщение в GigaChat
+Возвращает ответ с контекстом
+4️⃣ Калькулятор заказов
+Компонент: CalculatorSection.tsx
+Функциональность:
+Выбор базы (Landing/Corporate/Shop)
+Выбор опций (доп. функции)
+Автоматический расчет цены
+Модальная форма заказа
+POST /api/send-calculator-order → Telegram
+5️⃣ Admin Panel (Admin.tsx)
+Защита: JWT-токен (HMAC-SHA256, 24h)
+Функции:
+Просмотр заказов (активные/все)
+Редактирование статуса и заметок
+Управление дополнительными счетами
+Создание платежных ссылок (Robokassa)
+Просмотр контактных заявок
+Маршруты: /admin и /admin/invoices
+6️⃣ Платежи (Robokassa)
+Интеграция: MD5 подписи, шифрование
+Поток:
+Создание платежной ссылки
+Перенаправление на Robokassa
+Callback с подтверждением платежа
+Обновление статуса заказа в БД
+Маршруты:
+POST /api/create-robokassa-invoice
+GET /api/payment-callback
+7️⃣ Email & Уведомления
+Email: Yandex Cloud Postbox (AWS SES API compatible)
+Telegram: Отправка уведомлений о заявках
+Функции:
+Отправка контрактов
+Уведомления при новых заказах
+DKIM подписание
+8️⃣ SEO
+Meta-теги (title, description, keywords)
+Open Graph (VK, Telegram, Facebook)
+Twitter Cards
+JSON-LD структурированные данные
+Canonical URL
+sitemap.xml и robots.txt
+📁 Структура файлов
+├── client/
+│   └── src/
+│       ├── pages/
+│       │   ├── Home.tsx              (главная)
+│       │   ├── Order.tsx             (оформление заказа)
+│       │   ├── Admin.tsx             (админ-панель)
+│       │   ├── demo/                 (10 демо-сайтов)
+│       │   ├── PaymentSuccess.tsx
+│       │   ├── PaymentFail.tsx
+│       │   ├── Privacy.tsx
+│       │   ├── Offer.tsx
+│       │   └── TelegramApp.tsx
+│       ├── components/
+│       │   ├── ChatWidget.tsx        (AI чат)
+│       │   ├── CalculatorSection.tsx
+│       │   ├── HeroSection.tsx
+│       │   ├── PortfolioSection.tsx
+│       │   ├── ServicesSection.tsx
+│       │   ├── ParticleBackground.tsx
+│       │   ├── Navigation.tsx
+│       │   └── ui/                   (Shadcn компоненты)
+│       └── lib/
+│           └── queryClient.ts        (TanStack Query)
+├── server/
+│   ├── routes.ts                     (API endpoints)
+│   ├── storage.ts                    (ORM & DB)
+│   ├── db.ts                         (Drizzle конфиг)
+│   └── vite.ts
+├── shared/
+│   └── schema.ts                     (Zod schemas)
+├── yandex-cloud-function/
+│   └── index.js                      (GigaChat + Knowledge Base RAG)
+├── design_guidelines.md              (UI гайдлайны)
+├── site-content.json                 (Knowledge Base для AI)
+└── replit.md                         (документация)
+🔐 Безопасность
+Admin токены: HMAC-SHA256 с constant-time comparison
+Robokassa: MD5 подписи для верификации платежей
+SSL/TLS: Валидация сертификатов Sberbank
+Input validation: Zod schemas на всех API endpoints
+Soft delete: Заказы не удаляются, а помечаются deletedAt
+🚀 Развёртывание (Yandex Cloud)
+Static: Object Storage (www.mp-webstudio.ru)
+Функции: Cloud Functions (API endpoints, GigaChat, Email)
+DB: Managed PostgreSQL
+DNS: Reg.ru
+SSL: Let's Encrypt via Certificate Manager
+Email: Cloud Postbox (AWS SES compatible)
+📊 Ключевые числа
+10 демо-сайтов (полностью функциональные примеры)
+4 таблицы БД (well-structured)
+15+ API endpoints (полный CRUD)
+2 интеграции платежей (Robokassa + заказы)
+3 внешних сервиса (Telegram, Yandex Mail, GigaChat)
+Dark + Light режимы
+100% TypeScript
+⚙️ Технический стек
+Layer	Tech
+Frontend	React, TypeScript, Vite, Tailwind, Shadcn UI, Framer Motion
+Backend	Express.js, TypeScript, Drizzle ORM
+Database	PostgreSQL (Drizzle)
+AI	GigaChat API (gRPC), RAG with Knowledge Base
+Payments	Robokassa (MD5 signatures)
+Email	Yandex Cloud Postbox (SES-compatible)
+Notifications	Telegram Bot API
+Cloud	Yandex Cloud (Functions, Object Storage, Managed DB)
+Validation	Zod + React Hook Form
+Query	TanStack React Query v5
