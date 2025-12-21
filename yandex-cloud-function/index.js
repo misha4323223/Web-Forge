@@ -3785,7 +3785,7 @@ async function handleGigaChat(body, headers) {
             });
 
             setTimeout(() => {
-                console.error(`[${handlerId}] ❌ gRPC request timeout (10s)`);
+                console.error(`[${handlerId}] ❌ gRPC request timeout (30s)`);
                 client.close();
                 resolve({
                     statusCode: 500,
@@ -3795,7 +3795,7 @@ async function handleGigaChat(body, headers) {
                         response: 'Timeout при соединении с GigaChat',
                     }),
                 });
-            }, 10000);
+            }, 30000);
         });
 
     } catch (error) {
