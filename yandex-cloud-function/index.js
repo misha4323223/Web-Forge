@@ -3570,6 +3570,23 @@ async function handleGigaChat(body, headers) {
     console.log(`\n\n=== GIGACHAT gRPC REQUEST START [${handlerId}] (Yandex Cloud) ===`);
     const startTime = Date.now();
 
+    // Вспомогательная функция для повторных попыток
+    async function callWithRetry(fn, maxRetries = 2) {
+        let lastError;
+        for (let i = 0; i < maxRetries; i++) {
+            try {
+                return await fn();
+            } catch (err) {
+                lastError = err;
+                const isRetryable = err.code === 14 || err.code === 13 || err.message === 'TIMEOUT';
+                if (!isRetryable) throw err;
+                console.log(`[${handlerId}] 🔄 Attempt ${i + 1} failed: ${err.message}. Retrying...`);
+                await new Promise(r => setTimeout(r, 1000 * (i + 1)));
+            }
+        }
+        throw lastError;
+    }
+
     try {
         let { message } = body;
         console.log(`[${handlerId}] 1️⃣ Received message (${message?.length || 0} chars)`);
@@ -3692,95 +3709,67 @@ async function handleGigaChat(body, headers) {
             'grpc.client_idle_timeout_ms': 15000,
         };
 
-        console.log(`[${handlerId}]    Creating gRPC client with optimized options...`);
-        const clientStartTime = Date.now();
-        const client = new ChatServiceClient('gigachat.devices.sberbank.ru:443', credentials, channelOptions);
-        console.log(`[${handlerId}]    Client created in ${Date.now() - clientStartTime}ms`);
+        const chatRequest = {
+            model: 'GigaChat',
+            messages: [
+                {
+                    role: 'system',
+                    content: 'Ты помощник веб-студии MP.WebStudio. Говори ИСКЛЮЧИТЕЛЬНО о услугах студии, портфолио, технологиях, процессе разработки и ценах. Не отвечай на вопросы, не связанные с MP.WebStudio. Если клиент спрашивает о чем-то другом - вежливо перенаправь его на услуги студии.',
+                },
+                {
+                    role: 'user',
+                    content: message,
+                }
+            ],
+            options: {
+                temperature: 0.7,
+                max_tokens: 1000,
+            }
+        };
 
-        console.log(`[${handlerId}] 6️⃣ Sending chat request via gRPC...`);
+        console.log(`[${handlerId}] 6️⃣ Sending chat request via gRPC with retries...`);
         const chatStartTime = Date.now();
 
-        return new Promise((resolve) => {
-            const chatRequest = {
-                model: 'GigaChat',
-                messages: [
-                    {
-                        role: 'system',
-                        content: 'Ты помощник веб-студии MP.WebStudio. Говори ИСКЛЮЧИТЕЛЬНО о услугах студии, портфолио, технологиях, процессе разработки и ценах. Не отвечай на вопросы, не связанные с MP.WebStudio. Если клиент спрашивает о чем-то другом - вежливо перенаправь его на услуги студии.',
-                    },
-                    {
-                        role: 'user',
-                        content: message,
-                    }
-                ],
-                options: {
-                    temperature: 0.7,
-                    max_tokens: 1000,
-                }
-            };
+        const response = await callWithRetry(async () => {
+            return new Promise((resolve, reject) => {
+                const client = new ChatServiceClient('gigachat.devices.sberbank.ru:443', credentials, channelOptions);
+                let isFinished = false;
 
-            let isFinished = false;
-
-            client.chat(chatRequest, metadata, (err, response) => {
-                if (isFinished) return;
-                isFinished = true;
-                
-                const chatElapsed = Math.round((Date.now() - chatStartTime) / 1000);
-
-                if (err) {
-                    console.error(`[${handlerId}] ❌ gRPC error after ${chatElapsed}s: ${err.message}`);
-                    console.error(`[${handlerId}] Full error details:`, JSON.stringify(err));
+                const timeoutId = setTimeout(() => {
+                    if (isFinished) return;
+                    isFinished = true;
                     client.close();
-                    return resolve({
-                        statusCode: 500,
-                        headers,
-                        body: JSON.stringify({
-                            success: false,
-                            response: `gRPC ошибка: ${err.message}`,
-                            code: err.code,
-                            details: err.details
-                        }),
-                    });
-                }
+                    reject(new Error('TIMEOUT'));
+                }, 45000);
 
-                console.log(`[${handlerId}] ✅ gRPC response received in ${chatElapsed}s`);
-
-                const assistantMessage = response?.alternatives?.[0]?.message?.content || 'Нет ответа';
-                const totalTime = Math.round((Date.now() - startTime) / 1000);
-
-                console.log(`[${handlerId}] 7️⃣ Success!`);
-                console.log(`[${handlerId}]    Response length: ${assistantMessage.length} chars`);
-                console.log(`[${handlerId}]    Total time: ${totalTime}s`);
-                console.log(`=== GIGACHAT gRPC REQUEST END [${handlerId}] (SUCCESS) ===\n`);
-
-                client.close();
-
-                resolve({
-                    statusCode: 200,
-                    headers,
-                    body: JSON.stringify({
-                        success: true,
-                        response: assistantMessage,
-                    }),
+                client.chat(chatRequest, metadata, (err, resp) => {
+                    if (isFinished) return;
+                    isFinished = true;
+                    clearTimeout(timeoutId);
+                    client.close();
+                    if (err) reject(err);
+                    else resolve(resp);
                 });
             });
-
-            setTimeout(() => {
-                if (isFinished) return;
-                isFinished = true;
-                
-                console.error(`[${handlerId}] ❌ gRPC request timeout (45s)`);
-                client.close();
-                resolve({
-                    statusCode: 504,
-                    headers,
-                    body: JSON.stringify({
-                        success: false,
-                        response: 'Timeout при соединении с GigaChat (45s). Попробуйте еще раз.',
-                    }),
-                });
-            }, 45000);
         });
+
+        console.log(`[${handlerId}] ✅ gRPC response received in ${Math.round((Date.now() - chatStartTime) / 1000)}s`);
+        const assistantMessage = response?.alternatives?.[0]?.message?.content || 'Нет ответа';
+        const totalTime = Math.round((Date.now() - startTime) / 1000);
+
+        console.log(`[${handlerId}] 7️⃣ Success!`);
+        console.log(`[${handlerId}]    Response length: ${assistantMessage.length} chars`);
+        console.log(`[${handlerId}]    Total time: ${totalTime}s`);
+        console.log(`=== GIGACHAT gRPC REQUEST END [${handlerId}] (SUCCESS) ===\n`);
+
+        return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({
+                success: true,
+                response: assistantMessage,
+            }),
+        };
 
     } catch (error) {
         const totalTime = Math.round((Date.now() - startTime) / 1000);
