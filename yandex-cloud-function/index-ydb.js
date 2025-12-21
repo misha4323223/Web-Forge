@@ -3387,6 +3387,8 @@ async function handleGigaChat(body, headers) {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${accessToken}`,
+                    'Accept': 'application/json',
+                    'RqUID': crypto.randomUUID(),
                 },
                 body: JSON.stringify({
                     model: 'GigaChat',
