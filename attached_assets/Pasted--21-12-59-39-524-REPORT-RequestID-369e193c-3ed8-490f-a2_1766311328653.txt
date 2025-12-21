@@ -1,0 +1,131 @@
+
+
+21 дек. 12:59:39.524
+REPORT RequestID: 369e193c-3ed8-490f-a259-328ce9afe8e6 Duration: 25856.075 ms Billed Duration: 25900 ms Memory Size: 640 MB Max Memory Used: 176 MB Queuing Duration: 0.063 ms Function Init Duration: 717.731 ms
+
+21 дек. 12:59:39.524
+END RequestID: 369e193c-3ed8-490f-a259-328ce9afe8e6
+
+21 дек. 12:59:39.523
+[HTTPS] Error after 25019ms: socket hang up
+
+21 дек. 12:59:39.521
+=== GIGACHAT REQUEST FAILED ===
+
+21 дек. 12:59:39.521
+❌ ERROR: Chat request error: Request timeout after 25017ms
+
+21 дек. 12:59:39.521
+❌ Chat request failed: Request timeout after 25017ms
+
+21 дек. 12:59:39.521
+[HTTPS] TIMEOUT: No response after 25017ms
+   [HTTPS] TIMEOUT: No response after 25017ms
+"request_id""369e193c-3ed8-490f-a259-328ce9afe8e6"
+"source""user"
+"version_id""d4ea0gnf7s3bd981m50d"
+
+21 дек. 12:59:14.506
+[HTTPS] Socket created
+
+21 дек. 12:59:14.506
+[HTTPS] Request sent (POST /api/v1/chat/completions)
+
+21 дек. 12:59:14.504
+[HTTPS] Starting request to gigachat.devices.sberbank.ru
+
+21 дек. 12:59:14.504
+⏳ Waiting for chat response... (started at 2025-12-21T09:59:14.503Z)
+
+21 дек. 12:59:14.504
+URL: https://gigachat.devices.sberbank.ru:9443/api/v1/chat/completions
+
+21 дек. 12:59:14.504
+[INFO] Chat request timeout: 25 seconds (Yandex Cloud Function limit: 60 sec)
+
+21 дек. 12:59:14.504
+6️⃣ Sending chat request to GigaChat...
+
+21 дек. 12:59:14.504
+5️⃣ Got access token. Length: 1233
+
+21 дек. 12:59:14.504
+4️⃣ Auth response status: 200
+
+21 дек. 12:59:14.504
+[HTTPS] Request completed after 103ms, data length: 1279
+
+21 дек. 12:59:14.504
+[HTTPS] Received 1279 bytes (total: 1279)
+
+21 дек. 12:59:14.503
+[HTTPS] Response received after 102ms, status: 200
+
+21 дек. 12:59:14.465
+[HTTPS] TLS handshake complete after 64ms
+
+21 дек. 12:59:14.442
+[HTTPS] Socket connected to ngw.devices.sberbank.ru after 41ms
+
+21 дек. 12:59:14.433
+[HTTPS] Socket created
+
+21 дек. 12:59:14.433
+[HTTPS] Request sent (POST /api/v2/oauth)
+
+21 дек. 12:59:14.401
+[HTTPS] Starting request to ngw.devices.sberbank.ru
+
+21 дек. 12:59:14.401
+3️⃣ Requesting OAuth token...
+
+21 дек. 12:59:14.400
+Key length: 100
+
+21 дек. 12:59:14.400
+2️⃣ GIGACHAT_KEY exists: true
+
+21 дек. 12:59:14.400
+1️⃣ Received message: куку...
+
+21 дек. 12:59:14.400
+=== GIGACHAT REQUEST START (Yandex Cloud) ===
+
+21 дек. 12:59:14.400
+[GIGA-CHAT] Handler called
+
+21 дек. 12:59:14.400
+}
+
+21 дек. 12:59:14.400
+bodyKeys: [ 'message' ]
+
+21 дек. 12:59:14.400
+path: '',
+
+21 дек. 12:59:14.400
+action: 'giga-chat',
+
+21 дек. 12:59:14.400
+method: 'POST',
+
+21 дек. 12:59:14.400
+[REQUEST] {
+
+21 дек. 12:59:14.399
+}
+
+21 дек. 12:59:14.399
+timestamp: '2025-12-21T09:59:14.395Z'
+
+21 дек. 12:59:14.399
+path: undefined,
+
+21 дек. 12:59:14.399
+method: 'POST',
+
+21 дек. 12:59:14.399
+[HANDLER START] {
+
+21 дек. 12:59:13.665
+START RequestID: 369e193c-3ed8-490f-a259-328ce9afe8e6 Version: d4ea0gnf7s3bd981m50d
