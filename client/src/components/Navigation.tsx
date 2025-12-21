@@ -59,7 +59,7 @@ export function Navigation() {
           : "bg-transparent"
       }`}
     >
-      <nav className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
+      <nav className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between gap-8">
         <a
           href="/"
           onClick={(e) => {
@@ -68,7 +68,7 @@ export function Navigation() {
               window.scrollTo({ top: 0, behavior: "smooth" });
             }
           }}
-          className="flex items-center gap-2 mr-12"
+          className="flex items-center gap-2 flex-shrink-0"
           data-testid="link-logo"
         >
           <img src={logoImg} alt="MP.WebStudio" className="w-10 h-10 rounded-md object-cover" />
