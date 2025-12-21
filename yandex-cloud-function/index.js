@@ -3446,6 +3446,56 @@ let cachedKB = null;
 let cacheTime = 0;
 const CACHE_TTL = 3600000; // 1 час
 
+// AWS Signature V4 signing helper
+function signAwsRequest(method, host, path, accessKey, secretKey, payload = '') {
+    const crypto = require('crypto');
+    const algorithm = 'AWS4-HMAC-SHA256';
+    const service = 's3';
+    const region = 'ru-central1';
+    const now = new Date();
+    const amzDate = now.toISOString().replace(/[:-]|\.\d{3}/g, '');
+    const dateStamp = amzDate.slice(0, 8);
+    
+    // Canonical request
+    const canonicalHeaders = `host:${host}\nx-amz-content-sha256:UNSIGNED-PAYLOAD\nx-amz-date:${amzDate}\n`;
+    const signedHeaders = 'host;x-amz-content-sha256;x-amz-date';
+    const payloadHash = crypto.createHash('sha256').update(payload).digest('hex');
+    
+    const canonicalRequest = [
+        method,
+        path,
+        '',
+        canonicalHeaders,
+        signedHeaders,
+        payloadHash
+    ].join('\n');
+    
+    // String to sign
+    const canonicalRequestHash = crypto.createHash('sha256').update(canonicalRequest).digest('hex');
+    const credentialScope = `${dateStamp}/${region}/${service}/aws4_request`;
+    const stringToSign = [
+        algorithm,
+        amzDate,
+        credentialScope,
+        canonicalRequestHash
+    ].join('\n');
+    
+    // Calculate signature
+    const kDate = crypto.createHmac('sha256', `AWS4${secretKey}`).update(dateStamp).digest();
+    const kRegion = crypto.createHmac('sha256', kDate).update(region).digest();
+    const kService = crypto.createHmac('sha256', kRegion).update(service).digest();
+    const kSigning = crypto.createHmac('sha256', kService).update('aws4_request').digest();
+    const signature = crypto.createHmac('sha256', kSigning).update(stringToSign).digest('hex');
+    
+    const authorizationHeader = `${algorithm} Credential=${accessKey}/${credentialScope}, SignedHeaders=${signedHeaders}, Signature=${signature}`;
+    
+    return {
+        'Authorization': authorizationHeader,
+        'X-Amz-Date': amzDate,
+        'X-Amz-Content-Sha256': 'UNSIGNED-PAYLOAD'
+    };
+}
+
 async function loadKnowledgeBaseFromStorage() {
     const now = Date.now();
     if (cachedKB && (now - cacheTime) < CACHE_TTL) {
@@ -3455,25 +3505,37 @@ async function loadKnowledgeBaseFromStorage() {
 
     try {
         console.log('[KB] Loading knowledge base from Object Storage...');
-        const AWS = require('aws-sdk');
         
-        const s3 = new AWS.S3({
-            endpoint: 'https://storage.yandexcloud.net',
-            accessKeyId: process.env.YC_ACCESS_KEY,
-            secretAccessKey: process.env.YC_SECRET_KEY,
-            region: 'ru-central1',
-            s3ForcePathStyle: true,
-        });
-
+        const accessKey = process.env.YC_ACCESS_KEY;
+        const secretKey = process.env.YC_SECRET_KEY;
         const bucketName = process.env.YC_BUCKET_NAME || 'www.mp-webstudio.ru';
         const keyPath = 'site-content.json';
-
-        const data = await s3.getObject({
-            Bucket: bucketName,
-            Key: keyPath
-        }).promise();
-
-        const kbData = JSON.parse(data.Body.toString('utf-8'));
+        
+        if (!accessKey || !secretKey) {
+            console.log('[KB] No credentials provided, skipping KB load');
+            return null;
+        }
+        
+        const host = 'storage.yandexcloud.net';
+        const path = `/${bucketName}/${keyPath}`;
+        
+        // Sign the request
+        const signatureHeaders = signAwsRequest('GET', host, path, accessKey, secretKey);
+        
+        const response = await httpsRequest(`https://${host}${path}`, {
+            method: 'GET',
+            headers: {
+                'Host': host,
+                ...signatureHeaders
+            }
+        });
+        
+        if (response.statusCode !== 200) {
+            console.error(`[KB] HTTP ${response.statusCode}: ${response.data.slice(0, 200)}`);
+            return null;
+        }
+        
+        const kbData = JSON.parse(response.data);
         cachedKB = kbData;
         cacheTime = now;
         
@@ -3481,7 +3543,6 @@ async function loadKnowledgeBaseFromStorage() {
         return kbData;
     } catch (error) {
         console.error('[KB] ❌ Error loading KB:', error.message);
-        // Fallback - пустой объект
         return null;
     }
 }
