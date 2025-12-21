@@ -25,31 +25,68 @@ async function httpsRequest(
 ): Promise<{ statusCode: number; data: string }> {
   return new Promise((resolve, reject) => {
     const url = new URL(urlString);
-    const timeout = setTimeout(() => {
+    
+    // Увеличенный timeout для production (45 сек для GigaChat)
+    // GigaChat может обрабатывать долго, особенно в Yandex Cloud
+    const TIMEOUT_MS = 45000;
+    const SOCKET_TIMEOUT_MS = 50000;
+    
+    let socketTimeoutId: NodeJS.Timeout | null = null;
+    let requestTimeoutId: NodeJS.Timeout | null = null;
+    
+    const cleanup = () => {
+      if (requestTimeoutId) clearTimeout(requestTimeoutId);
+      if (socketTimeoutId) clearTimeout(socketTimeoutId);
+    };
+    
+    requestTimeoutId = setTimeout(() => {
+      cleanup();
       req.destroy();
-      reject(new Error('Request timeout'));
-    }, 15000);
+      reject(new Error(`Request timeout after ${TIMEOUT_MS}ms`));
+    }, TIMEOUT_MS);
     
     const reqOptions = {
       method: options.method,
       headers: options.headers,
       rejectUnauthorized: false, // Allow self-signed certificates
+      timeout: SOCKET_TIMEOUT_MS,
     };
     
     const req = https.request(url, reqOptions, (res) => {
+      // Reset socket timeout on response start
+      socketTimeoutId = setTimeout(() => {
+        cleanup();
+        req.destroy();
+        reject(new Error('Response timeout'));
+      }, SOCKET_TIMEOUT_MS);
+      
       let data = '';
       res.on('data', (chunk) => {
+        // Reset timeout on each data chunk
+        if (socketTimeoutId) clearTimeout(socketTimeoutId);
+        socketTimeoutId = setTimeout(() => {
+          cleanup();
+          req.destroy();
+          reject(new Error('Data timeout'));
+        }, SOCKET_TIMEOUT_MS);
+        
         data += chunk;
       });
       res.on('end', () => {
-        clearTimeout(timeout);
+        cleanup();
         resolve({ statusCode: res.statusCode || 500, data });
       });
     });
     
     req.on('error', (err) => {
-      clearTimeout(timeout);
+      cleanup();
       reject(err);
+    });
+    
+    req.on('timeout', () => {
+      cleanup();
+      req.destroy();
+      reject(new Error('Socket timeout'));
     });
     
     if (options.body) {
@@ -853,9 +890,11 @@ export async function registerRoutes(
       console.log("   URL:", chatUrl);
       console.log("   Access Token length:", accessToken.length);
       console.log("   Headers: Content-Type=application/json, Authorization=Bearer [token]");
+      console.log("   [INFO] Chat request timeout: 45 seconds (optimized for Yandex Cloud)");
       
       let chatResponse;
       try {
+        console.log("   ⏳ Waiting for chat response...");
         chatResponse = await httpsRequest(chatUrl, {
           method: 'POST',
           headers: {
@@ -864,7 +903,7 @@ export async function registerRoutes(
           },
           body: chatBody,
         });
-        console.log("   HTTPS request succeeded, status:", chatResponse.statusCode);
+        console.log("   ✅ HTTPS request succeeded, status:", chatResponse.statusCode);
       } catch (fetchErr) {
         const errMsg = fetchErr instanceof Error ? fetchErr.message : String(fetchErr);
         console.error('❌ HTTPS error during chat request:', errMsg);
