@@ -39,60 +39,6 @@ const protoLoader = require('@grpc/proto-loader');
 
 const SITE_URL = process.env.SITE_URL || 'https://www.mp-webstudio.ru';
 
-// ============ Embedded Knowledge Base ============
-const EMBEDDED_KNOWLEDGE_BASE = {
-  "company": {
-    "name": "MP.WebStudio",
-    "description": "Веб-студия, где человеческое мастерство встречается с современными технологиями. Мы создаём сайты, которые работают и приносят результат. Симбиоз опыта нашей команды и инновационных инструментов позволяет нам разрабатывать быстрее и качественнее.",
-    "tagline": "Ваша идея + Наш опыт = Успешный результат",
-    "phone": "+7 (953) 181-41-36",
-    "email": "mpwebstudio1@gmail.com",
-    "website": "https://mp-webstudio.ru"
-  },
-  "services": [
-    {"name": "Сайт-визитка", "description": "Компактный одностраничный сайт для представления вашей компании, специалиста или услуги. Идеален для малого бизнеса, фрилансеров и специалистов.", "price_from": "25000", "includes": ["Адаптивный дизайн", "Одна страница", "Контактная информация", "SEO-основа", "Хостинг включён"]},
-    {"name": "Лендинг", "description": "Целевая продающая страница, разработанная для конверсии. Мы создаём лендинги, которые привлекают клиентов и генерируют продажи.", "price_from": "45000", "includes": ["Адаптивный дизайн", "До 7 секций", "Форма обратной связи", "Базовые анимации", "SEO-основа", "Хостинг включён"]},
-    {"name": "Корпоративный сайт", "description": "Многостраничный сайт для компании. Формирует доверие, привлекает клиентов и деловых партнёров. Включает информацию об услугах, команде, портфолио и контакты.", "price_from": "90000", "includes": ["До 10 страниц", "Навигация между страницами", "Единый шаблон дизайна", "Страница контактов с картой", "SEO-оптимизация", "Хостинг включён"]},
-    {"name": "Интернет-магазин", "description": "E-commerce решение с полным функционалом: каталог товаров, управление заказами, интеграция платёжных систем, админ-панель для управления товарами.", "price_from": "150000", "includes": ["Каталог товаров", "Корзина заказов", "Интеграция платежей", "Система управления", "СМС/Email уведомления", "Хостинг включён"]}
-  ],
-  "process": [
-    {"step": 1, "name": "Консультация", "description": "Первая встреча: изучаем ваш бизнес, цели, целевую аудиторию и конкурентов. Определяем лучший подход к решению задачи."},
-    {"step": 2, "name": "Дизайн и структура", "description": "Создаём дизайн и структуру сайта. Согласуем макеты, получаем ваше одобрение перед разработкой кода."},
-    {"step": 3, "name": "Разработка и тестирование", "description": "Разрабатываем сайт, интегрируем все необходимые функции. Тестируем на всех устройствах и браузерах, исправляем ошибки."},
-    {"step": 4, "name": "Запуск и поддержка", "description": "Запускаем на вашем домене, настраиваем SSL и аналитику. 14 дней гарантийной поддержки входят в стоимость проекта."}
-  ],
-  "portfolio": [
-    {"id": 0, "name": "MP.WebStudio", "subtitle": "Сайт веб-студии", "description": "Портфолио-сайт веб-студии с калькулятором стоимости, онлайн-оплатой, Telegram-уведомлениями и админ-панелью для управления проектами.", "category": "Dark Theme", "status": "launched", "technologies": ["React", "TypeScript", "Yandex Cloud", "Telegram", "PostgreSQL"], "features": ["Интерактивный калькулятор", "Онлайн-платежи", "Админ-панель", "Telegram-уведомления"]},
-    {"id": 1, "name": "Сладкие наслаждения", "subtitle": "Интернет-магазин сладостей", "description": "Полнофункциональный интернет-магазин сладостей с админ-панелью, Telegram-приложением, интеграцией Robokassa и хранением в Яндекс Cloud.", "category": "E-commerce", "status": "launched", "technologies": ["React", "Node.js", "PostgreSQL", "Robokassa", "Telegram"], "features": ["Каталог товаров", "Система заказов", "Платежи Robokassa", "Telegram-уведомления", "Админ-панель"]}
-  ],
-  "technologies": {
-    "frontend": ["React", "Next.js", "Vue.js", "TypeScript", "Tailwind CSS"],
-    "backend": ["Node.js", "Express", "Python", "PostgreSQL"],
-    "russian_services": ["Yandex Cloud", "VK Cloud", "Yandex.Kassa", "Robokassa", "Yandex.Metrika", "1C", "Bitrix24", "SDEK", "DaData", "Telegram Bot", "VK API"]
-  },
-  "pricing": {
-    "mvp_startup": {"name": "Стартап - Быстро и просто", "description": "Готовый сайт за 2-4 недели. Идеально для новых проектов и MVP.", "price": "50000-100000"},
-    "business": {"name": "Бизнес - Полноценное решение", "description": "Сложный корпоративный сайт с интеграциями и нестандартными требованиями.", "price": "от 150000"},
-    "ecommerce": {"name": "E-commerce - Интернет-магазин", "description": "Полнофункциональный магазин с оплатой, управлением товарами и аналитикой.", "price": "от 200000"},
-    "support": {"name": "Техническая поддержка", "description": "Включена 14 дней. Затем по тарифам: от 5000₽/месяц.", "price": "от 5000/месяц"}
-  },
-  "faq": [
-    {"question": "В чём разница между лендингом, корпоративным сайтом и интернет-магазином?", "answer": "Лендинг — одностраничный сайт для продвижения конкретного товара/услуги с фокусом на конверсию. Корпоративный сайт — многостраничный портал компании с информацией об услугах, командой, контактами. Интернет-магазин — платформа с каталогом товаров, корзиной, платежной системой и управлением заказами."},
-    {"question": "Сколько времени занимает разработка сайта?", "answer": "В среднем: Сайт-визитка — 1-2 недели, Лендинг — 2-3 недели, Корпоративный сайт — 3-4 недели, Интернет-магазин — 4-6 недель. Сроки зависят от сложности и скорости согласования макетов."},
-    {"question": "Как работает калькулятор стоимости на сайте?", "answer": "Выберите тип проекта (базовая цена), а затем добавьте нужные функции. Каждая функция добавляет свою стоимость. Затем вы можете отправить заказ и наша команда свяжется с вами для уточнения деталей."},
-    {"question": "Что входит в поддержку после запуска сайта?", "answer": "В стандартную поддержку входит: исправление ошибок в течение 14 дней, техническая консультация, помощь с обновлением контента. Дополнительные услуги оплачиваются отдельно."},
-    {"question": "Вы помогаете с покупкой домена и хостингом?", "answer": "Да! Мы помогаем выбрать домен, переносим DNS, настраиваем SSL-сертификат и помогаем с покупкой и настройкой хостинга. Все настройки включены в процесс запуска проекта."}
-  ],
-  "keywords": {
-    "услуги": ["веб-разработка", "сайт", "лендинг", "e-commerce", "интернет-магазин", "корпоративный сайт", "сайт-визитка"],
-    "процесс": ["консультация", "дизайн", "разработка", "тестирование", "запуск", "поддержка"],
-    "портфолио": ["food delivery", "fitness", "cosmetics", "e-commerce", "магазин"],
-    "качество": ["современные технологии", "чистый код", "быстро", "качественно", "результат"],
-    "цена": ["от 25000", "калькулятор", "стоимость", "цены", "тариф"],
-    "технологии": ["React", "Node.js", "PostgreSQL", "TypeScript", "Tailwind", "Yandex Cloud"]
-  }
-};
-
 // YDB Driver (инициализируется один раз)
 let ydbDriver = null;
 
@@ -3445,39 +3391,27 @@ message ChatOptions {
   float top_p = 2;
   int32 max_alternatives = 3;
   int32 max_tokens = 4;
-  float repetition_penalty = 5;
-  float update_interval = 6;
-  repeated string flags = 7;
 }
 
 message Message {
   string role = 1;
   string content = 2;
-  string unprocessed_content = 3;
 }
 
 message ChatResponse {
   repeated Alternative alternatives = 1;
   Usage usage = 2;
-  ModelInfo model_info = 3;
-  int64 timestamp = 4;
 }
 
 message Alternative {
   Message message = 1;
   string finish_reason = 2;
-  int32 index = 3;
 }
 
 message Usage {
   int32 prompt_tokens = 1;
   int32 completion_tokens = 2;
   int32 total_tokens = 3;
-}
-
-message ModelInfo {
-  string name = 1;
-  string version = 2;
 }
 `;
 
@@ -3506,13 +3440,100 @@ async function getGigaChatProto() {
     return gigachatProto;
 }
 
-// ============ Knowledge Base (Embedded) ============
+// ============ Knowledge Base from Object Storage ============
 
-let cachedKB = EMBEDDED_KNOWLEDGE_BASE;
+let cachedKB = null;
+let cacheTime = 0;
+const CACHE_TTL = 3600000; // 1 час
+
+// AWS Signature V4 signing helper
+function signAwsRequest(method, host, path, accessKey, secretKey, payload = '') {
+    const crypto = require('crypto');
+    const algorithm = 'AWS4-HMAC-SHA256';
+    const service = 's3';
+    const region = 'ru-central1';
+    const now = new Date();
+    const amzDate = now.toISOString().replace(/[:-]|\.\d{3}/g, '');
+    const dateStamp = amzDate.slice(0, 8);
+
+    // Canonical request
+    const canonicalHeaders = `host:${host}\nx-amz-content-sha256:UNSIGNED-PAYLOAD\nx-amz-date:${amzDate}\n`;
+    const signedHeaders = 'host;x-amz-content-sha256;x-amz-date';
+    const payloadHash = crypto.createHash('sha256').update(payload).digest('hex');
+
+    const canonicalRequest = [
+        method,
+        path,
+        '',
+        canonicalHeaders,
+        signedHeaders,
+        payloadHash
+    ].join('\n');
+
+    // String to sign
+    const canonicalRequestHash = crypto.createHash('sha256').update(canonicalRequest).digest('hex');
+    const credentialScope = `${dateStamp}/${region}/${service}/aws4_request`;
+    const stringToSign = [
+        algorithm,
+        amzDate,
+        credentialScope,
+        canonicalRequestHash
+    ].join('\n');
+
+    // Calculate signature
+    const kDate = crypto.createHmac('sha256', `AWS4${secretKey}`).update(dateStamp).digest();
+    const kRegion = crypto.createHmac('sha256', kDate).update(region).digest();
+    const kService = crypto.createHmac('sha256', kRegion).update(service).digest();
+    const kSigning = crypto.createHmac('sha256', kService).update('aws4_request').digest();
+    const signature = crypto.createHmac('sha256', kSigning).update(stringToSign).digest('hex');
+
+    const authorizationHeader = `${algorithm} Credential=${accessKey}/${credentialScope}, SignedHeaders=${signedHeaders}, Signature=${signature}`;
+
+    return {
+        'Authorization': authorizationHeader,
+        'X-Amz-Date': amzDate,
+        'X-Amz-Content-Sha256': 'UNSIGNED-PAYLOAD'
+    };
+}
 
 async function loadKnowledgeBaseFromStorage() {
-    console.log('[KB] Using embedded knowledge base');
-    return cachedKB;
+    const now = Date.now();
+    if (cachedKB && (now - cacheTime) < CACHE_TTL) {
+        console.log('[KB] Using cached knowledge base');
+        return cachedKB;
+    }
+
+    try {
+        console.log('[KB] Loading knowledge base from Object Storage...');
+        const AWS = require('aws-sdk');
+
+        const s3 = new AWS.S3({
+            endpoint: 'https://storage.yandexcloud.net',
+            accessKeyId: process.env.YC_ACCESS_KEY,
+            secretAccessKey: process.env.YC_SECRET_KEY,
+            region: 'ru-central1',
+            s3ForcePathStyle: true,
+        });
+
+        const bucketName = process.env.YC_BUCKET_NAME || 'www.mp-webstudio.ru';
+        const keyPath = 'site-content.json';
+
+        const data = await s3.getObject({
+            Bucket: bucketName,
+            Key: keyPath
+        }).promise();
+
+        const kbData = JSON.parse(data.Body.toString('utf-8'));
+        cachedKB = kbData;
+        cacheTime = now;
+
+        console.log('[KB] ✅ Knowledge base loaded successfully');
+        return kbData;
+    } catch (error) {
+        console.error('[KB] ❌ Error loading KB:', error.message);
+        // Fallback - пустой объект
+        return null;
+    }
 }
 
 function findRelevantContext(kb, userMessage) {
@@ -3577,44 +3598,19 @@ function findRelevantContext(kb, userMessage) {
     return context;
 }
 
-    // Глобальные переменные для переиспользования gRPC клиента
-    let cachedChatServiceClient = null;
-    let cachedGrpcClient = null;
+async function handleGigaChat(body, headers) {
+    const handlerId = crypto.randomUUID().substring(0, 8);
+    console.log(`\n\n=== GIGACHAT gRPC REQUEST START [${handlerId}] (Yandex Cloud) ===`);
+    const startTime = Date.now();
 
-    async function handleGigaChat(body, headers) {
-        const handlerId = crypto.randomUUID().substring(0, 8);
-        console.log(`\n\n=== GIGACHAT gRPC REQUEST START [${handlerId}] (Yandex Cloud) ===`);
-        const startTime = Date.now();
-
-        // Вспомогательная функция для повторных попыток
-        async function callWithRetry(fn, maxRetries = 2) {
-            let lastError;
-            for (let i = 0; i < maxRetries; i++) {
-                try {
-                    return await fn();
-                } catch (err) {
-                    lastError = err;
-                    const isRetryable = err.code === 14 || err.code === 13 || err.message === 'TIMEOUT';
-                    if (!isRetryable) throw err;
-                    console.log(`[${handlerId}] 🔄 Attempt ${i + 1} failed: ${err.message}. Retrying...`);
-                    // Небольшая задержка перед повтором
-                    await new Promise(r => setTimeout(r, 500 * (i + 1)));
-                }
-            }
-            throw lastError;
-        }
-
-        try {
-            let { message } = body;
-            // ... (rest of logic)
+    try {
+        let { message } = body;
         console.log(`[${handlerId}] 1️⃣ Received message (${message?.length || 0} chars)`);
 
-        // ⚡ ОПТИМИЗАЦИЯ: Knowledge Base встроена в памяти функции
-        // - Время поиска: ~5-20ms (вместо 500-2000ms при загрузке из Object Storage)
-        // - Нет зависимости от Object Storage API
-        // - gRPC + SSL сертификат работают независимо от KB логики
-        console.log(`[${handlerId}] 1a️⃣ Using embedded knowledge base (in-memory)...`);
-        const relevantContext = findRelevantContext(cachedKB, message);
+        // НОВОЕ: Загружаем Knowledge Base и обогащаем контекст
+        console.log(`[${handlerId}] 1a️⃣ Loading knowledge base...`);
+        const kb = await loadKnowledgeBaseFromStorage();
+        const relevantContext = findRelevantContext(kb, message);
 
         if (relevantContext) {
             console.log(`[${handlerId}] 1b️⃣ Context found (${relevantContext.length} chars), enriching message...`);
@@ -3701,109 +3697,93 @@ function findRelevantContext(kb, userMessage) {
         const proto = await getGigaChatProto();
         const ChatServiceClient = proto.gigachat.v1.ChatService;
 
-        // Переиспользование клиента
-        if (!cachedGrpcClient) {
-            console.log(`[${handlerId}] 5️⃣ Creating new gRPC client...`);
-            const credentials = grpc.credentials.createSsl(Buffer.from(SBERBANK_ROOT_CA));
-            const channelOptions = {
-                'grpc.ssl_target_name_override': 'gigachat.devices.sberbank.ru',
-                'grpc.default_authority': 'gigachat.devices.sberbank.ru',
-                'grpc.max_receive_message_length': 10 * 1024 * 1024,
-                'grpc.max_send_message_length': 10 * 1024 * 1024,
-                'grpc.http2.keepalive_time': 120000,
-                'grpc.http2.keepalive_timeout': 20000,
-                'grpc.keepalive_time_ms': 120000,
-                'grpc.keepalive_timeout_ms': 20000,
-                'grpc.http2.max_pings_without_data': 0,
-                'grpc.keepalive_permit_without_calls': 1,
-            };
-            cachedGrpcClient = new ChatServiceClient('gigachat.devices.sberbank.ru:443', credentials, channelOptions);
-        } else {
-            console.log(`[${handlerId}] 5️⃣ Using cached gRPC client`);
-        }
-
+        console.log(`[${handlerId}] 5️⃣ Connecting to gRPC server...`);
+        // Используем корневой CA сертификат для валидации цепочки
+        const credentials = grpc.credentials.createSsl(Buffer.from(SBERBANK_ROOT_CA));
         const metadata = new grpc.Metadata();
         metadata.add('authorization', `Bearer ${accessToken}`);
 
-        const chatRequest = {
-            model: 'GigaChat',
-            messages: [
-                {
-                    role: 'system',
-                    content: 'Ты помощник веб-студии MP.WebStudio. Говори ИСКЛЮЧИТЕЛЬНО о услугах студии, портфолио, технологиях, процессе разработки и ценах. Не отвечай на вопросы, не связанные с MP.WebStudio. Если клиент спрашивает о чем-то другом - вежливо перенаправь его на услуги студии.',
-                },
-                {
-                    role: 'user',
-                    content: message,
-                }
-            ],
-            options: {
-                temperature: 0.7,
-                max_tokens: 1000,
-            }
+        // Опции для gRPC канала с правильной конфигурацией
+        const channelOptions = {
+            'grpc.ssl_target_name_override': 'gigachat.devices.sberbank.ru',
+            'grpc.default_authority': 'gigachat.devices.sberbank.ru',
+            'grpc.max_receive_message_length': 10 * 1024 * 1024,
+            'grpc.max_send_message_length': 10 * 1024 * 1024,
+            'grpc.http2.keepalive_time': 30000,
+            'grpc.http2.keepalive_timeout': 10000,
         };
 
-        console.log(`[${handlerId}] 6️⃣ Sending chat request via gRPC streaming...`);
+        const client = new ChatServiceClient('gigachat.devices.sberbank.ru:443', credentials, channelOptions);
+
+        console.log(`[${handlerId}] 6️⃣ Sending chat request via gRPC...`);
         const chatStartTime = Date.now();
 
-        // Переходим на потоковую передачу gRPC (RPC ChatStream)
-        // Это позволяет получать данные по мере их генерации и поддерживать соединение активным
-        const response = await callWithRetry(async () => {
-            return new Promise((resolve, reject) => {
-                const stream = cachedGrpcClient.chatStream(chatRequest, metadata);
-                let fullContent = '';
-                let isFinished = false;
-                
-                // Таймаут на все выполнение (увеличиваем, так как стриминг может идти долго)
-                const timeoutId = setTimeout(() => {
-                    if (isFinished) return;
-                    isFinished = true;
-                    stream.cancel();
-                    reject(new Error('TIMEOUT'));
-                }, 50000);
-
-                stream.on('data', (chunk) => {
-                    const content = chunk?.alternatives?.[0]?.message?.content || '';
-                    fullContent += content;
-                    // Каждые несколько чанков логируем прогресс
-                    if (fullContent.length % 50 === 0) {
-                        console.log(`[${handlerId}] 📥 Streaming: ${fullContent.length} chars...`);
+        return new Promise((resolve) => {
+            const chatRequest = {
+                model: 'GigaChat',
+                messages: [
+                    {
+                        role: 'user',
+                        content: message,
                     }
-                });
+                ],
+                options: {
+                    temperature: 0.7,
+                    max_tokens: 1000,
+                }
+            };
 
-                stream.on('error', (err) => {
-                    if (isFinished) return;
-                    isFinished = true;
-                    clearTimeout(timeoutId);
-                    reject(err);
-                });
+            client.chat(chatRequest, metadata, (err, response) => {
+                const chatElapsed = Math.round((Date.now() - chatStartTime) / 1000);
 
-                stream.on('end', () => {
-                    if (isFinished) return;
-                    isFinished = true;
-                    clearTimeout(timeoutId);
-                    resolve({ alternatives: [{ message: { content: fullContent } }] });
+                if (err) {
+                    console.error(`[${handlerId}] ❌ gRPC error after ${chatElapsed}s: ${err.message}`);
+                    client.close();
+                    return resolve({
+                        statusCode: 500,
+                        headers,
+                        body: JSON.stringify({
+                            success: false,
+                            response: `gRPC ошибка: ${err.message}`,
+                        }),
+                    });
+                }
+
+                console.log(`[${handlerId}] ✅ gRPC response received in ${chatElapsed}s`);
+
+                const assistantMessage = response?.alternatives?.[0]?.message?.content || 'Нет ответа';
+                const totalTime = Math.round((Date.now() - startTime) / 1000);
+
+                console.log(`[${handlerId}] 7️⃣ Success!`);
+                console.log(`[${handlerId}]    Response length: ${assistantMessage.length} chars`);
+                console.log(`[${handlerId}]    Total time: ${totalTime}s`);
+                console.log(`=== GIGACHAT gRPC REQUEST END [${handlerId}] (SUCCESS) ===\n`);
+
+                client.close();
+
+                resolve({
+                    statusCode: 200,
+                    headers,
+                    body: JSON.stringify({
+                        success: true,
+                        response: assistantMessage,
+                    }),
                 });
             });
-        }, 3);
 
-        console.log(`[${handlerId}] ✅ gRPC response received in ${Math.round((Date.now() - chatStartTime) / 1000)}s`);
-        const assistantMessage = response?.alternatives?.[0]?.message?.content || 'Нет ответа';
-        const totalTime = Math.round((Date.now() - startTime) / 1000);
-
-        console.log(`[${handlerId}] 7️⃣ Success!`);
-        console.log(`[${handlerId}]    Response length: ${assistantMessage.length} chars`);
-        console.log(`[${handlerId}]    Total time: ${totalTime}s`);
-        console.log(`=== GIGACHAT gRPC REQUEST END [${handlerId}] (SUCCESS) ===\n`);
-
-        return {
-            statusCode: 200,
-            headers,
-            body: JSON.stringify({
-                success: true,
-                response: assistantMessage,
-            }),
-        };
+            setTimeout(() => {
+                console.error(`[${handlerId}] ❌ gRPC request timeout (10s)`);
+                client.close();
+                resolve({
+                    statusCode: 500,
+                    headers,
+                    body: JSON.stringify({
+                        success: false,
+                        response: 'Timeout при соединении с GigaChat',
+                    }),
+                });
+            }, 10000);
+        });
 
     } catch (error) {
         const totalTime = Math.round((Date.now() - startTime) / 1000);
