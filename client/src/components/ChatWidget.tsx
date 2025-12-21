@@ -95,13 +95,9 @@ export function ChatWidget() {
           {/* Шапка - NEO TERMINAL */}
           <DialogHeader className="bg-gradient-to-r from-cyan-400/10 via-purple-400/10 to-cyan-400/10 border-b-2 border-cyan-400/50 p-3 space-y-0">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent font-mono text-xs">►</span>
-                <DialogTitle className="bg-gradient-to-r from-cyan-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent font-mono text-sm font-bold tracking-wider">
-                  AI_SYSTEM v2.1
-                </DialogTitle>
-                <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent font-mono text-xs">[ONLINE]</span>
-              </div>
+              <DialogTitle className="bg-gradient-to-r from-cyan-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent font-mono text-sm font-bold tracking-wider">
+                AI Assistant
+              </DialogTitle>
               <button
                 onClick={() => setIsOpen(false)}
                 className="p-1 text-cyan-400 hover:text-purple-400 hover:bg-purple-400/10 rounded-sm transition-colors"
