@@ -3445,27 +3445,39 @@ message ChatOptions {
   float top_p = 2;
   int32 max_alternatives = 3;
   int32 max_tokens = 4;
+  float repetition_penalty = 5;
+  float update_interval = 6;
+  repeated string flags = 7;
 }
 
 message Message {
   string role = 1;
   string content = 2;
+  string unprocessed_content = 3;
 }
 
 message ChatResponse {
   repeated Alternative alternatives = 1;
   Usage usage = 2;
+  ModelInfo model_info = 3;
+  int64 timestamp = 4;
 }
 
 message Alternative {
   Message message = 1;
   string finish_reason = 2;
+  int32 index = 3;
 }
 
 message Usage {
   int32 prompt_tokens = 1;
   int32 completion_tokens = 2;
   int32 total_tokens = 3;
+}
+
+message ModelInfo {
+  string name = 1;
+  string version = 2;
 }
 `;
 
