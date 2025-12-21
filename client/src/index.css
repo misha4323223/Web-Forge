@@ -376,6 +376,35 @@
     }
   }
 
+  /* AI Assistant Button - Neon Glow Animation */
+  @keyframes ai-glow-pulse {
+    0%, 100% {
+      box-shadow: 0 0 0 0 rgba(34, 211, 238, 0.4), inset 0 0 0 0 rgba(34, 211, 238, 0.1);
+    }
+    50% {
+      box-shadow: 0 0 15px 0 rgba(34, 211, 238, 0.6), inset 0 0 10px 0 rgba(34, 211, 238, 0.15);
+    }
+  }
+
+  .ai-assistant-btn {
+    position: relative;
+    animation: ai-glow-pulse 3s ease-in-out infinite;
+  }
+
+  .ai-assistant-btn:hover {
+    border-color: rgba(34, 211, 238, 0.8);
+    box-shadow: 0 0 20px rgba(34, 211, 238, 0.7), 0 0 40px rgba(168, 85, 247, 0.3) !important;
+  }
+
+  @keyframes animate-ai-glow {
+    0%, 100% { opacity: 0; }
+    50% { opacity: 0.3; }
+  }
+
+  .animate-ai-glow {
+    animation: animate-ai-glow 3s ease-in-out infinite;
+  }
+
   /* NEO-TERMINAL CHAT WIDGET - Mobile Optimized */
   .neo-terminal {
     /* Убираем излишние анимации */
@@ -403,6 +432,11 @@
     .neo-terminal input,
     .neo-terminal button {
       -webkit-tap-highlight-color: transparent;
+    }
+
+    /* На мобильных отключаем анимацию пульсации для экономии батареи */
+    .ai-assistant-btn {
+      animation: none;
     }
   }
 }

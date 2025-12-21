@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { MessageCircle, Send, X } from "lucide-react";
+import { Brain, Send, X } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 
 interface Message {
@@ -74,14 +74,15 @@ export function ChatWidget() {
 
   return (
     <>
-      {/* Плавающая кнопка - NEO TERMINAL STYLE */}
+      {/* Плавающая кнопка - NEO TERMINAL STYLE WITH NEON ANIMATION */}
       <button
         onClick={() => setIsOpen(true)}
         data-testid="button-ai-chat"
-        className="fixed bottom-6 right-6 h-14 w-14 rounded-sm bg-black border-2 border-cyan-500 hover:border-cyan-400 text-cyan-500 hover:text-cyan-400 shadow-lg hover:shadow-[0_0_15px_rgba(34,211,238,0.6)] transition-all duration-200 flex items-center justify-center z-40 font-mono text-xs font-bold"
+        className="fixed bottom-6 right-6 h-14 w-14 rounded-sm bg-black border-2 border-cyan-500 text-cyan-500 flex items-center justify-center z-40 font-mono text-xs font-bold transition-colors duration-200 ai-assistant-btn group"
         title="AI Assistant"
       >
-        {">"}
+        <Brain className="w-6 h-6 group-hover:text-cyan-400 transition-colors" />
+        <div className="absolute inset-0 rounded-sm bg-gradient-to-r from-cyan-500 via-purple-500 to-cyan-500 opacity-0 group-hover:opacity-20 transition-opacity duration-200 animate-ai-glow"></div>
       </button>
 
       {/* Модалка чата - NEO TERMINAL */}
