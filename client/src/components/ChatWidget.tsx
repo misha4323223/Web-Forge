@@ -112,7 +112,7 @@ export function ChatWidget() {
           </DialogHeader>
 
           {/* История сообщений */}
-          <div className="flex-1 overflow-y-auto p-3 space-y-3 bg-black font-mono text-xs">
+          <div className="flex-1 overflow-y-auto p-3 space-y-3 bg-black font-mono text-xs chat-messages-scroll">
             {messages.length === 0 && (
               <div className="h-full flex items-center justify-center text-center">
                 <div className="bg-gradient-to-r from-cyan-400/60 to-purple-400/60 bg-clip-text text-transparent">
