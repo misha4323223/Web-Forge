@@ -3577,30 +3577,36 @@ function findRelevantContext(kb, userMessage) {
     return context;
 }
 
-async function handleGigaChat(body, headers) {
-    const handlerId = crypto.randomUUID().substring(0, 8);
-    console.log(`\n\n=== GIGACHAT gRPC REQUEST START [${handlerId}] (Yandex Cloud) ===`);
-    const startTime = Date.now();
+    // Глобальные переменные для переиспользования gRPC клиента
+    let cachedChatServiceClient = null;
+    let cachedGrpcClient = null;
 
-    // Вспомогательная функция для повторных попыток
-    async function callWithRetry(fn, maxRetries = 2) {
-        let lastError;
-        for (let i = 0; i < maxRetries; i++) {
-            try {
-                return await fn();
-            } catch (err) {
-                lastError = err;
-                const isRetryable = err.code === 14 || err.code === 13 || err.message === 'TIMEOUT';
-                if (!isRetryable) throw err;
-                console.log(`[${handlerId}] 🔄 Attempt ${i + 1} failed: ${err.message}. Retrying...`);
-                await new Promise(r => setTimeout(r, 1000 * (i + 1)));
+    async function handleGigaChat(body, headers) {
+        const handlerId = crypto.randomUUID().substring(0, 8);
+        console.log(`\n\n=== GIGACHAT gRPC REQUEST START [${handlerId}] (Yandex Cloud) ===`);
+        const startTime = Date.now();
+
+        // Вспомогательная функция для повторных попыток
+        async function callWithRetry(fn, maxRetries = 2) {
+            let lastError;
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    return await fn();
+                } catch (err) {
+                    lastError = err;
+                    const isRetryable = err.code === 14 || err.code === 13 || err.message === 'TIMEOUT';
+                    if (!isRetryable) throw err;
+                    console.log(`[${handlerId}] 🔄 Attempt ${i + 1} failed: ${err.message}. Retrying...`);
+                    // Небольшая задержка перед повтором
+                    await new Promise(r => setTimeout(r, 500 * (i + 1)));
+                }
             }
+            throw lastError;
         }
-        throw lastError;
-    }
 
-    try {
-        let { message } = body;
+        try {
+            let { message } = body;
+            // ... (rest of logic)
         console.log(`[${handlerId}] 1️⃣ Received message (${message?.length || 0} chars)`);
 
         // ⚡ ОПТИМИЗАЦИЯ: Knowledge Base встроена в памяти функции
@@ -3695,31 +3701,29 @@ async function handleGigaChat(body, headers) {
         const proto = await getGigaChatProto();
         const ChatServiceClient = proto.gigachat.v1.ChatService;
 
-        console.log(`[${handlerId}] 5️⃣ Connecting to gRPC server...`);
-        console.log(`[${handlerId}]    Access token length: ${accessToken?.length || 0} chars`);
-        
-        // Используем корневой CA сертификат для валидации цепочки
-        const credentials = grpc.credentials.createSsl(Buffer.from(SBERBANK_ROOT_CA));
+        // Переиспользование клиента
+        if (!cachedGrpcClient) {
+            console.log(`[${handlerId}] 5️⃣ Creating new gRPC client...`);
+            const credentials = grpc.credentials.createSsl(Buffer.from(SBERBANK_ROOT_CA));
+            const channelOptions = {
+                'grpc.ssl_target_name_override': 'gigachat.devices.sberbank.ru',
+                'grpc.default_authority': 'gigachat.devices.sberbank.ru',
+                'grpc.max_receive_message_length': 10 * 1024 * 1024,
+                'grpc.max_send_message_length': 10 * 1024 * 1024,
+                'grpc.http2.keepalive_time': 120000,
+                'grpc.http2.keepalive_timeout': 20000,
+                'grpc.keepalive_time_ms': 120000,
+                'grpc.keepalive_timeout_ms': 20000,
+                'grpc.http2.max_pings_without_data': 0,
+                'grpc.keepalive_permit_without_calls': 1,
+            };
+            cachedGrpcClient = new ChatServiceClient('gigachat.devices.sberbank.ru:443', credentials, channelOptions);
+        } else {
+            console.log(`[${handlerId}] 5️⃣ Using cached gRPC client`);
+        }
+
         const metadata = new grpc.Metadata();
         metadata.add('authorization', `Bearer ${accessToken}`);
-
-        // Оптимизированная конфигурация gRPC для Yandex Cloud
-        const channelOptions = {
-            'grpc.ssl_target_name_override': 'gigachat.devices.sberbank.ru',
-            'grpc.default_authority': 'gigachat.devices.sberbank.ru',
-            'grpc.max_receive_message_length': 10 * 1024 * 1024,
-            'grpc.max_send_message_length': 10 * 1024 * 1024,
-            'grpc.http2.keepalive_time': 10000,
-            'grpc.http2.keepalive_timeout': 5000,
-            'grpc.keepalive_time_ms': 10000,
-            'grpc.keepalive_timeout_ms': 5000,
-            'grpc.http2.max_pings_without_data': 0,
-            'grpc.keepalive_permit_without_calls': 1,
-            'grpc.max_connection_idle_ms': 15000,
-            'grpc.max_connection_age_ms': 300000,
-            'grpc.http2.min_time_between_pings_ms': 5000,
-            'grpc.client_idle_timeout_ms': 15000,
-        };
 
         const chatRequest = {
             model: 'GigaChat',
@@ -3744,26 +3748,22 @@ async function handleGigaChat(body, headers) {
 
         const response = await callWithRetry(async () => {
             return new Promise((resolve, reject) => {
-                const client = new ChatServiceClient('gigachat.devices.sberbank.ru:443', credentials, channelOptions);
                 let isFinished = false;
-
                 const timeoutId = setTimeout(() => {
                     if (isFinished) return;
                     isFinished = true;
-                    client.close();
                     reject(new Error('TIMEOUT'));
-                }, 45000);
+                }, 25000);
 
-                client.chat(chatRequest, metadata, (err, resp) => {
+                cachedGrpcClient.chat(chatRequest, metadata, (err, resp) => {
                     if (isFinished) return;
                     isFinished = true;
                     clearTimeout(timeoutId);
-                    client.close();
                     if (err) reject(err);
                     else resolve(resp);
                 });
             });
-        });
+        }, 3); // Увеличиваем количество попыток до 3
 
         console.log(`[${handlerId}] ✅ gRPC response received in ${Math.round((Date.now() - chatStartTime) / 1000)}s`);
         const assistantMessage = response?.alternatives?.[0]?.message?.content || 'Нет ответа';
