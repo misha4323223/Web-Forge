@@ -65,13 +65,15 @@ async function httpsRequest(urlString, options) {
     return new Promise((resolve, reject) => {
         const url = new URL(urlString);
         let req;
-        console.log(`[HTTP] Starting ${options.method} request to ${url.hostname}${url.pathname}`);
+        const startTime = Date.now();
+        console.log(`[HTTP v2.0] Starting ${options.method} to ${url.hostname}${url.pathname} at ${startTime}`);
         
         const timeout = setTimeout(() => {
-            console.error(`[HTTP] TIMEOUT after 30 seconds for ${url.hostname}`);
+            const elapsed = Date.now() - startTime;
+            console.error(`[HTTP v2.0] TIMEOUT after ${elapsed}ms (60s limit) for ${url.hostname}`);
             if (req) req.destroy();
-            reject(new Error('Request timeout after 30s'));
-        }, 30000);
+            reject(new Error(`Request timeout after ${elapsed}ms`));
+        }, 60000);
         
         const reqOptions = {
             method: options.method,
@@ -81,27 +83,31 @@ async function httpsRequest(urlString, options) {
         };
         
         req = https.request(url, reqOptions, (res) => {
-            console.log(`[HTTP] Response received from ${url.hostname}: ${res.statusCode}`);
+            const elapsed = Date.now() - startTime;
+            console.log(`[HTTP v2.0] Response from ${url.hostname}: ${res.statusCode} after ${elapsed}ms`);
             let data = '';
             res.on('data', (chunk) => {
-                console.log(`[HTTP] Received ${chunk.length} bytes`);
+                console.log(`[HTTP v2.0] Received ${chunk.length} bytes (total so far: ${data.length})`);
                 data += chunk;
             });
             res.on('end', () => {
                 clearTimeout(timeout);
-                console.log(`[HTTP] Request completed. Total data: ${data.length} bytes`);
+                const total = Date.now() - startTime;
+                console.log(`[HTTP v2.0] Request completed in ${total}ms. Total data: ${data.length} bytes`);
                 resolve({ statusCode: res.statusCode || 500, data, headers: res.headers });
             });
         });
         
         req.on('error', (err) => {
             clearTimeout(timeout);
-            console.error(`[HTTP] Error during request to ${url.hostname}: ${err.message}`);
+            const elapsed = Date.now() - startTime;
+            console.error(`[HTTP v2.0] Error after ${elapsed}ms for ${url.hostname}: ${err.message}`);
             reject(err);
         });
         
         req.on('timeout', () => {
-            console.error(`[HTTP] Socket timeout for ${url.hostname}`);
+            const elapsed = Date.now() - startTime;
+            console.error(`[HTTP v2.0] Socket timeout after ${elapsed}ms for ${url.hostname}`);
             req.destroy();
         });
         
