@@ -1,0 +1,138 @@
+22 дек. 01:53:56.201
+END RequestID: c6961de5-5877-4f51-af01-3bb2ab75065f
+
+22 дек. 01:53:56.197
+=== GIGACHAT gRPC REQUEST END [871d3c71] (SUCCESS) ===
+
+22 дек. 01:53:56.197
+[871d3c71] Total time: 0s
+
+22 дек. 01:53:56.197
+[871d3c71] Response length: 75 chars
+
+22 дек. 01:53:56.197
+[871d3c71] 7️⃣ Success!
+
+22 дек. 01:53:56.197
+[871d3c71] ✅ gRPC response received in 0s
+
+22 дек. 01:53:55.961
+[871d3c71] 6️⃣ Sending chat request via gRPC...
+
+22 дек. 01:53:55.957
+[871d3c71] 5️⃣ Connecting to gRPC server...
+
+22 дек. 01:53:55.941
+[871d3c71] 4️⃣ Loading gRPC proto...
+
+22 дек. 01:53:55.941
+[871d3c71] ✅ OAuth completed in 0s
+
+22 дек. 01:53:55.941
+[HTTPS-eaa3dfab] ========== REQUEST SUCCESS ==========
+
+22 дек. 01:53:55.941
+[HTTPS-eaa3dfab] Total response size: 1279 bytes
+
+22 дек. 01:53:55.941
+[HTTPS-eaa3dfab] ✨ Response ended after 94ms
+
+22 дек. 01:53:55.941
+[HTTPS-eaa3dfab] 📥 Data chunk: 1279 bytes (total: 1279)
+
+22 дек. 01:53:55.941
+[HTTPS-eaa3dfab] 📦 First byte received after 93ms
+
+22 дек. 01:53:55.940
+[HTTPS-eaa3dfab] Response headers: content-type=application/json, content-length=1279
+
+22 дек. 01:53:55.940
+[HTTPS-eaa3dfab] TLS: TLSv1.3, Cipher: TLS_AES_256_GCM_SHA384
+
+22 дек. 01:53:55.940
+[HTTPS-eaa3dfab] Status code: 200
+
+22 дек. 01:53:55.940
+[HTTPS-eaa3dfab] ✅ Response callback triggered after 93ms
+
+22 дек. 01:53:55.906
+[HTTPS-eaa3dfab] 🔒 TLS handshake complete after 59ms
+
+22 дек. 01:53:55.889
+[HTTPS-eaa3dfab] 🌐 TCP connected after 42ms
+
+22 дек. 01:53:55.885
+[HTTPS-eaa3dfab] 🔍 DNS lookup started
+
+22 дек. 01:53:55.884
+[HTTPS-eaa3dfab] 🔌 Socket created, fd: unknown
+
+22 дек. 01:53:55.884
+[HTTPS-eaa3dfab] Waiting for response...
+
+22 дек. 01:53:55.884
+[HTTPS-eaa3dfab] 🚀 Calling req.end()
+
+22 дек. 01:53:55.884
+[HTTPS-eaa3dfab] Body written successfully
+
+22 дек. 01:53:55.883
+[HTTPS-eaa3dfab] 📤 Writing body (23 bytes): scope=GIGACHAT_API_PERS
+
+22 дек. 01:53:55.848
+[HTTPS-eaa3dfab] Creating HTTPS request with timeout: 50000ms
+
+22 дек. 01:53:55.848
+[HTTPS-eaa3dfab] Setting main timeout: 45000ms
+
+22 дек. 01:53:55.848
+[HTTPS-eaa3dfab] Headers: Content-Type, Accept, Authorization, RqUID
+
+22 дек. 01:53:55.848
+[HTTPS-eaa3dfab] Request body size: 23 bytes
+
+22 дек. 01:53:55.848
+[HTTPS-eaa3dfab] Path: /api/v2/oauth
+
+22 дек. 01:53:55.848
+[HTTPS-eaa3dfab] Hostname: ngw.devices.sberbank.ru:9443
+
+22 дек. 01:53:55.848
+[HTTPS-eaa3dfab] Method: POST
+
+22 дек. 01:53:55.848
+[HTTPS-eaa3dfab] URL: https://ngw.devices.sberbank.ru:9443/api/v2/oauth
+
+22 дек. 01:53:55.848
+[HTTPS-eaa3dfab] ========== HTTPS REQUEST START ==========
+
+22 дек. 01:53:55.847
+[871d3c71] 3️⃣ Requesting OAuth token...
+
+22 дек. 01:53:55.847
+[871d3c71] 2️⃣ GIGACHAT_KEY exists: true
+
+22 дек. 01:53:55.847
+- /function/code/index.js
+
+22 дек. 01:53:55.847
+Require stack:
+
+22 дек. 01:53:55.847
+[KB] ❌ Error loading KB: Cannot find module 'aws-sdk'
+[KB] ❌ Error loading KB: Cannot find module 'aws-sdk'
+"request_id""c6961de5-5877-4f51-af01-3bb2ab75065f"
+"source""user"
+"version_id""d4eqibba1m2ev1fsl2fu"
+
+22 дек. 01:53:55.846
+[KB] Loading knowledge base from Object Storage...
+
+22 дек. 01:53:55.846
+[871d3c71] 1a️⃣ Loading knowledge base...
+
+22 дек. 01:53:55.846
+[871d3c71] 1️⃣ Received message (9 chars)
+
+22 дек. 01:53:55.846
+=== GIGACHAT gRPC REQUEST START [871d3c71] (Yandex Cloud) ===
