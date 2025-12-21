@@ -39,6 +39,60 @@ const protoLoader = require('@grpc/proto-loader');
 
 const SITE_URL = process.env.SITE_URL || 'https://www.mp-webstudio.ru';
 
+// ============ Embedded Knowledge Base ============
+const EMBEDDED_KNOWLEDGE_BASE = {
+  "company": {
+    "name": "MP.WebStudio",
+    "description": "Веб-студия, где человеческое мастерство встречается с современными технологиями. Мы создаём сайты, которые работают и приносят результат. Симбиоз опыта нашей команды и инновационных инструментов позволяет нам разрабатывать быстрее и качественнее.",
+    "tagline": "Ваша идея + Наш опыт = Успешный результат",
+    "phone": "+7 (953) 181-41-36",
+    "email": "mpwebstudio1@gmail.com",
+    "website": "https://mp-webstudio.ru"
+  },
+  "services": [
+    {"name": "Сайт-визитка", "description": "Компактный одностраничный сайт для представления вашей компании, специалиста или услуги. Идеален для малого бизнеса, фрилансеров и специалистов.", "price_from": "25000", "includes": ["Адаптивный дизайн", "Одна страница", "Контактная информация", "SEO-основа", "Хостинг включён"]},
+    {"name": "Лендинг", "description": "Целевая продающая страница, разработанная для конверсии. Мы создаём лендинги, которые привлекают клиентов и генерируют продажи.", "price_from": "45000", "includes": ["Адаптивный дизайн", "До 7 секций", "Форма обратной связи", "Базовые анимации", "SEO-основа", "Хостинг включён"]},
+    {"name": "Корпоративный сайт", "description": "Многостраничный сайт для компании. Формирует доверие, привлекает клиентов и деловых партнёров. Включает информацию об услугах, команде, портфолио и контакты.", "price_from": "90000", "includes": ["До 10 страниц", "Навигация между страницами", "Единый шаблон дизайна", "Страница контактов с картой", "SEO-оптимизация", "Хостинг включён"]},
+    {"name": "Интернет-магазин", "description": "E-commerce решение с полным функционалом: каталог товаров, управление заказами, интеграция платёжных систем, админ-панель для управления товарами.", "price_from": "150000", "includes": ["Каталог товаров", "Корзина заказов", "Интеграция платежей", "Система управления", "СМС/Email уведомления", "Хостинг включён"]}
+  ],
+  "process": [
+    {"step": 1, "name": "Консультация", "description": "Первая встреча: изучаем ваш бизнес, цели, целевую аудиторию и конкурентов. Определяем лучший подход к решению задачи."},
+    {"step": 2, "name": "Дизайн и структура", "description": "Создаём дизайн и структуру сайта. Согласуем макеты, получаем ваше одобрение перед разработкой кода."},
+    {"step": 3, "name": "Разработка и тестирование", "description": "Разрабатываем сайт, интегрируем все необходимые функции. Тестируем на всех устройствах и браузерах, исправляем ошибки."},
+    {"step": 4, "name": "Запуск и поддержка", "description": "Запускаем на вашем домене, настраиваем SSL и аналитику. 14 дней гарантийной поддержки входят в стоимость проекта."}
+  ],
+  "portfolio": [
+    {"id": 0, "name": "MP.WebStudio", "subtitle": "Сайт веб-студии", "description": "Портфолио-сайт веб-студии с калькулятором стоимости, онлайн-оплатой, Telegram-уведомлениями и админ-панелью для управления проектами.", "category": "Dark Theme", "status": "launched", "technologies": ["React", "TypeScript", "Yandex Cloud", "Telegram", "PostgreSQL"], "features": ["Интерактивный калькулятор", "Онлайн-платежи", "Админ-панель", "Telegram-уведомления"]},
+    {"id": 1, "name": "Сладкие наслаждения", "subtitle": "Интернет-магазин сладостей", "description": "Полнофункциональный интернет-магазин сладостей с админ-панелью, Telegram-приложением, интеграцией Robokassa и хранением в Яндекс Cloud.", "category": "E-commerce", "status": "launched", "technologies": ["React", "Node.js", "PostgreSQL", "Robokassa", "Telegram"], "features": ["Каталог товаров", "Система заказов", "Платежи Robokassa", "Telegram-уведомления", "Админ-панель"]}
+  ],
+  "technologies": {
+    "frontend": ["React", "Next.js", "Vue.js", "TypeScript", "Tailwind CSS"],
+    "backend": ["Node.js", "Express", "Python", "PostgreSQL"],
+    "russian_services": ["Yandex Cloud", "VK Cloud", "Yandex.Kassa", "Robokassa", "Yandex.Metrika", "1C", "Bitrix24", "SDEK", "DaData", "Telegram Bot", "VK API"]
+  },
+  "pricing": {
+    "mvp_startup": {"name": "Стартап - Быстро и просто", "description": "Готовый сайт за 2-4 недели. Идеально для новых проектов и MVP.", "price": "50000-100000"},
+    "business": {"name": "Бизнес - Полноценное решение", "description": "Сложный корпоративный сайт с интеграциями и нестандартными требованиями.", "price": "от 150000"},
+    "ecommerce": {"name": "E-commerce - Интернет-магазин", "description": "Полнофункциональный магазин с оплатой, управлением товарами и аналитикой.", "price": "от 200000"},
+    "support": {"name": "Техническая поддержка", "description": "Включена 14 дней. Затем по тарифам: от 5000₽/месяц.", "price": "от 5000/месяц"}
+  },
+  "faq": [
+    {"question": "В чём разница между лендингом, корпоративным сайтом и интернет-магазином?", "answer": "Лендинг — одностраничный сайт для продвижения конкретного товара/услуги с фокусом на конверсию. Корпоративный сайт — многостраничный портал компании с информацией об услугах, командой, контактами. Интернет-магазин — платформа с каталогом товаров, корзиной, платежной системой и управлением заказами."},
+    {"question": "Сколько времени занимает разработка сайта?", "answer": "В среднем: Сайт-визитка — 1-2 недели, Лендинг — 2-3 недели, Корпоративный сайт — 3-4 недели, Интернет-магазин — 4-6 недель. Сроки зависят от сложности и скорости согласования макетов."},
+    {"question": "Как работает калькулятор стоимости на сайте?", "answer": "Выберите тип проекта (базовая цена), а затем добавьте нужные функции. Каждая функция добавляет свою стоимость. Затем вы можете отправить заказ и наша команда свяжется с вами для уточнения деталей."},
+    {"question": "Что входит в поддержку после запуска сайта?", "answer": "В стандартную поддержку входит: исправление ошибок в течение 14 дней, техническая консультация, помощь с обновлением контента. Дополнительные услуги оплачиваются отдельно."},
+    {"question": "Вы помогаете с покупкой домена и хостингом?", "answer": "Да! Мы помогаем выбрать домен, переносим DNS, настраиваем SSL-сертификат и помогаем с покупкой и настройкой хостинга. Все настройки включены в процесс запуска проекта."}
+  ],
+  "keywords": {
+    "услуги": ["веб-разработка", "сайт", "лендинг", "e-commerce", "интернет-магазин", "корпоративный сайт", "сайт-визитка"],
+    "процесс": ["консультация", "дизайн", "разработка", "тестирование", "запуск", "поддержка"],
+    "портфолио": ["food delivery", "fitness", "cosmetics", "e-commerce", "магазин"],
+    "качество": ["современные технологии", "чистый код", "быстро", "качественно", "результат"],
+    "цена": ["от 25000", "калькулятор", "стоимость", "цены", "тариф"],
+    "технологии": ["React", "Node.js", "PostgreSQL", "TypeScript", "Tailwind", "Yandex Cloud"]
+  }
+};
+
 // YDB Driver (инициализируется один раз)
 let ydbDriver = null;
 
@@ -3440,105 +3494,13 @@ async function getGigaChatProto() {
     return gigachatProto;
 }
 
-// ============ Knowledge Base from Object Storage ============
+// ============ Knowledge Base (Embedded) ============
 
-let cachedKB = null;
-let cacheTime = 0;
-const CACHE_TTL = 3600000; // 1 час
-
-// AWS Signature V4 signing helper
-function signAwsRequest(method, host, path, accessKey, secretKey, payload = '') {
-    const crypto = require('crypto');
-    const algorithm = 'AWS4-HMAC-SHA256';
-    const service = 's3';
-    const region = 'ru-central1';
-    const now = new Date();
-    const amzDate = now.toISOString().replace(/[:-]|\.\d{3}/g, '');
-    const dateStamp = amzDate.slice(0, 8);
-
-    // Canonical request
-    const canonicalHeaders = `host:${host}\nx-amz-content-sha256:UNSIGNED-PAYLOAD\nx-amz-date:${amzDate}\n`;
-    const signedHeaders = 'host;x-amz-content-sha256;x-amz-date';
-    const payloadHash = crypto.createHash('sha256').update(payload).digest('hex');
-
-    const canonicalRequest = [
-        method,
-        path,
-        '',
-        canonicalHeaders,
-        signedHeaders,
-        payloadHash
-    ].join('\n');
-
-    // String to sign
-    const canonicalRequestHash = crypto.createHash('sha256').update(canonicalRequest).digest('hex');
-    const credentialScope = `${dateStamp}/${region}/${service}/aws4_request`;
-    const stringToSign = [
-        algorithm,
-        amzDate,
-        credentialScope,
-        canonicalRequestHash
-    ].join('\n');
-
-    // Calculate signature
-    const kDate = crypto.createHmac('sha256', `AWS4${secretKey}`).update(dateStamp).digest();
-    const kRegion = crypto.createHmac('sha256', kDate).update(region).digest();
-    const kService = crypto.createHmac('sha256', kRegion).update(service).digest();
-    const kSigning = crypto.createHmac('sha256', kService).update('aws4_request').digest();
-    const signature = crypto.createHmac('sha256', kSigning).update(stringToSign).digest('hex');
-
-    const authorizationHeader = `${algorithm} Credential=${accessKey}/${credentialScope}, SignedHeaders=${signedHeaders}, Signature=${signature}`;
-
-    return {
-        'Authorization': authorizationHeader,
-        'X-Amz-Date': amzDate,
-        'X-Amz-Content-Sha256': 'UNSIGNED-PAYLOAD'
-    };
-}
+let cachedKB = EMBEDDED_KNOWLEDGE_BASE;
 
 async function loadKnowledgeBaseFromStorage() {
-    const now = Date.now();
-    if (cachedKB && (now - cacheTime) < CACHE_TTL) {
-        console.log('[KB] Using cached knowledge base');
-        return cachedKB;
-    }
-
-    try {
-        console.log('[KB] Loading knowledge base from Object Storage...');
-        const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3');
-
-        const s3Client = new S3Client({
-            endpoint: 'https://storage.yandexcloud.net',
-            credentials: {
-                accessKeyId: process.env.YC_ACCESS_KEY,
-                secretAccessKey: process.env.YC_SECRET_KEY,
-            },
-            region: 'ru-central1',
-            forcePathStyle: true,
-        });
-
-        const bucketName = process.env.YC_BUCKET_NAME || 'www.mp-webstudio.ru';
-        const keyPath = 'site-content.json';
-
-        const command = new GetObjectCommand({
-            Bucket: bucketName,
-            Key: keyPath
-        });
-
-        const response = await s3Client.send(command);
-        const bodyString = await response.Body.transformToString();
-        const kbData = JSON.parse(bodyString);
-        
-        cachedKB = kbData;
-        cacheTime = now;
-
-        console.log('[KB] ✅ Knowledge base loaded successfully');
-        return kbData;
-    } catch (error) {
-        console.error('[KB] ❌ Error loading KB:', error.message);
-        // Fallback - пустой объект
-        return null;
-    }
+    console.log('[KB] Using embedded knowledge base');
+    return cachedKB;
 }
 
 function findRelevantContext(kb, userMessage) {
