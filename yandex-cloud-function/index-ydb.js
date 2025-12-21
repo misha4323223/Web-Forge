@@ -132,11 +132,48 @@ async function httpsRequest(urlString, options) {
         req.on('socket', (socket) => {
             const elapsed = Date.now() - startTime;
             console.log(`[HTTP v2.0] ✓ SOCKET CREATED after ${elapsed}ms`);
+            console.log(`[HTTP v2.0] Socket state - readable: ${socket.readable}, writable: ${socket.writable}, connecting: ${socket.connecting}`);
+            
+            socket.on('lookup', () => {
+                const elapsed = Date.now() - startTime;
+                console.log(`[HTTP v2.0] ✓ SOCKET lookup after ${elapsed}ms`);
+            });
+            
+            socket.on('connect', () => {
+                const elapsed = Date.now() - startTime;
+                console.log(`[HTTP v2.0] ✓ SOCKET connect EVENT after ${elapsed}ms`);
+            });
+            
+            socket.on('secureConnect', () => {
+                const elapsed = Date.now() - startTime;
+                const tlsVersion = socket.tlsVersion;
+                console.log(`[HTTP v2.0] ✓ SOCKET secureConnect EVENT after ${elapsed}ms (TLS: ${tlsVersion})`);
+            });
+            
+            socket.on('error', (err) => {
+                const elapsed = Date.now() - startTime;
+                console.error(`[HTTP v2.0] ✗ SOCKET ERROR after ${elapsed}ms: ${err.message}`);
+            });
+            
+            socket.on('close', () => {
+                const elapsed = Date.now() - startTime;
+                console.log(`[HTTP v2.0] ✗ SOCKET CLOSED after ${elapsed}ms`);
+            });
+            
+            socket.on('drain', () => {
+                const elapsed = Date.now() - startTime;
+                console.log(`[HTTP v2.0] ✓ SOCKET drain after ${elapsed}ms`);
+            });
         });
         
         req.on('connect', () => {
             const elapsed = Date.now() - startTime;
-            console.log(`[HTTP v2.0] ✓ SOCKET CONNECTED after ${elapsed}ms`);
+            console.log(`[HTTP v2.0] ✓ REQUEST connect EVENT after ${elapsed}ms`);
+        });
+        
+        req.on('secureConnect', () => {
+            const elapsed = Date.now() - startTime;
+            console.log(`[HTTP v2.0] ✓ REQUEST secureConnect EVENT after ${elapsed}ms`);
         });
         
         console.log(`[HTTP v2.0] Writing body...`);
