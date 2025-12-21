@@ -37,12 +37,7 @@ export function ChatWidget() {
     try {
       const response = await apiRequest("POST", "/api/giga-chat", { message: userMessage });
 
-      const contentType = response.headers.get("content-type");
-      
-      if (!contentType?.includes("application/json")) {
-        throw new Error("Сервер вернул невалидный ответ");
-      }
-
+      // apiRequest уже обрабатывает response.ok и выбрасывает ошибку, если статус не 2xx
       const data = await response.json();
 
       if (data.success) {
@@ -51,21 +46,30 @@ export function ChatWidget() {
           { role: "assistant", content: data.response },
         ]);
       } else {
+        const errorMsg = data.response || "Ошибка при получении ответа. Попробуйте снова.";
+        const details = data.code ? ` (Код: ${data.code})` : "";
         setMessages((prev) => [
           ...prev,
           {
             role: "assistant",
-            content: data.response || "Ошибка при получении ответа. Попробуйте снова.",
+            content: `Ошибка: ${errorMsg}${details}`,
           },
         ]);
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error('Chat error:', error);
+      let errorMessage = "Не удалось связаться с AI-ассистентом";
+      
+      if (error instanceof Error) {
+        // Если это ошибка от apiRequest, она может содержать тело ответа
+        errorMessage = error.message;
+      }
+      
       setMessages((prev) => [
         ...prev,
         {
           role: "assistant",
-          content: `Ошибка: ${errorMessage}`,
+          content: `⚠️ ${errorMessage}. Пожалуйста, попробуйте позже или напишите нам в Telegram.`,
         },
       ]);
     } finally {
