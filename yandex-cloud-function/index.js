@@ -34,6 +34,8 @@ const PDFDocument = require('pdfkit');
 const { Driver, getCredentialsFromEnv, TypedValues, Types } = require('ydb-sdk');
 const { SESv2Client, SendEmailCommand } = require('@aws-sdk/client-sesv2');
 const GigaChat = require('gigachat');
+const grpc = require('@grpc/grpc-js');
+const protoLoader = require('@grpc/proto-loader');
 
 const SITE_URL = process.env.SITE_URL || 'https://www.mp-webstudio.ru';
 
@@ -3331,19 +3333,83 @@ async function sendTelegramNotification(message) {
     }
 }
 
-// ============ Giga Chat Handler ============
+// ============ Giga Chat gRPC Handler ============
+
+const GIGACHAT_PROTO = `
+syntax = "proto3";
+
+package gigachat.v1;
+
+service ChatService {
+  rpc Chat (ChatRequest) returns (ChatResponse);
+  rpc ChatStream (ChatRequest) returns (stream ChatResponse);
+}
+
+message ChatRequest {
+  ChatOptions options = 1;
+  string model = 2;
+  repeated Message messages = 3;
+}
+
+message ChatOptions {
+  float temperature = 1;
+  float top_p = 2;
+  int32 max_alternatives = 3;
+  int32 max_tokens = 4;
+}
+
+message Message {
+  string role = 1;
+  string content = 2;
+}
+
+message ChatResponse {
+  repeated Alternative alternatives = 1;
+  Usage usage = 2;
+}
+
+message Alternative {
+  Message message = 1;
+  string finish_reason = 2;
+}
+
+message Usage {
+  int32 prompt_tokens = 1;
+  int32 completion_tokens = 2;
+  int32 total_tokens = 3;
+}
+`;
+
+async function loadGigaChatProto() {
+    const packageDefinition = await protoLoader.loadSync(Buffer.from(GIGACHAT_PROTO), {
+        keepCase: true,
+        longs: String,
+        enums: String,
+        defaults: true,
+        oneofs: true,
+    });
+    return grpc.loadPackageDefinition(packageDefinition);
+}
+
+let gigachatProto = null;
+
+async function getGigaChatProto() {
+    if (!gigachatProto) {
+        gigachatProto = await loadGigaChatProto();
+    }
+    return gigachatProto;
+}
 
 async function handleGigaChat(body, headers) {
     const handlerId = crypto.randomUUID().substring(0, 8);
-    console.log(`\n\n=== GIGACHAT REQUEST START [${handlerId}] (Yandex Cloud Function) ===`);
+    console.log(`\n\n=== GIGACHAT gRPC REQUEST START [${handlerId}] (Yandex Cloud) ===`);
     const startTime = Date.now();
     
     try {
         const { message } = body;
-        console.log(`[${handlerId}] 1️⃣ Received message (${message?.length || 0} chars): ${message?.substring(0, 50)}...`);
+        console.log(`[${handlerId}] 1️⃣ Received message (${message?.length || 0} chars)`);
         
         if (!message || typeof message !== 'string' || message.trim().length === 0) {
-            console.error(`[${handlerId}] ❌ Message validation failed`);
             return {
                 statusCode: 400,
                 headers,
@@ -3355,7 +3421,6 @@ async function handleGigaChat(body, headers) {
         }
 
         if (message.length > 2000) {
-            console.error(`[${handlerId}] ❌ Message too long (${message.length} chars)`);
             return {
                 statusCode: 400,
                 headers,
@@ -3366,16 +3431,12 @@ async function handleGigaChat(body, headers) {
             };
         }
 
-        console.log(`[${handlerId}] ✅ Message validation passed (${message.length} chars)`);
-
         const gigachatKey = process.env.GIGACHAT_KEY;
         const gigachatScope = process.env.GIGACHAT_SCOPE || 'GIGACHAT_API_PERS';
         
-        console.log(`[${handlerId}] 2️⃣ GIGACHAT_KEY exists:`, !!gigachatKey);
-        console.log(`[${handlerId}]    Key length: ${gigachatKey?.length || 0}`);
+        console.log(`[${handlerId}] 2️⃣ GIGACHAT_KEY exists: ${!!gigachatKey}`);
 
         if (!gigachatKey) {
-            console.error(`[${handlerId}] ❌ GIGACHAT_KEY not configured`);
             return {
                 statusCode: 500,
                 headers,
@@ -3386,150 +3447,130 @@ async function handleGigaChat(body, headers) {
             };
         }
 
-        // Получаем токен доступа
-        const authBody = `scope=${encodeURIComponent(gigachatScope)}`;
-        
+        // Получаем OAuth токен
         console.log(`[${handlerId}] 3️⃣ Requesting OAuth token...`);
-        console.log(`[${handlerId}]    Scope: ${gigachatScope}`);
-        console.log(`[${handlerId}]    Auth URL: https://ngw.devices.sberbank.ru:9443/api/v2/oauth`);
-        
-        let authResponse;
+        const authBody = `scope=${encodeURIComponent(gigachatScope)}`;
         const authStartTime = Date.now();
         
+        let authResponse;
         try {
             authResponse = await httpsRequest('https://ngw.devices.sberbank.ru:9443/api/v2/oauth', {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/x-www-form-urlencoded',
                     'Accept': 'application/json',
-                    'Content-Length': Buffer.byteLength(authBody),
                     'Authorization': `Basic ${gigachatKey}`,
                     'RqUID': crypto.randomUUID(),
                 },
                 body: authBody,
             });
-            const authElapsed = Math.round((Date.now() - authStartTime) / 1000);
-            console.log(`[${handlerId}] ✅ OAuth request completed in ${authElapsed}s`);
-        } catch (fetchErr) {
-            const authElapsed = Math.round((Date.now() - authStartTime) / 1000);
-            const errMsg = fetchErr instanceof Error ? fetchErr.message : String(fetchErr);
-            console.error(`[${handlerId}] ❌ OAuth failed after ${authElapsed}s: ${errMsg}`);
-            throw new Error(`OAuth network error: ${errMsg}`);
+            console.log(`[${handlerId}] ✅ OAuth completed in ${Math.round((Date.now() - authStartTime) / 1000)}s`);
+        } catch (err) {
+            throw new Error(`OAuth failed: ${err.message}`);
         }
 
-        console.log(`[${handlerId}] 4️⃣ Auth response status: ${authResponse.statusCode}`);
-        console.log(`[${handlerId}]    Response size: ${authResponse.data.length} bytes`);
-
         if (authResponse.statusCode !== 200) {
-            console.error(`[${handlerId}] ❌ Auth failed. Status: ${authResponse.statusCode}`);
-            console.error(`[${handlerId}]    Response: ${authResponse.data.substring(0, 500)}`);
-            throw new Error(`Auth error: ${authResponse.statusCode} - ${authResponse.data.substring(0, 100)}`);
+            throw new Error(`Auth error: ${authResponse.statusCode}`);
         }
 
         let authData;
         try {
             authData = JSON.parse(authResponse.data);
-        } catch (parseErr) {
-            console.error(`[${handlerId}] ❌ Failed to parse auth response`);
+        } catch {
             throw new Error('Invalid auth response format');
         }
 
         const accessToken = authData.access_token;
-        console.log(`[${handlerId}] 5️⃣ Got access token`);
-        console.log(`[${handlerId}]    Token length: ${accessToken?.length || 0}`);
-        console.log(`[${handlerId}]    Token preview: ${accessToken?.substring(0, 20)}...`);
-
         if (!accessToken) {
-            console.error(`[${handlerId}] ❌ No access token in auth response`);
             throw new Error('No access token in response');
         }
 
-        // Отправляем сообщение в Giga Chat
-        console.log(`[${handlerId}] 6️⃣ Sending chat request to GigaChat...`);
-        console.log(`[${handlerId}]    Chat URL: https://gigachat.devices.sberbank.ru/api/v1/chat/completions`);
-        console.log(`[${handlerId}]    Model: GigaChat`);
-        console.log(`[${handlerId}]    Temperature: 0.7`);
-        console.log(`[${handlerId}]    Max tokens: 1000`);
-        console.log(`[${handlerId}]    Function timeout limit: 60s`);
-        
-        let chatResponse;
+        console.log(`[${handlerId}] 4️⃣ Loading gRPC proto...`);
+        const proto = await getGigaChatProto();
+        const ChatServiceClient = proto.gigachat.v1.ChatService;
+
+        console.log(`[${handlerId}] 5️⃣ Connecting to gRPC server...`);
+        const credentials = grpc.credentials.createSsl();
+        const metadata = new grpc.Metadata();
+        metadata.add('authorization', `Bearer ${accessToken}`);
+
+        const client = new ChatServiceClient('gigachat.devices.sberbank.ru:443', credentials);
+
+        console.log(`[${handlerId}] 6️⃣ Sending chat request via gRPC...`);
         const chatStartTime = Date.now();
         
-        try {
-            const chatBody = JSON.stringify({
+        return new Promise((resolve) => {
+            const chatRequest = {
                 model: 'GigaChat',
-                messages: [{ role: 'user', content: message }],
-                temperature: 0.7,
-                max_tokens: 1000,
+                messages: [
+                    {
+                        role: 'user',
+                        content: message,
+                    }
+                ],
+                options: {
+                    temperature: 0.7,
+                    max_tokens: 1000,
+                }
+            };
+
+            client.chat(chatRequest, metadata, (err, response) => {
+                const chatElapsed = Math.round((Date.now() - chatStartTime) / 1000);
+                
+                if (err) {
+                    console.error(`[${handlerId}] ❌ gRPC error after ${chatElapsed}s: ${err.message}`);
+                    client.close();
+                    return resolve({
+                        statusCode: 500,
+                        headers,
+                        body: JSON.stringify({
+                            success: false,
+                            response: `gRPC ошибка: ${err.message}`,
+                        }),
+                    });
+                }
+
+                console.log(`[${handlerId}] ✅ gRPC response received in ${chatElapsed}s`);
+                
+                const assistantMessage = response?.alternatives?.[0]?.message?.content || 'Нет ответа';
+                const totalTime = Math.round((Date.now() - startTime) / 1000);
+
+                console.log(`[${handlerId}] 7️⃣ Success!`);
+                console.log(`[${handlerId}]    Response length: ${assistantMessage.length} chars`);
+                console.log(`[${handlerId}]    Total time: ${totalTime}s`);
+                console.log(`=== GIGACHAT gRPC REQUEST END [${handlerId}] (SUCCESS) ===\n`);
+
+                client.close();
+                
+                resolve({
+                    statusCode: 200,
+                    headers,
+                    body: JSON.stringify({
+                        success: true,
+                        response: assistantMessage,
+                    }),
+                });
             });
-            console.log(`[${handlerId}]    Request body size: ${chatBody.length} bytes`);
-            console.log(`[${handlerId}] ⏳ Waiting for chat response... (started at ${new Date().toISOString()})`);
-            
-            chatResponse = await httpsRequest('https://gigachat.devices.sberbank.ru/api/v1/chat/completions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Content-Length': Buffer.byteLength(chatBody),
-                    'Authorization': `Bearer ${accessToken}`,
-                },
-                body: chatBody,
-            });
-            
-            const chatElapsed = Math.round((Date.now() - chatStartTime) / 1000);
-            console.log(`[${handlerId}] ✅ Chat request completed in ${chatElapsed}s`);
-            console.log(`[${handlerId}]    Response status: ${chatResponse.statusCode}`);
-            console.log(`[${handlerId}]    Response size: ${chatResponse.data.length} bytes`);
-        } catch (chatErr) {
-            const chatElapsed = Math.round((Date.now() - chatStartTime) / 1000);
-            const errMsg = chatErr instanceof Error ? chatErr.message : String(chatErr);
-            console.error(`[${handlerId}] ❌ Chat request failed after ${chatElapsed}s: ${errMsg}`);
-            throw new Error(`Chat request error: ${errMsg}`);
-        }
+
+            setTimeout(() => {
+                console.error(`[${handlerId}] ❌ gRPC request timeout (10s)`);
+                client.close();
+                resolve({
+                    statusCode: 500,
+                    headers,
+                    body: JSON.stringify({
+                        success: false,
+                        response: 'Timeout при соединении с GigaChat',
+                    }),
+                });
+            }, 10000);
+        });
         
-        if (!chatResponse) {
-            console.error(`[${handlerId}] ❌ No chat response`);
-            throw new Error('No response from GigaChat');
-        }
-
-        console.log(`[${handlerId}] 7️⃣ Chat response status: ${chatResponse.statusCode}`);
-
-        if (chatResponse.statusCode !== 200) {
-            console.error(`[${handlerId}] ❌ Chat API error. Status: ${chatResponse.statusCode}`);
-            console.error(`[${handlerId}]    Response: ${chatResponse.data.substring(0, 500)}`);
-            throw new Error(`Chat error: ${chatResponse.statusCode}`);
-        }
-
-        let chatData;
-        try {
-            chatData = JSON.parse(chatResponse.data);
-        } catch (parseErr) {
-            console.error(`[${handlerId}] ❌ Failed to parse chat response`);
-            console.error(`[${handlerId}]    Response preview: ${chatResponse.data.substring(0, 200)}`);
-            throw new Error('Invalid chat response format');
-        }
-
-        const assistantMessage = chatData.choices?.[0]?.message?.content || 'Нет ответа';
-        const totalTime = Math.round((Date.now() - startTime) / 1000);
-        
-        console.log(`[${handlerId}] 8️⃣ Success!`);
-        console.log(`[${handlerId}]    Response length: ${assistantMessage.length} chars`);
-        console.log(`[${handlerId}]    Total time: ${totalTime}s`);
-        console.log(`=== GIGACHAT REQUEST END [${handlerId}] (SUCCESS) ===\n`);
-
-        return {
-            statusCode: 200,
-            headers,
-            body: JSON.stringify({
-                success: true,
-                response: assistantMessage,
-            }),
-        };
     } catch (error) {
         const totalTime = Math.round((Date.now() - startTime) / 1000);
         const errorMsg = error instanceof Error ? error.message : String(error);
-        console.error(`[${handlerId}] ❌ ERROR: ${errorMsg}`);
-        console.error(`[${handlerId}] Total time before error: ${totalTime}s`);
-        console.error(`=== GIGACHAT REQUEST END [${handlerId}] (FAILED) ===\n`);
+        console.error(`[${handlerId}] ❌ ERROR: ${errorMsg} (after ${totalTime}s)`);
+        console.error(`=== GIGACHAT gRPC REQUEST END [${handlerId}] (FAILED) ===\n`);
         
         return {
             statusCode: 500,
