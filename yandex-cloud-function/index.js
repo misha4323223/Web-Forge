@@ -3335,51 +3335,39 @@ async function sendTelegramNotification(message) {
 
 // ============ Giga Chat gRPC Handler ============
 
-const SBERBANK_CERTIFICATE = `-----BEGIN CERTIFICATE-----
-MIIIFDCCBfygAwIBAgIQJkEz2ls8QZGaWVenzUJmdjANBgkqhkiG9w0BAQsFADBv
-MQswCQYDVQQGEwJSVTE/MD0GA1UECgw2VGhlIE1pbmlzdHJ5IG9mIERpZ2l0YWwg
-RGV2ZWxvcG1lbnQgYW5kIENvbW11bmljYXRpb25zMR8wHQYDVQQDDBZSdXNzaWFu
-IFRydXN0ZWQgU3ViIENBMB4XDTI1MDcyMzEzMzAyMVoXDTI2MDcyMzEzMzAyMVow
-gY4xCzAJBgNVBAYTAlJVMQ8wDQYDVQQIDAZNb3Njb3cxDzANBgNVBAcMBk1vc2Nv
-dzE2MDQGA1UECgwtUHVibGljIEpvaW50LVN0b2NrIENvbXBhbnkgU2JlcmJhbmsg
-b2YgUnVzc2lhMSUwIwYDVQQDDBxnaWdhY2hhdC5kZXZpY2VzLnNiZXJiYW5rLnJ1
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuOQthISTNp/qfe32MpQA
-h2d6h/wWrrY1MBTH6vY2XHPdsCdKgUP/sBR0FV3d87SYmp06Dsv41JGpDxb+ID/S
-gCxy2x2mAAaJL5SD+mUKJPKtfcwExPCdT6Z1o/Ho2y3lhovSEIaAPXsNGGz05YOu
-9Havt77ao4Jf2wwfZV7ijIyfOqU3GeRTcPbuU49JCQlkY09BTYsYzeXzzIIgT2Zr
-l1iYDrwD7RMB/RXUA7DDdvtezpASubWXH/eh34G4zSH2vqXsmJRANDWWetpGQGdv
-lrIkpKnxI0las7B797/X/vbO7n313HogTZXmkEjL/rBK+1P0LhPbzBo2QBNeMcRh
-mwIDAQABo4IDijCCA4YwHQYDVR0OBBYEFIGoslfDlPtDb2jI0xwr8Q2LRyfbMB8G
-A1UdIwQYMBaAFHc92TmvQr3cW8p26u79zj5hKTBfMAkGA1UdEwQCMAAwCwYDVR0P
-BAQDAgXgMB0GA1UdJQQWMBQGCCsGAQUFBwMBBggrBgEFBQcDAjAnBgNVHREEIDAe
-ghxnaWdhY2hhdC5kZXZpY2VzLnNiZXJiYW5rLnJ1MIGLBgNVHR8EgYMwgYAwPKA6
-oDiGNmh0dHA6Ly9udWMtY2RwLnZvc2tob2QucnUvY2RwL3N1YmNhX3NzbF9yc2Ey
-MDI0X292LmNybDBAoD6gPIY6aHR0cDovL251Yy1jZHAuZGlnaXRhbC5nb3YucnUv
-Y2RwL3N1YmNhX3NzbF9yc2EyMDI0X292LmNybDCBvwYIKwYBBQUHAQEEgbIwga8w
-QAYIKwYBBQUHMAKGNGh0dHA6Ly9udWMtY2RwLnZvc2tob2QucnUvY2RwL3N1YmNh
-X3NzbF9yc2EyMDI0LmNydDswQwYIKwYBBQUHMAKGN2h0dHA6Ly9udWMtY2RwLmRp
-Z2l0YWwuZ292LnJ1L2NkcC9zdWJjYV9zc2xfcnNhMjAyNC5jcnQwJgYIKwYBBQUH
-MAGGGmh0dHA6Ly9udWMtb2NzcC52b3NraG9kLnJ1MBMGA1UdIAQMMAowCAYGZ4EM
-AQICMIIBfQYKKwYBBAHWeQIEAgSCAW0EggFpAWcAdgB42RK+QgrAAhy6XaJUMpFT
-20jLBiv8QwEkHhCrxxaeZwAAAZg3erqGAAAEAwBHMEUCIQC60+sD+1uIProcKZLk
-+6gU+mgjyZmmgnSjyMZWckv1ZwIgM6yveoF9gAquB80S2k3ErOnDY28BaCk59f/4
-ffnLVP4AdQBWHsdE3xr3AuYmg63fxJXPdaMbDGzooMfqAQMwkLdIhQAAAZg3erqZ
-AAAEAwBGMEQCID2+CgNHYIUysLXuCHzp0nGkl5cJkFbYdNs2GHdCexYlAiBa5hk5
-os36KUVl9a2jhElE7BGhlVR+JYXAcWvp9lbKTgB2AMm4EbzAHGJdyif01sRHy19+
-Dr9yy1mRqDMvmb+aKj5KAAABmDd6uoUAAAQDAEcwRQIgHae4r9v0UKC3u/5QMjlP
-kOUO5fVMpg5DyNdhWM8oVFgCIQC/XG1d+oeBwitELirHwbHchfBWMhSscxpWvdIE
-CHhegjANBgkqhkiG9w0BAQsFAAOCAgEAjTPCjSsTgPigHIsIHqlUrxbMoJnXhwwH
-336j2z/+QXmX4XJuxpge57vb2mjBldjoLdquOi6LSypS3lVbOgw6l+55ZMW7ls3o
-0v8J5cP/ax996SrH02jPewcsyK+A01+lFMBHAjE1jDe10ZDvpH43hetAVrtEw9He
-o1jHh+L/yl5MROING4ms41f5fDXZJyL/d3AS9wdOd0FTySS1di6LBrWaj2GdCshl
-IdNxwcKz7CUWhkNvFyfzwARtOwo9ZDWauXUd8PG3fKGmvo1rSoIP7XbngkXcoejH
-D8sihSBTgTp8S49y3Zax/xdNRn+MmB4rH+SSWk3r+iTgXgNC/F0hyk479Ct/1WfF
-Fcx/6+asNaaTeLbeMb7vs1JbEjMMuFWxzaGhYgpdytQC2TIquq3tUUSfJfSB/2wf
-r6aUGkISSaTKqScPKo001Mz+zoVrCkXNMX+AboYg2zYMRRpvzmFuQU0GXDKHS/R4
-3Lhf035iEXFQ90WBofqlulkS5oq4z2NIzbxZeYqMNIViOIlwdKMU8wz1AI+qxu97
-t6GRyxVKcx6vdiYDT1m8YwNxnF54P87TgoXjBRZVB0WppPDTaa/NH1KJVLE18p/u
-23cdvNnHGTqpRh9cBSUdxdGGgs5inuoAOvXcv/NJVzuilO0uW9iCi17DKbiD7aE6
-kb+GLCwjuNo=
+// Корневой сертификат Russian Trusted Root CA (для валидации цепочки)
+const SBERBANK_ROOT_CA = `-----BEGIN CERTIFICATE-----
+MIIFwjCCA6qgAwIBAgICEAAwDQYJKoZIhvcNAQELBQAwcDELMAkGA1UEBhMCUlUx
+PzA9BgNVBAoMNlRoZSBNaW5pc3RyeSBvZiBEaWdpdGFsIERldmVsb3BtZW50IGFu
+ZCBDb21tdW5pY2F0aW9uczEgMB4GA1UEAwwXUnVzc2lhbiBUcnVzdGVkIFJvb3Qg
+Q0EwHhcNMjIwMzAxMjEwNDE1WhcNMzIwMjI3MjEwNDE1WjBwMQswCQYDVQQGEwJS
+VTE/MD0GA1UECgw2VGhlIE1pbmlzdHJ5IG9mIERpZ2l0YWwgRGV2ZWxvcG1lbnQg
+YW5kIENvbW11bmljYXRpb25zMSAwHgYDVQQDDBdSdXNzaWFuIFRydXN0ZWQgUm9v
+dCBDQTCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBAMfFOZ8pUAL3+r2n
+qqE0Zp52selXsKGFYoG0GM5bwz1bSFtCt+AZQMhkWQheI3poZAToYJu69pHLKS6Q
+XBiwBC1cvzYmUYKMYZC7jE5YhEU2bSL0mX7NaMxMDmH2/NwuOVRj8OImVa5s1F4U
+zn4Kv3PFlDBjjSjXKVY9kmjUBsXQrIHeaqmUIsPIlNWUnimXS0I0abExqkbdrXbX
+YwCOXhOO2pDUx3ckmJlCMUGacUTnylyQW2VsJIyIGA8V0xzdaeUXg0VZ6ZmNUr5Y
+Ber/EAOLPb8NYpsAhJe2mXjMB/J9HNsoFMBFJ0lLOT/+dQvjbdRZoOT8eqJpWnVD
+U+QL/qEZnz57N88OWM3rabJkRNdU/Z7x5SFIM9FrqtN8xewsiBWBI0K6XFuOBOTD
+4V08o4TzJ8+Ccq5XlCUW2L48pZNCYuBDfBh7FxkB7qDgGDiaftEkZZfApRg2E+M9
+G8wkNKTPLDc4wH0FDTijhgxR3Y4PiS1HL2Zhw7bD3CbslmEGgfnnZojNkJtcLeBH
+BLa52/dSwNU4WWLubaYSiAmA9IUMX1/RpfpxOxd4Ykmhz97oFbUaDJFipIggx5sX
+ePAlkTdWnv+RWBxlJwMQ25oEHmRguNYf4Zr/Rxr9cS93Y+mdXIZaBEE0KS2iLRqa
+OiWBki9IMQU4phqPOBAaG7A+eP8PAgMBAAGjZjBkMB0GA1UdDgQWBBTh0YHlzlpf
+BKrS6badZrHF+qwshzAfBgNVHSMEGDAWgBTh0YHlzlpfBKrS6badZrHF+qwshzAS
+BgNVHRMBAf8ECDAGAQH/AgEEMA4GA1UdDwEB/wQEAwIBhjANBgkqhkiG9w0BAQsF
+AAOCAgEAALIY1wkilt/urfEVM5vKzr6utOeDWCUczmWX/RX4ljpRdgF+5fAIS4vH
+tmXkqpSCOVeWUrJV9QvZn6L227ZwuE15cWi8DCDal3Ue90WgAJJZMfTshN4OI8cq
+W9E4EG9wglbEtMnObHlms8F3CHmrw3k6KmUkWGoa+/ENmcVl68u/cMRl1JbW2bM+
+/3A+SAg2c6iPDlehczKx2oa95QW0SkPPWGuNA/CE8CpyANIhu9XFrj3RQ3EqeRcS
+AQQod1RNuHpfETLU/A2gMmvn/w/sx7TB3W5BPs6rprOA37tutPq9u6FTZOcG1Oqj
+C/B7yTqgI7rbyvox7DEXoX7rIiEqyNNUguTk/u3SZ4VXE2kmxdmSh3TQvybfbnXV
+4JbCZVaqiZraqc7oZMnRoWrXRG3ztbnbes/9qhRGI7PqXqeKJBztxRTEVj8ONs1d
+WN5szTwaPIvhkhO3CO5ErU2rVdUr89wKpNXbBODFKRtgxUT70YpmJ46VVaqdAhOZ
+D9EUUn4YaeLaS8AjSF/h7UkjOibNc4qVDiPP+rkehFWM66PVnP1Msh93tc+taIfC
+EYVMxjh8zNbFuoc7fzvvrFILLe7ifvEIUqSVIC/AzplM/Jxw7buXFeGP1qVCBEHq
+391d/9RAfaZ12zkwFsl+IKwE/OZxW8AHa9i1p4GO0YSNuczzEm4=
 -----END CERTIFICATE-----`;
 
 const GIGACHAT_PROTO = `
@@ -3542,16 +3530,19 @@ async function handleGigaChat(body, headers) {
         const ChatServiceClient = proto.gigachat.v1.ChatService;
 
         console.log(`[${handlerId}] 5️⃣ Connecting to gRPC server...`);
-        const credentials = grpc.credentials.createSsl(Buffer.from(SBERBANK_CERTIFICATE));
+        // Используем корневой CA сертификат для валидации цепочки
+        const credentials = grpc.credentials.createSsl(Buffer.from(SBERBANK_ROOT_CA));
         const metadata = new grpc.Metadata();
         metadata.add('authorization', `Bearer ${accessToken}`);
 
-        // Опции для gRPC канала
+        // Опции для gRPC канала с правильной конфигурацией
         const channelOptions = {
             'grpc.ssl_target_name_override': 'gigachat.devices.sberbank.ru',
             'grpc.default_authority': 'gigachat.devices.sberbank.ru',
             'grpc.max_receive_message_length': 10 * 1024 * 1024,
             'grpc.max_send_message_length': 10 * 1024 * 1024,
+            'grpc.http2.keepalive_time': 30000,
+            'grpc.http2.keepalive_timeout': 10000,
         };
 
         const client = new ChatServiceClient('gigachat.devices.sberbank.ru:443', credentials, channelOptions);
