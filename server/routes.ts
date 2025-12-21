@@ -26,8 +26,9 @@ async function httpsRequest(
   return new Promise((resolve, reject) => {
     const url = new URL(urlString);
     
-    // Увеличенный timeout для production (45 сек для GigaChat)
-    // GigaChat может обрабатывать долго, особенно в Yandex Cloud
+    // Timeout для GigaChat
+    // Replit: 45 сек (нет жесткого лимита на функцию)
+    // Yandex Cloud: используется 25 сек (60 сек лимит функции - запас на обработку)
     const TIMEOUT_MS = 45000;
     const SOCKET_TIMEOUT_MS = 50000;
     

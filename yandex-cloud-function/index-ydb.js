@@ -65,9 +65,10 @@ async function httpsRequest(urlString, options) {
     return new Promise((resolve, reject) => {
         const url = new URL(urlString);
         
-        // Увеличенный timeout для production (45 сек для GigaChat)
-        const TIMEOUT_MS = 45000;
-        const SOCKET_TIMEOUT_MS = 50000;
+        // Timeout оптимизирован для Yandex Cloud Function (60 сек лимит)
+        // OAuth: ~1 сек, Chat API: должно быть < 25 сек, обработка результата: ~5 сек
+        const TIMEOUT_MS = 25000;  // 25 сек для одного запроса
+        const SOCKET_TIMEOUT_MS = 28000;  // 28 сек для сокета
         
         let socketTimeoutId = null;
         let requestTimeoutId = null;
@@ -3312,11 +3313,13 @@ async function handleGigaChat(body, headers) {
 
         // Отправляем сообщение в Giga Chat
         console.log("6️⃣ Sending chat request to GigaChat...");
-        console.log("   [INFO] Chat request timeout: 45 seconds (optimized for Yandex Cloud)");
+        console.log("   [INFO] Chat request timeout: 25 seconds (Yandex Cloud Function limit: 60 sec)");
+        console.log("   URL: https://gigachat.devices.sberbank.ru:9443/api/v1/chat/completions");
         let chatResponse;
         
         try {
-            console.log("   ⏳ Waiting for chat response...");
+            const startTime = Date.now();
+            console.log("   ⏳ Waiting for chat response... (started at " + new Date().toISOString() + ")");
             chatResponse = await httpsRequest('https://gigachat.devices.sberbank.ru:9443/api/v1/chat/completions', {
                 method: 'POST',
                 headers: {
@@ -3330,7 +3333,8 @@ async function handleGigaChat(body, headers) {
                     max_tokens: 1000,
                 }),
             });
-            console.log("   ✅ HTTPS request succeeded, status:", chatResponse.statusCode);
+            const elapsed = Math.round((Date.now() - startTime) / 1000);
+            console.log("   ✅ HTTPS request succeeded, status:", chatResponse.statusCode, `(elapsed: ${elapsed}s)`);
         } catch (chatErr) {
             const errMsg = chatErr instanceof Error ? chatErr.message : String(chatErr);
             console.error(`❌ Chat request failed: ${errMsg}`);
