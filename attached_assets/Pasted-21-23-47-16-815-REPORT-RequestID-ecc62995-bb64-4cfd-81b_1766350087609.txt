@@ -1,0 +1,185 @@
+21 дек. 23:47:16.815
+REPORT RequestID: ecc62995-bb64-4cfd-81bb-564fcd885191 Duration: 10151.172 ms Billed Duration: 10200 ms Memory Size: 640 MB Max Memory Used: 178 MB Queuing Duration: 0.109 ms CPU Usage: 2.148 %
+
+21 дек. 23:47:16.815
+END RequestID: ecc62995-bb64-4cfd-81bb-564fcd885191
+
+21 дек. 23:47:16.812
+[d0ffe9eb] ❌ gRPC request timeout (10s)
+
+21 дек. 23:47:11.785
+[HTTPS-c046d047] ❌ Socket closed (hadError: false) after 5117ms
+
+21 дек. 23:47:06.805
+[d0ffe9eb] 6️⃣ Sending chat request via gRPC...
+
+21 дек. 23:47:06.801
+[d0ffe9eb] 5️⃣ Connecting to gRPC server...
+
+21 дек. 23:47:06.784
+[d0ffe9eb] 4️⃣ Loading gRPC proto...
+
+21 дек. 23:47:06.784
+[d0ffe9eb] ✅ OAuth completed in 0s
+
+21 дек. 23:47:06.784
+[HTTPS-c046d047] ========== REQUEST SUCCESS ==========
+
+21 дек. 23:47:06.784
+[HTTPS-c046d047] Total response size: 1279 bytes
+
+21 дек. 23:47:06.784
+[HTTPS-c046d047] ✨ Response ended after 116ms
+
+21 дек. 23:47:06.783
+[HTTPS-c046d047] 📥 Data chunk: 1279 bytes (total: 1279)
+
+21 дек. 23:47:06.783
+[HTTPS-c046d047] 📦 First byte received after 116ms
+
+21 дек. 23:47:06.783
+[HTTPS-c046d047] Response headers: content-type=application/json, content-length=1279
+
+21 дек. 23:47:06.783
+[HTTPS-c046d047] TLS: TLSv1.3, Cipher: TLS_AES_256_GCM_SHA384
+
+21 дек. 23:47:06.783
+[HTTPS-c046d047] Status code: 200
+
+21 дек. 23:47:06.783
+[HTTPS-c046d047] ✅ Response callback triggered after 115ms
+
+21 дек. 23:47:06.742
+[HTTPS-c046d047] 🔒 TLS handshake complete after 74ms
+
+21 дек. 23:47:06.717
+[HTTPS-c046d047] 🌐 TCP connected after 50ms
+
+21 дек. 23:47:06.709
+[HTTPS-c046d047] 🔍 DNS lookup started
+
+21 дек. 23:47:06.706
+[HTTPS-c046d047] 🔌 Socket created, fd: unknown
+
+21 дек. 23:47:06.705
+[HTTPS-c046d047] Waiting for response...
+
+21 дек. 23:47:06.705
+[HTTPS-c046d047] 🚀 Calling req.end()
+
+21 дек. 23:47:06.705
+[HTTPS-c046d047] Body written successfully
+
+21 дек. 23:47:06.705
+[HTTPS-c046d047] 📤 Writing body (23 bytes): scope=GIGACHAT_API_PERS
+
+21 дек. 23:47:06.668
+[HTTPS-c046d047] Creating HTTPS request with timeout: 50000ms
+
+21 дек. 23:47:06.668
+[HTTPS-c046d047] Setting main timeout: 45000ms
+
+21 дек. 23:47:06.668
+[HTTPS-c046d047] Headers: Content-Type, Accept, Authorization, RqUID
+
+21 дек. 23:47:06.668
+[HTTPS-c046d047] Request body size: 23 bytes
+
+21 дек. 23:47:06.668
+[HTTPS-c046d047] Path: /api/v2/oauth
+
+21 дек. 23:47:06.668
+[HTTPS-c046d047] Hostname: ngw.devices.sberbank.ru:9443
+
+21 дек. 23:47:06.668
+[HTTPS-c046d047] Method: POST
+
+21 дек. 23:47:06.668
+[HTTPS-c046d047] URL: https://ngw.devices.sberbank.ru:9443/api/v2/oauth
+
+21 дек. 23:47:06.668
+[HTTPS-c046d047] ========== HTTPS REQUEST START ==========
+
+21 дек. 23:47:06.667
+[d0ffe9eb] 3️⃣ Requesting OAuth token...
+
+21 дек. 23:47:06.667
+[d0ffe9eb] 2️⃣ GIGACHAT_KEY exists: true
+
+21 дек. 23:47:06.667
+[d0ffe9eb] 1b️⃣ Context found (331 chars), enriching message...
+
+21 дек. 23:47:06.666
+[d0ffe9eb] 1a️⃣ Using embedded knowledge base (in-memory)...
+
+21 дек. 23:47:06.666
+[d0ffe9eb] 1️⃣ Received message (6 chars)
+
+21 дек. 23:47:06.666
+=== GIGACHAT gRPC REQUEST START [d0ffe9eb] (Yandex Cloud) ===
+
+21 дек. 23:47:06.665
+[GIGA-CHAT] Handler called
+
+21 дек. 23:47:06.665
+}
+
+21 дек. 23:47:06.665
+bodyKeys: [ 'message' ]
+
+21 дек. 23:47:06.665
+path: '',
+
+21 дек. 23:47:06.665
+action: 'giga-chat',
+
+21 дек. 23:47:06.665
+method: 'POST',
+
+21 дек. 23:47:06.665
+[REQUEST] {
+
+21 дек. 23:47:06.665
+}
+
+21 дек. 23:47:06.665
+timestamp: '2025-12-21T20:47:06.664Z'
+
+21 дек. 23:47:06.665
+path: undefined,
+
+21 дек. 23:47:06.665
+method: 'POST',
+
+21 дек. 23:47:06.665
+[HANDLER START] {
+
+21 дек. 23:47:06.660
+START RequestID: ecc62995-bb64-4cfd-81bb-564fcd885191 Version: d4evfgpqheqjk7jse1n4
+
+21 дек. 23:47:06.523
+REPORT RequestID: 0443bbc5-d0ef-46f8-b80b-e8bc0d78cc4b Duration: 896.861 ms Billed Duration: 900 ms Memory Size: 640 MB Max Memory Used: 158 MB Queuing Duration: 0.099 ms Function Init Duration: 878.410 ms CPU Usage: 99.902 %
+
+21 дек. 23:47:06.523
+END RequestID: 0443bbc5-d0ef-46f8-b80b-e8bc0d78cc4b
+
+21 дек. 23:47:06.520
+[OPTIONS] Returning 200
+
+21 дек. 23:47:06.520
+}
+
+21 дек. 23:47:06.520
+timestamp: '2025-12-21T20:47:06.514Z'
+
+21 дек. 23:47:06.520
+path: undefined,
+
+21 дек. 23:47:06.520
+method: 'OPTIONS',
+
+21 дек. 23:47:06.520
+[HANDLER START] {
+
+21 дек. 23:47:05.621
+START RequestID: 0443bbc5-d0ef-46f8-b80b-e8bc0d78cc4b Version: d4evfgpqheqjk7jse1n4

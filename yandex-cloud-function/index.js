@@ -3667,22 +3667,34 @@ async function handleGigaChat(body, headers) {
         const ChatServiceClient = proto.gigachat.v1.ChatService;
 
         console.log(`[${handlerId}] 5️⃣ Connecting to gRPC server...`);
+        console.log(`[${handlerId}]    Access token length: ${accessToken?.length || 0} chars`);
+        
         // Используем корневой CA сертификат для валидации цепочки
         const credentials = grpc.credentials.createSsl(Buffer.from(SBERBANK_ROOT_CA));
         const metadata = new grpc.Metadata();
         metadata.add('authorization', `Bearer ${accessToken}`);
 
-        // Опции для gRPC канала с правильной конфигурацией
+        // Оптимизированная конфигурация gRPC для Yandex Cloud
+        // Уменьшенные таймауты для быстрого обнаружения проблем соединения
         const channelOptions = {
             'grpc.ssl_target_name_override': 'gigachat.devices.sberbank.ru',
             'grpc.default_authority': 'gigachat.devices.sberbank.ru',
             'grpc.max_receive_message_length': 10 * 1024 * 1024,
             'grpc.max_send_message_length': 10 * 1024 * 1024,
-            'grpc.http2.keepalive_time': 30000,
-            'grpc.http2.keepalive_timeout': 10000,
+            'grpc.http2.keepalive_time': 15000,
+            'grpc.http2.keepalive_timeout': 5000,
+            'grpc.keepalive_time_ms': 15000,
+            'grpc.keepalive_timeout_ms': 5000,
+            'grpc.http2.max_pings_without_data': 0,
+            'grpc.max_connection_idle_ms': 30000,
+            'grpc.max_connection_age_ms': 600000,
+            'grpc.http2.min_time_between_pings_ms': 10000,
         };
 
+        console.log(`[${handlerId}]    Creating gRPC client with optimized options...`);
+        const clientStartTime = Date.now();
         const client = new ChatServiceClient('gigachat.devices.sberbank.ru:443', credentials, channelOptions);
+        console.log(`[${handlerId}]    Client created in ${Date.now() - clientStartTime}ms`);
 
         console.log(`[${handlerId}] 6️⃣ Sending chat request via gRPC...`);
         const chatStartTime = Date.now();
