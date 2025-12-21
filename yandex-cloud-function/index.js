@@ -3733,6 +3733,10 @@ async function handleGigaChat(body, headers) {
                 model: 'GigaChat',
                 messages: [
                     {
+                        role: 'system',
+                        content: 'Ты помощник веб-студии MP.WebStudio. Говори ИСКЛЮЧИТЕЛЬНО о услугах студии, портфолио, технологиях, процессе разработки и ценах. Не отвечай на вопросы, не связанные с MP.WebStudio. Если клиент спрашивает о чем-то другом - вежливо перенаправь его на услуги студии.',
+                    },
+                    {
                         role: 'user',
                         content: message,
                     }
