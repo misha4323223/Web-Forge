@@ -64,140 +64,37 @@ async function getYdbDriver() {
 async function httpsRequest(urlString, options) {
     return new Promise((resolve, reject) => {
         const url = new URL(urlString);
-        let req;
-        const startTime = Date.now();
-        console.log(`[HTTP v2.0] Starting ${options.method} to ${url.hostname}${url.pathname} at ${startTime}`);
-        
         const timeout = setTimeout(() => {
-            const elapsed = Date.now() - startTime;
-            console.error(`[HTTP v2.0] TIMEOUT after ${elapsed}ms (60s limit) for ${url.hostname}`);
-            if (req) req.destroy();
-            reject(new Error(`Request timeout after ${elapsed}ms`));
-        }, 60000);
-        
-        // Prepare headers with Content-Length for better compatibility
-        const headersWithLength = { ...options.headers };
-        if (options.body) {
-            const bodyLength = Buffer.byteLength(options.body);
-            headersWithLength['Content-Length'] = bodyLength;
-        }
+            req.destroy();
+            reject(new Error('Request timeout'));
+        }, 15000);
         
         const reqOptions = {
             method: options.method,
-            headers: headersWithLength,
+            headers: options.headers,
             rejectUnauthorized: false,
-            timeout: 55000, // Socket-level timeout (less than 60s global)
-            keepAliveTimeout: 60000,
         };
         
-        console.log(`[HTTP v2.0] Request headers:`, JSON.stringify(headersWithLength));
-        if (options.body && options.body.length < 1000) {
-            console.log(`[HTTP v2.0] Request body:`, options.body);
-        } else {
-            console.log(`[HTTP v2.0] Request body size: ${options.body?.length || 0} bytes`);
-        }
-        
-        console.log(`[HTTP v2.0] Creating request object...`);
-        
-        req = https.request(url, reqOptions, (res) => {
-            const elapsed = Date.now() - startTime;
-            console.log(`[HTTP v2.0] ✓ RESPONSE RECEIVED from ${url.hostname}: ${res.statusCode} after ${elapsed}ms`);
+        const req = https.request(url, reqOptions, (res) => {
             let data = '';
             res.on('data', (chunk) => {
-                console.log(`[HTTP v2.0] ✓ DATA CHUNK: ${chunk.length} bytes (total so far: ${data.length})`);
                 data += chunk;
             });
             res.on('end', () => {
                 clearTimeout(timeout);
-                const total = Date.now() - startTime;
-                console.log(`[HTTP v2.0] ✓ DATA END: Request completed in ${total}ms. Total data: ${data.length} bytes`);
-                resolve({ statusCode: res.statusCode || 500, data, headers: res.headers });
+                resolve({ statusCode: res.statusCode || 500, data });
             });
         });
-        console.log(`[HTTP v2.0] Request object created, attaching listeners...`);
         
         req.on('error', (err) => {
             clearTimeout(timeout);
-            const elapsed = Date.now() - startTime;
-            console.error(`[HTTP v2.0] ✗ REQUEST ERROR after ${elapsed}ms for ${url.hostname}: ${err.message}`);
             reject(err);
         });
         
-        req.on('timeout', () => {
-            const elapsed = Date.now() - startTime;
-            console.error(`[HTTP v2.0] ✗ SOCKET TIMEOUT after ${elapsed}ms for ${url.hostname}`);
-            req.destroy();
-        });
-        
-        req.on('socket', (socket) => {
-            const elapsed = Date.now() - startTime;
-            console.log(`[HTTP v2.0] ✓ SOCKET CREATED after ${elapsed}ms`);
-            console.log(`[HTTP v2.0] Socket state - readable: ${socket.readable}, writable: ${socket.writable}, connecting: ${socket.connecting}`);
-            
-            socket.on('lookup', () => {
-                const elapsed = Date.now() - startTime;
-                console.log(`[HTTP v2.0] ✓ SOCKET lookup after ${elapsed}ms`);
-            });
-            
-            socket.on('connect', () => {
-                const elapsed = Date.now() - startTime;
-                console.log(`[HTTP v2.0] ✓ SOCKET connect EVENT after ${elapsed}ms`);
-            });
-            
-            socket.on('secureConnect', () => {
-                const elapsed = Date.now() - startTime;
-                const tlsVersion = socket.tlsVersion;
-                console.log(`[HTTP v2.0] ✓ SOCKET secureConnect EVENT after ${elapsed}ms (TLS: ${tlsVersion})`);
-            });
-            
-            socket.on('error', (err) => {
-                const elapsed = Date.now() - startTime;
-                console.error(`[HTTP v2.0] ✗ SOCKET ERROR after ${elapsed}ms: ${err.message}`);
-            });
-            
-            socket.on('close', () => {
-                const elapsed = Date.now() - startTime;
-                console.log(`[HTTP v2.0] ✗ SOCKET CLOSED after ${elapsed}ms`);
-            });
-            
-            socket.on('drain', () => {
-                const elapsed = Date.now() - startTime;
-                console.log(`[HTTP v2.0] ✓ SOCKET drain after ${elapsed}ms`);
-            });
-        });
-        
-        req.on('connect', () => {
-            const elapsed = Date.now() - startTime;
-            console.log(`[HTTP v2.0] ✓ REQUEST connect EVENT after ${elapsed}ms`);
-        });
-        
-        req.on('secureConnect', () => {
-            const elapsed = Date.now() - startTime;
-            console.log(`[HTTP v2.0] ✓ REQUEST secureConnect EVENT after ${elapsed}ms`);
-        });
-        
-        console.log(`[HTTP v2.0] Writing body...`);
         if (options.body) {
-            const bodySize = Buffer.byteLength(options.body);
-            console.log(`[HTTP v2.0] About to write ${bodySize} bytes to socket`);
-            const writeResult = req.write(options.body);
-            console.log(`[HTTP v2.0] ✓ BODY WRITTEN: ${bodySize} bytes, write returned: ${writeResult}`);
-            if (!writeResult) {
-                console.warn(`[HTTP v2.0] ⚠️  Write returned false - buffer backpressure!`);
-            }
-        } else {
-            console.log(`[HTTP v2.0] No body to write`);
+            req.write(options.body);
         }
-        
-        console.log(`[HTTP v2.0] About to call req.end()...`);
-        req.end((err) => {
-            if (err) {
-                console.error(`[HTTP v2.0] ✗ Error from req.end(): ${err.message}`);
-            } else {
-                console.log(`[HTTP v2.0] ✓ req.end() callback - no error`);
-            }
-        });
-        console.log(`[HTTP v2.0] ✓ req.end() called - waiting for response...`);
+        req.end();
     });
 }
 
@@ -3387,8 +3284,6 @@ async function handleGigaChat(body, headers) {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${accessToken}`,
-                    'Accept': 'application/json',
-                    'RqUID': crypto.randomUUID(),
                 },
                 body: JSON.stringify({
                     model: 'GigaChat',
