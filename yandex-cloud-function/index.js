@@ -66,7 +66,7 @@ async function httpsRequest(urlString, options) {
         const url = new URL(urlString);
         const startTime = Date.now();
         
-        console.log(`   [HTTPS] Starting request to ${url.hostname}`);
+        console.log(`   [HTTPS] Starting request to ${url.hostname}:${url.port || 443}`);
         
         // Timeout оптимизирован для Yandex Cloud Function (60 сек лимит)
         const TIMEOUT_MS = 25000;
@@ -75,6 +75,8 @@ async function httpsRequest(urlString, options) {
         let socketTimeoutId = null;
         let requestTimeoutId = null;
         let hasResponded = false;
+        let socketConnected = false;
+        let tlsConnected = false;
         
         const cleanup = () => {
             if (requestTimeoutId) clearTimeout(requestTimeoutId);
@@ -85,11 +87,15 @@ async function httpsRequest(urlString, options) {
         
         requestTimeoutId = setTimeout(() => {
             cleanup();
-            if (!hasResponded) {
-                console.log(`   [HTTPS] TIMEOUT: No response after ${elapsed()}ms`);
-            }
+            const debugInfo = {
+                elapsed: elapsed() + 'ms',
+                hasResponded,
+                socketConnected,
+                tlsConnected
+            };
+            console.log(`   [HTTPS] ⏱️ TIMEOUT after ${elapsed()}ms`, debugInfo);
             req.destroy();
-            reject(new Error(`Request timeout after ${elapsed()}ms`));
+            reject(new Error(`Request timeout after ${elapsed()}ms (socket: ${socketConnected}, tls: ${tlsConnected})`));
         }, TIMEOUT_MS);
         
         const reqOptions = {
@@ -97,11 +103,15 @@ async function httpsRequest(urlString, options) {
             headers: options.headers,
             rejectUnauthorized: false,
             timeout: SOCKET_TIMEOUT_MS,
+            connectTimeout: 10000,
         };
         
         const req = https.request(url, reqOptions, (res) => {
             hasResponded = true;
-            console.log(`   [HTTPS] Response received after ${elapsed()}ms, status: ${res.statusCode}`);
+            const tlsVersion = res.socket?.getProtocol?.() || 'unknown';
+            const cipher = res.socket?.getCipher?.()?.name || 'unknown';
+            console.log(`   [HTTPS] ✅ Response received after ${elapsed()}ms, status: ${res.statusCode}`);
+            console.log(`   [HTTPS]    TLS: ${tlsVersion}, Cipher: ${cipher}`);
             
             // Reset socket timeout on response start
             socketTimeoutId = setTimeout(() => {
@@ -112,7 +122,7 @@ async function httpsRequest(urlString, options) {
             
             let data = '';
             res.on('data', (chunk) => {
-                console.log(`   [HTTPS] Received ${chunk.length} bytes (total: ${data.length + chunk.length})`);
+                console.log(`   [HTTPS] 📦 Received ${chunk.length} bytes (total: ${data.length + chunk.length})`);
                 // Reset timeout on each data chunk
                 if (socketTimeoutId) clearTimeout(socketTimeoutId);
                 socketTimeoutId = setTimeout(() => {
@@ -125,38 +135,59 @@ async function httpsRequest(urlString, options) {
             });
             res.on('end', () => {
                 cleanup();
-                console.log(`   [HTTPS] Request completed after ${elapsed()}ms, data length: ${data.length}`);
+                console.log(`   [HTTPS] ✨ Completed after ${elapsed()}ms, response size: ${data.length} bytes`);
                 resolve({ statusCode: res.statusCode || 500, data });
             });
         });
         
         req.on('socket', (socket) => {
-            console.log(`   [HTTPS] Socket created`);
+            console.log(`   [HTTPS] 🔌 Socket created after ${elapsed()}ms`);
+            
             socket.on('connect', () => {
-                console.log(`   [HTTPS] Socket connected to ${url.hostname} after ${elapsed()}ms`);
+                socketConnected = true;
+                console.log(`   [HTTPS] 🌐 TCP connected after ${elapsed()}ms`);
             });
+            
             socket.on('secureConnect', () => {
-                console.log(`   [HTTPS] TLS handshake complete after ${elapsed()}ms`);
+                tlsConnected = true;
+                const tlsVersion = socket.getProtocol?.();
+                const cipher = socket.getCipher?.()?.name;
+                console.log(`   [HTTPS] 🔐 TLS handshake complete after ${elapsed()}ms (${tlsVersion}, ${cipher})`);
+            });
+            
+            socket.on('lookup', () => {
+                console.log(`   [HTTPS] 🔍 DNS lookup started`);
+            });
+            
+            socket.on('secureConnect', () => {
+                console.log(`   [HTTPS] 📡 Secure connection established after ${elapsed()}ms`);
             });
         });
         
         req.on('error', (err) => {
             cleanup();
-            console.log(`   [HTTPS] Error after ${elapsed()}ms: ${err.message}`);
+            console.error(`   [HTTPS] ❌ Error after ${elapsed()}ms:`);
+            console.error(`       Code: ${err.code}`);
+            console.error(`       Message: ${err.message}`);
+            console.error(`       Socket connected: ${socketConnected}, TLS connected: ${tlsConnected}`);
+            if (err.syscall) console.error(`       Syscall: ${err.syscall}`);
+            if (err.errno) console.error(`       Errno: ${err.errno}`);
             reject(err);
         });
         
         req.on('timeout', () => {
             cleanup();
-            console.log(`   [HTTPS] Socket timeout after ${elapsed()}ms`);
+            console.log(`   [HTTPS] ⏱️ Socket timeout after ${elapsed()}ms`);
             req.destroy();
             reject(new Error('Socket timeout'));
         });
         
         if (options.body) {
+            console.log(`   [HTTPS] 📤 Writing body (${options.body.length} bytes)`);
             req.write(options.body);
         }
-        console.log(`   [HTTPS] Request sent (${options.method} ${url.pathname})`);
+        
+        console.log(`   [HTTPS] 🚀 Request sent (${options.method} ${url.pathname})`);
         req.end();
     });
 }
