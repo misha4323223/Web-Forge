@@ -158,7 +158,7 @@ export function ChatWidget() {
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyPress={(e) => e.key === "Enter" && sendMessage()}
-                placeholder="&gt; INPUT_"
+                placeholder="Ask me anything..."
                 disabled={isLoading}
                 className="bg-black border-cyan-400/30 focus:border-purple-400 text-cyan-400 placeholder-cyan-400/40 font-mono text-xs rounded-sm focus:ring-0 focus:outline-none transition-colors"
               />
@@ -172,7 +172,6 @@ export function ChatWidget() {
                 <Send className="w-4 h-4" />
               </Button>
             </div>
-            <p className="bg-gradient-to-r from-cyan-400/50 to-purple-400/50 bg-clip-text text-transparent text-xs font-mono">&gt; HISTORY: DISABLED</p>
           </div>
         </DialogContent>
       </Dialog>
