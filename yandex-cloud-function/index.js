@@ -3723,8 +3723,10 @@ async function handleGigaChat(body, headers) {
             'grpc.default_authority': 'gigachat.devices.sberbank.ru',
             'grpc.max_receive_message_length': 10 * 1024 * 1024,
             'grpc.max_send_message_length': 10 * 1024 * 1024,
-            'grpc.http2.keepalive_time': 30000,
-            'grpc.http2.keepalive_timeout': 10000,
+            'grpc.http2.keepalive_time': 10000,
+            'grpc.http2.keepalive_timeout': 20000,
+            'grpc.keepalive_permit_without_calls': true,
+            'grpc.http2.max_pings_without_data': 0,
         };
 
         const client = new ChatServiceClient('gigachat.devices.sberbank.ru:443', credentials, channelOptions);
@@ -3786,7 +3788,7 @@ async function handleGigaChat(body, headers) {
             });
 
             setTimeout(() => {
-                console.error(`[${handlerId}] ❌ gRPC request timeout (10s)`);
+                console.error(`[${handlerId}] ❌ gRPC request timeout (30s)`);
                 client.close();
                 resolve({
                     statusCode: 500,
@@ -3796,7 +3798,7 @@ async function handleGigaChat(body, headers) {
                         response: 'Timeout при соединении с GigaChat',
                     }),
                 });
-            }, 10000);
+            }, 30000);
         });
         
     } catch (error) {
