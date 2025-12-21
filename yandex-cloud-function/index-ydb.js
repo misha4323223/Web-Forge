@@ -97,39 +97,60 @@ async function httpsRequest(urlString, options) {
             console.log(`[HTTP v2.0] Request body size: ${options.body?.length || 0} bytes`);
         }
         
+        console.log(`[HTTP v2.0] Creating request object...`);
+        
         req = https.request(url, reqOptions, (res) => {
             const elapsed = Date.now() - startTime;
-            console.log(`[HTTP v2.0] Response from ${url.hostname}: ${res.statusCode} after ${elapsed}ms`);
+            console.log(`[HTTP v2.0] ✓ RESPONSE RECEIVED from ${url.hostname}: ${res.statusCode} after ${elapsed}ms`);
             let data = '';
             res.on('data', (chunk) => {
-                console.log(`[HTTP v2.0] Received ${chunk.length} bytes (total so far: ${data.length})`);
+                console.log(`[HTTP v2.0] ✓ DATA CHUNK: ${chunk.length} bytes (total so far: ${data.length})`);
                 data += chunk;
             });
             res.on('end', () => {
                 clearTimeout(timeout);
                 const total = Date.now() - startTime;
-                console.log(`[HTTP v2.0] Request completed in ${total}ms. Total data: ${data.length} bytes`);
+                console.log(`[HTTP v2.0] ✓ DATA END: Request completed in ${total}ms. Total data: ${data.length} bytes`);
                 resolve({ statusCode: res.statusCode || 500, data, headers: res.headers });
             });
         });
+        console.log(`[HTTP v2.0] Request object created, attaching listeners...`);
         
         req.on('error', (err) => {
             clearTimeout(timeout);
             const elapsed = Date.now() - startTime;
-            console.error(`[HTTP v2.0] Error after ${elapsed}ms for ${url.hostname}: ${err.message}`);
+            console.error(`[HTTP v2.0] ✗ REQUEST ERROR after ${elapsed}ms for ${url.hostname}: ${err.message}`);
             reject(err);
         });
         
         req.on('timeout', () => {
             const elapsed = Date.now() - startTime;
-            console.error(`[HTTP v2.0] Socket timeout after ${elapsed}ms for ${url.hostname}`);
+            console.error(`[HTTP v2.0] ✗ SOCKET TIMEOUT after ${elapsed}ms for ${url.hostname}`);
             req.destroy();
         });
         
+        req.on('socket', (socket) => {
+            const elapsed = Date.now() - startTime;
+            console.log(`[HTTP v2.0] ✓ SOCKET CREATED after ${elapsed}ms`);
+        });
+        
+        req.on('connect', () => {
+            const elapsed = Date.now() - startTime;
+            console.log(`[HTTP v2.0] ✓ SOCKET CONNECTED after ${elapsed}ms`);
+        });
+        
+        console.log(`[HTTP v2.0] Writing body...`);
         if (options.body) {
+            const bodySize = Buffer.byteLength(options.body);
             req.write(options.body);
+            console.log(`[HTTP v2.0] ✓ BODY WRITTEN: ${bodySize} bytes`);
+        } else {
+            console.log(`[HTTP v2.0] No body to write`);
         }
+        
+        console.log(`[HTTP v2.0] Calling req.end()...`);
         req.end();
+        console.log(`[HTTP v2.0] ✓ req.end() called - waiting for response...`);
     });
 }
 
