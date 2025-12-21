@@ -3382,39 +3382,19 @@ async function handleGigaChat(body, headers) {
         let chatResponse;
         
         try {
-            const chatPayload = JSON.stringify({
-                model: 'GigaChat',
-                messages: [{ role: 'user', content: message }],
-                temperature: 0.7,
-                max_tokens: 1000,
-            });
-            
-            console.log("🔄 Trying fetch API for GigaChat...");
-            const fetchStartTime = Date.now();
-            const fetchResponse = await fetch('https://gigachat.devices.sberbank.ru/api/v1/chat/completions', {
+            chatResponse = await httpsRequest('https://gigachat.devices.sberbank.ru/api/v1/chat/completions', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${accessToken}`,
-                    'User-Agent': 'Yandex-Cloud-Function/1.0',
-                    'Accept': 'application/json',
-                    'X-Request-ID': crypto.randomUUID(),
                 },
-                body: chatPayload,
-                timeout: 55000,
+                body: JSON.stringify({
+                    model: 'GigaChat',
+                    messages: [{ role: 'user', content: message }],
+                    temperature: 0.7,
+                    max_tokens: 1000,
+                }),
             });
-            
-            const fetchElapsed = Date.now() - fetchStartTime;
-            console.log(`✓ Fetch response received after ${fetchElapsed}ms: ${fetchResponse.status}`);
-            
-            const responseBody = await fetchResponse.text();
-            console.log(`✓ Fetch response body received: ${responseBody.length} bytes`);
-            
-            chatResponse = {
-                statusCode: fetchResponse.status,
-                data: responseBody,
-                headers: {},
-            };
         } catch (chatErr) {
             const errMsg = chatErr instanceof Error ? chatErr.message : String(chatErr);
             console.error(`❌ Chat request failed: ${errMsg}`);
