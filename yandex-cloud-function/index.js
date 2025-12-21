@@ -125,6 +125,11 @@ async function httpsRequest(urlString, options) {
             connectTimeout: 15000,
         };
         
+        // Убедимся что Content-Length установлен если есть body
+        if (options.body && !reqOptions.headers['Content-Length']) {
+            reqOptions.headers['Content-Length'] = Buffer.byteLength(options.body);
+        }
+        
         console.log(`   [HTTPS-${requestId}] Creating HTTPS request with timeout: ${SOCKET_TIMEOUT_MS}ms`);
         
         const req = https.request(url, reqOptions, (res) => {
@@ -3397,6 +3402,7 @@ async function handleGigaChat(body, headers) {
                 headers: { 
                     'Content-Type': 'application/x-www-form-urlencoded',
                     'Accept': 'application/json',
+                    'Content-Length': Buffer.byteLength(authBody),
                     'Authorization': `Basic ${gigachatKey}`,
                     'RqUID': crypto.randomUUID(),
                 },
@@ -3463,6 +3469,7 @@ async function handleGigaChat(body, headers) {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Content-Length': Buffer.byteLength(chatBody),
                     'Authorization': `Bearer ${accessToken}`,
                 },
                 body: chatBody,

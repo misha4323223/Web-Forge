@@ -1,0 +1,250 @@
+
+
+21 дек. 13:22:03.079
+REPORT RequestID: 2888e278-7897-4991-b27c-570d5f296d9d Duration: 30763.769 ms Billed Duration: 30800 ms Memory Size: 640 MB Max Memory Used: 178 MB Queuing Duration: 0.074 ms Function Init Duration: 762.572 ms CPU Usage: 0.391 %
+
+21 дек. 13:22:03.079
+ERROR RequestID: 2888e278-7897-4991-b27c-570d5f296d9d Code: 504 Message: Execution timeout exceeded
+
+21 дек. 13:22:03.079
+END RequestID: 2888e278-7897-4991-b27c-570d5f296d9d
+
+21 дек. 13:22:03.079
+{"errorMessage":"execution timeout exceeded","errorType":"JobExecutionTimeoutExceeded","stackTrace":null}
+
+21 дек. 13:21:38.207
+[HTTPS-8fd279b6] ❌ Socket closed (hadError: false) after 5111ms
+
+21 дек. 13:21:33.246
+[HTTPS-aa760b50] 🔒 TLS handshake complete after 39ms
+
+21 дек. 13:21:33.220
+[HTTPS-aa760b50] 🌐 TCP connected after 14ms
+
+21 дек. 13:21:33.212
+[HTTPS-aa760b50] 🔍 DNS lookup started
+
+21 дек. 13:21:33.209
+[HTTPS-aa760b50] 🔌 Socket created, fd: unknown
+
+21 дек. 13:21:33.209
+[HTTPS-aa760b50] Waiting for response...
+
+21 дек. 13:21:33.209
+[HTTPS-aa760b50] 🚀 Calling req.end()
+
+21 дек. 13:21:33.209
+[HTTPS-aa760b50] Body written successfully
+
+21 дек. 13:21:33.209
+[HTTPS-aa760b50] 📤 Writing body (110 bytes): {"model":"GigaChat","messages":[{"role":"user","content":"привет"}],"temperature":0.7,"max_tokens":1...
+
+21 дек. 13:21:33.207
+[HTTPS-aa760b50] Creating HTTPS request with timeout: 50000ms
+
+21 дек. 13:21:33.207
+[HTTPS-aa760b50] Setting main timeout: 45000ms
+
+21 дек. 13:21:33.207
+[HTTPS-aa760b50] Headers: Content-Type, Authorization
+
+21 дек. 13:21:33.207
+[HTTPS-aa760b50] Request body size: 110 bytes
+
+21 дек. 13:21:33.207
+[HTTPS-aa760b50] Path: /api/v1/chat/completions
+
+21 дек. 13:21:33.207
+[HTTPS-aa760b50] Hostname: gigachat.devices.sberbank.ru:443
+
+21 дек. 13:21:33.207
+[HTTPS-aa760b50] Method: POST
+
+21 дек. 13:21:33.207
+[HTTPS-aa760b50] URL: https://gigachat.devices.sberbank.ru/api/v1/chat/completions
+
+21 дек. 13:21:33.207
+[HTTPS-aa760b50] ========== HTTPS REQUEST START ==========
+
+21 дек. 13:21:33.207
+[599667b8] ⏳ Waiting for chat response... (started at 2025-12-21T10:21:33.206Z)
+
+21 дек. 13:21:33.207
+[599667b8] Request body size: 104 bytes
+
+21 дек. 13:21:33.207
+[599667b8] Function timeout limit: 60s
+
+21 дек. 13:21:33.207
+[599667b8] Max tokens: 1000
+
+21 дек. 13:21:33.207
+[599667b8] Temperature: 0.7
+
+21 дек. 13:21:33.207
+[599667b8] Model: GigaChat
+
+21 дек. 13:21:33.207
+[599667b8] Chat URL: https://gigachat.devices.sberbank.ru/api/v1/chat/completions
+
+21 дек. 13:21:33.207
+[599667b8] 6️⃣ Sending chat request to GigaChat...
+
+21 дек. 13:21:33.207
+[599667b8] Token preview: eyJjdHkiOiJqd3QiLCJl...
+
+21 дек. 13:21:33.207
+[599667b8] Token length: 1233
+
+21 дек. 13:21:33.207
+[599667b8] 5️⃣ Got access token
+
+21 дек. 13:21:33.207
+[599667b8] Response size: 1279 bytes
+
+21 дек. 13:21:33.206
+[599667b8] 4️⃣ Auth response status: 200
+
+21 дек. 13:21:33.206
+[599667b8] ✅ OAuth request completed in 0s
+
+21 дек. 13:21:33.206
+[HTTPS-8fd279b6] ========== REQUEST SUCCESS ==========
+
+21 дек. 13:21:33.206
+[HTTPS-8fd279b6] Total response size: 1279 bytes
+
+21 дек. 13:21:33.206
+[HTTPS-8fd279b6] ✨ Response ended after 111ms
+
+21 дек. 13:21:33.206
+[HTTPS-8fd279b6] 📥 Data chunk: 1279 bytes (total: 1279)
+
+21 дек. 13:21:33.206
+[HTTPS-8fd279b6] 📦 First byte received after 110ms
+
+21 дек. 13:21:33.206
+[HTTPS-8fd279b6] Response headers: content-type=application/json, content-length=1279
+
+21 дек. 13:21:33.205
+[HTTPS-8fd279b6] TLS: TLSv1.3, Cipher: TLS_AES_256_GCM_SHA384
+
+21 дек. 13:21:33.205
+[HTTPS-8fd279b6] Status code: 200
+
+21 дек. 13:21:33.205
+[HTTPS-8fd279b6] ✅ Response callback triggered after 110ms
+
+21 дек. 13:21:33.166
+[HTTPS-8fd279b6] 🔒 TLS handshake complete after 71ms
+
+21 дек. 13:21:33.144
+[HTTPS-8fd279b6] 🌐 TCP connected after 48ms
+
+21 дек. 13:21:33.136
+[HTTPS-8fd279b6] 🔍 DNS lookup started
+
+21 дек. 13:21:33.134
+[HTTPS-8fd279b6] 🔌 Socket created, fd: unknown
+
+21 дек. 13:21:33.134
+[HTTPS-8fd279b6] Waiting for response...
+
+21 дек. 13:21:33.134
+[HTTPS-8fd279b6] 🚀 Calling req.end()
+
+21 дек. 13:21:33.134
+[HTTPS-8fd279b6] Body written successfully
+
+21 дек. 13:21:33.133
+[HTTPS-8fd279b6] 📤 Writing body (23 bytes): scope=GIGACHAT_API_PERS
+
+21 дек. 13:21:33.096
+[HTTPS-8fd279b6] Creating HTTPS request with timeout: 50000ms
+
+21 дек. 13:21:33.096
+[HTTPS-8fd279b6] Setting main timeout: 45000ms
+
+21 дек. 13:21:33.096
+[HTTPS-8fd279b6] Headers: Content-Type, Accept, Authorization, RqUID
+
+21 дек. 13:21:33.096
+[HTTPS-8fd279b6] Request body size: 23 bytes
+
+21 дек. 13:21:33.096
+[HTTPS-8fd279b6] Path: /api/v2/oauth
+
+21 дек. 13:21:33.096
+[HTTPS-8fd279b6] Hostname: ngw.devices.sberbank.ru:9443
+
+21 дек. 13:21:33.096
+[HTTPS-8fd279b6] Method: POST
+
+21 дек. 13:21:33.096
+[HTTPS-8fd279b6] URL: https://ngw.devices.sberbank.ru:9443/api/v2/oauth
+
+21 дек. 13:21:33.096
+[HTTPS-8fd279b6] ========== HTTPS REQUEST START ==========
+
+21 дек. 13:21:33.095
+[599667b8] Auth URL: https://ngw.devices.sberbank.ru:9443/api/v2/oauth
+
+21 дек. 13:21:33.095
+[599667b8] Scope: GIGACHAT_API_PERS
+
+21 дек. 13:21:33.095
+[599667b8] 3️⃣ Requesting OAuth token...
+
+21 дек. 13:21:33.095
+[599667b8] Key length: 100
+
+21 дек. 13:21:33.095
+[599667b8] 2️⃣ GIGACHAT_KEY exists: true
+
+21 дек. 13:21:33.094
+[599667b8] ✅ Message validation passed (6 chars)
+
+21 дек. 13:21:33.094
+[599667b8] 1️⃣ Received message (6 chars): привет...
+
+21 дек. 13:21:33.094
+=== GIGACHAT REQUEST START [599667b8] (Yandex Cloud Function) ===
+
+21 дек. 13:21:33.093
+[GIGA-CHAT] Handler called
+
+21 дек. 13:21:33.093
+}
+
+21 дек. 13:21:33.093
+bodyKeys: [ 'message' ]
+
+21 дек. 13:21:33.093
+path: '',
+
+21 дек. 13:21:33.093
+action: 'giga-chat',
+
+21 дек. 13:21:33.093
+method: 'POST',
+
+21 дек. 13:21:33.093
+[REQUEST] {
+
+21 дек. 13:21:33.093
+}
+
+21 дек. 13:21:33.093
+timestamp: '2025-12-21T10:21:33.088Z'
+
+21 дек. 13:21:33.093
+path: undefined,
+
+21 дек. 13:21:33.093
+method: 'POST',
+
+21 дек. 13:21:33.093
+[HANDLER START] {
+
+21 дек. 13:21:32.312
+START RequestID: 2888e278-7897-4991-b27c-570d5f296d9d Version: d4e2974sqjiofnl4qvo1
