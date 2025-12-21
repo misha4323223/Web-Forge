@@ -3440,7 +3440,7 @@ async function handleGigaChat(body, headers) {
 
         // Отправляем сообщение в Giga Chat
         console.log(`[${handlerId}] 6️⃣ Sending chat request to GigaChat...`);
-        console.log(`[${handlerId}]    Chat URL: https://gigachat.devices.sberbank.ru:9443/api/v1/chat/completions`);
+        console.log(`[${handlerId}]    Chat URL: https://gigachat.devices.sberbank.ru/api/v1/chat/completions`);
         console.log(`[${handlerId}]    Model: GigaChat`);
         console.log(`[${handlerId}]    Temperature: 0.7`);
         console.log(`[${handlerId}]    Max tokens: 1000`);
@@ -3459,7 +3459,7 @@ async function handleGigaChat(body, headers) {
             console.log(`[${handlerId}]    Request body size: ${chatBody.length} bytes`);
             console.log(`[${handlerId}] ⏳ Waiting for chat response... (started at ${new Date().toISOString()})`);
             
-            chatResponse = await httpsRequest('https://gigachat.devices.sberbank.ru:9443/api/v1/chat/completions', {
+            chatResponse = await httpsRequest('https://gigachat.devices.sberbank.ru/api/v1/chat/completions', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
