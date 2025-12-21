@@ -79,30 +79,30 @@ export function ChatWidget() {
         <button
           onClick={() => setIsOpen(true)}
           data-testid="button-ai-chat"
-          className="h-14 w-14 rounded-sm bg-black border-2 border-cyan-500 text-cyan-500 hover:text-cyan-400 hover:border-cyan-400 flex items-center justify-center font-mono text-xs font-bold transition-all duration-200 ai-assistant-btn"
+          className="h-14 w-14 rounded-sm bg-black border-2 border-transparent bg-gradient-to-r from-cyan-400 via-purple-400 to-cyan-400 bg-clip-padding flex items-center justify-center font-mono text-xs font-bold transition-all duration-200 ai-assistant-btn group hover:shadow-lg hover:shadow-purple-400/25"
           title="AI Assistant"
         >
-          <Brain className="w-6 h-6" />
+          <Brain className="w-6 h-6 text-cyan-400 group-hover:text-purple-400 transition-colors duration-200" />
         </button>
       </div>
 
       {/* Модалка чата - NEO TERMINAL */}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="w-full max-w-md h-[600px] md:h-[500px] flex flex-col p-0 bg-black border-2 border-cyan-500 rounded-sm shadow-[0_0_20px_rgba(34,211,238,0.5)] neo-terminal" description="AI чат помощник для ответов на вопросы">
+        <DialogContent className="w-full max-w-md h-[600px] md:h-[500px] flex flex-col p-0 bg-black border-2 border-transparent bg-gradient-to-br from-cyan-400/20 via-purple-400/20 to-cyan-400/20 bg-clip-padding rounded-sm shadow-[0_0_30px_rgba(168,85,247,0.3),0_0_20px_rgba(34,211,238,0.3)] neo-terminal" description="AI чат помощник для ответов на вопросы">
           
           {/* Шапка - NEO TERMINAL */}
-          <DialogHeader className="bg-cyan-500/10 border-b-2 border-cyan-500/50 p-3 space-y-0">
+          <DialogHeader className="bg-gradient-to-r from-cyan-400/10 via-purple-400/10 to-cyan-400/10 border-b-2 border-cyan-400/50 p-3 space-y-0">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="text-cyan-500 font-mono text-xs">►</span>
-                <DialogTitle className="text-cyan-500 font-mono text-sm font-bold tracking-wider">
+                <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent font-mono text-xs">►</span>
+                <DialogTitle className="bg-gradient-to-r from-cyan-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent font-mono text-sm font-bold tracking-wider">
                   AI_SYSTEM v2.1
                 </DialogTitle>
-                <span className="text-cyan-500 font-mono text-xs">[ONLINE]</span>
+                <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent font-mono text-xs">[ONLINE]</span>
               </div>
               <button
                 onClick={() => setIsOpen(false)}
-                className="p-1 text-cyan-500 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-sm transition-colors"
+                className="p-1 text-cyan-400 hover:text-purple-400 hover:bg-purple-400/10 rounded-sm transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -113,7 +113,7 @@ export function ChatWidget() {
           <div className="flex-1 overflow-y-auto p-3 space-y-3 bg-black font-mono text-xs">
             {messages.length === 0 && (
               <div className="h-full flex items-center justify-center text-center">
-                <div className="text-cyan-500/60">
+                <div className="bg-gradient-to-r from-cyan-400/60 to-purple-400/60 bg-clip-text text-transparent">
                   <p className="mb-2">&gt; SYSTEM READY</p>
                   <p>&lt; INPUT YOUR QUERY</p>
                 </div>
@@ -129,8 +129,8 @@ export function ChatWidget() {
                 <div
                   className={`max-w-xs px-3 py-2 rounded-sm border ${
                     msg.role === "user"
-                      ? "bg-cyan-500/5 border-cyan-500/30 text-cyan-400"
-                      : "bg-black border-cyan-500/20 text-cyan-500"
+                      ? "bg-gradient-to-r from-cyan-400/10 to-purple-400/10 border-purple-400/30 text-cyan-400"
+                      : "bg-black border-cyan-400/20 text-cyan-400"
                   }`}
                 >
                   <p className="text-xs leading-relaxed">{msg.content}</p>
@@ -140,8 +140,8 @@ export function ChatWidget() {
             
             {isLoading && (
               <div className="flex justify-start">
-                <div className="bg-black border border-cyan-500/20 px-3 py-2 rounded-sm">
-                  <p className="text-cyan-500 text-xs animate-none">
+                <div className="bg-black border border-cyan-400/20 px-3 py-2 rounded-sm">
+                  <p className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent text-xs animate-none">
                     &gt; PROCESSING...
                   </p>
                 </div>
@@ -151,7 +151,7 @@ export function ChatWidget() {
           </div>
 
           {/* Форма ввода */}
-          <div className="bg-cyan-500/5 border-t-2 border-cyan-500/50 p-3 space-y-2">
+          <div className="bg-gradient-to-r from-cyan-400/5 via-purple-400/5 to-cyan-400/5 border-t-2 border-cyan-400/50 p-3 space-y-2">
             <div className="flex gap-2">
               <Input
                 data-testid="input-chat-message"
@@ -160,19 +160,19 @@ export function ChatWidget() {
                 onKeyPress={(e) => e.key === "Enter" && sendMessage()}
                 placeholder="&gt; INPUT_"
                 disabled={isLoading}
-                className="bg-black border-cyan-500/30 focus:border-cyan-500 text-cyan-500 placeholder-cyan-500/40 font-mono text-xs rounded-sm focus:ring-0 focus:outline-none transition-colors"
+                className="bg-black border-cyan-400/30 focus:border-purple-400 text-cyan-400 placeholder-cyan-400/40 font-mono text-xs rounded-sm focus:ring-0 focus:outline-none transition-colors"
               />
               <Button
                 data-testid="button-send-chat"
                 onClick={sendMessage}
                 disabled={isLoading || !inputValue.trim()}
                 size="icon"
-                className="bg-black border-2 border-cyan-500 hover:bg-cyan-500/10 text-cyan-500 hover:text-cyan-400 rounded-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-black border-2 border-cyan-400 hover:border-purple-400 text-cyan-400 hover:text-purple-400 rounded-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Send className="w-4 h-4" />
               </Button>
             </div>
-            <p className="text-xs text-cyan-500/50 font-mono">&gt; HISTORY: DISABLED</p>
+            <p className="bg-gradient-to-r from-cyan-400/50 to-purple-400/50 bg-clip-text text-transparent text-xs font-mono">&gt; HISTORY: DISABLED</p>
           </div>
         </DialogContent>
       </Dialog>
