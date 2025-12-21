@@ -3506,33 +3506,45 @@ async function loadKnowledgeBaseFromStorage() {
 
     try {
         console.log('[KB] Loading knowledge base from Object Storage...');
-        const AWS = require('aws-sdk');
         
-        const s3 = new AWS.S3({
-            endpoint: 'https://storage.yandexcloud.net',
-            accessKeyId: process.env.YC_ACCESS_KEY,
-            secretAccessKey: process.env.YC_SECRET_KEY,
+        const accessKey = process.env.YC_ACCESS_KEY;
+        const secretKey = process.env.YC_SECRET_KEY;
+        
+        if (!accessKey || !secretKey) {
+            console.log('[KB] No credentials provided, skipping KB load');
+            return null;
+        }
+
+        const s3Client = new S3Client({
             region: 'ru-central1',
-            s3ForcePathStyle: true,
+            endpoint: 'https://storage.yandexcloud.net',
+            credentials: {
+                accessKeyId: accessKey,
+                secretAccessKey: secretKey,
+            },
+            forcePathStyle: true,
         });
 
         const bucketName = process.env.YC_BUCKET_NAME || 'www.mp-webstudio.ru';
         const keyPath = 'site-content.json';
 
-        const data = await s3.getObject({
+        const command = new GetObjectCommand({
             Bucket: bucketName,
-            Key: keyPath
-        }).promise();
+            Key: keyPath,
+        });
 
-        const kbData = JSON.parse(data.Body.toString('utf-8'));
+        const response = await s3Client.send(command);
+        const dataBuffer = await response.Body.transformToByteArray();
+        const dataString = new TextDecoder().decode(dataBuffer);
+
+        const kbData = JSON.parse(dataString);
         cachedKB = kbData;
         cacheTime = now;
-        
+
         console.log('[KB] ✅ Knowledge base loaded successfully');
         return kbData;
     } catch (error) {
         console.error('[KB] ❌ Error loading KB:', error.message);
-        // Fallback - пустой объект
         return null;
     }
 }
@@ -3608,15 +3620,6 @@ async function handleGigaChat(body, headers) {
         let { message } = body;
         console.log(`[${handlerId}] 1️⃣ Received message (${message?.length || 0} chars)`);
 
-        // НОВОЕ: Загружаем Knowledge Base и обогащаем контекст
-        console.log(`[${handlerId}] 1a️⃣ Loading knowledge base...`);
-        const kb = await loadKnowledgeBaseFromStorage();
-        const relevantContext = findRelevantContext(kb, message);
-
-        if (relevantContext) {
-            console.log(`[${handlerId}] 1b️⃣ Context found (${relevantContext.length} chars), enriching message...`);
-            message = `Контекст о компании:\n${relevantContext}\n---\n\nВопрос клиента: ${message}`;
-        }
 
         if (!message || typeof message !== 'string' || message.trim().length === 0) {
             return {
