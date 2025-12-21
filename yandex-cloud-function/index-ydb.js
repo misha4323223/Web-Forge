@@ -65,31 +65,44 @@ async function httpsRequest(urlString, options) {
     return new Promise((resolve, reject) => {
         const url = new URL(urlString);
         let req;
+        console.log(`[HTTP] Starting ${options.method} request to ${url.hostname}${url.pathname}`);
+        
         const timeout = setTimeout(() => {
+            console.error(`[HTTP] TIMEOUT after 30 seconds for ${url.hostname}`);
             if (req) req.destroy();
-            reject(new Error('Request timeout'));
-        }, 15000);
+            reject(new Error('Request timeout after 30s'));
+        }, 30000);
         
         const reqOptions = {
             method: options.method,
             headers: options.headers,
             rejectUnauthorized: false,
+            timeout: 28000, // Socket-level timeout
         };
         
         req = https.request(url, reqOptions, (res) => {
+            console.log(`[HTTP] Response received from ${url.hostname}: ${res.statusCode}`);
             let data = '';
             res.on('data', (chunk) => {
+                console.log(`[HTTP] Received ${chunk.length} bytes`);
                 data += chunk;
             });
             res.on('end', () => {
                 clearTimeout(timeout);
+                console.log(`[HTTP] Request completed. Total data: ${data.length} bytes`);
                 resolve({ statusCode: res.statusCode || 500, data, headers: res.headers });
             });
         });
         
         req.on('error', (err) => {
             clearTimeout(timeout);
+            console.error(`[HTTP] Error during request to ${url.hostname}: ${err.message}`);
             reject(err);
+        });
+        
+        req.on('timeout', () => {
+            console.error(`[HTTP] Socket timeout for ${url.hostname}`);
+            req.destroy();
         });
         
         if (options.body) {
