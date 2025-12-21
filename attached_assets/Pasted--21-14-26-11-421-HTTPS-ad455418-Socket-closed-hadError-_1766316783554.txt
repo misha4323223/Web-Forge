@@ -1,0 +1,154 @@
+
+
+21 дек. 14:26:11.421
+[HTTPS-ad455418] ❌ Socket closed (hadError: false) after 5094ms
+
+21 дек. 14:26:06.476
+REPORT RequestID: 98b81ba7-b6b0-46cd-89e1-ee2f5c629e7b Duration: 1071.928 ms Billed Duration: 1100 ms Memory Size: 640 MB Max Memory Used: 159 MB Queuing Duration: 0.055 ms Function Init Duration: 907.451 ms CPU Usage: 18.457 %
+
+21 дек. 14:26:06.476
+END RequestID: 98b81ba7-b6b0-46cd-89e1-ee2f5c629e7b
+
+21 дек. 14:26:06.473
+[4c463620] ❌ gRPC error after 0s: 14 UNAVAILABLE: No connection established. Last error: Error: self-signed certificate in certificate chain. Resolution note:
+
+21 дек. 14:26:06.441
+[4c463620] 6️⃣ Sending chat request via gRPC...
+
+21 дек. 14:26:06.437
+[4c463620] 5️⃣ Connecting to gRPC server...
+
+21 дек. 14:26:06.420
+[4c463620] 4️⃣ Loading gRPC proto...
+
+21 дек. 14:26:06.420
+[4c463620] ✅ OAuth completed in 0s
+
+21 дек. 14:26:06.420
+[HTTPS-ad455418] ========== REQUEST SUCCESS ==========
+
+21 дек. 14:26:06.420
+[HTTPS-ad455418] Total response size: 1279 bytes
+
+21 дек. 14:26:06.420
+[HTTPS-ad455418] ✨ Response ended after 93ms
+
+21 дек. 14:26:06.419
+[HTTPS-ad455418] 📥 Data chunk: 1279 bytes (total: 1279)
+
+21 дек. 14:26:06.419
+[HTTPS-ad455418] 📦 First byte received after 92ms
+
+21 дек. 14:26:06.419
+[HTTPS-ad455418] Response headers: content-type=application/json, content-length=1279
+
+21 дек. 14:26:06.419
+[HTTPS-ad455418] TLS: TLSv1.3, Cipher: TLS_AES_256_GCM_SHA384
+
+21 дек. 14:26:06.419
+[HTTPS-ad455418] Status code: 200
+
+21 дек. 14:26:06.419
+[HTTPS-ad455418] ✅ Response callback triggered after 92ms
+
+21 дек. 14:26:06.387
+[HTTPS-ad455418] 🔒 TLS handshake complete after 60ms
+
+21 дек. 14:26:06.371
+[HTTPS-ad455418] 🌐 TCP connected after 44ms
+
+21 дек. 14:26:06.366
+[HTTPS-ad455418] 🔍 DNS lookup started
+
+21 дек. 14:26:06.365
+[HTTPS-ad455418] 🔌 Socket created, fd: unknown
+
+21 дек. 14:26:06.365
+[HTTPS-ad455418] Waiting for response...
+
+21 дек. 14:26:06.365
+[HTTPS-ad455418] 🚀 Calling req.end()
+
+21 дек. 14:26:06.365
+[HTTPS-ad455418] Body written successfully
+
+21 дек. 14:26:06.365
+[HTTPS-ad455418] 📤 Writing body (23 bytes): scope=GIGACHAT_API_PERS
+
+21 дек. 14:26:06.328
+[HTTPS-ad455418] Creating HTTPS request with timeout: 50000ms
+
+21 дек. 14:26:06.328
+[HTTPS-ad455418] Setting main timeout: 45000ms
+
+21 дек. 14:26:06.328
+[HTTPS-ad455418] Headers: Content-Type, Accept, Authorization, RqUID
+
+21 дек. 14:26:06.328
+[HTTPS-ad455418] Request body size: 23 bytes
+
+21 дек. 14:26:06.328
+[HTTPS-ad455418] Path: /api/v2/oauth
+
+21 дек. 14:26:06.328
+[HTTPS-ad455418] Hostname: ngw.devices.sberbank.ru:9443
+
+21 дек. 14:26:06.328
+[HTTPS-ad455418] Method: POST
+
+21 дек. 14:26:06.328
+[HTTPS-ad455418] URL: https://ngw.devices.sberbank.ru:9443/api/v2/oauth
+
+21 дек. 14:26:06.327
+[HTTPS-ad455418] ========== HTTPS REQUEST START ==========
+
+21 дек. 14:26:06.327
+[4c463620] 3️⃣ Requesting OAuth token...
+
+21 дек. 14:26:06.327
+[4c463620] 2️⃣ GIGACHAT_KEY exists: true
+
+21 дек. 14:26:06.327
+[4c463620] 1️⃣ Received message (6 chars)
+
+21 дек. 14:26:06.326
+=== GIGACHAT gRPC REQUEST START [4c463620] (Yandex Cloud) ===
+
+21 дек. 14:26:06.326
+[GIGA-CHAT] Handler called
+
+21 дек. 14:26:06.326
+}
+
+21 дек. 14:26:06.326
+bodyKeys: [ 'message' ]
+
+21 дек. 14:26:06.326
+path: '',
+
+21 дек. 14:26:06.326
+action: 'giga-chat',
+
+21 дек. 14:26:06.326
+method: 'POST',
+
+21 дек. 14:26:06.326
+[REQUEST] {
+
+21 дек. 14:26:06.325
+}
+
+21 дек. 14:26:06.325
+timestamp: '2025-12-21T11:26:06.318Z'
+
+21 дек. 14:26:06.325
+path: undefined,
+
+21 дек. 14:26:06.325
+method: 'POST',
+
+21 дек. 14:26:06.325
+[HANDLER START] {
+
+21 дек. 14:26:05.305
+START RequestID: 98b81ba7-b6b0-46cd-89e1-ee2f5c629e7b Version: d4eo4por62csl2jcuouv
