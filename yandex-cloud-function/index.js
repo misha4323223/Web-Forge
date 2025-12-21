@@ -3718,11 +3718,17 @@ async function handleGigaChat(body, headers) {
                 }
             };
 
+            let isFinished = false;
+
             client.chat(chatRequest, metadata, (err, response) => {
+                if (isFinished) return;
+                isFinished = true;
+                
                 const chatElapsed = Math.round((Date.now() - chatStartTime) / 1000);
 
                 if (err) {
                     console.error(`[${handlerId}] ❌ gRPC error after ${chatElapsed}s: ${err.message}`);
+                    console.error(`[${handlerId}] Full error details:`, JSON.stringify(err));
                     client.close();
                     return resolve({
                         statusCode: 500,
@@ -3730,6 +3736,8 @@ async function handleGigaChat(body, headers) {
                         body: JSON.stringify({
                             success: false,
                             response: `gRPC ошибка: ${err.message}`,
+                            code: err.code,
+                            details: err.details
                         }),
                     });
                 }
@@ -3757,17 +3765,20 @@ async function handleGigaChat(body, headers) {
             });
 
             setTimeout(() => {
-                console.error(`[${handlerId}] ❌ gRPC request timeout (10s)`);
+                if (isFinished) return;
+                isFinished = true;
+                
+                console.error(`[${handlerId}] ❌ gRPC request timeout (45s)`);
                 client.close();
                 resolve({
-                    statusCode: 500,
+                    statusCode: 504,
                     headers,
                     body: JSON.stringify({
                         success: false,
-                        response: 'Timeout при соединении с GigaChat',
+                        response: 'Timeout при соединении с GigaChat (45s). Попробуйте еще раз.',
                     }),
                 });
-            }, 10000);
+            }, 45000);
         });
 
     } catch (error) {
