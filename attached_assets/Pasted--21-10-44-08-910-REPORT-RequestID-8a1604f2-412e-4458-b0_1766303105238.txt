@@ -1,0 +1,112 @@
+
+
+21 дек. 10:44:08.910
+REPORT RequestID: 8a1604f2-412e-4458-b0fd-e6e3907e4d5a Duration: 29180.409 ms Billed Duration: 29200 ms Memory Size: 256 MB Max Memory Used: 170 MB Queuing Duration: 0.070 ms Function Init Duration: 715.745 ms
+
+21 дек. 10:44:08.910
+END RequestID: 8a1604f2-412e-4458-b0fd-e6e3907e4d5a
+
+21 дек. 10:44:08.908
+=== GIGACHAT REQUEST FAILED ===
+
+21 дек. 10:44:08.908
+❌ ERROR: Chat request error: socket hang up
+
+21 дек. 10:44:08.908
+❌ Chat request failed: socket hang up
+
+21 дек. 10:44:08.908
+[HTTP v2.0] Error after 28023ms for gigachat.devices.sberbank.ru: socket hang up
+
+21 дек. 10:44:08.907
+[HTTP v2.0] Socket timeout after 28022ms for gigachat.devices.sberbank.ru
+
+21 дек. 10:43:40.885
+[HTTP v2.0] Request body: {"model":"GigaChat","messages":[{"role":"user","content":"привет"}],"temperature":0.7,"max_tokens":1000}
+
+21 дек. 10:43:40.885
+[HTTP v2.0] Request headers: {"Content-Type":"application/json","Authorization":"Bearer eyJjdHkiOiJqd3QiLCJlbmMiOiJBMjU2Q0JDLUhTNTEyIiwiYWxnIjoiUlNBLU9BRVAtMjU2In0.Q5lYAJ9M9ku2PXsFC-0F1rNdNNTCAUtizSdew-2tNnOSUQkcqqYV7pJ8MQ4hQm5CHIYEobZ1mr68zCN1z8ftaPLrtM-v6vmUuNErdDUeUhw_Ayd9VAk--L3ffRdS9QLXZaY5uxFeUAeFHh_f9vf-4_vEgRFBmsSMz-NIrBD_47SAlUpzbO5_Y1OVCyYNkdQGRodisJw648dWqoSxKK0V9jlJvXZkJ8QXrpUy_o5rPlnS1rBOaFlkHmVhTKvH7NHuZ-A992k04DQRPc_G7NfWTF0Ng-VaLRuStj4m5jWXosa7iVwIscFz51wXetTFqMq-8al3EpTLM61iAPnI1J3Exw.svZy4UR0aLlGQZo5w5psXQ.bgCq1S7IEnXwGzmYU2gaemnoMldNne9ENmJFUHmv4o6wWbdbbXefTvp5J2_cHd2_ZRXchAexgshp9ekSRLDdXYtfhH1tTzE8LrlDy7lroTsV9Ht8t977PWLz8o7CofXlLlQmzRLLgcSF-chaA_jwzyXAKKX6hYOc7u25Vb-jHhIuyivkjT8Y-igcGUwdep53wxo_XvBUmmbiSaQWqrl44XQQDQhrhcFfS56rsfQ058GK9j7DFDYHMMwf7av9qnnl3fvklgLyLTse5vKFBeC8v1CyNWXNFcGBz_VRrtlWAWHDC-TRSBA3S_iyj9aXrJlofaJ2s4OsjtOjL7_XEjyN3EhuEBVY6y56uyooK88tNxsRUDzSYbhTnExK0zpzLhKn9u1wIfk6JEBB0OsmOKa8OncjHFg7NQaFOWbC3mPb-rDAUtBrhgiJ989ZdQzgtIe2jCQO2WM2rl3LnSomLZov1zWC4o2ByPrbF9x9Svdi5cNFTTXOSqhk5uVi2coQ6aezShP2vvr7r_aHzIdluONT-aX2KQF2opWey9-hU3O4NhJZLc-TtDj4WJNDY3GLZ5O-idLGiLcIp-sski_IUlQjfT9pmvMk2HpizjUbqKLelMZpgaNOx0m3Wsr0kkfepypQRFOBAV1_T_Fhrtxnt__Um37pEaR8E3MbyZOXCXCiSQg9Qwqslm7L-ktcld0xXZ9vN-Hg39k8iZklXwThGb-hz534gQGykQl-52YgfVT3X2I.cNaLyl5r8rJ63rJhRKah-7W28lRQW2G2ue6-ueEddqo","Content-Length":110}
+
+21 дек. 10:43:40.885
+[HTTP v2.0] Starting POST to gigachat.devices.sberbank.ru/api/v1/chat/completions at 1766303020884
+
+21 дек. 10:43:40.885
+6️⃣ Sending chat request...
+
+21 дек. 10:43:40.885
+5️⃣ Got access token. Length: 1233
+
+21 дек. 10:43:40.885
+4️⃣ Auth response status: 200
+
+21 дек. 10:43:40.885
+[HTTP v2.0] Request completed in 89ms. Total data: 1279 bytes
+
+21 дек. 10:43:40.885
+[HTTP v2.0] Received 1279 bytes (total so far: 0)
+
+21 дек. 10:43:40.885
+[HTTP v2.0] Response from ngw.devices.sberbank.ru: 200 after 88ms
+
+21 дек. 10:43:40.796
+[HTTP v2.0] Request body: scope=GIGACHAT_API_PERS
+
+21 дек. 10:43:40.796
+[HTTP v2.0] Request headers: {"Content-Type":"application/x-www-form-urlencoded","Accept":"application/json","Authorization":"Basic ZDY2ODkxYjUtZDBkNi00MTM4LWJjZDUtMzBkODc2N2NlNjk5OmM0YjkxZjNlLTM2YTYtNGEwNS1iODk5LWQyNGY1ODUxOGU1Yg==","RqUID":"9becfe53-dd55-4af8-b532-f6626751ea5c","Content-Length":23}
+
+21 дек. 10:43:40.796
+[HTTP v2.0] Starting POST to ngw.devices.sberbank.ru/api/v2/oauth at 1766303020795
+
+21 дек. 10:43:40.795
+3️⃣ Requesting OAuth token...
+
+21 дек. 10:43:40.795
+Key length: 100
+
+21 дек. 10:43:40.795
+2️⃣ GIGACHAT_KEY exists: true
+
+21 дек. 10:43:40.795
+1️⃣ Received message: привет...
+
+21 дек. 10:43:40.795
+=== GIGACHAT REQUEST START (Yandex Cloud) ===
+
+21 дек. 10:43:40.795
+[GIGA-CHAT] Handler called
+
+21 дек. 10:43:40.795
+}
+
+21 дек. 10:43:40.795
+bodyKeys: [ 'message' ]
+
+21 дек. 10:43:40.795
+path: '',
+
+21 дек. 10:43:40.795
+action: 'giga-chat',
+
+21 дек. 10:43:40.795
+method: 'POST',
+
+21 дек. 10:43:40.794
+[REQUEST] {
+
+21 дек. 10:43:40.794
+}
+
+21 дек. 10:43:40.794
+timestamp: '2025-12-21T07:43:40.455Z'
+
+21 дек. 10:43:40.794
+path: undefined,
+
+21 дек. 10:43:40.794
+method: 'POST',
+
+21 дек. 10:43:40.794
+[HANDLER START] {
+
+21 дек. 10:43:39.725
+START RequestID: 8a1604f2-412e-4458-b0fd-e6e3907e4d5a Version: d4enctu399vdtiou3k1p

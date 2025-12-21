@@ -86,7 +86,8 @@ async function httpsRequest(urlString, options) {
             method: options.method,
             headers: headersWithLength,
             rejectUnauthorized: false,
-            timeout: 28000, // Socket-level timeout
+            timeout: 55000, // Socket-level timeout (less than 60s global)
+            keepAliveTimeout: 60000,
         };
         
         console.log(`[HTTP v2.0] Request headers:`, JSON.stringify(headersWithLength));
@@ -3313,18 +3314,23 @@ async function handleGigaChat(body, headers) {
         let chatResponse;
         
         try {
+            const chatPayload = JSON.stringify({
+                model: 'GigaChat',
+                messages: [{ role: 'user', content: message }],
+                temperature: 0.7,
+                max_tokens: 1000,
+            });
+            
             chatResponse = await httpsRequest('https://gigachat.devices.sberbank.ru/api/v1/chat/completions', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${accessToken}`,
+                    'User-Agent': 'Yandex-Cloud-Function/1.0',
+                    'Accept': 'application/json',
+                    'X-Request-ID': crypto.randomUUID(),
                 },
-                body: JSON.stringify({
-                    model: 'GigaChat',
-                    messages: [{ role: 'user', content: message }],
-                    temperature: 0.7,
-                    max_tokens: 1000,
-                }),
+                body: chatPayload,
             });
         } catch (chatErr) {
             const errMsg = chatErr instanceof Error ? chatErr.message : String(chatErr);
