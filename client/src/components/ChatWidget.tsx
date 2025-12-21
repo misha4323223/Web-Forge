@@ -75,14 +75,16 @@ export function ChatWidget() {
   return (
     <>
       {/* Плавающая кнопка - NEO TERMINAL STYLE WITH NEON ANIMATION */}
-      <button
-        onClick={() => setIsOpen(true)}
-        data-testid="button-ai-chat"
-        className="fixed bottom-6 right-6 h-14 w-14 rounded-sm bg-black border-2 border-cyan-500 text-cyan-500 hover:text-cyan-400 hover:border-cyan-400 flex items-center justify-center z-40 font-mono text-xs font-bold transition-all duration-200 ai-assistant-btn"
-        title="AI Assistant"
-      >
-        <Brain className="w-6 h-6" />
-      </button>
+      <div className="fixed bottom-6 right-6 z-50 pointer-events-auto">
+        <button
+          onClick={() => setIsOpen(true)}
+          data-testid="button-ai-chat"
+          className="h-14 w-14 rounded-sm bg-black border-2 border-cyan-500 text-cyan-500 hover:text-cyan-400 hover:border-cyan-400 flex items-center justify-center font-mono text-xs font-bold transition-all duration-200 ai-assistant-btn"
+          title="AI Assistant"
+        >
+          <Brain className="w-6 h-6" />
+        </button>
+      </div>
 
       {/* Модалка чата - NEO TERMINAL */}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
