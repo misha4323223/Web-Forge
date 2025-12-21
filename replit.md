@@ -27,7 +27,87 @@ I want to interact with the agent in a clear and concise manner. I prefer detail
 - **GigaChat Integration:**
     - Frontend: `ChatWidget.tsx` for the AI chat interface.
     - Backend: `/api/giga-chat` endpoint to interact with the GigaChat API (Sberbank). Handles OAuth token requests and chat completion requests with specific headers and body formats. Includes detailed diagnostic logging for troubleshooting.
-    - Optimized version `index-minimal.js` for Yandex Cloud Function to reduce size and fix timeout issues.
+    - Yandex Cloud Function: Full-featured implementation with gRPC support, proper SSL certificate validation, and comprehensive logging for debugging.
+    
+#### GigaChat on Yandex Cloud Function - Implementation Details
+
+**Architecture Flow:**
+```
+Frontend (ChatWidget.tsx)
+    ↓
+  POST /api/giga-chat
+    ↓
+Yandex Cloud Function (index.js)
+    ↓
+[Step 1] OAuth Authentication to ngw.devices.sberbank.ru:9443
+    • Sends GIGACHAT_KEY (Basic auth) + RqUID header
+    • Gets access_token for current session (valid ~30 min)
+    ↓
+[Step 2] gRPC Connection to gigachat.devices.sberbank.ru:443
+    • Creates secure SSL connection using SBERBANK_ROOT_CA certificate
+    • Validates entire certificate chain: Server → Sub CA → Root CA
+    • Includes Bearer token in gRPC metadata
+    ↓
+[Step 3] gRPC Chat Request
+    • Sends ChatRequest (model, messages, options)
+    • Receives ChatResponse with alternatives and usage stats
+    ↓
+[Step 4] Response to Frontend
+    • Returns AI response as JSON
+```
+
+**Key Technical Components:**
+
+1. **SSL Certificate Management:**
+   - Uses Russian Trusted Root CA certificate (embedded in code)
+   - Validates complete certificate chain for `gigachat.devices.sberbank.ru`
+   - Root certificate expires: Feb 27, 2032
+   - Located in `yandex-cloud-function/index.js` as `SBERBANK_ROOT_CA` constant
+
+2. **gRPC Configuration:**
+   - Proto definition embedded in code (const `GIGACHAT_PROTO`)
+   - Channel options: message size limits (10MB), keepalive settings
+   - Metadata headers: Authorization Bearer token
+   - Timeout: 10 seconds for gRPC chat request
+
+3. **OAuth Token Handling:**
+   - Base endpoint: `https://ngw.devices.sberbank.ru:9443/api/v2/oauth`
+   - Scope: `GIGACHAT_API_PERS` (default)
+   - Token lifetime: ~30 minutes per session
+   - Fresh token obtained for every chat request
+
+4. **Error Handling & Logging:**
+   - Detailed HTTPS request logging (DNS, TCP, TLS handshake, data chunks)
+   - gRPC-specific error messages and diagnostics
+   - Request IDs for tracing across logs
+   - Graceful timeout handling (45s main, 50s socket level)
+
+**Environment Variables (Required):**
+```
+GIGACHAT_KEY        - Full GigaChat API key from Sberbank
+GIGACHAT_SCOPE      - OAuth scope (default: GIGACHAT_API_PERS)
+```
+
+**How Certificate Validation Works:**
+The `SBERBANK_ROOT_CA` constant contains the root certificate in PEM format. During gRPC connection:
+1. Server presents its certificate chain
+2. gRPC validates against the root CA we provide
+3. Confirms CN matches `gigachat.devices.sberbank.ru`
+4. Establishes secure TLS 1.3 connection
+5. Sends gRPC request with Bearer token
+
+**Deployment Steps:**
+1. Copy `yandex-cloud-function/index.js` to Yandex Cloud Function editor
+2. Set environment variables: `GIGACHAT_KEY`, `GIGACHAT_SCOPE`
+3. Install dependencies (npm auto-install on deploy)
+4. Create new function version
+5. Deploy and test
+
+**Testing the Integration:**
+- Frontend makes POST to `/api/giga-chat` with message
+- Logs show: OAuth → gRPC proto load → gRPC connection → Chat request → Response
+- Response includes AI text or error message
+
 - **Calculator Order Flow:** Integrated calculator with a modal "Send Order" form. It displays selected options and contacts fields. The `/api/send-calculator-order` endpoint processes the order, validates fields, and sends formatted notifications to Telegram.
 - **Additional Invoices System:** Admin panel functionality to create additional invoices for extra work. Generates Robokassa payment links and handles payment callbacks.
 - **Email with Contract:** Uses Yandex Cloud Postbox for sending emails, specifically `sendContractEmail` function, with DKIM signing and handling for long lines in messages.
