@@ -3499,39 +3499,63 @@ function signAwsRequest(method, host, path, accessKey, secretKey, payload = '') 
 async function loadKnowledgeBaseFromStorage() {
     const now = Date.now();
     if (cachedKB && (now - cacheTime) < CACHE_TTL) {
-        console.log('[KB] Using cached knowledge base');
+        console.log('[KB] ✅ Using cached knowledge base');
         return cachedKB;
     }
 
     try {
-        console.log('[KB] Loading knowledge base from Object Storage...');
-        const AWS = require('aws-sdk');
+        const kbStorageKey = process.env.KB_STORAGE_KEY;
+        const kbStorageSecret = process.env.KB_STORAGE_SECRET;
+        const kbBucketName = process.env.KB_BUCKET_NAME || 'mp-webstudio-kb';
+        const kbObjectPath = process.env.KB_OBJECT_PATH || 'site-content.json';
 
-        const s3 = new AWS.S3({
-            endpoint: 'https://storage.yandexcloud.net',
-            accessKeyId: process.env.YC_ACCESS_KEY,
-            secretAccessKey: process.env.YC_SECRET_KEY,
-            region: 'ru-central1',
-            s3ForcePathStyle: true,
+        if (!kbStorageKey || !kbStorageSecret) {
+            console.log('[KB] ⚠️  KB_STORAGE_KEY or KB_STORAGE_SECRET not configured, skipping KB load');
+            return null;
+        }
+
+        console.log('[KB] 📥 Loading knowledge base from Object Storage (using fetch API)...');
+        
+        const host = 'storage.yandexcloud.net';
+        const path = `/${kbBucketName}/${kbObjectPath}`;
+        const method = 'GET';
+
+        // Используем встроенную функцию для подписи AWS Signature V4
+        const signatureHeaders = signAwsRequest(method, host, path, kbStorageKey, kbStorageSecret);
+
+        const kbUrl = `https://${host}${path}`;
+        console.log(`[KB]    URL: ${host}${path}`);
+        console.log(`[KB]    Method: ${method}`);
+
+        const fetchStartTime = Date.now();
+        const kbResponse = await fetch(kbUrl, {
+            method: method,
+            headers: {
+                ...signatureHeaders,
+                'Host': host,
+            },
         });
 
-        const bucketName = process.env.YC_BUCKET_NAME || 'www.mp-webstudio.ru';
-        const keyPath = 'site-content.json';
+        const fetchElapsed = Math.round((Date.now() - fetchStartTime) / 1000);
+        console.log(`[KB]    Response status: ${kbResponse.status} (${fetchElapsed}s)`);
 
-        const data = await s3.getObject({
-            Bucket: bucketName,
-            Key: keyPath
-        }).promise();
+        if (!kbResponse.ok) {
+            throw new Error(`HTTP ${kbResponse.status}: ${kbResponse.statusText}`);
+        }
 
-        const kbData = JSON.parse(data.Body.toString('utf-8'));
+        const kbText = await kbResponse.text();
+        console.log(`[KB]    Response size: ${kbText.length} bytes`);
+
+        const kbData = JSON.parse(kbText);
         cachedKB = kbData;
         cacheTime = now;
 
-        console.log('[KB] ✅ Knowledge base loaded successfully');
+        console.log('[KB] ✅ Knowledge base loaded successfully (cached for 1 hour)');
         return kbData;
     } catch (error) {
-        console.error('[KB] ❌ Error loading KB:', error.message);
-        // Fallback - пустой объект
+        const errorMsg = error instanceof Error ? error.message : String(error);
+        console.warn(`[KB] ⚠️  Could not load KB (will work without context): ${errorMsg}`);
+        // Fallback - возвращаем null, GigaChat будет работать без KB контекста
         return null;
     }
 }
