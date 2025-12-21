@@ -112,7 +112,7 @@ export function ChatWidget() {
             {messages.length === 0 && (
               <div className="h-full flex items-center justify-center text-center">
                 <div className="text-cyan-500/60">
-                  <p className="mb-2">> SYSTEM READY</p>
+                  <p className="mb-2">&gt; SYSTEM READY</p>
                   <p>&lt; INPUT YOUR QUERY</p>
                 </div>
               </div>
@@ -140,7 +140,7 @@ export function ChatWidget() {
               <div className="flex justify-start">
                 <div className="bg-black border border-cyan-500/20 px-3 py-2 rounded-sm">
                   <p className="text-cyan-500 text-xs animate-none">
-                    > PROCESSING...
+                    &gt; PROCESSING...
                   </p>
                 </div>
               </div>
@@ -156,7 +156,7 @@ export function ChatWidget() {
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyPress={(e) => e.key === "Enter" && sendMessage()}
-                placeholder="> INPUT_"
+                placeholder="&gt; INPUT_"
                 disabled={isLoading}
                 className="bg-black border-cyan-500/30 focus:border-cyan-500 text-cyan-500 placeholder-cyan-500/40 font-mono text-xs rounded-sm focus:ring-0 focus:outline-none transition-colors"
               />
@@ -170,7 +170,7 @@ export function ChatWidget() {
                 <Send className="w-4 h-4" />
               </Button>
             </div>
-            <p className="text-xs text-cyan-500/50 font-mono">> HISTORY: DISABLED</p>
+            <p className="text-xs text-cyan-500/50 font-mono">&gt; HISTORY: DISABLED</p>
           </div>
         </DialogContent>
       </Dialog>
