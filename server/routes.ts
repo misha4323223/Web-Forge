@@ -26,15 +26,32 @@ async function httpsRequest(
   return new Promise((resolve, reject) => {
     const url = new URL(urlString);
     const startTime = Date.now();
+    const requestId = crypto.randomUUID().substring(0, 8);
     
-    console.log(`   [HTTPS] Starting request to ${url.hostname}`);
+    console.log(`\n   [HTTPS-${requestId}] ========== STARTING REQUEST ==========`);
+    console.log(`   [HTTPS-${requestId}] URL: ${urlString}`);
+    console.log(`   [HTTPS-${requestId}] Method: ${options.method}`);
+    console.log(`   [HTTPS-${requestId}] Hostname: ${url.hostname}`);
+    console.log(`   [HTTPS-${requestId}] Port: ${url.port || 443}`);
+    console.log(`   [HTTPS-${requestId}] Path: ${url.pathname}`);
     
-    const TIMEOUT_MS = 45000;
-    const SOCKET_TIMEOUT_MS = 50000;
+    const bodySize = options.body ? Buffer.byteLength(options.body) : 0;
+    console.log(`   [HTTPS-${requestId}] Request body size: ${bodySize} bytes`);
+    
+    console.log(`   [HTTPS-${requestId}] Headers:`);
+    Object.entries(options.headers).forEach(([key, value]) => {
+      const displayValue = key.toLowerCase().includes('auth') ? '[REDACTED]' : value.substring(0, 50) + (value.length > 50 ? '...' : '');
+      console.log(`   [HTTPS-${requestId}]   ${key}: ${displayValue}`);
+    });
+    
+    const TIMEOUT_MS = 50000;
+    const SOCKET_TIMEOUT_MS = 55000;
     
     let socketTimeoutId: NodeJS.Timeout | null = null;
     let requestTimeoutId: NodeJS.Timeout | null = null;
     let hasResponded = false;
+    let receivedFirstByte = false;
+    let totalBytesReceived = 0;
     
     const cleanup = () => {
       if (requestTimeoutId) clearTimeout(requestTimeoutId);
@@ -42,12 +59,12 @@ async function httpsRequest(
     };
     
     const elapsed = () => Math.round((Date.now() - startTime) / 1000);
+    const elapsedMs = () => Math.round((Date.now() - startTime));
     
     requestTimeoutId = setTimeout(() => {
       cleanup();
-      if (!hasResponded) {
-        console.log(`   [HTTPS] TIMEOUT: No response after ${elapsed()}s`);
-      }
+      console.error(`   [HTTPS-${requestId}] ❌ MAIN TIMEOUT: No response after ${elapsed()}s (${elapsedMs()}ms)`);
+      console.error(`   [HTTPS-${requestId}] hasResponded: ${hasResponded}, receivedFirstByte: ${receivedFirstByte}, totalBytes: ${totalBytesReceived}`);
       req.destroy();
       reject(new Error(`Request timeout after ${elapsed()}s`));
     }, TIMEOUT_MS);
@@ -59,63 +76,112 @@ async function httpsRequest(
       timeout: SOCKET_TIMEOUT_MS,
     };
     
+    console.log(`   [HTTPS-${requestId}] Creating HTTPS request with timeout: ${SOCKET_TIMEOUT_MS}ms`);
     const req = https.request(url, reqOptions, (res) => {
       hasResponded = true;
-      console.log(`   [HTTPS] Response received after ${elapsed()}s, status: ${res.statusCode}`);
+      console.log(`   [HTTPS-${requestId}] ✅ Response received after ${elapsed()}s (${elapsedMs()}ms)`);
+      console.log(`   [HTTPS-${requestId}] Status Code: ${res.statusCode}`);
+      console.log(`   [HTTPS-${requestId}] Response Headers:`);
+      Object.entries(res.headers).forEach(([key, value]) => {
+        console.log(`   [HTTPS-${requestId}]   ${key}: ${String(value).substring(0, 100)}`);
+      });
       
       socketTimeoutId = setTimeout(() => {
         cleanup();
+        console.error(`   [HTTPS-${requestId}] ❌ RESPONSE TIMEOUT: No data after ${elapsed()}s, received ${totalBytesReceived} bytes so far`);
         req.destroy();
         reject(new Error('Response timeout'));
       }, SOCKET_TIMEOUT_MS);
       
       let data = '';
       res.on('data', (chunk) => {
-        console.log(`   [HTTPS] Received ${chunk.length} bytes (total: ${data.length + chunk.length})`);
+        if (!receivedFirstByte) {
+          receivedFirstByte = true;
+          console.log(`   [HTTPS-${requestId}] 📦 First byte received after ${elapsedMs()}ms`);
+        }
+        
+        totalBytesReceived += chunk.length;
+        console.log(`   [HTTPS-${requestId}] 📥 Chunk: ${chunk.length} bytes (total: ${totalBytesReceived})`);
+        
         if (socketTimeoutId) clearTimeout(socketTimeoutId);
         socketTimeoutId = setTimeout(() => {
           cleanup();
+          console.error(`   [HTTPS-${requestId}] ❌ DATA TIMEOUT: No data chunks after ${elapsed()}s, received ${totalBytesReceived} bytes total`);
           req.destroy();
           reject(new Error('Data timeout'));
         }, SOCKET_TIMEOUT_MS);
         
         data += chunk;
       });
+      
       res.on('end', () => {
         cleanup();
-        console.log(`   [HTTPS] Request completed after ${elapsed()}s, data length: ${data.length}`);
+        console.log(`   [HTTPS-${requestId}] ✅ Response completed after ${elapsed()}s (${elapsedMs()}ms)`);
+        console.log(`   [HTTPS-${requestId}] Total data length: ${data.length} bytes`);
+        console.log(`   [HTTPS-${requestId}] ========== REQUEST SUCCESS ==========\n`);
         resolve({ statusCode: res.statusCode || 500, data });
       });
     });
     
     req.on('socket', (socket) => {
-      console.log(`   [HTTPS] Socket created`);
+      console.log(`   [HTTPS-${requestId}] 🔌 Socket created, fd: ${socket.fd}`);
+      
       socket.on('connect', () => {
-        console.log(`   [HTTPS] Socket connected to ${url.hostname} after ${elapsed()}s`);
+        console.log(`   [HTTPS-${requestId}] 🔗 Socket connected to ${url.hostname} after ${elapsedMs()}ms`);
       });
+      
       socket.on('secureConnect', () => {
-        console.log(`   [HTTPS] TLS handshake complete after ${elapsed()}s`);
+        console.log(`   [HTTPS-${requestId}] 🔒 TLS handshake complete after ${elapsedMs()}ms`);
+      });
+      
+      socket.on('close', (hadError) => {
+        console.log(`   [HTTPS-${requestId}] ❌ Socket closed (hadError: ${hadError}) after ${elapsed()}s`);
+      });
+      
+      socket.on('error', (err) => {
+        console.error(`   [HTTPS-${requestId}] ❌ Socket error: ${err.message}`);
+      });
+      
+      socket.on('timeout', () => {
+        console.log(`   [HTTPS-${requestId}] ⏱️ Socket timeout event after ${elapsed()}s`);
       });
     });
     
     req.on('error', (err) => {
       cleanup();
-      console.log(`   [HTTPS] Error after ${elapsed()}s: ${(err as Error).message}`);
+      const errorMessage = (err as Error).message;
+      const errorCode = (err as any).code;
+      const errorErrno = (err as any).errno;
+      
+      console.error(`   [HTTPS-${requestId}] ❌ REQUEST ERROR after ${elapsed()}s (${elapsedMs()}ms)`);
+      console.error(`   [HTTPS-${requestId}] Error message: ${errorMessage}`);
+      console.error(`   [HTTPS-${requestId}] Error code: ${errorCode}`);
+      console.error(`   [HTTPS-${requestId}] Error errno: ${errorErrno}`);
+      console.error(`   [HTTPS-${requestId}] Stack: ${(err as Error).stack}`);
+      console.error(`   [HTTPS-${requestId}] State: hasResponded=${hasResponded}, receivedFirstByte=${receivedFirstByte}, totalBytes=${totalBytesReceived}`);
+      console.error(`   [HTTPS-${requestId}] ========== REQUEST FAILED ==========\n`);
+      
       reject(err);
     });
     
     req.on('timeout', () => {
       cleanup();
-      console.log(`   [HTTPS] Socket timeout after ${elapsed()}s`);
+      console.error(`   [HTTPS-${requestId}] ⏱️ REQUEST TIMEOUT EVENT after ${elapsed()}s (${elapsedMs()}ms)`);
+      console.error(`   [HTTPS-${requestId}] State: hasResponded=${hasResponded}, receivedFirstByte=${receivedFirstByte}, totalBytes=${totalBytesReceived}`);
       req.destroy();
       reject(new Error('Socket timeout'));
     });
     
     if (options.body) {
+      const bodyStr = options.body.substring(0, 200) + (options.body.length > 200 ? '...' : '');
+      console.log(`   [HTTPS-${requestId}] 📝 Request body: ${bodyStr}`);
       req.write(options.body);
+      console.log(`   [HTTPS-${requestId}] Body written, ${bodySize} bytes`);
     }
-    console.log(`   [HTTPS] Request sent (${options.method} ${url.pathname})`);
+    
+    console.log(`   [HTTPS-${requestId}] Ending request (calling req.end())`);
     req.end();
+    console.log(`   [HTTPS-${requestId}] Request ended, waiting for response...`);
   });
 }
 
