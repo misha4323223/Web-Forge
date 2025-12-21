@@ -33,6 +33,7 @@ const nodemailer = require('nodemailer');
 const PDFDocument = require('pdfkit');
 const { Driver, getCredentialsFromEnv, TypedValues, Types } = require('ydb-sdk');
 const { SESv2Client, SendEmailCommand } = require('@aws-sdk/client-sesv2');
+const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3');
 const GigaChat = require('gigachat');
 const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
@@ -3516,26 +3517,28 @@ async function loadKnowledgeBaseFromStorage() {
             return null;
         }
         
-        const host = 'storage.yandexcloud.net';
-        const path = `/${bucketName}/${keyPath}`;
-        
-        // Sign the request
-        const signatureHeaders = signAwsRequest('GET', host, path, accessKey, secretKey);
-        
-        const response = await httpsRequest(`https://${host}${path}`, {
-            method: 'GET',
-            headers: {
-                'Host': host,
-                ...signatureHeaders
-            }
+        // Create S3 client for Yandex Cloud Object Storage
+        const s3Client = new S3Client({
+            region: 'ru-central1',
+            endpoint: 'https://storage.yandexcloud.net',
+            credentials: {
+                accessKeyId: accessKey,
+                secretAccessKey: secretKey,
+            },
+            forcePathStyle: true,
         });
         
-        if (response.statusCode !== 200) {
-            console.error(`[KB] HTTP ${response.statusCode}: ${response.data.slice(0, 200)}`);
-            return null;
-        }
+        // Get the file from Object Storage
+        const command = new GetObjectCommand({
+            Bucket: bucketName,
+            Key: keyPath,
+        });
         
-        const kbData = JSON.parse(response.data);
+        const response = await s3Client.send(command);
+        const dataBuffer = await response.Body.transformToByteArray();
+        const dataString = new TextDecoder().decode(dataBuffer);
+        
+        const kbData = JSON.parse(dataString);
         cachedKB = kbData;
         cacheTime = now;
         
