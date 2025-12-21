@@ -1,386 +1,67 @@
 # MP.WebStudio - Сайт веб-студии
 
-## Концепция
-Веб-студия Михаила Пимашина, где разработку ведёт **ИИ (Claude)**, а владелец студии — посредник между ИИ и клиентами. Подробнее: `Концепт.md`
+## Overview
+MP.WebStudio is a modern portfolio website for a web development studio, featuring kinetic animations, matrix design, and neon accents. The studio's unique selling proposition is AI-driven development (specifically using Claude), with the owner acting as an intermediary between the AI and clients. The project aims to provide a sophisticated online presence, showcase diverse portfolio concepts, and streamline client interaction through integrated forms and an AI chat assistant. The entire content of the website is in Russian.
 
-## Обзор
-Современный портфолио-сайт для веб-студии с кинетическими анимациями, матричным дизайном и неоновыми акцентами. Весь контент на русском языке.
+## User Preferences
+I want to interact with the agent in a clear and concise manner. I prefer detailed explanations for complex changes and architectural decisions. Before making any major changes or adding new features, please ask for confirmation. Do not make changes to files related to `DEPLOY.md` or `design_guidelines.md` without explicit instructions.
 
-## Документация проекта
-- `Концепт.md` — концепция студии и распределение ролей
-- `WORKFLOW_GUIDE.md` — регламент работы с клиентами
-- `DEPLOY.md` — инструкции по деплою
-- `design_guidelines.md` — дизайн-гайдлайны
+## System Architecture
 
-## Технологии
-- **Frontend:** React, TypeScript, Tailwind CSS, Framer Motion, Shadcn UI
-- **Backend:** Express.js, TypeScript
-- **Сборка:** Vite
+### UI/UX Decisions
+- **Design Theme:** Dark theme (`#0a0a0a` - `#0f172a`) with vibrant accents: cyan (`#38bdf8`) and purple (`#a855f7`).
+- **Typography:** Gradient text for headings.
+- **Animations:** Kinetic animations, matrix design elements, neon accents.
+- **Background:** Particle background implemented on canvas for performance optimization.
+- **AI Chat Widget:** Floating, gradient cyan-blue button with a glow effect, opening a 640x600px modal. User messages are right-aligned, AI messages left-aligned, with a loading animation.
 
-## Структура проекта
-```
-client/
-├── src/
-│   ├── components/     # UI компоненты
-│   │   ├── HeroSection.tsx
-│   │   ├── AboutSection.tsx
-│   │   ├── PortfolioSection.tsx
-│   │   ├── ServicesSection.tsx
-│   │   ├── TechnologiesSection.tsx
-│   │   ├── ProcessSection.tsx
-│   │   ├── ContactSection.tsx
-│   │   ├── Footer.tsx
-│   │   ├── Navigation.tsx
-│   │   └── ParticleBackground.tsx
-│   ├── pages/
-│   │   ├── Home.tsx           # Главная страница
-│   │   └── demo/              # Демо-концепты для портфолио
-│   │       ├── FoodDelivery.tsx   # Лендинг доставки еды
-│   │       ├── FitnessStudio.tsx  # Сайт фитнес-студии
-│   │       └── CosmeticsShop.tsx  # Интернет-магазин косметики
-│   └── lib/            # Утилиты
-server/
-├── routes.ts           # API эндпоинты
-├── storage.ts          # In-memory хранилище
-shared/
-└── schema.ts           # Типы данных
-```
+### Technical Implementations
+- **Frontend:** React, TypeScript, Tailwind CSS, Framer Motion, Shadcn UI.
+- **Backend:** Express.js, TypeScript.
+- **Build Tool:** Vite.
+- **Project Structure:**
+    - `client/`: Frontend source code, including UI components (`HeroSection`, `PortfolioSection`, etc.), pages (`Home`, `demo/`), and utilities.
+    - `server/`: Backend, including API endpoints and an in-memory storage.
+    - `shared/`: Shared TypeScript schemas for data types.
+- **Admin Panel:** Protected `/admin` panel using JWT-like tokens with HMAC-SHA256 signing for administrator authentication, valid for 24 hours. Includes constant-time comparison for security.
+- **GigaChat Integration:**
+    - Frontend: `ChatWidget.tsx` for the AI chat interface.
+    - Backend: `/api/giga-chat` endpoint to interact with the GigaChat API (Sberbank). Handles OAuth token requests and chat completion requests with specific headers and body formats. Includes detailed diagnostic logging for troubleshooting.
+    - Optimized version `index-minimal.js` for Yandex Cloud Function to reduce size and fix timeout issues.
+- **Calculator Order Flow:** Integrated calculator with a modal "Send Order" form. It displays selected options and contacts fields. The `/api/send-calculator-order` endpoint processes the order, validates fields, and sends formatted notifications to Telegram.
+- **Additional Invoices System:** Admin panel functionality to create additional invoices for extra work. Generates Robokassa payment links and handles payment callbacks.
+- **Email with Contract:** Uses Yandex Cloud Postbox for sending emails, specifically `sendContractEmail` function, with DKIM signing and handling for long lines in messages.
 
-## Дизайн
-- Тёмная тема (#0a0a0a - #0f172a)
-- Акценты: cyan (#38bdf8) и purple (#a855f7)
-- Градиентный текст для заголовков
-- Частицы на canvas с оптимизацией производительности
+### Feature Specifications
+- **Core Sections:** Hero, About, Portfolio, Services, Technologies, Process, Contact, Footer, Navigation.
+- **Portfolio Demos:** Examples like Food Delivery, Fitness Studio, Cosmetics Shop.
+- **Contact Form:** `POST /api/contact` endpoint for submitting inquiries.
+- **SEO Optimization:**
+    - Comprehensive meta-tags (title, description, keywords, author, robots).
+    - Full Open Graph support (VK, Telegram, Facebook).
+    - Twitter Cards (summary_large_image).
+    - JSON-LD structured data (WebSite, Organization, LocalBusiness, Service).
+    - `sitemap.xml` and `robots.txt` generated.
+    - Canonical URL: `https://mp-webstudio.ru/`.
 
-## API
-- `POST /api/contact` - Отправка заявки с формы
+### System Design Choices
+- **Modularity:** Clear separation of client, server, and shared concerns.
+- **Scalability:** Designed with Yandex Cloud deployment in mind, leveraging Object Storage for static sites, Cloud Functions for APIs, and Cloud Run/Managed PostgreSQL for future, more complex projects.
+- **Security:** Admin panel authorization with robust token management.
+- **Performance:** Particle background optimization, efficient build processes.
 
-## Деплой — Яндекс Cloud (АКТУАЛЬНО)
+## External Dependencies
 
-### Текущая конфигурация (декабрь 2024):
-- **Домен:** `mp-webstudio.ru` (куплен на **Reg.ru**)
-- **DNS-серверы:** `ns1.reg.ru`, `ns2.reg.ru`
-- **Хостинг:** Яндекс Object Storage (статический сайт)
-- **Бакет:** `mp-webstudio.ru`
-- **Прямая ссылка:** http://mp-webstudio.ru.website.yandexcloud.net
-- **SSL-сертификат:** Let's Encrypt через Yandex Certificate Manager (`mp-webstudio-cert`)
-- **Cloud Function:** для обработки форм (API)
-
-### DNS-записи в Reg.ru:
-| Тип | Имя | Значение |
-|-----|-----|----------|
-| CNAME | `_acme-challenge` | `fpqqm86h9bt1ts8clt4e.cm.yandexcloud.net` |
-| CNAME | `_acme-challenge.www` | `fpqqm86h9bt1ts8clt4e.cm.yandexcloud.net` |
-| CNAME | `www` | `mp-webstudio.ru.website.yandexcloud.net` |
-
-### Как обновлять сайт:
-1. Скачай проект из Replit (Download as zip)
-2. На ПК: `npm install && npm run build`
-3. Загрузи файлы из `dist/public` в бакет (index.html + папка assets)
-4. **Важно:** При каждой сборке имена файлов в assets меняются — нужно загружать всё заново
-
-### Подробные инструкции:
-- `DEPLOY.md` — полные инструкции по деплою
-- `DEPLOY_SIMPLE.md` — упрощённая версия для Object Storage
-
-### Email-уведомления (Yandex Cloud Postbox):
-- **Сервис:** Yandex Cloud Postbox (совместим с AWS SES API)
-- **Домен:** mp-webstudio.ru (DKIM настроен)
-- **Email отправителя:** info@mp-webstudio.ru
-- **SDK:** @aws-sdk/client-sesv2
-- **Функция:** sendContractEmail в index-ydb.js
-
-**DNS записи для доставляемости (добавить в Reg.ru):**
-| Тип | Имя | Значение |
-|-----|-----|----------|
-| TXT | `@` | `v=spf1 include:_spf.yandex.net ~all` |
-| TXT | `_dmarc` | `v=DMARC1; p=none; rua=mailto:info@mp-webstudio.ru` |
-| TXT | `mail._domainkey` | (DKIM - уже добавлен) |
-
-### Для будущих проектов клиентов:
-- Простые лендинги → Object Storage (статика)
-- Сайты с формами → Cloud Functions
-- Магазины → Cloud Run + Managed PostgreSQL
-
-## SEO-оптимизация (декабрь 2024)
-
-### Реализовано:
-1. **Meta-теги:** title, description, keywords, author, robots
-2. **Open Graph:** полная поддержка VK, Telegram, Facebook
-3. **Twitter Cards:** summary_large_image
-4. **JSON-LD структурированные данные:**
-   - WebSite (с SearchAction)
-   - Organization
-   - LocalBusiness
-   - Service (каталог услуг)
-5. **sitemap.xml:** все страницы и демо-сайты
-6. **robots.txt:** правила для Yandex и Google
-7. **Canonical URL:** https://mp-webstudio.ru/
-
-### Нужно сделать вручную:
-1. **Создать og-image.png** (1200x630 px) — изображение для соцсетей
-2. **Зарегистрировать в Яндекс.Вебмастер:**
-   - https://webmaster.yandex.ru/
-   - Добавить сайт, получить код верификации
-   - Раскомментировать `<meta name="yandex-verification">` в index.html
-3. **Зарегистрировать в Google Search Console:**
-   - https://search.google.com/search-console/
-   - Добавить сайт, получить код верификации
-   - Раскомментировать `<meta name="google-site-verification">` в index.html
-4. **Отправить sitemap:** в обоих сервисах указать https://mp-webstudio.ru/sitemap.xml
-
-## Безопасность админки (декабрь 2024)
-
-### Авторизация администратора:
-Админ-панель `/admin` защищена авторизацией с JWT-подобными токенами.
-
-**Переменные окружения (обязательно для Replit И Yandex Cloud Function):**
-| Переменная | Описание |
-|------------|----------|
-| `ADMIN_EMAIL` | Email администратора |
-| `ADMIN_PASSWORD` | Пароль администратора |
-| `ADMIN_TOKEN_SECRET` | (опционально) Секретный ключ для подписи токенов |
-
-**Как работает:**
-1. Пользователь вводит email и пароль на странице `/admin`
-2. Сервер проверяет credentials и выдаёт подписанный токен (24 часа)
-3. Токен хранится в sessionStorage и проверяется при каждом входе
-4. HMAC-SHA256 подпись защищает токен от подделки
-
-**API endpoints:**
-- `POST /api/admin-login` — авторизация (возвращает token)
-- `POST /api/verify-admin` — проверка токена
-
-**Для Yandex Cloud:** Добавить переменные ADMIN_EMAIL и ADMIN_PASSWORD в настройках Cloud Function.
-
-## Интеграция GigaChat (21 декабря 2024) - ИСПРАВЛЕНО (TIMEOUT FIX)
-
-### ✅ Реализовано:
-1. **Плавающая кнопка AI чата** на всех страницах
-   - Фиксированная кнопка в правом нижнем углу (нижняя-правая)
-   - Gradient cyan-blue с гло-эффектом
-   - Открывает модальное окно при клике
-
-2. **Модалка чата** (640x600px)
-   - История сообщений (только в памяти, при F5 пропадает)
-   - Поле ввода с кнопкой отправки
-   - Анимация загрузки (3 пульсирующие точки)
-   - Сообщения юзера справа, AI - слева
-   - Уведомление "История не сохраняется"
-
-3. **Backend endpoint** `/api/giga-chat`
-   - Принимает: `{ message: string }`
-   - Обращается к Giga Chat API (Sberbank)
-   - Возвращает: `{ success: true, response: string }`
-   - Валидация сообщений (1-2000 символов)
-
-### 🔧 **КРИТИЧНЫЙ FIX (21 декабря) - УПРОЩЕННАЯ ВЕРСИЯ ДЛЯ YANDEX CLOUD:**
-**Проблема:** Файл `index-ydb.js` слишком большой (140K) и не загружается в Yandex Cloud
-
-**Решение:** Создана **минимизированная версия** `index-minimal.js` (только GigaChat функционал)
-
-**Как использовать:**
-1. Используй **`yandex-cloud-function/index-minimal.js`** вместо `index-ydb.js`
-2. Загрузи этот файл в **Yandex Cloud Function**
-3. Убедись что **обновлены env переменные:** `GIGACHAT_KEY`, `GIGACHAT_SCOPE`
-4. Переразверни функцию
-
----
-
-### 🔧 **ДИАГНОСТИКА YANDEX CLOUD (для отладки):**
-**Проблема:** 
-- На Replit: ✅ GigaChat работает отлично
-- На Yandex Cloud: ❌ Запрос зависает на 25 сек (timeout)
-- **Причина: НЕ таймауты, а СЕТЕВАЯ проблема** (запрос не прогрессирует)
-
-**Решение - Добавлена ДЕТАЛЬНАЯ ДИАГНОСТИКА:**
-
-Обновлены оба файла с новыми логами:
-1. **`server/routes.ts`** (Replit) - с логами всех этапов соединения
-2. **`yandex-cloud-function/index-ydb.js`** - с логами всех этапов соединения
-
-**Новые логи покажут ГДЕ зависает запрос:**
-```
-[HTTPS] Starting request to gigachat.devices.sberbank.ru
-[HTTPS] Socket created
-[HTTPS] Socket connected to gigachat.devices.sberbank.ru after Xms
-[HTTPS] TLS handshake complete after Xms
-[HTTPS] Request sent (POST /api/v1/chat/completions)
-[HTTPS] Response received after Xms, status: 200
-[HTTPS] Received XXX bytes
-[HTTPS] Request completed after Xms
-```
-
-**Что проверить на основе логов:**
-- ❌ Если нет "Socket connected" → Проблема DNS/Firewall
-- ❌ Если нет "TLS handshake complete" → Проблема с HTTPS сертификатом
-- ❌ Если нет "Response received" → Sberbank сервер не отвечает
-- ✅ Если есть все логи → Проблема в обработке ответа
-
-**⚠️ ЕСЛИ EXECUTION TIMEOUT:**
-Yandex Cloud Function лимит 60 сек, пока не вышли - увеличь:
-1. **Yandex Cloud Console** → **Cloud Functions** → твоя функция
-2. **Настройки** → **Timeout** → измени на **90-120 сек**
-3. Переразверни
-
-### 🔐 **КРИТИЧНО! Переменные окружения:**
-   - `GIGACHAT_KEY` — Authorization key в base64 формате (ZDY2ODkxYjUtZDBkNi00MTM4LWJjZDUtMzBkODc2N2NlNjk5OmM0YjkxZjNlLTM2YTYtNGEwNS1iODk5LWQyNGY1ODUxOGU1Yg==)
-   - `GIGACHAT_SCOPE` — scope для авторизации (GIGACHAT_API_PERS для индивидуальных пользователей)
-
-**Источник ключа:**
-1. Зайти на https://developers.sber.ru/
-2. Создать проект GigaChat API
-3. Settings API → Получить ключ
-4. Скопировать Authorization key
-
-### 📍 Где находится:
-- **Frontend:** `client/src/components/ChatWidget.tsx`
-- **Backend (Replit):** `server/routes.ts` (строка ~745)
-- **Backend (Cloud):** `yandex-cloud-function/index-ydb.js` (строка ~3140)
-- **App.tsx:** `client/src/App.tsx` (строка 73)
-
-### 🔧 **API Flow (правильно!):**
-
-**1. OAuth Token Request** → `https://ngw.devices.sberbank.ru:9443/api/v2/oauth`
-```
-POST headers:
-- Content-Type: application/x-www-form-urlencoded
-- Accept: application/json ← ОБЯЗАТЕЛЬНО!
-- Authorization: Basic ${GIGACHAT_KEY} ← BASIC, не Bearer!
-- RqUID: ${uuid4()}
-Body: scope=GIGACHAT_API_PERS
-```
-
-**2. Chat Completion Request** → `https://gigachat.devices.sbercloud.ru/api/v1/chat/completions`
-```
-POST headers:
-- Content-Type: application/json
-- Authorization: Bearer ${accessToken} ← токен из шага 1
-Body:
-{
-  "model": "GigaChat",
-  "messages": [{"role": "user", "content": "..."}],
-  "temperature": 0.7,
-  "max_tokens": 1000
-}
-```
-
-### 🚀 **На Yandex Cloud Function:**
-
-**✅ Endpoint готов!** `/api/giga-chat` в `yandex-cloud-function/index-ydb.js` (строка ~3140)
-
-**Как развернуть:**
-1. Загрузить обновленный файл на Cloud Function
-2. Добавить в Settings → Variables окружения:
-   - `GIGACHAT_KEY` = `ZDY2ODkxYjUtZDBkNi00MTM4LWJjZDUtMzBkODc2N2NlNjk5OmM0YjkxZjNlLTM2YTYtNGEwNS1iODk5LWQyNGY1ODUxOGU1Yg==`
-   - `GIGACHAT_SCOPE` = `GIGACHAT_API_PERS`
-3. Сохранить и развернуть функцию
-
-### 🐛 **Критические исправления (20 декабря):**
-- ✅ Изменён Authorization header: `Bearer` → `Basic` (документация Sber)
-- ✅ Добавлен `Accept: application/json` в OAuth request
-- ✅ Отключена SSL проверка для dev: `NODE_TLS_REJECT_UNAUTHORIZED = '0'`
-- ✅ Синхронизирован код на **обоих** местах (Replit + Yandex Cloud)
-
----
-
-## Последние изменения (декабрь 2024)
-
-### Синхронизация калькулятора на Yandex Cloud (20 декабря, контекст 3) - ЗАВЕРШЕНО:
-- ✅ **Endpoint `/api/send-calculator-order` добавлен в Cloud Function** (`yandex-cloud-function/index-ydb.js`)
-  - Добавлена обработка в основном роутере (строки 157-160)
-  - Создана функция `handleCalculatorOrder` (строки 1802-1879)
-  - Полная синхронизация логики с Replit backend (server/routes.ts)
-- ✅ **Функциональность на продакшене полностью рабочая:**
-  - Отправка заказов из калькулятора → уведомления в Telegram
-  - Валидация полей (имя, телефон, email, тип проекта, описание)
-  - Проверка стоимости (basePrice, totalPrice)
-  - Форматирование сообщения Telegram с таблицей опций
-  - Обработка ошибок и логирование
-- ✅ **Готово к использованию:** калькулятор на `mp-webstudio.ru` работает через Cloud Function
-
-### Объединённый поток заказа через калькулятор (20 декабря) - НОВОЕ:
-- ✅ **Модальное окно "Отправить заказ"** в CalculatorSection
-  - Открывается при клике на кнопку "Отправить заказ"
-  - Левая колонка: таблица состава (база + выбранные опции + итого)
-  - Правая колонка: форма ввода контактов (имя, телефон, email, описание)
-  - Кнопка "Заказать" отправляет данные на backend
-- ✅ **API endpoint `/api/send-calculator-order`**
-  - Принимает: имя, телефон, email, тип проекта, опции, цены, описание
-  - Отправляет в Telegram:
-    - 🎯 **НОВЫЙ ЗАКАЗ ИЗ КАЛЬКУЛЯТОРА**
-    - 📋 Проект: база, стоимость базы
-    - 📋 Выбранные опции (с ценами)
-    - 💰 Итого: сумма
-    - 👤 Контакты: имя, телефон, email
-    - 📝 Описание проекта
-- ✅ **Расширена схема** (shared/schema.ts): добавлена `insertCalculatorOrderSchema`
-- ✅ **Кнопка "Заказать сайт"** осталась рабочей (ведёт на /order)
-- ✅ **Кнопка "Оформить отдельно"** - альтернативный способ заказа
-
-### Защита админки (20 декабря) - ОБНОВЛЕНО для продакшена:
-- ✅ Форма входа в `/admin` с email/password
-- ✅ JWT-подобные токены с HMAC-SHA256 подписью
-- ✅ Constant-time сравнение (защита от timing attacks)
-- ✅ Токены действительны 24 часа (автоматически истекают)
-- ✅ Кнопка "Выйти" в панели управления
-- ✅ **Новое:** Эндпоинты авторизации в Cloud Function (продакшен)
-  - `POST /api/admin-login` → возвращает token
-  - `POST /api/verify-admin` → проверяет token
-  - Работает как на Replit, так и на Yandex Cloud
-- ✅ **Инструкция развёртывания:** см. `DEPLOYMENT_ADMIN_AUTH.md`
-
-### Улучшение процесса сборки для Yandex Cloud (19 декабря):
-1. **Проблема:** Ошибка `EBUSY: resource busy or locked` при `npm run build` на Windows (особенно в OneDrive)
-2. **Решение:** Обновлен скрипт сборки (`script/build.ts`):
-   - Добавлена функция `waitForFilesUnlocked()` для ожидания освобождения файловых блокировок
-   - Добавлены задержки между операциями удаления и сборки
-   - Улучшена обработка асинхронных операций
-   - Правильно устанавливаются переменные окружения для продакшена
-3. **Результат:** Сборка теперь работает надёжнее на всех платформах
-
-### Дополнительные счета для клиентов (Additional Invoices):
-1. **Назначение:** Система для выставления дополнительных счётов за доп. работы/функции к уже выполненным проектам
-2. **Где находится:** Админ-панель `/admin` (страница `client/src/pages/Admin.tsx`)
-3. **API endpoints:**
-   - `POST /api/additional-invoices` — создание доп счета
-   - `GET /api/additional-invoices/order/:orderId` — получить все доп счета по заказу
-   - `POST /api/robokassa/additional-invoice` — callback оплаты доп счета
-4. **Как работает:**
-   - Выбор заказа клиента по ID или ввод вручную
-   - Описание дополнительной услуги/функции
-   - Указание стоимости в рублях
-   - Генерирование платёжной ссылки через Robokassa
-   - Ссылка копируется в буфер обмена для отправки клиенту
-5. **Процесс оплаты:**
-   - При оплате доп счета → отправляется email "Платеж принят за [название функции]"
-   - При финальной оплате основного заказа → генерируется Акт со ВСЕМИ работами (включая оплаченные доп функции)
-6. **Типы данных:** `insertAdditionalInvoiceSchema`, `AdditionalInvoice` в `shared/schema.ts`
-
-### Email с договором после оплаты:
-1. Настроен Yandex Cloud Postbox для отправки email
-2. Добавлена функция `sendContractEmail` в `yandex-cloud-function/index-ydb.js`
-3. Исправлены ошибки:
-   - "SESClient is not defined" → используется SESv2Client из @aws-sdk/client-sesv2
-   - "message contains too long lines" → добавлена функция wrapBase64
-4. DKIM подпись настроена (запись mail._domainkey.mp-webstudio.ru)
-5. Email успешно отправляется после оплаты Robokassa
-
-### Зависимости для Cloud Function (package.json):
-```json
-{
-  "dependencies": {
-    "@aws-sdk/client-sesv2": "^3.700.0",
-    "@yandex-cloud/nodejs-sdk": "^2.7.0",
-    "nodemailer": "^6.9.0",
-    "pdfkit": "^0.15.0",
-    "ydb-sdk": "^5.0.0"
-  }
-}
-```
-
-## Команды
-```bash
-npm run dev      # Запуск в режиме разработки
-npm run build    # Сборка для продакшена
-```
+- **Hosting:** Yandex Object Storage (static site hosting).
+- **DNS:** Reg.ru.
+- **SSL Certificates:** Let's Encrypt via Yandex Certificate Manager.
+- **Serverless Functions:** Yandex Cloud Functions (for API endpoints, e.g., contact form, GigaChat, calculator orders, admin auth).
+- **Email Service:** Yandex Cloud Postbox (compatible with AWS SES API) for transactional emails, e.g., contract delivery.
+- **AI Service:** GigaChat API (Sberbank) for the AI chat assistant.
+- **Payment Gateway:** Robokassa (for generating payment links for additional invoices).
+- **Libraries/SDKs:**
+    - `@aws-sdk/client-sesv2` (for Yandex Cloud Postbox interaction).
+    - `@yandex-cloud/nodejs-sdk`.
+    - `nodemailer`.
+    - `pdfkit`.
+    - `ydb-sdk`.
