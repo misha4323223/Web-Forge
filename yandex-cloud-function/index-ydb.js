@@ -3382,7 +3382,7 @@ async function handleGigaChat(body, headers) {
         let chatResponse;
         
         try {
-            chatResponse = await httpsRequest('https://gigachat.devices.sberbank.ru/api/v1/chat/completions', {
+            chatResponse = await httpsRequest('https://gigachat.devices.sberbank.ru:9443/api/v1/chat/completions', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

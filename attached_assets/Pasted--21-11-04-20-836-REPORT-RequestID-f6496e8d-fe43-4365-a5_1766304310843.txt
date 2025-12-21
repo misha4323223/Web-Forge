@@ -1,0 +1,184 @@
+
+
+21 дек. 11:04:20.836
+REPORT RequestID: f6496e8d-fe43-4365-a566-1a754a4bebde Duration: 30829.928 ms Billed Duration: 30900 ms Memory Size: 256 MB Max Memory Used: 171 MB Queuing Duration: 0.080 ms Function Init Duration: 828.936 ms
+
+21 дек. 11:04:20.836
+ERROR RequestID: f6496e8d-fe43-4365-a566-1a754a4bebde Code: 504 Message: Execution timeout exceeded
+
+21 дек. 11:04:20.836
+END RequestID: f6496e8d-fe43-4365-a566-1a754a4bebde
+
+21 дек. 11:04:20.836
+{"errorMessage":"execution timeout exceeded","errorType":"JobExecutionTimeoutExceeded","stackTrace":null}
+
+21 дек. 11:03:55.951
+[HTTP v2.0] ✗ SOCKET CLOSED after 5098ms
+
+21 дек. 11:03:50.971
+[HTTP v2.0] ✓ req.end() callback - no error
+
+21 дек. 11:03:50.971
+[HTTP v2.0] ✓ SOCKET secureConnect EVENT after 21ms (TLS: undefined)
+
+21 дек. 11:03:50.957
+[HTTP v2.0] ✓ SOCKET connect EVENT after 7ms
+
+21 дек. 11:03:50.953
+[HTTP v2.0] ✓ SOCKET lookup after 3ms
+
+21 дек. 11:03:50.952
+[HTTP v2.0] Socket state - readable: true, writable: true, connecting: true
+
+21 дек. 11:03:50.952
+[HTTP v2.0] ✓ SOCKET CREATED after 2ms
+
+21 дек. 11:03:50.952
+[HTTP v2.0] ✓ req.end() called - waiting for response...
+
+21 дек. 11:03:50.952
+[HTTP v2.0] About to call req.end()...
+
+21 дек. 11:03:50.952
+[HTTP v2.0] ✓ BODY WRITTEN: 110 bytes, write returned: true
+
+21 дек. 11:03:50.951
+[HTTP v2.0] About to write 110 bytes to socket
+
+21 дек. 11:03:50.951
+[HTTP v2.0] Writing body...
+
+21 дек. 11:03:50.951
+[HTTP v2.0] Request object created, attaching listeners...
+
+21 дек. 11:03:50.950
+[HTTP v2.0] Creating request object...
+
+21 дек. 11:03:50.950
+[HTTP v2.0] Request body: {"model":"GigaChat","messages":[{"role":"user","content":"привет"}],"temperature":0.7,"max_tokens":1000}
+
+21 дек. 11:03:50.950
+[HTTP v2.0] Request headers: {"Content-Type":"application/json","Authorization":"Bearer eyJjdHkiOiJqd3QiLCJlbmMiOiJBMjU2Q0JDLUhTNTEyIiwiYWxnIjoiUlNBLU9BRVAtMjU2In0.dV6k7IAD28GsPK59WTM8XPi3dJrIxgLaKyYIPgk9ULDzMByteqTNzBifu8vBu4xGf0Q7RfS2ZyK3QFdI1VABhEutqjzH-puLLd41aBDhFCCawHOR-X7wKOD86MPnjjXZNMlLuI1vjabwjTyASEfEouTq12M8ZpMRNPXEn3JyvFuUW5O2S2sUzxpec6cM_O78FAFCDYOoRxDnjw01O236L6UQ6lkuRf8PawofmqBevJRkxy1SZjEycC3rzVuGlM9RiP8RSShxB--hD0ZJP5CruIUq00B0Tsl9-7tMJQPbNEcJ8RzCnlnhVaTymXhe2yZxY5QOsvr1YFRXQrfzhb5PMg.lyESmDuWEbfvhylUHJssLg.qlazNs2kQnK_hOxH2O0aSbvsnvVq5f-k4AbDxmIppA2Sa72zVvu0CGAaM_JjMOBv1AywbIuta3Jf6zZJBbiV_P91yFw6oKKREAW7NQQ5VS2gETgB2zdt6soytu0aY92F_7TFJNc1ShGImSaPmk7pGGTZoV9uViVKWSt23VhIVkI2XZ7p6UZP1mlwsDd0PIH0jjSJun4kkAs5zcJXQsv44GTMQ1YWZ0mFHalTn-MMJQGuK9xAtTXTYrvm6x3DN7nNn2UI-4sXg-edyTnSwaT7X9pk0lDQKSraJCQJJ3tu-6zxmVvMi49rD8XTIftDlD0s10LDb0cofTtTIevpUOBdUwQ4HBFAyeSZWnQM3z_YLUVCqG3ZopXzMKDAWXdeugeFflW-Zm0ZSlsIkz3KTUnoSYfVjMBNV0pg1tRWxbsZLvqsrUKjuAJHRIg84a0dN0KJNS-JaVp0M06vK7_wpD04HAO-90Fa6jDSEJvAoIpdvm5PpammVUmSm67r3Xd9yoB32qQPvrX6coe3-pOPCfhwcgDNMnfTKvHUpL4waKPUqpV66PcfW80swZDUW-1q0a5u_xVv6TVKpT2W16xqTl64CMRf8tifGfhhG8bpoVPwhPOgUARPOAcF1sPdSUwCgIYQjM9ET6agArhMEzXWOk-9D-TiKWSclstoyETQ4lR5vASLfYcO-mIuFqgVohSEyMYDd_muaMsbZWXFCmNzGFaKj8sqMi261xNals78HQ8u1XM.qBVt30D9N1sgxZ87BTVHse8PjHHWLUmhiYK1-Q8CjzI","Accept":"application/json","RqUID":"17df13ae-a125-4a46-9967-8746507ce5fe","Content-Length":110}
+
+21 дек. 11:03:50.950
+[HTTP v2.0] Starting POST to gigachat.devices.sberbank.ru/api/v1/chat/completions at 1766304230949
+
+21 дек. 11:03:50.950
+6️⃣ Sending chat request...
+
+21 дек. 11:03:50.950
+5️⃣ Got access token. Length: 1233
+
+21 дек. 11:03:50.950
+4️⃣ Auth response status: 200
+
+21 дек. 11:03:50.950
+[HTTP v2.0] ✓ DATA END: Request completed in 97ms. Total data: 1279 bytes
+
+21 дек. 11:03:50.949
+[HTTP v2.0] ✓ DATA CHUNK: 1279 bytes (total so far: 0)
+
+21 дек. 11:03:50.949
+[HTTP v2.0] ✓ RESPONSE RECEIVED from ngw.devices.sberbank.ru: 200 after 96ms
+
+21 дек. 11:03:50.912
+[HTTP v2.0] ✓ req.end() callback - no error
+
+21 дек. 11:03:50.912
+[HTTP v2.0] ✓ SOCKET secureConnect EVENT after 59ms (TLS: undefined)
+
+21 дек. 11:03:50.895
+[HTTP v2.0] ✓ SOCKET connect EVENT after 42ms
+
+21 дек. 11:03:50.890
+[HTTP v2.0] ✓ SOCKET lookup after 37ms
+
+21 дек. 11:03:50.889
+[HTTP v2.0] Socket state - readable: true, writable: true, connecting: true
+
+21 дек. 11:03:50.888
+[HTTP v2.0] ✓ SOCKET CREATED after 36ms
+
+21 дек. 11:03:50.888
+[HTTP v2.0] ✓ req.end() called - waiting for response...
+
+21 дек. 11:03:50.888
+[HTTP v2.0] About to call req.end()...
+
+21 дек. 11:03:50.888
+[HTTP v2.0] ✓ BODY WRITTEN: 23 bytes, write returned: true
+
+21 дек. 11:03:50.888
+[HTTP v2.0] About to write 23 bytes to socket
+
+21 дек. 11:03:50.888
+[HTTP v2.0] Writing body...
+
+21 дек. 11:03:50.888
+[HTTP v2.0] Request object created, attaching listeners...
+
+21 дек. 11:03:50.853
+[HTTP v2.0] Creating request object...
+
+21 дек. 11:03:50.853
+[HTTP v2.0] Request body: scope=GIGACHAT_API_PERS
+
+21 дек. 11:03:50.853
+[HTTP v2.0] Request headers: {"Content-Type":"application/x-www-form-urlencoded","Accept":"application/json","Authorization":"Basic ZDY2ODkxYjUtZDBkNi00MTM4LWJjZDUtMzBkODc2N2NlNjk5OmM0YjkxZjNlLTM2YTYtNGEwNS1iODk5LWQyNGY1ODUxOGU1Yg==","RqUID":"5a09785e-03e8-4431-958f-a5a18edd9095","Content-Length":23}
+
+21 дек. 11:03:50.853
+[HTTP v2.0] Starting POST to ngw.devices.sberbank.ru/api/v2/oauth at 1766304230852
+
+21 дек. 11:03:50.852
+3️⃣ Requesting OAuth token...
+
+21 дек. 11:03:50.852
+Key length: 100
+
+21 дек. 11:03:50.852
+2️⃣ GIGACHAT_KEY exists: true
+
+21 дек. 11:03:50.852
+1️⃣ Received message: привет...
+
+21 дек. 11:03:50.852
+=== GIGACHAT REQUEST START (Yandex Cloud) ===
+
+21 дек. 11:03:50.851
+[GIGA-CHAT] Handler called
+
+21 дек. 11:03:50.851
+}
+
+21 дек. 11:03:50.851
+bodyKeys: [ 'message' ]
+
+21 дек. 11:03:50.851
+path: '',
+
+21 дек. 11:03:50.851
+action: 'giga-chat',
+
+21 дек. 11:03:50.851
+method: 'POST',
+
+21 дек. 11:03:50.851
+[REQUEST] {
+
+21 дек. 11:03:50.851
+}
+
+21 дек. 11:03:50.851
+timestamp: '2025-12-21T08:03:50.845Z'
+
+21 дек. 11:03:50.851
+path: undefined,
+
+21 дек. 11:03:50.851
+method: 'POST',
+
+21 дек. 11:03:50.851
+[HANDLER START] {
+
+21 дек. 11:03:50.001
+START RequestID: f6496e8d-fe43-4365-a566-1a754a4bebde Version: d4e13h3o7bsf4i5te5p8
