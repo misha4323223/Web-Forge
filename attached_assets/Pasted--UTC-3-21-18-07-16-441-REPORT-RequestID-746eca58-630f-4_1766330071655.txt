@@ -1,0 +1,170 @@
+Время (UTC +3)
+Сообщение
+
+21 дек. 18:07:16.441
+REPORT RequestID: 746eca58-630f-4271-9b73-c29fac2bf293 Duration: 30897.008 ms Billed Duration: 30900 ms Memory Size: 640 MB Max Memory Used: 185 MB Queuing Duration: 0.045 ms Function Init Duration: 896.634 ms
+
+21 дек. 18:07:16.441
+ERROR RequestID: 746eca58-630f-4271-9b73-c29fac2bf293 Code: 504 Message: Execution timeout exceeded
+
+21 дек. 18:07:16.441
+END RequestID: 746eca58-630f-4271-9b73-c29fac2bf293
+
+21 дек. 18:07:16.440
+{"errorMessage":"execution timeout exceeded","errorType":"JobExecutionTimeoutExceeded","stackTrace":null}
+
+21 дек. 18:06:51.610
+[HTTPS-4cc7ab85] ❌ Socket closed (hadError: false) after 5062ms
+
+21 дек. 18:06:46.629
+[a0fdb8e3] 6️⃣ Sending chat request via gRPC...
+
+21 дек. 18:06:46.625
+[a0fdb8e3] 5️⃣ Connecting to gRPC server...
+
+21 дек. 18:06:46.609
+[a0fdb8e3] 4️⃣ Loading gRPC proto...
+
+21 дек. 18:06:46.609
+[a0fdb8e3] ✅ OAuth completed in 0s
+
+21 дек. 18:06:46.609
+[HTTPS-4cc7ab85] ========== REQUEST SUCCESS ==========
+
+21 дек. 18:06:46.609
+[HTTPS-4cc7ab85] Total response size: 1279 bytes
+
+21 дек. 18:06:46.609
+[HTTPS-4cc7ab85] ✨ Response ended after 61ms
+
+21 дек. 18:06:46.608
+[HTTPS-4cc7ab85] 📥 Data chunk: 1279 bytes (total: 1279)
+
+21 дек. 18:06:46.608
+[HTTPS-4cc7ab85] 📦 First byte received after 61ms
+
+21 дек. 18:06:46.608
+[HTTPS-4cc7ab85] Response headers: content-type=application/json, content-length=1279
+
+21 дек. 18:06:46.608
+[HTTPS-4cc7ab85] TLS: TLSv1.3, Cipher: TLS_AES_256_GCM_SHA384
+
+21 дек. 18:06:46.608
+[HTTPS-4cc7ab85] Status code: 200
+
+21 дек. 18:06:46.608
+[HTTPS-4cc7ab85] ✅ Response callback triggered after 60ms
+
+21 дек. 18:06:46.572
+[HTTPS-4cc7ab85] 🔒 TLS handshake complete after 24ms
+
+21 дек. 18:06:46.560
+[HTTPS-4cc7ab85] 🌐 TCP connected after 13ms
+
+21 дек. 18:06:46.551
+[HTTPS-4cc7ab85] 🔍 DNS lookup started
+
+21 дек. 18:06:46.550
+[HTTPS-4cc7ab85] 🔌 Socket created, fd: unknown
+
+21 дек. 18:06:46.550
+[HTTPS-4cc7ab85] Waiting for response...
+
+21 дек. 18:06:46.550
+[HTTPS-4cc7ab85] 🚀 Calling req.end()
+
+21 дек. 18:06:46.550
+[HTTPS-4cc7ab85] Body written successfully
+
+21 дек. 18:06:46.549
+[HTTPS-4cc7ab85] 📤 Writing body (23 bytes): scope=GIGACHAT_API_PERS
+
+21 дек. 18:06:46.548
+[HTTPS-4cc7ab85] Creating HTTPS request with timeout: 50000ms
+
+21 дек. 18:06:46.548
+[HTTPS-4cc7ab85] Setting main timeout: 45000ms
+
+21 дек. 18:06:46.548
+[HTTPS-4cc7ab85] Headers: Content-Type, Accept, Authorization, RqUID
+
+21 дек. 18:06:46.548
+[HTTPS-4cc7ab85] Request body size: 23 bytes
+
+21 дек. 18:06:46.548
+[HTTPS-4cc7ab85] Path: /api/v2/oauth
+
+21 дек. 18:06:46.548
+[HTTPS-4cc7ab85] Hostname: ngw.devices.sberbank.ru:9443
+
+21 дек. 18:06:46.548
+[HTTPS-4cc7ab85] Method: POST
+
+21 дек. 18:06:46.548
+[HTTPS-4cc7ab85] URL: https://ngw.devices.sberbank.ru:9443/api/v2/oauth
+
+21 дек. 18:06:46.548
+[HTTPS-4cc7ab85] ========== HTTPS REQUEST START ==========
+
+21 дек. 18:06:46.547
+[a0fdb8e3] 3️⃣ Requesting OAuth token...
+
+21 дек. 18:06:46.547
+[a0fdb8e3] 2️⃣ GIGACHAT_KEY exists: true
+
+21 дек. 18:06:46.547
+[a0fdb8e3] 1b️⃣ Context found (839 chars), enriching message...
+
+21 дек. 18:06:46.547
+[KB] ✅ Knowledge base loaded successfully
+
+21 дек. 18:06:46.457
+[KB] Loading knowledge base from Object Storage...
+
+21 дек. 18:06:46.457
+[a0fdb8e3] 1a️⃣ Loading knowledge base...
+
+21 дек. 18:06:46.457
+[a0fdb8e3] 1️⃣ Received message (31 chars)
+
+21 дек. 18:06:46.457
+=== GIGACHAT gRPC REQUEST START [a0fdb8e3] (Yandex Cloud) ===
+
+21 дек. 18:06:46.456
+[GIGA-CHAT] Handler called
+
+21 дек. 18:06:46.456
+}
+
+21 дек. 18:06:46.456
+bodyKeys: [ 'message' ]
+
+21 дек. 18:06:46.456
+path: '',
+
+21 дек. 18:06:46.456
+action: 'giga-chat',
+
+21 дек. 18:06:46.456
+method: 'POST',
+
+21 дек. 18:06:46.456
+[REQUEST] {
+
+21 дек. 18:06:46.456
+}
+
+21 дек. 18:06:46.456
+timestamp: '2025-12-21T15:06:46.451Z'
+
+21 дек. 18:06:46.456
+path: undefined,
+
+21 дек. 18:06:46.456
+method: 'POST',
+
+21 дек. 18:06:46.456
+[HANDLER START] {
+
+21 дек. 18:06:45.538
+START RequestID: 746eca58-630f-4271-9b73-c29fac2bf293 Version: d4ec9f1bfob1lao79aqi
