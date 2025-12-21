@@ -375,4 +375,34 @@
         0 4px 12px rgba(56, 189, 248, 0.1);
     }
   }
+
+  /* NEO-TERMINAL CHAT WIDGET - Mobile Optimized */
+  .neo-terminal {
+    /* Убираем излишние анимации */
+    animation: none !important;
+  }
+
+  .neo-terminal * {
+    /* Отключаем все pulse/bounce анимации для мобильных */
+    animation: none !important;
+  }
+
+  /* Минимальная подсветка при наведении на десктопе */
+  @media (min-width: 769px) {
+    .neo-terminal:hover {
+      box-shadow: 0 0 30px rgba(34, 211, 238, 0.5) !important;
+    }
+  }
+
+  /* Оптимизация для мобильных - убираем hover эффекты */
+  @media (max-width: 768px) {
+    .neo-terminal {
+      max-height: calc(100vh - 4rem);
+    }
+    
+    .neo-terminal input,
+    .neo-terminal button {
+      -webkit-tap-highlight-color: transparent;
+    }
+  }
 }
