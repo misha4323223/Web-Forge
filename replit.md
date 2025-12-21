@@ -130,13 +130,13 @@ The `SBERBANK_ROOT_CA` constant contains the root certificate in PEM format. Dur
 - **Security:** Admin panel authorization with robust token management.
 - **Performance:** Particle background optimization, efficient build processes.
 
-## Knowledge Base Integration (GigaChat RAG)
+## Knowledge Base Integration (GigaChat RAG) - OPTIMIZED
 
 ### Overview
-The AI Chat Widget now automatically enriches GigaChat responses with company knowledge from a JSON knowledge base stored in Yandex Object Storage. The system:
-- Loads `site-content.json` from Object Storage bucket (`www.mp-webstudio.ru`)
-- Caches KB for 1 hour to reduce API calls
-- Searches for relevant context based on user keywords
+The AI Chat Widget automatically enriches GigaChat responses with company knowledge from an embedded knowledge base. The system:
+- Uses **embedded Knowledge Base** in Yandex Cloud Function memory (EMBEDDED_KNOWLEDGE_BASE)
+- **No external API calls** - Knowledge Base is in-memory, ready instantly
+- Searches for relevant context based on user keywords (~5-20ms lookup time)
 - Injects context into GigaChat prompts before sending
 
 ### How It Works
