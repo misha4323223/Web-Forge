@@ -179,14 +179,24 @@ async function httpsRequest(urlString, options) {
         console.log(`[HTTP v2.0] Writing body...`);
         if (options.body) {
             const bodySize = Buffer.byteLength(options.body);
-            req.write(options.body);
-            console.log(`[HTTP v2.0] ✓ BODY WRITTEN: ${bodySize} bytes`);
+            console.log(`[HTTP v2.0] About to write ${bodySize} bytes to socket`);
+            const writeResult = req.write(options.body);
+            console.log(`[HTTP v2.0] ✓ BODY WRITTEN: ${bodySize} bytes, write returned: ${writeResult}`);
+            if (!writeResult) {
+                console.warn(`[HTTP v2.0] ⚠️  Write returned false - buffer backpressure!`);
+            }
         } else {
             console.log(`[HTTP v2.0] No body to write`);
         }
         
-        console.log(`[HTTP v2.0] Calling req.end()...`);
-        req.end();
+        console.log(`[HTTP v2.0] About to call req.end()...`);
+        req.end((err) => {
+            if (err) {
+                console.error(`[HTTP v2.0] ✗ Error from req.end(): ${err.message}`);
+            } else {
+                console.log(`[HTTP v2.0] ✓ req.end() callback - no error`);
+            }
+        });
         console.log(`[HTTP v2.0] ✓ req.end() called - waiting for response...`);
     });
 }
@@ -3379,7 +3389,9 @@ async function handleGigaChat(body, headers) {
                 max_tokens: 1000,
             });
             
-            chatResponse = await httpsRequest('https://gigachat.devices.sberbank.ru/api/v1/chat/completions', {
+            console.log("🔄 Trying fetch API for GigaChat...");
+            const fetchStartTime = Date.now();
+            const fetchResponse = await fetch('https://gigachat.devices.sberbank.ru/api/v1/chat/completions', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -3389,7 +3401,20 @@ async function handleGigaChat(body, headers) {
                     'X-Request-ID': crypto.randomUUID(),
                 },
                 body: chatPayload,
+                timeout: 55000,
             });
+            
+            const fetchElapsed = Date.now() - fetchStartTime;
+            console.log(`✓ Fetch response received after ${fetchElapsed}ms: ${fetchResponse.status}`);
+            
+            const responseBody = await fetchResponse.text();
+            console.log(`✓ Fetch response body received: ${responseBody.length} bytes`);
+            
+            chatResponse = {
+                statusCode: fetchResponse.status,
+                data: responseBody,
+                headers: {},
+            };
         } catch (chatErr) {
             const errMsg = chatErr instanceof Error ? chatErr.message : String(chatErr);
             console.error(`❌ Chat request failed: ${errMsg}`);

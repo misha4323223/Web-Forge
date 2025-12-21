@@ -1,0 +1,169 @@
+
+
+21 дек. 10:54:29.912
+REPORT RequestID: 31c99e51-8ffd-4f59-be7f-fe0a9c93e531 Duration: 30810.978 ms Billed Duration: 30900 ms Memory Size: 256 MB Max Memory Used: 172 MB Queuing Duration: 0.040 ms Function Init Duration: 810.750 ms
+
+21 дек. 10:54:29.912
+ERROR RequestID: 31c99e51-8ffd-4f59-be7f-fe0a9c93e531 Code: 504 Message: Execution timeout exceeded
+
+21 дек. 10:54:29.912
+END RequestID: 31c99e51-8ffd-4f59-be7f-fe0a9c93e531
+
+21 дек. 10:54:29.911
+{"errorMessage":"execution timeout exceeded","errorType":"JobExecutionTimeoutExceeded","stackTrace":null}
+
+21 дек. 10:54:05.014
+[HTTP v2.0] ✗ SOCKET CLOSED after 5087ms
+
+21 дек. 10:54:00.035
+[HTTP v2.0] ✓ SOCKET secureConnect EVENT after 23ms (TLS: undefined)
+
+21 дек. 10:54:00.020
+[HTTP v2.0] ✓ SOCKET connect EVENT after 7ms
+
+21 дек. 10:54:00.015
+[HTTP v2.0] ✓ SOCKET lookup after 3ms
+
+21 дек. 10:54:00.014
+[HTTP v2.0] Socket state - readable: true, writable: true, connecting: true
+
+21 дек. 10:54:00.014
+[HTTP v2.0] ✓ SOCKET CREATED after 2ms
+
+21 дек. 10:54:00.014
+[HTTP v2.0] ✓ req.end() called - waiting for response...
+
+21 дек. 10:54:00.014
+[HTTP v2.0] Calling req.end()...
+
+21 дек. 10:54:00.014
+[HTTP v2.0] ✓ BODY WRITTEN: 110 bytes
+
+21 дек. 10:54:00.014
+[HTTP v2.0] Writing body...
+
+21 дек. 10:54:00.014
+[HTTP v2.0] Request object created, attaching listeners...
+
+21 дек. 10:54:00.013
+[HTTP v2.0] Creating request object...
+
+21 дек. 10:54:00.013
+[HTTP v2.0] Request body: {"model":"GigaChat","messages":[{"role":"user","content":"привет"}],"temperature":0.7,"max_tokens":1000}
+
+21 дек. 10:54:00.013
+[HTTP v2.0] Request headers: {"Content-Type":"application/json","Authorization":"Bearer eyJjdHkiOiJqd3QiLCJlbmMiOiJBMjU2Q0JDLUhTNTEyIiwiYWxnIjoiUlNBLU9BRVAtMjU2In0.PRqRNSdiu59p8s13sUtSXol3VYUU7EXtwPtCONm2tRndvc441vxiipg00ihUA1VDiHzXEddZc4e-chH3ZejwnSupAA_PArX-PR_yNZpGqO9WGRB0JuBPoR0Atj5R6_sACajQXP6i5v0FrlmzC4y5SoTbL-YGi8I6mDz3X0ryuWdkA4D5bC99oRjVic0QQHaFFh7L4MpR3b5PjGIS7hXqWDEEPrsyZuXupCo99X3ddOaDuqqDqD0Pctp8yja0PsAP_LOtZdXpr4GVGSgXmqQz9fWDOwv9KsWubqpc9d9ZlejuE0KWLGUjMcUoUmeYS9jg4a2Mn47F5_8C4oNtB_wF8w.a-k4mrcctTZZOCkavJi0-Q.A-3g8TDDWAZSQUkatuG1MwpqUVGVzXZ5pcSaY6HSui-b11CaHjwac0tJEhNVPoDIVi3-iUROy_iB3aTbT2S3TrCkKYH_sW-Jml6tDeFuFT44_D2CfYHwV0l3wxN3aKAUTOWLdUMw_hIIR_es3fbpPnCVv_AbZvUMr4V-S5JXEY8SUQY_gfnkLu1hpikkhzqe8U9WpdXM8iz7Ig0ipL99Jhk85FoOD3Sam90J0xjdeH1oJCPpz1CviKqrfn3a9l2P0_CQuDIu5eSpLNDEJ6dds8gsW234XX2SiQwuXPeJQlOwpNXjbsrZ_Xv-loyNowqp4st5cb8Sae9qlhw2GNothmum_S4HRidEmmqYgtZFM2ddVJTh1U6454GcpFD-daBFM9eyTyyg4zcO4x8cKNfkL9n5fUP33Uv7w45Kjk6GhWP8-N-2du293GT-TB_Uph387HYYxUxOeivvCcBwoG3xnBbVo7U3CHnYz_cdmxtyXWZ4zLf3w6U_Hkx4Lc1N7lq-P5q-9H5Mq3NCUYzNz-BsDSA74WVFFZ0-eEWGGbUibHlWDfyvPwSDWFQ2lmDrhD7if7lHLsFSDZ6g_YqOe_SPPRVcSgPoYN9JgWewrSwelN0tuFm14D_OuKE3iHUPWfLo5jjeUAUHrZhMk15VgZZ9yhllK8i4HUa83JTMWoCCxanrJgayPr7rzqW93hDN3zuRg2bFiw0o9_yfdNuUZ-wHpDLQMaD8lRd60VE9_g1XfOY.lIP52Ta81zJn1otXzSqGGmeQps1juo2k7DPh0WYs8h0","User-Agent":"Yandex-Cloud-Function/1.0","Accept":"application/json","X-Request-ID":"1cf6e4d5-2d59-4327-9c0d-d0f850eabe0e","Content-Length":110}
+
+21 дек. 10:54:00.013
+[HTTP v2.0] Starting POST to gigachat.devices.sberbank.ru/api/v1/chat/completions at 1766303640012
+
+21 дек. 10:54:00.012
+6️⃣ Sending chat request...
+
+21 дек. 10:54:00.012
+5️⃣ Got access token. Length: 1233
+
+21 дек. 10:54:00.012
+4️⃣ Auth response status: 200
+
+21 дек. 10:54:00.012
+[HTTP v2.0] ✓ DATA END: Request completed in 86ms. Total data: 1279 bytes
+
+21 дек. 10:54:00.012
+[HTTP v2.0] ✓ DATA CHUNK: 1279 bytes (total so far: 0)
+
+21 дек. 10:54:00.011
+[HTTP v2.0] ✓ RESPONSE RECEIVED from ngw.devices.sberbank.ru: 200 after 85ms
+
+21 дек. 10:53:59.978
+[HTTP v2.0] ✓ SOCKET secureConnect EVENT after 51ms (TLS: undefined)
+
+21 дек. 10:53:59.967
+[HTTP v2.0] ✓ SOCKET connect EVENT after 40ms
+
+21 дек. 10:53:59.963
+[HTTP v2.0] ✓ SOCKET lookup after 36ms
+
+21 дек. 10:53:59.962
+[HTTP v2.0] Socket state - readable: true, writable: true, connecting: true
+
+21 дек. 10:53:59.962
+[HTTP v2.0] ✓ SOCKET CREATED after 35ms
+
+21 дек. 10:53:59.961
+[HTTP v2.0] ✓ req.end() called - waiting for response...
+
+21 дек. 10:53:59.961
+[HTTP v2.0] Calling req.end()...
+
+21 дек. 10:53:59.961
+[HTTP v2.0] ✓ BODY WRITTEN: 23 bytes
+
+21 дек. 10:53:59.961
+[HTTP v2.0] Writing body...
+
+21 дек. 10:53:59.961
+[HTTP v2.0] Request object created, attaching listeners...
+
+21 дек. 10:53:59.926
+[HTTP v2.0] Creating request object...
+
+21 дек. 10:53:59.926
+[HTTP v2.0] Request body: scope=GIGACHAT_API_PERS
+
+21 дек. 10:53:59.926
+[HTTP v2.0] Request headers: {"Content-Type":"application/x-www-form-urlencoded","Accept":"application/json","Authorization":"Basic ZDY2ODkxYjUtZDBkNi00MTM4LWJjZDUtMzBkODc2N2NlNjk5OmM0YjkxZjNlLTM2YTYtNGEwNS1iODk5LWQyNGY1ODUxOGU1Yg==","RqUID":"bc9b9f66-1a5c-43e9-9ed4-ab361d0358f1","Content-Length":23}
+
+21 дек. 10:53:59.926
+[HTTP v2.0] Starting POST to ngw.devices.sberbank.ru/api/v2/oauth at 1766303639926
+
+21 дек. 10:53:59.925
+3️⃣ Requesting OAuth token...
+
+21 дек. 10:53:59.925
+Key length: 100
+
+21 дек. 10:53:59.925
+2️⃣ GIGACHAT_KEY exists: true
+
+21 дек. 10:53:59.925
+1️⃣ Received message: привет...
+
+21 дек. 10:53:59.925
+=== GIGACHAT REQUEST START (Yandex Cloud) ===
+
+21 дек. 10:53:59.925
+[GIGA-CHAT] Handler called
+
+21 дек. 10:53:59.925
+}
+
+21 дек. 10:53:59.925
+bodyKeys: [ 'message' ]
+
+21 дек. 10:53:59.924
+path: '',
+
+21 дек. 10:53:59.924
+action: 'giga-chat',
+
+21 дек. 10:53:59.924
+method: 'POST',
+
+21 дек. 10:53:59.924
+[REQUEST] {
+
+21 дек. 10:53:59.924
+}
+
+21 дек. 10:53:59.924
+timestamp: '2025-12-21T07:53:59.918Z'
+
+21 дек. 10:53:59.924
+path: undefined,
+
+21 дек. 10:53:59.924
+method: 'POST',
+
+21 дек. 10:53:59.924
+[HANDLER START] {
