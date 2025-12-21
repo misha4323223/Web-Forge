@@ -1,0 +1,181 @@
+
+
+21 дек. 18:54:04.552
+REPORT RequestID: 8af97686-d63b-4516-8f5f-24799a357117 Duration: 11378.660 ms Billed Duration: 11400 ms Memory Size: 640 MB Max Memory Used: 190 MB Queuing Duration: 0.053 ms Function Init Duration: 772.798 ms CPU Usage: 2.148 %
+
+21 дек. 18:54:04.552
+END RequestID: 8af97686-d63b-4516-8f5f-24799a357117
+
+21 дек. 18:54:04.549
+[ffaa4262] ❌ gRPC request timeout (10s)
+
+21 дек. 18:53:59.524
+[HTTPS-fa070f49] ❌ Socket closed (hadError: false) after 5058ms
+
+21 дек. 18:53:54.543
+[ffaa4262] 6️⃣ Sending chat request via gRPC...
+
+21 дек. 18:53:54.539
+[ffaa4262] 5️⃣ Connecting to gRPC server...
+
+21 дек. 18:53:54.523
+[ffaa4262] 4️⃣ Loading gRPC proto...
+
+21 дек. 18:53:54.523
+[ffaa4262] ✅ OAuth completed in 0s
+
+21 дек. 18:53:54.523
+[HTTPS-fa070f49] ========== REQUEST SUCCESS ==========
+
+21 дек. 18:53:54.523
+[HTTPS-fa070f49] Total response size: 1279 bytes
+
+21 дек. 18:53:54.523
+[HTTPS-fa070f49] ✨ Response ended after 56ms
+
+21 дек. 18:53:54.523
+[HTTPS-fa070f49] 📥 Data chunk: 1279 bytes (total: 1279)
+
+21 дек. 18:53:54.523
+[HTTPS-fa070f49] 📦 First byte received after 56ms
+
+21 дек. 18:53:54.523
+[HTTPS-fa070f49] Response headers: content-type=application/json, content-length=1279
+
+21 дек. 18:53:54.523
+[HTTPS-fa070f49] TLS: TLSv1.3, Cipher: TLS_AES_256_GCM_SHA384
+
+21 дек. 18:53:54.523
+[HTTPS-fa070f49] Status code: 200
+
+21 дек. 18:53:54.522
+[HTTPS-fa070f49] ✅ Response callback triggered after 56ms
+
+21 дек. 18:53:54.489
+[HTTPS-fa070f49] 🔒 TLS handshake complete after 22ms
+
+21 дек. 18:53:54.474
+[HTTPS-fa070f49] 🌐 TCP connected after 7ms
+
+21 дек. 18:53:54.469
+[HTTPS-fa070f49] 🔍 DNS lookup started
+
+21 дек. 18:53:54.468
+[HTTPS-fa070f49] 🔌 Socket created, fd: unknown
+
+21 дек. 18:53:54.468
+[HTTPS-fa070f49] Waiting for response...
+
+21 дек. 18:53:54.468
+[HTTPS-fa070f49] 🚀 Calling req.end()
+
+21 дек. 18:53:54.468
+[HTTPS-fa070f49] Body written successfully
+
+21 дек. 18:53:54.468
+[HTTPS-fa070f49] 📤 Writing body (23 bytes): scope=GIGACHAT_API_PERS
+
+21 дек. 18:53:54.467
+[HTTPS-fa070f49] Creating HTTPS request with timeout: 50000ms
+
+21 дек. 18:53:54.467
+[HTTPS-fa070f49] Setting main timeout: 45000ms
+
+21 дек. 18:53:54.467
+[HTTPS-fa070f49] Headers: Content-Type, Accept, Authorization, RqUID
+
+21 дек. 18:53:54.467
+[HTTPS-fa070f49] Request body size: 23 bytes
+
+21 дек. 18:53:54.467
+[HTTPS-fa070f49] Path: /api/v2/oauth
+
+21 дек. 18:53:54.467
+[HTTPS-fa070f49] Hostname: ngw.devices.sberbank.ru:9443
+
+21 дек. 18:53:54.466
+[HTTPS-fa070f49] Method: POST
+
+21 дек. 18:53:54.466
+[HTTPS-fa070f49] URL: https://ngw.devices.sberbank.ru:9443/api/v2/oauth
+
+21 дек. 18:53:54.466
+[HTTPS-fa070f49] ========== HTTPS REQUEST START ==========
+
+21 дек. 18:53:54.466
+[ffaa4262] 3️⃣ Requesting OAuth token...
+
+21 дек. 18:53:54.466
+[ffaa4262] 2️⃣ GIGACHAT_KEY exists: true
+
+21 дек. 18:53:54.466
+[ffaa4262] 1b️⃣ Context found (839 chars), enriching message...
+
+21 дек. 18:53:54.465
+[KB] ✅ Knowledge base loaded successfully
+
+21 дек. 18:53:54.430
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+21 дек. 18:53:54.430
+For more information, check the blog post at https://a.co/cUPnyil
+
+21 дек. 18:53:54.430
+Please migrate your code to use AWS SDK for JavaScript (v3).
+
+21 дек. 18:53:54.430
+It will no longer receive updates or releases.
+
+21 дек. 18:53:54.430
+(node:89) NOTE: The AWS SDK for JavaScript (v2) has reached end-of-support.
+
+21 дек. 18:53:53.958
+[KB] Loading knowledge base from Object Storage...
+
+21 дек. 18:53:53.958
+[ffaa4262] 1a️⃣ Loading knowledge base...
+
+21 дек. 18:53:53.958
+[ffaa4262] 1️⃣ Received message (31 chars)
+
+21 дек. 18:53:53.957
+=== GIGACHAT gRPC REQUEST START [ffaa4262] (Yandex Cloud) ===
+
+21 дек. 18:53:53.957
+[GIGA-CHAT] Handler called
+
+21 дек. 18:53:53.957
+}
+
+21 дек. 18:53:53.957
+bodyKeys: [ 'message' ]
+
+21 дек. 18:53:53.957
+path: '',
+
+21 дек. 18:53:53.957
+action: 'giga-chat',
+
+21 дек. 18:53:53.957
+method: 'POST',
+
+21 дек. 18:53:53.957
+[REQUEST] {
+
+21 дек. 18:53:53.956
+}
+
+21 дек. 18:53:53.956
+timestamp: '2025-12-21T15:53:53.952Z'
+
+21 дек. 18:53:53.956
+path: undefined,
+
+21 дек. 18:53:53.956
+method: 'POST',
+
+21 дек. 18:53:53.956
+[HANDLER START] {
+
+21 дек. 18:53:53.170
+START RequestID: 8af97686-d63b-4516-8f5f-24799a357117 Version: d4etl7vrsgcjotq3qsca

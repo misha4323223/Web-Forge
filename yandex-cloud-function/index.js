@@ -3505,25 +3505,30 @@ async function loadKnowledgeBaseFromStorage() {
 
     try {
         console.log('[KB] Loading knowledge base from Object Storage...');
-        const AWS = require('aws-sdk');
+        const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3');
 
-        const s3 = new AWS.S3({
+        const s3Client = new S3Client({
             endpoint: 'https://storage.yandexcloud.net',
-            accessKeyId: process.env.YC_ACCESS_KEY,
-            secretAccessKey: process.env.YC_SECRET_KEY,
+            credentials: {
+                accessKeyId: process.env.YC_ACCESS_KEY,
+                secretAccessKey: process.env.YC_SECRET_KEY,
+            },
             region: 'ru-central1',
-            s3ForcePathStyle: true,
+            forcePathStyle: true,
         });
 
         const bucketName = process.env.YC_BUCKET_NAME || 'www.mp-webstudio.ru';
         const keyPath = 'site-content.json';
 
-        const data = await s3.getObject({
+        const command = new GetObjectCommand({
             Bucket: bucketName,
             Key: keyPath
-        }).promise();
+        });
 
-        const kbData = JSON.parse(data.Body.toString('utf-8'));
+        const response = await s3Client.send(command);
+        const bodyString = await response.Body.transformToString();
+        const kbData = JSON.parse(bodyString);
+        
         cachedKB = kbData;
         cacheTime = now;
 
@@ -3607,14 +3612,19 @@ async function handleGigaChat(body, headers) {
         let { message } = body;
         console.log(`[${handlerId}] 1️⃣ Received message (${message?.length || 0} chars)`);
 
-        // НОВОЕ: Загружаем Knowledge Base и обогащаем контекст
-        console.log(`[${handlerId}] 1a️⃣ Loading knowledge base...`);
-        const kb = await loadKnowledgeBaseFromStorage();
-        const relevantContext = findRelevantContext(kb, message);
+        // ОПТИМИЗАЦИЯ: Используем КЭШированный KB БЕЗ ОЖИДАНИЯ (не блокируем gRPC)
+        console.log(`[${handlerId}] 1a️⃣ Using knowledge base (cached)...`);
+        const relevantContext = findRelevantContext(cachedKB, message);
 
         if (relevantContext) {
             console.log(`[${handlerId}] 1b️⃣ Context found (${relevantContext.length} chars), enriching message...`);
             message = `Контекст о компании:\n${relevantContext}\n---\n\nВопрос клиента: ${message}`;
+        }
+        
+        // Загружаем KB в фоне (не блокируя основной поток)
+        if (!cachedKB && (Date.now() - cacheTime) > CACHE_TTL) {
+            console.log(`[${handlerId}] 1c️⃣ Loading KB in background...`);
+            loadKnowledgeBaseFromStorage().catch(err => console.warn('[KB] Background load failed:', err.message));
         }
 
         if (!message || typeof message !== 'string' || message.trim().length === 0) {
