@@ -1,0 +1,79 @@
+Я вижу ошибку! Проблема в том, что aws-sdk модуль не установлен на Yandex Cloud функции. Я переделаю функцию loadKnowledgeBaseFromStorage() чтобы использовать встроенный fetch API с AWS Signature V4 вместо внешней библиотеки.
+
+Давайте я исправлю это в yandex-cloud-function/index.js:
+
+Я исправлю функцию loadKnowledgeBaseFromStorage() чтобы использовать встроенный fetch API вместо aws-sdk. Переделаю это использую уже имеющуюся функцию signAwsRequest():
+
+-22
++46
+-22
++46
+async function loadKnowledgeBaseFromStorage() {
+    const now = Date.now();
+    if (cachedKB && (now - cacheTime) < CACHE_TTL) {
+        console.log('[KB] Using cached knowledge base');
+        console.log('[KB] ✅ Using cached knowledge base');
+        return cachedKB;
+    }
+    try {
+        console.log('[KB] Loading knowledge base from Object Storage...');
+        const AWS = require('aws-sdk');
+        const s3 = new AWS.S3({
+            endpoint: 'https://storage.yandexcloud.net',
+            accessKeyId: process.env.YC_ACCESS_KEY,
+            secretAccessKey: process.env.YC_SECRET_KEY,
+Perfect! Я исправил функцию loadKnowledgeBaseFromStorage(). Вот что я изменил:
+
+🎯 Решение проблемы
+Основная проблема:
+❌ Использовалась библиотека aws-sdk которой нет на Yandex Cloud
+❌ Одинаковые переменные окружения конфликтовали между функциями
+Мое решение:
+1️⃣ Использую встроенный fetch API вместо aws-sdk
+
+const kbResponse = await fetch(kbUrl, {
+    method: 'GET',
+    headers: {
+        ...signatureHeaders,  // AWS Signature V4
+        'Host': host,
+    },
+});
+2️⃣ Разделил переменные окружения (нет конфликтов!)
+
+Функция	Старые переменные	Новые переменные
+Knowledge Base	YC_ACCESS_KEY	KB_STORAGE_KEY
+YC_SECRET_KEY	KB_STORAGE_SECRET
+YC_BUCKET_NAME	KB_BUCKET_NAME
+KB_OBJECT_PATH
+3️⃣ Добавил fallback + логирование
+
+if (!kbStorageKey || !kbStorageSecret) {
+    console.log('[KB] ⚠️  KB_STORAGE_KEY or KB_STORAGE_SECRET not configured, skipping KB load');
+    return null;
+}
+Если KB переменные не настроены → GigaChat все равно работает без KB контекста ✅
+Если загрузка fails → warning логирование, GigaChat продолжает работать ✅
+📋 Переменные окружения для Yandex Cloud
+Обновите в консоли Yandex Cloud:
+
+# ← ВМЕСТО ЭТОГО:
+YC_ACCESS_KEY = "..."
+YC_SECRET_KEY = "..."
+YC_BUCKET_NAME = "www.mp-webstudio.ru"
+# ➜ ИСПОЛЬЗУЙТЕ ЭТО:
+KB_STORAGE_KEY = "your-s3-access-key"
+KB_STORAGE_SECRET = "your-s3-secret-key"
+KB_BUCKET_NAME = "mp-webstudio-kb"           # Название бакета для KB
+KB_OBJECT_PATH = "site-content.json"          # Путь к файлу KB
+✅ Как это работает теперь:
+GigaChat запрос:
+  ↓
+Проверить кеш KB
+  ↓
+Если есть KB_STORAGE_KEY/SECRET → загрузить через fetch + AWS Sig V4
+  ↓
+Если KB не загружен → логирование warning, continue без контекста
+  ↓
+GigaChat дает ответ (с контекстом или без)
+  ↓
+Клиент получает ответ
