@@ -1,0 +1,105 @@
+Время (UTC +3)
+Сообщение
+
+21 дек. 13:10:50.465
+REPORT RequestID: b8c4a078-596d-480c-9f27-378427800eee Duration: 30929.294 ms Billed Duration: 31000 ms Memory Size: 640 MB Max Memory Used: 178 MB Queuing Duration: 0.085 ms Function Init Duration: 928.711 ms
+
+21 дек. 13:10:50.465
+ERROR RequestID: b8c4a078-596d-480c-9f27-378427800eee Code: 504 Message: Execution timeout exceeded
+ERROR RequestID: b8c4a078-596d-480c-9f27-378427800eee Code: 504 Message: Execution timeout exceeded
+"request_id""b8c4a078-596d-480c-9f27-378427800eee"
+"source""system"
+"version_id""d4e36beto8qavdsb8a4s"
+
+21 дек. 13:10:50.465
+END RequestID: b8c4a078-596d-480c-9f27-378427800eee
+
+21 дек. 13:10:50.464
+{"errorMessage":"execution timeout exceeded","errorType":"JobExecutionTimeoutExceeded","stackTrace":null}
+
+21 дек. 13:10:25.574
+[HTTPS-841af3a9] ❌ Socket closed (hadError: false) after 5091ms
+
+21 дек. 13:10:20.576
+[HTTPS-cbefd23d] 🔍 DNS lookup started
+
+21 дек. 13:10:20.575
+[HTTPS-cbefd23d] 🔌 Socket created, fd: unknown
+
+21 дек. 13:10:20.575
+[HTTPS-cbefd23d] Waiting for response...
+
+21 дек. 13:10:20.575
+[HTTPS-cbefd23d] 🚀 Calling req.end()
+
+21 дек. 13:10:20.575
+[HTTPS-cbefd23d] Body written successfully
+
+21 дек. 13:10:20.575
+[HTTPS-cbefd23d] 📤 Writing body (110 bytes): {"model":"GigaChat","messages":[{"role":"user","content":"привет"}],"temperature":0.7,"max_tokens":1...
+
+21 дек. 13:10:20.573
+[HTTPS-cbefd23d] Creating HTTPS request with timeout: 50000ms
+
+21 дек. 13:10:20.573
+[HTTPS-cbefd23d] Setting main timeout: 45000ms
+
+21 дек. 13:10:20.573
+[HTTPS-cbefd23d] Headers: Content-Type, Authorization
+
+21 дек. 13:10:20.573
+[HTTPS-cbefd23d] Request body size: 110 bytes
+
+21 дек. 13:10:20.573
+[HTTPS-cbefd23d] Path: /api/v1/chat/completions
+
+21 дек. 13:10:20.573
+[HTTPS-cbefd23d] Hostname: gigachat.devices.sberbank.ru:9443
+
+21 дек. 13:10:20.573
+[HTTPS-cbefd23d] Method: POST
+
+21 дек. 13:10:20.573
+[HTTPS-cbefd23d] URL: https://gigachat.devices.sberbank.ru:9443/api/v1/chat/completions
+
+21 дек. 13:10:20.573
+[HTTPS-cbefd23d] ========== HTTPS REQUEST START ==========
+
+21 дек. 13:10:20.573
+[1a7273ae] ⏳ Waiting for chat response... (started at 2025-12-21T10:10:20.573Z)
+
+21 дек. 13:10:20.573
+[1a7273ae] Request body size: 104 bytes
+
+21 дек. 13:10:20.573
+[1a7273ae] Function timeout limit: 60s
+
+21 дек. 13:10:20.573
+[1a7273ae] Max tokens: 1000
+
+21 дек. 13:10:20.573
+[1a7273ae] Temperature: 0.7
+
+21 дек. 13:10:20.573
+[1a7273ae] Model: GigaChat
+
+21 дек. 13:10:20.573
+[1a7273ae] Chat URL: https://gigachat.devices.sberbank.ru:9443/api/v1/chat/completions
+
+21 дек. 13:10:20.573
+[1a7273ae] 6️⃣ Sending chat request to GigaChat...
+
+21 дек. 13:10:20.573
+[1a7273ae] Token preview: eyJjdHkiOiJqd3QiLCJl...
+
+21 дек. 13:10:20.573
+[1a7273ae] Token length: 1233
+
+21 дек. 13:10:20.573
+[1a7273ae] 5️⃣ Got access token
+
+21 дек. 13:10:20.573
+[1a7273ae] Response size: 1279 bytes
+
+21 дек. 13:10:20.573
+[1a7273ae] 4️⃣ Auth response status: 200

@@ -1,0 +1,145 @@
+
+
+21 дек. 13:10:20.573
+[1a7273ae] ✅ OAuth request completed in 0s
+
+21 дек. 13:10:20.572
+[HTTPS-841af3a9] ========== REQUEST SUCCESS ==========
+
+21 дек. 13:10:20.572
+[HTTPS-841af3a9] Total response size: 1279 bytes
+
+21 дек. 13:10:20.572
+[HTTPS-841af3a9] ✨ Response ended after 89ms
+
+21 дек. 13:10:20.572
+[HTTPS-841af3a9] 📥 Data chunk: 1279 bytes (total: 1279)
+
+21 дек. 13:10:20.572
+[HTTPS-841af3a9] 📦 First byte received after 88ms
+
+21 дек. 13:10:20.572
+[HTTPS-841af3a9] Response headers: content-type=application/json, content-length=1279
+
+21 дек. 13:10:20.571
+[HTTPS-841af3a9] TLS: TLSv1.3, Cipher: TLS_AES_256_GCM_SHA384
+
+21 дек. 13:10:20.571
+[HTTPS-841af3a9] Status code: 200
+
+21 дек. 13:10:20.571
+[HTTPS-841af3a9] ✅ Response callback triggered after 88ms
+
+21 дек. 13:10:20.541
+[HTTPS-841af3a9] 🔒 TLS handshake complete after 57ms
+
+21 дек. 13:10:20.526
+[HTTPS-841af3a9] 🌐 TCP connected after 43ms
+
+21 дек. 13:10:20.522
+[HTTPS-841af3a9] 🔍 DNS lookup started
+
+21 дек. 13:10:20.521
+[HTTPS-841af3a9] 🔌 Socket created, fd: unknown
+
+21 дек. 13:10:20.521
+[HTTPS-841af3a9] Waiting for response...
+
+21 дек. 13:10:20.520
+[HTTPS-841af3a9] 🚀 Calling req.end()
+
+21 дек. 13:10:20.520
+[HTTPS-841af3a9] Body written successfully
+
+21 дек. 13:10:20.520
+[HTTPS-841af3a9] 📤 Writing body (23 bytes): scope=GIGACHAT_API_PERS
+
+21 дек. 13:10:20.483
+[HTTPS-841af3a9] Creating HTTPS request with timeout: 50000ms
+
+21 дек. 13:10:20.483
+[HTTPS-841af3a9] Setting main timeout: 45000ms
+
+21 дек. 13:10:20.483
+[HTTPS-841af3a9] Headers: Content-Type, Accept, Authorization, RqUID
+
+21 дек. 13:10:20.483
+[HTTPS-841af3a9] Request body size: 23 bytes
+
+21 дек. 13:10:20.483
+[HTTPS-841af3a9] Path: /api/v2/oauth
+
+21 дек. 13:10:20.483
+[HTTPS-841af3a9] Hostname: ngw.devices.sberbank.ru:9443
+
+21 дек. 13:10:20.483
+[HTTPS-841af3a9] Method: POST
+
+21 дек. 13:10:20.483
+[HTTPS-841af3a9] URL: https://ngw.devices.sberbank.ru:9443/api/v2/oauth
+
+21 дек. 13:10:20.483
+[HTTPS-841af3a9] ========== HTTPS REQUEST START ==========
+
+21 дек. 13:10:20.482
+[1a7273ae] Auth URL: https://ngw.devices.sberbank.ru:9443/api/v2/oauth
+
+21 дек. 13:10:20.482
+[1a7273ae] Scope: GIGACHAT_API_PERS
+
+21 дек. 13:10:20.482
+[1a7273ae] 3️⃣ Requesting OAuth token...
+
+21 дек. 13:10:20.482
+[1a7273ae] Key length: 100
+
+21 дек. 13:10:20.482
+[1a7273ae] 2️⃣ GIGACHAT_KEY exists: true
+
+21 дек. 13:10:20.482
+[1a7273ae] ✅ Message validation passed (6 chars)
+
+21 дек. 13:10:20.482
+[1a7273ae] 1️⃣ Received message (6 chars): привет...
+
+21 дек. 13:10:20.482
+=== GIGACHAT REQUEST START [1a7273ae] (Yandex Cloud Function) ===
+
+21 дек. 13:10:20.481
+[GIGA-CHAT] Handler called
+
+21 дек. 13:10:20.481
+}
+
+21 дек. 13:10:20.481
+bodyKeys: [ 'message' ]
+
+21 дек. 13:10:20.481
+path: '',
+
+21 дек. 13:10:20.481
+action: 'giga-chat',
+
+21 дек. 13:10:20.481
+method: 'POST',
+
+21 дек. 13:10:20.481
+[REQUEST] {
+
+21 дек. 13:10:20.480
+}
+
+21 дек. 13:10:20.480
+timestamp: '2025-12-21T10:10:20.474Z'
+
+21 дек. 13:10:20.480
+path: undefined,
+
+21 дек. 13:10:20.480
+method: 'POST',
+
+21 дек. 13:10:20.480
+[HANDLER START] {
+
+21 дек. 13:10:19.532
+START RequestID: b8c4a078-596d-480c-9f27-378427800eee Version: d4e36beto8qavdsb8a4s
