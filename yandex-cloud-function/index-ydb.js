@@ -64,31 +64,67 @@ async function getYdbDriver() {
 async function httpsRequest(urlString, options) {
     return new Promise((resolve, reject) => {
         const url = new URL(urlString);
-        const timeout = setTimeout(() => {
+        
+        // Увеличенный timeout для production (45 сек для GigaChat)
+        const TIMEOUT_MS = 45000;
+        const SOCKET_TIMEOUT_MS = 50000;
+        
+        let socketTimeoutId = null;
+        let requestTimeoutId = null;
+        
+        const cleanup = () => {
+            if (requestTimeoutId) clearTimeout(requestTimeoutId);
+            if (socketTimeoutId) clearTimeout(socketTimeoutId);
+        };
+        
+        requestTimeoutId = setTimeout(() => {
+            cleanup();
             req.destroy();
-            reject(new Error('Request timeout'));
-        }, 15000);
+            reject(new Error(`Request timeout after ${TIMEOUT_MS}ms`));
+        }, TIMEOUT_MS);
         
         const reqOptions = {
             method: options.method,
             headers: options.headers,
             rejectUnauthorized: false,
+            timeout: SOCKET_TIMEOUT_MS,
         };
         
         const req = https.request(url, reqOptions, (res) => {
+            // Reset socket timeout on response start
+            socketTimeoutId = setTimeout(() => {
+                cleanup();
+                req.destroy();
+                reject(new Error('Response timeout'));
+            }, SOCKET_TIMEOUT_MS);
+            
             let data = '';
             res.on('data', (chunk) => {
+                // Reset timeout on each data chunk
+                if (socketTimeoutId) clearTimeout(socketTimeoutId);
+                socketTimeoutId = setTimeout(() => {
+                    cleanup();
+                    req.destroy();
+                    reject(new Error('Data timeout'));
+                }, SOCKET_TIMEOUT_MS);
+                
                 data += chunk;
             });
             res.on('end', () => {
-                clearTimeout(timeout);
+                cleanup();
                 resolve({ statusCode: res.statusCode || 500, data });
             });
         });
         
         req.on('error', (err) => {
-            clearTimeout(timeout);
+            cleanup();
             reject(err);
+        });
+        
+        req.on('timeout', () => {
+            cleanup();
+            req.destroy();
+            reject(new Error('Socket timeout'));
         });
         
         if (options.body) {
@@ -3275,10 +3311,12 @@ async function handleGigaChat(body, headers) {
         }
 
         // Отправляем сообщение в Giga Chat
-        console.log("6️⃣ Sending chat request...");
+        console.log("6️⃣ Sending chat request to GigaChat...");
+        console.log("   [INFO] Chat request timeout: 45 seconds (optimized for Yandex Cloud)");
         let chatResponse;
         
         try {
+            console.log("   ⏳ Waiting for chat response...");
             chatResponse = await httpsRequest('https://gigachat.devices.sberbank.ru:9443/api/v1/chat/completions', {
                 method: 'POST',
                 headers: {
@@ -3292,6 +3330,7 @@ async function handleGigaChat(body, headers) {
                     max_tokens: 1000,
                 }),
             });
+            console.log("   ✅ HTTPS request succeeded, status:", chatResponse.statusCode);
         } catch (chatErr) {
             const errMsg = chatErr instanceof Error ? chatErr.message : String(chatErr);
             console.error(`❌ Chat request failed: ${errMsg}`);
