@@ -3440,14 +3440,132 @@ async function getGigaChatProto() {
     return gigachatProto;
 }
 
+// ============ Knowledge Base from Object Storage ============
+
+let cachedKB = null;
+let cacheTime = 0;
+const CACHE_TTL = 3600000; // 1 час
+
+async function loadKnowledgeBaseFromStorage() {
+    const now = Date.now();
+    if (cachedKB && (now - cacheTime) < CACHE_TTL) {
+        console.log('[KB] Using cached knowledge base');
+        return cachedKB;
+    }
+
+    try {
+        console.log('[KB] Loading knowledge base from Object Storage...');
+        const AWS = require('aws-sdk');
+        
+        const s3 = new AWS.S3({
+            endpoint: 'https://storage.yandexcloud.net',
+            accessKeyId: process.env.YC_ACCESS_KEY,
+            secretAccessKey: process.env.YC_SECRET_KEY,
+            region: 'ru-central1',
+            s3ForcePathStyle: true,
+        });
+
+        const bucketName = process.env.YC_BUCKET_NAME || 'www.mp-webstudio.ru';
+        const keyPath = 'site-content.json';
+
+        const data = await s3.getObject({
+            Bucket: bucketName,
+            Key: keyPath
+        }).promise();
+
+        const kbData = JSON.parse(data.Body.toString('utf-8'));
+        cachedKB = kbData;
+        cacheTime = now;
+        
+        console.log('[KB] ✅ Knowledge base loaded successfully');
+        return kbData;
+    } catch (error) {
+        console.error('[KB] ❌ Error loading KB:', error.message);
+        // Fallback - пустой объект
+        return null;
+    }
+}
+
+function findRelevantContext(kb, userMessage) {
+    if (!kb) return '';
+    
+    const lowerMessage = userMessage.toLowerCase();
+    let context = '';
+    
+    // Ищем совпадения по ключевым словам
+    if (kb.keywords) {
+        for (const [category, keywords] of Object.entries(kb.keywords)) {
+            for (const keyword of keywords) {
+                if (lowerMessage.includes(keyword.toLowerCase())) {
+                    // Добавляем соответствующую информацию
+                    if (category === 'услуги' && kb.services) {
+                        const servicesText = kb.services
+                            .map(s => `• ${s.name} (от ${s.price_from} руб): ${s.description}`)
+                            .join('\n');
+                        context += `Наши услуги:\n${servicesText}\n\n`;
+                    } else if (category === 'технологии' && kb.technologies) {
+                        const techText = Object.entries(kb.technologies)
+                            .map(([key, values]) => `${key}: ${values.join(', ')}`)
+                            .join('\n');
+                        context += `Используемые технологии:\n${techText}\n\n`;
+                    } else if (category === 'процесс' && kb.process) {
+                        const processText = kb.process
+                            .map(p => `${p.step}. ${p.name}: ${p.description}`)
+                            .join('\n');
+                        context += `Наш процесс разработки:\n${processText}\n\n`;
+                    } else if (category === 'портфолио' && kb.portfolio) {
+                        const portfolioText = kb.portfolio
+                            .map(p => `• ${p.name}: ${p.description} (Технологии: ${p.technologies.join(', ')})`)
+                            .join('\n');
+                        context += `Примеры наших работ:\n${portfolioText}\n\n`;
+                    } else if (category === 'цена' && kb.pricing) {
+                        const pricingText = Object.entries(kb.pricing)
+                            .map(([key, val]) => `• ${val.name}: ${val.price}`)
+                            .join('\n');
+                        context += `Стоимость услуг:\n${pricingText}\n\n`;
+                    }
+                }
+            }
+        }
+    }
+    
+    // Если вопрос о FAQ - добавляем соответствующие ответы
+    if (kb.faq && (lowerMessage.includes('вопрос') || lowerMessage.includes('как') || 
+                  lowerMessage.includes('какой') || lowerMessage.includes('сколько'))) {
+        const faqText = kb.faq
+            .map(f => `Q: ${f.question}\nA: ${f.answer}`)
+            .join('\n\n');
+        context += `Часто задаваемые вопросы:\n${faqText}\n\n`;
+    }
+    
+    // Если ничего не найдено - добавляем основную информацию о компании
+    if (!context && kb.company) {
+        context = `О компании ${kb.company.name}:\n${kb.company.description}\n\n`;
+        if (kb.company.phone) context += `Телефон: ${kb.company.phone}\n`;
+        if (kb.company.email) context += `Email: ${kb.company.email}\n`;
+    }
+    
+    return context;
+}
+
 async function handleGigaChat(body, headers) {
     const handlerId = crypto.randomUUID().substring(0, 8);
     console.log(`\n\n=== GIGACHAT gRPC REQUEST START [${handlerId}] (Yandex Cloud) ===`);
     const startTime = Date.now();
     
     try {
-        const { message } = body;
+        let { message } = body;
         console.log(`[${handlerId}] 1️⃣ Received message (${message?.length || 0} chars)`);
+        
+        // НОВОЕ: Загружаем Knowledge Base и обогащаем контекст
+        console.log(`[${handlerId}] 1a️⃣ Loading knowledge base...`);
+        const kb = await loadKnowledgeBaseFromStorage();
+        const relevantContext = findRelevantContext(kb, message);
+        
+        if (relevantContext) {
+            console.log(`[${handlerId}] 1b️⃣ Context found (${relevantContext.length} chars), enriching message...`);
+            message = `Контекст о компании:\n${relevantContext}\n---\n\nВопрос клиента: ${message}`;
+        }
         
         if (!message || typeof message !== 'string' || message.trim().length === 0) {
             return {

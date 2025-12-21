@@ -1,0 +1,133 @@
+{
+  "company": {
+    "name": "MP.WebStudio",
+    "description": "Веб-студия специализирующаяся на AI-driven разработке",
+    "tagline": "Ваша идея + AI = результат",
+    "phone": "+7 (953) 181-41-36",
+    "email": "hello@mp-webstudio.ru",
+    "website": "https://mp-webstudio.ru"
+  },
+  "services": [
+    {
+      "name": "Веб-разработка с AI",
+      "description": "Разработка современных веб-приложений с использованием искусственного интеллекта для ускорения процесса",
+      "price_from": "50000"
+    },
+    {
+      "name": "Мобильные приложения",
+      "description": "Создание нативных и кросс-платформенных мобильных приложений для iOS и Android",
+      "price_from": "100000"
+    },
+    {
+      "name": "AI консультирование",
+      "description": "Консультирование по внедрению AI в ваше производство и бизнес-процессы",
+      "price_from": "10000"
+    },
+    {
+      "name": "E-commerce решения",
+      "description": "Разработка интернет-магазинов с полной интеграцией платежных систем",
+      "price_from": "75000"
+    }
+  ],
+  "process": [
+    {
+      "step": 1,
+      "name": "Консультация и анализ",
+      "description": "Первичная встреча, анализ требований и постановка задачи"
+    },
+    {
+      "step": 2,
+      "name": "Разработка прототипа",
+      "description": "Создание прототипа с использованием AI для ускорения процесса"
+    },
+    {
+      "step": 3,
+      "name": "Тестирование и доработка",
+      "description": "Полное тестирование, исправление багов, оптимизация"
+    },
+    {
+      "step": 4,
+      "name": "Запуск и поддержка",
+      "description": "Развертывание на продакшене и подключение техподержки на 14 дней"
+    }
+  ],
+  "portfolio": [
+    {
+      "name": "Food Delivery Platform",
+      "description": "Платформа доставки еды с AI рекомендациями. React + Node.js + Machine Learning",
+      "technologies": ["React", "Node.js", "MongoDB", "TensorFlow"],
+      "status": "launched"
+    },
+    {
+      "name": "Fitness Studio Management",
+      "description": "Приложение управления фитнес-студией с расписанием и бронированием. Flutter + Firebase",
+      "technologies": ["Flutter", "Firebase", "Cloud Functions"],
+      "status": "launched"
+    },
+    {
+      "name": "Cosmetics E-commerce Shop",
+      "description": "Интернет-магазин косметики с умными рекомендациями. Vue.js + Express",
+      "technologies": ["Vue.js", "Express", "PostgreSQL", "Stripe"],
+      "status": "launched"
+    }
+  ],
+  "technologies": {
+    "frontend": ["React", "Vue.js", "Next.js", "Tailwind CSS", "TypeScript"],
+    "backend": ["Node.js", "Express", "Python", "Django", "FastAPI"],
+    "databases": ["PostgreSQL", "MongoDB", "Firebase"],
+    "ai_ml": ["Claude API", "GigaChat", "TensorFlow", "OpenAI"],
+    "deployment": ["Yandex Cloud", "AWS", "Docker", "Kubernetes"]
+  },
+  "pricing": {
+    "mvp_startup": {
+      "name": "MVP для стартапа",
+      "description": "Готовый прототип за 2-4 недели",
+      "price": "50000-100000"
+    },
+    "enterprise": {
+      "name": "Корпоративное решение",
+      "description": "Полнофункциональное приложение с интеграциями",
+      "price": "от 150000"
+    },
+    "support": {
+      "name": "Техническая поддержка",
+      "description": "Включена 14 дней, далее по тарифам",
+      "price": "от 5000/месяц"
+    }
+  },
+  "faq": [
+    {
+      "question": "Сколько времени занимает разработка сайта?",
+      "answer": "В среднем 2-4 недели для MVP. Сроки зависят от сложности проекта. Более точные сроки определяются после анализа требований."
+    },
+    {
+      "question": "Какие платежные системы вы интегрируете?",
+      "answer": "Мы интегрируем Яндекс.Касса, Сбербанк, Stripe, PayPal и другие системы по вашему выбору."
+    },
+    {
+      "question": "Предоставляете ли вы технподдержку после запуска?",
+      "answer": "Да, входит гарантия 14 дней. Далее техподдержка может быть продлена на платной основе (от 5000₽/месяц)."
+    },
+    {
+      "question": "Могу ли я использовать AI в моем проекте?",
+      "answer": "Конечно! Мы специализируемся на AI-driven разработке. Можно встроить ChatGPT, Claude, GigaChat или другие AI модели."
+    },
+    {
+      "question": "Как происходит расчет стоимости проекта?",
+      "answer": "50% предоплата, 50% остаток при сдаче проекта. Для корпоративных клиентов работаем по счетам с выставлением счета по договору."
+    }
+  ],
+  "achievements": {
+    "projects_completed": "25+",
+    "happy_clients": "20+",
+    "years_experience": "5+",
+    "average_project_time": "3 недели"
+  },
+  "keywords": {
+    "услуги": ["веб-разработка", "мобильные приложения", "ai консультирование", "e-commerce"],
+    "технологии": ["react", "vue", "node.js", "python", "ai", "machine learning"],
+    "процесс": ["консультация", "разработка", "тестирование", "запуск", "поддержка"],
+    "портфолио": ["food delivery", "fitness", "cosmetics", "e-commerce"],
+    "цена": ["от 50000", "стоимость", "цены", "тариф", "расценки"]
+  }
+}

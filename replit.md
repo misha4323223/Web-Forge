@@ -130,14 +130,137 @@ The `SBERBANK_ROOT_CA` constant contains the root certificate in PEM format. Dur
 - **Security:** Admin panel authorization with robust token management.
 - **Performance:** Particle background optimization, efficient build processes.
 
+## Knowledge Base Integration (GigaChat RAG)
+
+### Overview
+The AI Chat Widget now automatically enriches GigaChat responses with company knowledge from a JSON knowledge base stored in Yandex Object Storage. The system:
+- Loads `site-content.json` from Object Storage bucket (`www.mp-webstudio.ru`)
+- Caches KB for 1 hour to reduce API calls
+- Searches for relevant context based on user keywords
+- Injects context into GigaChat prompts before sending
+
+### How It Works
+1. **User asks a question** in the Chat Widget
+2. **Cloud Function receives the message**
+3. **Loads site-content.json** from Object Storage (with 1-hour caching)
+4. **Searches for relevant context** using keyword matching:
+   - Keywords about "услуги" → adds services info
+   - Keywords about "технологии" → adds tech stack info
+   - Keywords about "процесс" → adds development process
+   - Keywords about "портфолио" → adds portfolio examples
+   - Keywords about "цена" → adds pricing info
+   - Questions with "как", "сколько" → adds FAQ answers
+5. **Enriches the message** with context: `Контекст о компании:\n[RELEVANT_INFO]\n---\n\nВопрос клиента: [USER_MESSAGE]`
+6. **Sends to GigaChat** with full context
+7. **Returns AI response** enriched with company knowledge
+
+### Files Involved
+- **Frontend:** `client/src/components/ChatWidget.tsx` (no changes needed, works as-is)
+- **Backend:** `yandex-cloud-function/index.js`
+  - New function: `loadKnowledgeBaseFromStorage()` - loads KB from Object Storage with caching
+  - New function: `findRelevantContext(kb, userMessage)` - searches for relevant content
+  - Modified: `handleGigaChat()` - enriches message before sending to GigaChat
+- **Knowledge Base:** `site-content.json` (stores all company information)
+
+### Configuration
+
+**Environment Variables (in Yandex Cloud Function):**
+```
+YC_ACCESS_KEY      - Access Key ID for Object Storage (from Service Account)
+YC_SECRET_KEY      - Secret Access Key for Object Storage (from Service Account)
+YC_BUCKET_NAME     - Object Storage bucket name (default: www.mp-webstudio.ru)
+```
+
+### Setup Instructions
+
+**Step 1: Get Object Storage Credentials**
+1. Go to Yandex Cloud Console → Service Accounts
+2. Create new Service Account or use existing with `storage.editor` role
+3. Create Static Access Key (get Access Key ID + Secret Access Key)
+
+**Step 2: Upload Knowledge Base to Object Storage**
+1. In Yandex Cloud Console → Object Storage
+2. Select bucket `www.mp-webstudio.ru`
+3. Upload `site-content.json` file (from repo root) to bucket root
+4. Or create folder `knowledge-base/` and upload there (then update `keyPath` in code)
+
+**Step 3: Set Environment Variables in Cloud Function**
+1. Go to Yandex Cloud Function editor
+2. Add environment variables:
+   - `YC_ACCESS_KEY` = your-access-key-id
+   - `YC_SECRET_KEY` = your-secret-key
+   - `YC_BUCKET_NAME` = www.mp-webstudio.ru
+
+**Step 4: Deploy**
+1. Copy updated `yandex-cloud-function/index.js` to Cloud Function editor
+2. Create new function version
+3. Test in Chat Widget
+
+### Testing the Integration
+
+**Test 1: Ask about services**
+- User: "Какие услуги вы предоставляете?"
+- Expected: AI mentions all 4 services with prices
+
+**Test 2: Ask about portfolio**
+- User: "Покажите примеры ваших работ"
+- Expected: AI lists Food Delivery, Fitness Studio, Cosmetics Shop
+
+**Test 3: Ask about process**
+- User: "Как проходит разработка?"
+- Expected: AI describes 4-step process
+
+**Test 4: Ask about pricing**
+- User: "Сколько стоит разработка сайта?"
+- Expected: AI provides pricing tiers
+
+**Test 5: FAQ questions**
+- User: "Как долго разработка?" or "Какие платежные системы?"
+- Expected: AI finds and answers from FAQ section
+
+### Knowledge Base Structure (site-content.json)
+
+The JSON file contains:
+- `company` - Company info, phone, email
+- `services[]` - Service descriptions with pricing
+- `process[]` - 4-step development process
+- `portfolio[]` - Portfolio projects with tech stack
+- `technologies` - Frontend, backend, databases, AI/ML, deployment tech
+- `pricing` - Service tiers and pricing
+- `faq[]` - Common questions and answers
+- `keywords` - Keyword mapping for smart context search
+
+**To update knowledge base:**
+1. Edit `site-content.json` locally
+2. Upload new version to Object Storage
+3. Cache invalidates after 1 hour automatically
+
+### Logging and Debugging
+
+Look for these log patterns in Cloud Function logs:
+```
+[KB] Loading knowledge base from Object Storage...
+[KB] Using cached knowledge base                    (if cache hit)
+[KB] ✅ Knowledge base loaded successfully
+[HANDLER_ID] 1a️⃣ Loading knowledge base...
+[HANDLER_ID] 1b️⃣ Context found (XXXX chars), enriching message...
+```
+
+### Cost Optimization
+
+- KB is cached for 1 hour → only 1 Object Storage read per hour
+- No embedding costs (uses keyword matching)
+- No extra API calls to AI (context injected into single GigaChat request)
+- Cost = same as before + minimal Object Storage reads
+
 ## External Dependencies
 
-- **Hosting:** Yandex Object Storage (static site hosting).
+- **Hosting:** Yandex Object Storage (static site hosting + knowledge base storage).
 - **DNS:** Reg.ru.
 - **SSL Certificates:** Let's Encrypt via Yandex Certificate Manager.
 - **Serverless Functions:** Yandex Cloud Functions (for API endpoints, e.g., contact form, GigaChat, calculator orders, admin auth).
 - **Email Service:** Yandex Cloud Postbox (compatible with AWS SES API) for transactional emails, e.g., contract delivery.
-- **AI Service:** GigaChat API (Sberbank) for the AI chat assistant.
+- **AI Service:** GigaChat API (Sberbank) for the AI chat assistant with RAG.
 - **Payment Gateway:** Robokassa (for generating payment links for additional invoices).
 - **Libraries/SDKs:**
     - `@aws-sdk/client-sesv2` (for Yandex Cloud Postbox interaction).
@@ -145,3 +268,4 @@ The `SBERBANK_ROOT_CA` constant contains the root certificate in PEM format. Dur
     - `nodemailer`.
     - `pdfkit`.
     - `ydb-sdk`.
+    - `aws-sdk` (for Object Storage S3-compatible API).
