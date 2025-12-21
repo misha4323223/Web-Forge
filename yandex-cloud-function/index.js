@@ -3743,27 +3743,49 @@ function findRelevantContext(kb, userMessage) {
             }
         };
 
-        console.log(`[${handlerId}] 6️⃣ Sending chat request via gRPC with retries...`);
+        console.log(`[${handlerId}] 6️⃣ Sending chat request via gRPC streaming...`);
         const chatStartTime = Date.now();
 
+        // Переходим на потоковую передачу gRPC (RPC ChatStream)
+        // Это позволяет получать данные по мере их генерации и поддерживать соединение активным
         const response = await callWithRetry(async () => {
             return new Promise((resolve, reject) => {
+                const stream = cachedGrpcClient.chatStream(chatRequest, metadata);
+                let fullContent = '';
                 let isFinished = false;
+                
+                // Таймаут на все выполнение (увеличиваем, так как стриминг может идти долго)
                 const timeoutId = setTimeout(() => {
                     if (isFinished) return;
                     isFinished = true;
+                    stream.cancel();
                     reject(new Error('TIMEOUT'));
-                }, 25000);
+                }, 50000);
 
-                cachedGrpcClient.chat(chatRequest, metadata, (err, resp) => {
+                stream.on('data', (chunk) => {
+                    const content = chunk?.alternatives?.[0]?.message?.content || '';
+                    fullContent += content;
+                    // Каждые несколько чанков логируем прогресс
+                    if (fullContent.length % 50 === 0) {
+                        console.log(`[${handlerId}] 📥 Streaming: ${fullContent.length} chars...`);
+                    }
+                });
+
+                stream.on('error', (err) => {
                     if (isFinished) return;
                     isFinished = true;
                     clearTimeout(timeoutId);
-                    if (err) reject(err);
-                    else resolve(resp);
+                    reject(err);
+                });
+
+                stream.on('end', () => {
+                    if (isFinished) return;
+                    isFinished = true;
+                    clearTimeout(timeoutId);
+                    resolve({ alternatives: [{ message: { content: fullContent } }] });
                 });
             });
-        }, 3); // Увеличиваем количество попыток до 3
+        }, 3);
 
         console.log(`[${handlerId}] ✅ gRPC response received in ${Math.round((Date.now() - chatStartTime) / 1000)}s`);
         const assistantMessage = response?.alternatives?.[0]?.message?.content || 'Нет ответа';
