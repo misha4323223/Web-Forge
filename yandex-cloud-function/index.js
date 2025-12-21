@@ -47,14 +47,14 @@ async function getYdbDriver() {
     if (!ydbDriver) {
         const endpoint = process.env.YDB_ENDPOINT || 'grpcs://ydb.serverless.yandexcloud.net:2135';
         const database = process.env.YDB_DATABASE;
-        
+
         if (!database) {
             throw new Error('YDB_DATABASE not configured');
         }
-        
+
         const authService = getCredentialsFromEnv();
         ydbDriver = new Driver({ endpoint, database, authService });
-        
+
         const timeout = 10000;
         if (!(await ydbDriver.ready(timeout))) {
             throw new Error('YDB driver failed to connect');
@@ -69,21 +69,21 @@ async function httpsRequest(urlString, options) {
         const url = new URL(urlString);
         const startTime = Date.now();
         const requestId = crypto.randomUUID().substring(0, 8);
-        
+
         console.log(`\n   [HTTPS-${requestId}] ========== HTTPS REQUEST START ==========`);
         console.log(`   [HTTPS-${requestId}] URL: ${urlString}`);
         console.log(`   [HTTPS-${requestId}] Method: ${options.method}`);
         console.log(`   [HTTPS-${requestId}] Hostname: ${url.hostname}:${url.port || 443}`);
         console.log(`   [HTTPS-${requestId}] Path: ${url.pathname}`);
-        
+
         const bodySize = options.body ? Buffer.byteLength(options.body) : 0;
         console.log(`   [HTTPS-${requestId}] Request body size: ${bodySize} bytes`);
         console.log(`   [HTTPS-${requestId}] Headers: ${Object.keys(options.headers).join(', ')}`);
-        
+
         // Timeout оптимизирован для Yandex Cloud Function (60 сек лимит)
         const TIMEOUT_MS = 45000;
         const SOCKET_TIMEOUT_MS = 50000;
-        
+
         let socketTimeoutId = null;
         let requestTimeoutId = null;
         let hasResponded = false;
@@ -92,17 +92,17 @@ async function httpsRequest(urlString, options) {
         let socketConnected = false;
         let tlsConnected = false;
         let requestEnded = false;
-        
+
         const cleanup = () => {
             if (requestTimeoutId) clearTimeout(requestTimeoutId);
             if (socketTimeoutId) clearTimeout(socketTimeoutId);
         };
-        
+
         const elapsed = () => Math.round(Date.now() - startTime);
         const elapsedMs = () => Math.round(Date.now() - startTime);
-        
+
         console.log(`   [HTTPS-${requestId}] Setting main timeout: ${TIMEOUT_MS}ms`);
-        
+
         requestTimeoutId = setTimeout(() => {
             cleanup();
             const state = {
@@ -119,7 +119,7 @@ async function httpsRequest(urlString, options) {
             req.destroy();
             reject(new Error(`Request timeout after ${elapsed()}ms`));
         }, TIMEOUT_MS);
-        
+
         const reqOptions = {
             method: options.method,
             headers: options.headers,
@@ -127,19 +127,19 @@ async function httpsRequest(urlString, options) {
             timeout: SOCKET_TIMEOUT_MS,
             connectTimeout: 15000,
         };
-        
+
         // Убедимся что Content-Length установлен если есть body
         if (options.body && !reqOptions.headers['Content-Length']) {
             reqOptions.headers['Content-Length'] = Buffer.byteLength(options.body);
         }
-        
+
         console.log(`   [HTTPS-${requestId}] Creating HTTPS request with timeout: ${SOCKET_TIMEOUT_MS}ms`);
-        
+
         const req = https.request(url, reqOptions, (res) => {
             hasResponded = true;
             console.log(`   [HTTPS-${requestId}] ✅ Response callback triggered after ${elapsedMs()}ms`);
             console.log(`   [HTTPS-${requestId}] Status code: ${res.statusCode}`);
-            
+
             try {
                 const tlsVersion = res.socket?.getProtocol?.() || 'unknown';
                 const cipher = res.socket?.getCipher?.()?.name || 'unknown';
@@ -148,7 +148,7 @@ async function httpsRequest(urlString, options) {
             } catch (e) {
                 console.log(`   [HTTPS-${requestId}] Could not get TLS info:`, e.message);
             }
-            
+
             // Reset socket timeout on response start
             socketTimeoutId = setTimeout(() => {
                 cleanup();
@@ -156,17 +156,17 @@ async function httpsRequest(urlString, options) {
                 req.destroy();
                 reject(new Error('Response timeout'));
             }, SOCKET_TIMEOUT_MS);
-            
+
             let data = '';
             res.on('data', (chunk) => {
                 if (!receivedFirstByte) {
                     receivedFirstByte = true;
                     console.log(`   [HTTPS-${requestId}] 📦 First byte received after ${elapsedMs()}ms`);
                 }
-                
+
                 totalBytesReceived += chunk.length;
                 console.log(`   [HTTPS-${requestId}] 📥 Data chunk: ${chunk.length} bytes (total: ${totalBytesReceived})`);
-                
+
                 // Reset timeout on each data chunk
                 if (socketTimeoutId) clearTimeout(socketTimeoutId);
                 socketTimeoutId = setTimeout(() => {
@@ -175,10 +175,10 @@ async function httpsRequest(urlString, options) {
                     req.destroy();
                     reject(new Error('Data timeout'));
                 }, SOCKET_TIMEOUT_MS);
-                
+
                 data += chunk;
             });
-            
+
             res.on('end', () => {
                 cleanup();
                 console.log(`   [HTTPS-${requestId}] ✨ Response ended after ${elapsedMs()}ms`);
@@ -186,38 +186,38 @@ async function httpsRequest(urlString, options) {
                 console.log(`   [HTTPS-${requestId}] ========== REQUEST SUCCESS ==========\n`);
                 resolve({ statusCode: res.statusCode || 500, data });
             });
-            
+
             res.on('error', (err) => {
                 console.error(`   [HTTPS-${requestId}] ❌ Response error:`, err.message);
             });
         });
-        
+
         req.on('socket', (socket) => {
             console.log(`   [HTTPS-${requestId}] 🔌 Socket created, fd: ${socket.fd || 'unknown'}`);
-            
+
             socket.on('lookup', () => {
                 console.log(`   [HTTPS-${requestId}] 🔍 DNS lookup started`);
             });
-            
+
             socket.on('connect', () => {
                 socketConnected = true;
                 console.log(`   [HTTPS-${requestId}] 🌐 TCP connected after ${elapsedMs()}ms`);
             });
-            
+
             socket.on('secureConnect', () => {
                 tlsConnected = true;
                 console.log(`   [HTTPS-${requestId}] 🔒 TLS handshake complete after ${elapsedMs()}ms`);
             });
-            
+
             socket.on('close', (hadError) => {
                 console.log(`   [HTTPS-${requestId}] ❌ Socket closed (hadError: ${hadError}) after ${elapsed()}ms`);
             });
-            
+
             socket.on('error', (err) => {
                 console.error(`   [HTTPS-${requestId}] ❌ Socket error:`, err.code, err.message);
             });
         });
-        
+
         req.on('error', (err) => {
             cleanup();
             console.error(`   [HTTPS-${requestId}] ❌ REQUEST ERROR after ${elapsed()}ms`);
@@ -228,7 +228,7 @@ async function httpsRequest(urlString, options) {
             console.error(`   [HTTPS-${requestId}] ========== REQUEST FAILED ==========\n`);
             reject(err);
         });
-        
+
         req.on('timeout', () => {
             cleanup();
             console.error(`   [HTTPS-${requestId}] ⏱️ REQUEST TIMEOUT EVENT after ${elapsed()}ms`);
@@ -236,18 +236,18 @@ async function httpsRequest(urlString, options) {
             req.destroy();
             reject(new Error('Socket timeout'));
         });
-        
+
         req.on('abort', () => {
             console.log(`   [HTTPS-${requestId}] Request aborted after ${elapsed()}ms`);
         });
-        
+
         if (options.body) {
             const bodyPreview = options.body.substring(0, 100) + (options.body.length > 100 ? '...' : '');
             console.log(`   [HTTPS-${requestId}] 📤 Writing body (${bodySize} bytes): ${bodyPreview}`);
             req.write(options.body);
             console.log(`   [HTTPS-${requestId}] Body written successfully`);
         }
-        
+
         console.log(`   [HTTPS-${requestId}] 🚀 Calling req.end()`);
         requestEnded = true;
         req.end();
@@ -257,7 +257,7 @@ async function httpsRequest(urlString, options) {
 
 module.exports.handler = async function (event, context) {
     console.log('[HANDLER START]', { method: event.httpMethod, path: event.path, timestamp: new Date().toISOString() });
-    
+
     const headers = {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
@@ -279,14 +279,14 @@ module.exports.handler = async function (event, context) {
     const path = event.path || event.url || '';
     const action = query.action || '';
     const method = event.httpMethod;
-    
+
     try {
         let body = {};
         if (event.body) {
             let rawBody = event.isBase64Encoded 
                 ? Buffer.from(event.body, 'base64').toString('utf-8')
                 : event.body;
-            
+
             try {
                 body = JSON.parse(rawBody);
             } catch (e) {
@@ -296,7 +296,7 @@ module.exports.handler = async function (event, context) {
                 }
             }
         }
-        
+
         console.log('[REQUEST]', { method, action, path, bodyKeys: Object.keys(body) });
 
         // Telegram Bot Webhook
@@ -307,7 +307,7 @@ module.exports.handler = async function (event, context) {
         if ((action === 'contact' || path.includes('/contact')) && method === 'POST') {
             return await handleContact(body, headers);
         }
-        
+
         if ((action === 'orders' || path.includes('/order')) && method === 'POST') {
             return await handleOrder(body, headers);
         }
@@ -397,18 +397,18 @@ module.exports.handler = async function (event, context) {
         if (orderMatch && method === 'GET') {
             return await handleGetOrder(orderMatch[1], headers);
         }
-        
+
         // Также поддерживаем action=orders/orderId для совместимости с фронтендом
         const actionOrderMatch = action.match(/^orders\/([a-zA-Z0-9_-]+)$/);
         if (actionOrderMatch && method === 'GET') {
             return await handleGetOrder(actionOrderMatch[1], headers);
         }
-        
+
         // Admin authentication
         if (action === 'admin-login' && method === 'POST') {
             return await handleAdminLogin(body, headers);
         }
-        
+
         if (action === 'verify-admin' && method === 'POST') {
             return await handleVerifyAdmin(body, headers);
         }
@@ -466,7 +466,7 @@ module.exports.handler = async function (event, context) {
 async function handleTelegramWebhook(body, headers) {
     try {
         const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
-        
+
         if (!TELEGRAM_BOT_TOKEN) {
             console.error('TELEGRAM_BOT_TOKEN not configured');
             return { statusCode: 200, headers, body: JSON.stringify({ ok: true }) };
@@ -476,9 +476,9 @@ async function handleTelegramWebhook(body, headers) {
         if (body.message?.text === '/start') {
             const chatId = body.message.chat.id;
             const firstName = body.message.from?.first_name || 'Клиент';
-            
+
             const text = `Привет, ${firstName}!\n\nДобро пожаловать в MP.WebStudio — веб-студию, где сайты создаёт искусственный интеллект.\n\nВыберите действие:`;
-            
+
             const keyboard = {
                 inline_keyboard: [
                     [{ text: 'Перейти на сайт', url: 'https://mp-webstudio.ru' }]
@@ -509,7 +509,7 @@ async function createOrderInYdb(orderData) {
     const driver = await getYdbDriver();
     const orderId = generateOrderId();
     const now = new Date().toISOString();
-    
+
     // Валидация входных данных
     const clientName = String(orderData.clientName || '').trim();
     const clientEmail = String(orderData.clientEmail || '').trim();
@@ -525,11 +525,11 @@ async function createOrderInYdb(orderData) {
     const companyInn = String(orderData.companyInn || '').trim();
     const companyKpp = String(orderData.companyKpp || '').trim();
     const companyAddress = String(orderData.companyAddress || '').trim();
-    
+
     if (!clientName || !clientEmail) {
         throw new Error('clientName and clientEmail are required');
     }
-    
+
     await driver.tableClient.withSession(async (session) => {
         const queryText = `
             DECLARE $id AS Utf8;
@@ -548,13 +548,13 @@ async function createOrderInYdb(orderData) {
             DECLARE $company_inn AS Utf8;
             DECLARE $company_kpp AS Utf8;
             DECLARE $company_address AS Utf8;
-            
+
             UPSERT INTO orders (id, client_name, client_email, client_phone, project_type, project_description, amount, total_amount, selected_features, status, created_at, payment_method, company_name, company_inn, company_kpp, company_address)
             VALUES ($id, $client_name, $client_email, $client_phone, $project_type, $project_description, $amount, $total_amount, $selected_features, $status, $created_at, $payment_method, $company_name, $company_inn, $company_kpp, $company_address);
         `;
-        
+
         const preparedQuery = await session.prepareQuery(queryText);
-        
+
         await session.executeQuery(preparedQuery, {
             '$id': TypedValues.utf8(orderId),
             '$client_name': TypedValues.utf8(clientName),
@@ -574,7 +574,7 @@ async function createOrderInYdb(orderData) {
             '$company_address': TypedValues.utf8(companyAddress),
         });
     });
-    
+
     console.log('Order created in YDB:', orderId);
     return orderId;
 }
@@ -582,7 +582,7 @@ async function createOrderInYdb(orderData) {
 async function getOrderFromYdb(orderId) {
     const driver = await getYdbDriver();
     let order = null;
-    
+
     await driver.tableClient.withSession(async (session) => {
         const queryText = `
             DECLARE $id AS Utf8;
@@ -590,34 +590,34 @@ async function getOrderFromYdb(orderId) {
             FROM orders
             WHERE id = $id;
         `;
-        
+
         const preparedQuery = await session.prepareQuery(queryText);
-        
+
         const result = await session.executeQuery(preparedQuery, {
             '$id': TypedValues.utf8(orderId),
         });
-        
+
         console.log('YDB raw result:', JSON.stringify(result, null, 2));
-        
+
         if (result.resultSets && result.resultSets.length > 0) {
             const resultSet = result.resultSets[0];
             const rows = resultSet.rows || [];
             const columns = resultSet.columns || [];
-            
+
             console.log('YDB rows count:', rows.length);
             console.log('YDB columns:', JSON.stringify(columns.map(c => c.name)));
-            
+
             if (rows.length > 0) {
                 const row = rows[0];
                 console.log('YDB row structure:', JSON.stringify(row, null, 2));
-                
+
                 // Строим маппинг имени колонки -> индекс
                 const columnMap = {};
                 columns.forEach((col, idx) => {
                     columnMap[col.name] = idx;
                 });
                 console.log('Column mapping:', JSON.stringify(columnMap));
-                
+
                 // YDB SDK возвращает данные как массив items
                 if (row.items && Array.isArray(row.items)) {
                     // Логируем каждый элемент для отладки
@@ -626,7 +626,7 @@ async function getOrderFromYdb(orderId) {
                         const value = getStringValue(item);
                         console.log(`  Column [${idx}] ${colName}: ${JSON.stringify(item)} -> "${value}"`);
                     });
-                    
+
                     // Извлекаем значения по имени колонки
                     const getValue = (colName) => {
                         const idx = columnMap[colName];
@@ -635,7 +635,7 @@ async function getOrderFromYdb(orderId) {
                         }
                         return '';
                     };
-                    
+
                     order = {
                         id: getValue('id'),
                         clientName: getValue('client_name'),
@@ -685,12 +685,12 @@ async function getOrderFromYdb(orderId) {
                         internalNote: getStringValue(row.internal_note),
                     };
                 }
-                
+
                 console.log('Parsed order:', JSON.stringify(order));
             }
         }
     });
-    
+
     console.log('Order fetched from YDB:', JSON.stringify(order));
     return order;
 }
@@ -700,7 +700,7 @@ async function getOrderFromYdb(orderId) {
 async function saveAdditionalInvoiceToYdb(invoiceId, orderId, description, amount, status = 'pending') {
     const driver = await getYdbDriver();
     const now = new Date().toISOString();
-    
+
     await driver.tableClient.withSession(async (session) => {
         const queryText = `
             DECLARE $id AS Utf8;
@@ -709,13 +709,13 @@ async function saveAdditionalInvoiceToYdb(invoiceId, orderId, description, amoun
             DECLARE $amount AS Utf8;
             DECLARE $status AS Utf8;
             DECLARE $paid_at AS Utf8;
-            
+
             UPSERT INTO additional_invoices (id, order_id, description, amount, status, paid_at)
             VALUES ($id, $order_id, $description, $amount, $status, $paid_at);
         `;
-        
+
         const preparedQuery = await session.prepareQuery(queryText);
-        
+
         await session.executeQuery(preparedQuery, {
             '$id': TypedValues.utf8(invoiceId),
             '$order_id': TypedValues.utf8(orderId),
@@ -725,41 +725,41 @@ async function saveAdditionalInvoiceToYdb(invoiceId, orderId, description, amoun
             '$paid_at': TypedValues.utf8(status === 'paid' ? now : ''),
         });
     });
-    
+
     console.log('Additional invoice saved to YDB:', invoiceId, 'status:', status);
 }
 
 async function updateAdditionalInvoiceStatusInYdb(invoiceId, status) {
     const driver = await getYdbDriver();
     const now = new Date().toISOString();
-    
+
     await driver.tableClient.withSession(async (session) => {
         const queryText = `
             DECLARE $id AS Utf8;
             DECLARE $status AS Utf8;
             DECLARE $paid_at AS Utf8;
-            
+
             UPDATE additional_invoices
             SET status = $status, paid_at = $paid_at
             WHERE id = $id;
         `;
-        
+
         const preparedQuery = await session.prepareQuery(queryText);
-        
+
         await session.executeQuery(preparedQuery, {
             '$id': TypedValues.utf8(invoiceId),
             '$status': TypedValues.utf8(status),
             '$paid_at': TypedValues.utf8(status === 'paid' ? now : ''),
         });
     });
-    
+
     console.log('Additional invoice status updated in YDB:', invoiceId, 'to:', status);
 }
 
 async function getAdditionalInvoicesFromYdb(orderId) {
     const driver = await getYdbDriver();
     const invoices = [];
-    
+
     await driver.tableClient.withSession(async (session) => {
         const queryText = `
             DECLARE $order_id AS Utf8;
@@ -767,23 +767,23 @@ async function getAdditionalInvoicesFromYdb(orderId) {
             FROM additional_invoices
             WHERE order_id = $order_id AND status = 'paid';
         `;
-        
+
         const preparedQuery = await session.prepareQuery(queryText);
-        
+
         const result = await session.executeQuery(preparedQuery, {
             '$order_id': TypedValues.utf8(orderId),
         });
-        
+
         if (result.resultSets && result.resultSets.length > 0) {
             const resultSet = result.resultSets[0];
             const rows = resultSet.rows || [];
             const columns = resultSet.columns || [];
-            
+
             const columnMap = {};
             columns.forEach((col, idx) => {
                 columnMap[col.name] = idx;
             });
-            
+
             rows.forEach(row => {
                 if (row.items && Array.isArray(row.items)) {
                     const getValue = (colName) => {
@@ -793,7 +793,7 @@ async function getAdditionalInvoicesFromYdb(orderId) {
                         }
                         return '';
                     };
-                    
+
                     invoices.push({
                         id: getValue('id'),
                         orderId: getValue('order_id'),
@@ -806,7 +806,7 @@ async function getAdditionalInvoicesFromYdb(orderId) {
             });
         }
     });
-    
+
     console.log('Additional invoices fetched from YDB:', invoices.length);
     return invoices;
 }
@@ -816,7 +816,7 @@ function getStringValue(field) {
     if (typeof field === 'string') return field;
     if (typeof field === 'number') return String(field);
     if (typeof field === 'boolean') return String(field);
-    
+
     // YDB SDK возвращает специальные объекты с геттерами
     // Нормализуем через JSON для получения обычного объекта
     let normalizedField;
@@ -825,39 +825,39 @@ function getStringValue(field) {
     } catch (e) {
         normalizedField = field;
     }
-    
+
     // Проверяем null значение
     if (normalizedField.nullFlagValue !== undefined) return '';
-    
+
     // Прямое textValue (основной формат YDB для UTF8)
     if (normalizedField.textValue !== undefined && normalizedField.textValue !== null) {
         return String(normalizedField.textValue);
     }
-    
+
     // UTF8 значение
     if (normalizedField.utf8Value !== undefined && normalizedField.utf8Value !== null) {
         return String(normalizedField.utf8Value);
     }
-    
+
     // stringValue
     if (normalizedField.stringValue !== undefined && normalizedField.stringValue !== null) {
         return String(normalizedField.stringValue);
     }
-    
+
     // int32Value / int64Value / uint64Value
     if (normalizedField.int32Value !== undefined) return String(normalizedField.int32Value);
     if (normalizedField.int64Value !== undefined) return String(normalizedField.int64Value);
     if (normalizedField.uint64Value !== undefined) return String(normalizedField.uint64Value);
-    
+
     // doubleValue / floatValue
     if (normalizedField.doubleValue !== undefined) return String(normalizedField.doubleValue);
     if (normalizedField.floatValue !== undefined) return String(normalizedField.floatValue);
-    
+
     // Вложенный value (для опциональных типов)
     if (normalizedField.value !== undefined && normalizedField.value !== null) {
         return getStringValue(normalizedField.value);
     }
-    
+
     // bytesValue
     if (normalizedField.bytesValue !== undefined) {
         if (Buffer.isBuffer(normalizedField.bytesValue)) {
@@ -872,13 +872,13 @@ function getStringValue(field) {
         }
         return String(normalizedField.bytesValue);
     }
-    
+
     // text
     if (normalizedField.text !== undefined) return String(normalizedField.text);
-    
+
     // Если это Buffer напрямую
     if (Buffer.isBuffer(field)) return field.toString('utf-8');
-    
+
     // Попробуем взять первый не-null ключ со значением
     const keys = Object.keys(normalizedField);
     for (const key of keys) {
@@ -886,7 +886,7 @@ function getStringValue(field) {
             return String(normalizedField[key]);
         }
     }
-    
+
     // Для отладки
     console.log('Unknown field format, keys:', keys, 'value:', JSON.stringify(normalizedField));
     return '';
@@ -895,27 +895,27 @@ function getStringValue(field) {
 async function updateOrderStatusInYdb(orderId, status) {
     const driver = await getYdbDriver();
     const now = new Date().toISOString();
-    
+
     await driver.tableClient.withSession(async (session) => {
         const queryText = `
             DECLARE $id AS Utf8;
             DECLARE $status AS Utf8;
             DECLARE $paid_at AS Utf8;
-            
+
             UPDATE orders
             SET status = $status, paid_at = $paid_at
             WHERE id = $id;
         `;
-        
+
         const preparedQuery = await session.prepareQuery(queryText);
-        
+
         await session.executeQuery(preparedQuery, {
             '$id': TypedValues.utf8(orderId),
             '$status': TypedValues.utf8(status),
             '$paid_at': TypedValues.utf8(now),
         });
     });
-    
+
     console.log('Order status updated in YDB:', orderId, '->', status);
 }
 
@@ -928,7 +928,7 @@ function generateOrderId() {
 async function handleContact(data, headers) {
     try {
         await sendTelegramNotification(formatContactMessage(data));
-        
+
         return {
             statusCode: 200,
             headers,
@@ -954,9 +954,9 @@ async function handleOrder(data, headers) {
                 body: JSON.stringify({ success: false, message: 'Имя и email обязательны' }),
             };
         }
-        
+
         const orderId = await createOrderInYdb(data);
-        
+
         await sendTelegramNotification(formatOrderMessage({
             id: orderId,
             clientName: data.clientName,
@@ -966,10 +966,10 @@ async function handleOrder(data, headers) {
             projectDescription: data.projectDescription || '',
             amount: data.amount,
         }));
-        
+
         // Генерируем ссылку на оплату Robokassa
         const paymentUrl = generateRobokassaUrl(orderId, data.amount);
-        
+
         return {
             statusCode: 200,
             headers,
@@ -994,26 +994,26 @@ function generateRobokassaUrl(orderId, amount) {
     const merchantLogin = process.env.ROBOKASSA_MERCHANT_LOGIN;
     const password1 = process.env.ROBOKASSA_PASSWORD1;
     const isTestMode = process.env.ROBOKASSA_TEST_MODE === 'true';
-    
+
     if (!merchantLogin || !password1) {
         console.error('Robokassa not configured');
         return null;
     }
-    
+
     const numericAmount = parseFloat(amount) || 0;
     if (numericAmount <= 0) {
         console.error('Invalid amount:', amount);
         return null;
     }
-    
+
     // amount уже содержит сумму предоплаты (50%), НЕ делим повторно
     const invId = Date.now() % 1000000;
-    
+
     const signatureString = `${merchantLogin}:${numericAmount}:${invId}:${password1}:shp_orderId=${orderId}`;
     const signature = crypto.createHash('md5').update(signatureString).digest('hex');
-    
+
     const baseUrl = 'https://auth.robokassa.ru/Merchant/Index.aspx';
-    
+
     const params = new URLSearchParams({
         MerchantLogin: merchantLogin,
         OutSum: numericAmount,
@@ -1023,13 +1023,13 @@ function generateRobokassaUrl(orderId, amount) {
         shp_orderId: orderId,
         IsTest: isTestMode ? '1' : '0',
     });
-    
+
     return `${baseUrl}?${params.toString()}`;
 }
 
 async function handleRobokassaResult(data, headers) {
     console.log('Robokassa result - full data:', JSON.stringify(data));
-    
+
     const OutSum = data.OutSum;
     const InvId = data.InvId;
     const SignatureValue = data.SignatureValue;
@@ -1043,7 +1043,7 @@ async function handleRobokassaResult(data, headers) {
     }
 
     const PASSWORD2 = process.env.ROBOKASSA_PASSWORD2;
-    
+
     if (!PASSWORD2) {
         console.error('ROBOKASSA_PASSWORD2 not configured');
         return { statusCode: 500, headers: { 'Content-Type': 'text/plain' }, body: 'config error' };
@@ -1051,7 +1051,7 @@ async function handleRobokassaResult(data, headers) {
 
     const signatureString = `${OutSum}:${InvId}:${PASSWORD2}:shp_orderId=${shp_orderId}`;
     const calculatedSignature = crypto.createHash('md5').update(signatureString).digest('hex');
-    
+
     console.log('Signature check:', { 
         expected: calculatedSignature.toLowerCase(), 
         received: SignatureValue.toLowerCase() 
@@ -1064,19 +1064,19 @@ async function handleRobokassaResult(data, headers) {
 
     // Проверяем, это оплата дополнительного счёта или основного заказа
     const isAdditionalInvoicePayment = shp_orderId.startsWith('addinv_');
-    
+
     if (isAdditionalInvoicePayment) {
         // Это оплата дополнительного счёта
         console.log('Processing additional invoice payment:', shp_orderId);
-        
+
         // Извлекаем orderId из addinv_{orderIdSuffix}_{timestamp}
         // Пример: addinv_mjcv3hwa54rerggqx_lxyz123
         const parts = shp_orderId.split('_');
         // parts[0] = "addinv", parts[1] = "orderIdSuffix", parts[2] = "timestamp"
         const realOrderId = parts.length >= 2 ? `ord_${parts[1]}` : null;
-        
+
         console.log('Extracted order ID from additional invoice:', realOrderId);
-        
+
         let order = null;
         try {
             if (realOrderId) {
@@ -1086,7 +1086,7 @@ async function handleRobokassaResult(data, headers) {
         } catch (error) {
             console.error('Error fetching order for additional invoice:', error.message);
         }
-        
+
         // Обновляем статус счёта на "paid" в YDB (описание уже сохранено при создании)
         try {
             await updateAdditionalInvoiceStatusInYdb(shp_orderId, 'paid');
@@ -1094,7 +1094,7 @@ async function handleRobokassaResult(data, headers) {
         } catch (saveError) {
             console.error('Error updating additional invoice status in YDB:', saveError.message);
         }
-        
+
         // Отправляем уведомление в Telegram
         if (order) {
             await sendTelegramNotification(`💳 Оплачен дополнительный счёт!
@@ -1104,7 +1104,7 @@ async function handleRobokassaResult(data, headers) {
 📋 Заказ: ${realOrderId ? realOrderId.toUpperCase() : shp_orderId}
 
 Статус основного заказа: ${order.status === 'paid' ? 'Предоплата получена' : order.status === 'completed' ? 'Завершён' : 'Ожидает оплаты'}`);
-            
+
             // Отправляем email клиенту об оплате дополнительной услуги
             try {
                 await sendAdditionalInvoiceEmail(order, OutSum, shp_orderId);
@@ -1119,7 +1119,7 @@ async function handleRobokassaResult(data, headers) {
 
 (Данные заказа не найдены)`);
         }
-        
+
         return {
             statusCode: 200,
             headers: { 'Content-Type': 'text/plain' },
@@ -1134,7 +1134,7 @@ async function handleRobokassaResult(data, headers) {
     try {
         order = await getOrderFromYdb(shp_orderId);
         console.log('Order fetched from YDB:', order);
-        
+
         if (order) {
             if (order.status === 'paid') {
                 await updateOrderStatusInYdb(shp_orderId, 'completed');
@@ -1158,17 +1158,17 @@ async function handleRobokassaResult(data, headers) {
                 console.log('Generating contract PDF for order:', order.id);
                 const pdfBuffer = await generateContractPDF(order);
                 console.log('Contract PDF generated, size:', pdfBuffer.length);
-                
+
                 await sendContractEmail(order, pdfBuffer);
                 console.log('Contract email sent to:', order.clientEmail);
             } catch (emailError) {
                 console.error('Failed to send contract email:', emailError.message, emailError.stack);
             }
-            
+
             // Формируем ссылку для оплаты остатка
             const payRemainingLink = `${SITE_URL}/pay-remaining?orderId=${shp_orderId}`;
             const prepaymentPercent = order.prepaymentPercent || 50;
-            
+
             await sendTelegramNotification(`Получена предоплата!
 👤 Клиент: ${order.clientName}
 📧 Email: ${order.clientEmail}
@@ -1184,7 +1184,7 @@ ${payRemainingLink}
             // Полная оплата - отправляем акт выполненных работ
             try {
                 console.log('Generating completion act PDF for order:', order.id);
-                
+
                 // Получаем список всех оплаченных дополнительных счётов из YDB
                 try {
                     console.log('Fetching additional invoices from YDB for order:', shp_orderId);
@@ -1193,16 +1193,16 @@ ${payRemainingLink}
                 } catch (fetchError) {
                     console.error('Error fetching additional invoices from YDB:', fetchError.message);
                 }
-                
+
                 const pdfBuffer = await generateCompletionActPDF(order, additionalInvoices);
                 console.log('Completion act PDF generated, size:', pdfBuffer.length);
-                
+
                 await sendCompletionActEmail(order, pdfBuffer);
                 console.log('Completion act email sent to:', order.clientEmail);
             } catch (emailError) {
                 console.error('Failed to send completion act email:', emailError.message, emailError.stack);
             }
-            
+
             // Формируем сообщение о дополнительных счётах
             let additionalInvoicesMessage = '';
             if (additionalInvoices && additionalInvoices.length > 0) {
@@ -1214,7 +1214,7 @@ ${payRemainingLink}
                     });
                 }
             }
-            
+
             await sendTelegramNotification(`Заказ полностью оплачен!
 👤 Клиент: ${order.clientName}
 📧 Email: ${order.clientEmail}
@@ -1250,7 +1250,7 @@ ${payRemainingLink}
 
 function handleRobokassaSuccess(query) {
     const orderId = query.shp_orderId || '';
-    
+
     return {
         statusCode: 302,
         headers: { 'Location': `${SITE_URL}/payment-success?orderId=${orderId}` },
@@ -1260,7 +1260,7 @@ function handleRobokassaSuccess(query) {
 
 function handleRobokassaFail(query) {
     const orderId = query.shp_orderId || '';
-    
+
     return {
         statusCode: 302,
         headers: { 'Location': `${SITE_URL}/payment-fail?orderId=${orderId}` },
@@ -1279,7 +1279,7 @@ async function handleGetOrder(orderId, headers) {
 
     try {
         const order = await getOrderFromYdb(orderId);
-        
+
         if (!order) {
             return {
                 statusCode: 404,
@@ -1308,7 +1308,7 @@ async function handleListOrders(query, headers) {
     try {
         const showDeleted = query.all === 'true';
         const orders = await getAllOrdersFromYdb(showDeleted);
-        
+
         return {
             statusCode: 200,
             headers,
@@ -1328,7 +1328,7 @@ async function handleListOrders(query, headers) {
 async function handleClientOrders(query, headers) {
     try {
         const email = (query.email || '').trim().toLowerCase();
-        
+
         if (!email) {
             return {
                 statusCode: 400,
@@ -1338,7 +1338,7 @@ async function handleClientOrders(query, headers) {
         }
 
         const allOrders = await getAllOrdersFromYdb(false);
-        
+
         const clientOrders = allOrders.filter(order => 
             order.clientEmail && order.clientEmail.toLowerCase() === email
         );
@@ -1404,48 +1404,48 @@ async function handleUpdateOrderNote(orderId, note, headers) {
 async function softDeleteOrderInYdb(orderId) {
     const driver = await getYdbDriver();
     const now = new Date().toISOString();
-    
+
     await driver.tableClient.withSession(async (session) => {
         const queryText = `
             DECLARE $id AS Utf8;
             DECLARE $deleted_at AS Utf8;
-            
+
             UPDATE orders
             SET deleted_at = $deleted_at
             WHERE id = $id;
         `;
-        
+
         const preparedQuery = await session.prepareQuery(queryText);
         await session.executeQuery(preparedQuery, {
             '$id': TypedValues.utf8(orderId),
             '$deleted_at': TypedValues.utf8(now),
         });
     });
-    
+
     console.log('Order soft deleted:', orderId);
 }
 
 // Обновление заметки заказа в YDB
 async function updateOrderNoteInYdb(orderId, note) {
     const driver = await getYdbDriver();
-    
+
     await driver.tableClient.withSession(async (session) => {
         const queryText = `
             DECLARE $id AS Utf8;
             DECLARE $internal_note AS Utf8;
-            
+
             UPDATE orders
             SET internal_note = $internal_note
             WHERE id = $id;
         `;
-        
+
         const preparedQuery = await session.prepareQuery(queryText);
         await session.executeQuery(preparedQuery, {
             '$id': TypedValues.utf8(orderId),
             '$internal_note': TypedValues.utf8(note || ''),
         });
     });
-    
+
     console.log('Order note updated:', orderId);
 }
 
@@ -1453,7 +1453,7 @@ async function updateOrderNoteInYdb(orderId, note) {
 async function getAllOrdersFromYdb(includeDeleted = false) {
     const driver = await getYdbDriver();
     let orders = [];
-    
+
     await driver.tableClient.withSession(async (session) => {
         let queryText;
         if (includeDeleted) {
@@ -1461,25 +1461,25 @@ async function getAllOrdersFromYdb(includeDeleted = false) {
         } else {
             queryText = `SELECT * FROM orders WHERE deleted_at IS NULL OR deleted_at = '' ORDER BY created_at DESC;`;
         }
-        
+
         const result = await session.executeQuery(queryText);
-        
+
         if (result.resultSets && result.resultSets.length > 0) {
             const resultSet = result.resultSets[0];
             const rows = resultSet.rows || [];
             const columns = resultSet.columns || [];
-            
+
             // Строим маппинг имени колонки -> индекс
             const columnMap = {};
             columns.forEach((col, idx) => {
                 columnMap[col.name] = idx;
             });
-            
+
             orders = rows.map(row => {
                 if (!row.items || !Array.isArray(row.items)) {
                     return null;
                 }
-                
+
                 // Извлекаем значения по имени колонки
                 const getValue = (colName) => {
                     const idx = columnMap[colName];
@@ -1488,7 +1488,7 @@ async function getAllOrdersFromYdb(includeDeleted = false) {
                     }
                     return '';
                 };
-                
+
                 return {
                     id: getValue('id'),
                     clientName: getValue('client_name'),
@@ -1517,13 +1517,13 @@ async function getAllOrdersFromYdb(includeDeleted = false) {
             }).filter(Boolean);
         }
     });
-    
+
     return orders;
 }
 
 async function handlePayRemaining(data, headers) {
     const { orderId } = data;
-    
+
     if (!orderId) {
         return {
             statusCode: 400,
@@ -1564,7 +1564,7 @@ async function handlePayRemaining(data, headers) {
     }
 
     const paymentUrl = generateRemainingPaymentUrl(orderId, order.amount);
-    
+
     if (!paymentUrl) {
         return {
             statusCode: 500,
@@ -1590,25 +1590,25 @@ function generateRemainingPaymentUrl(orderId, amount) {
     const merchantLogin = process.env.ROBOKASSA_MERCHANT_LOGIN;
     const password1 = process.env.ROBOKASSA_PASSWORD1;
     const isTestMode = process.env.ROBOKASSA_TEST_MODE === 'true';
-    
+
     if (!merchantLogin || !password1) {
         console.error('Robokassa not configured');
         return null;
     }
-    
+
     const numericAmount = parseFloat(amount) || 0;
     if (numericAmount <= 0) {
         console.error('Invalid amount:', amount);
         return null;
     }
-    
+
     const invId = Date.now() % 1000000;
-    
+
     const signatureString = `${merchantLogin}:${numericAmount}:${invId}:${password1}:shp_orderId=${orderId}`;
     const signature = crypto.createHash('md5').update(signatureString).digest('hex');
-    
+
     const baseUrl = 'https://auth.robokassa.ru/Merchant/Index.aspx';
-    
+
     const params = new URLSearchParams({
         MerchantLogin: merchantLogin,
         OutSum: numericAmount.toString(),
@@ -1618,13 +1618,13 @@ function generateRemainingPaymentUrl(orderId, amount) {
         shp_orderId: orderId,
         IsTest: isTestMode ? '1' : '0',
     });
-    
+
     return `${baseUrl}?${params.toString()}`;
 }
 
 async function handleAdditionalInvoice(data, headers) {
     const { orderId, amount, description } = data;
-    
+
     if (!orderId || !amount) {
         return {
             statusCode: 400,
@@ -1639,7 +1639,7 @@ async function handleAdditionalInvoice(data, headers) {
         normalizedOrderId = orderId.substring(4); // убираем 'ORD_'
     }
     normalizedOrderId = 'ord_' + normalizedOrderId.toLowerCase();
-    
+
     console.log('Original orderId:', orderId);
     console.log('Normalized orderId:', normalizedOrderId);
 
@@ -1670,7 +1670,7 @@ async function handleAdditionalInvoice(data, headers) {
     const merchantLogin = process.env.ROBOKASSA_MERCHANT_LOGIN;
     const password1 = process.env.ROBOKASSA_PASSWORD1;
     const isTestMode = process.env.ROBOKASSA_TEST_MODE === 'true';
-    
+
     if (!merchantLogin || !password1) {
         console.error('Robokassa not configured');
         return {
@@ -1687,7 +1687,7 @@ async function handleAdditionalInvoice(data, headers) {
     const orderIdSuffix = normalizedOrderId.replace('ord_', '');
     const timestamp = Date.now().toString(36); // base36 для компактности
     const addInvUniqueId = `addinv_${orderIdSuffix}_${timestamp}`;
-    
+
     // Санитизируем описание для Robokassa:
     // - Русский текст OK, но переносы строк и скобки вызывают ошибку
     // - Заменяем \n на "; ", скобки на точки
@@ -1700,12 +1700,12 @@ async function handleAdditionalInvoice(data, headers) {
         .replace(/\s+/g, ' ')              // множественные пробелы -> один
         .trim()
         .substring(0, 100);
-    
+
     const signatureString = `${merchantLogin}:${numericAmount}:${invId}:${password1}:shp_orderId=${addInvUniqueId}`;
     const signature = crypto.createHash('md5').update(signatureString).digest('hex');
-    
+
     const baseUrl = 'https://auth.robokassa.ru/Merchant/Index.aspx';
-    
+
     const params = new URLSearchParams({
         MerchantLogin: merchantLogin,
         OutSum: numericAmount.toString(),
@@ -1715,9 +1715,9 @@ async function handleAdditionalInvoice(data, headers) {
         shp_orderId: addInvUniqueId,
         IsTest: isTestMode ? '1' : '0',
     });
-    
+
     const paymentUrl = `${baseUrl}?${params.toString()}`;
-    
+
     console.log('Additional invoice payment URL generated:');
     console.log('  MerchantLogin:', merchantLogin);
     console.log('  OutSum:', numericAmount);
@@ -1826,7 +1826,7 @@ async function handleBankInvoice(data, headers) {
 
         // Получаем номер счёта (используем timestamp + random для уникальности)
         const invoiceNumber = Date.now().toString().slice(-8);
-        
+
         // Генерируем PDF счёта
         const pdfBuffer = await generateBankInvoicePDF({
             invoiceNumber,
@@ -1903,7 +1903,7 @@ ${companyKpp ? `КПП: ${companyKpp}` : ''}
 async function handleConfirmBankPayment(data, headers) {
     try {
         const { orderId, paymentType } = data; // paymentType: 'prepayment' | 'remaining'
-        
+
         if (!orderId) {
             return {
                 statusCode: 400,
@@ -1943,9 +1943,9 @@ async function handleConfirmBankPayment(data, headers) {
                    DECLARE $remaining_confirmed_at AS Utf8;
                    DECLARE $paid_at AS Utf8;
                    UPDATE orders SET status = $status, remaining_confirmed_at = $remaining_confirmed_at, paid_at = $paid_at WHERE id = $id;`;
-            
+
             const preparedQuery = await session.prepareQuery(queryText);
-            
+
             const params = paymentType === 'prepayment'
                 ? {
                     '$id': TypedValues.utf8(orderId),
@@ -1958,7 +1958,7 @@ async function handleConfirmBankPayment(data, headers) {
                     '$remaining_confirmed_at': TypedValues.utf8(now),
                     '$paid_at': TypedValues.utf8(now),
                 };
-            
+
             await session.executeQuery(preparedQuery, params);
         });
 
@@ -2061,7 +2061,7 @@ async function handleCalculatorOrder(body, headers) {
 async function handleBankInvoiceRemaining(data, headers) {
     try {
         const { orderId } = data;
-        
+
         if (!orderId) {
             return {
                 statusCode: 400,
@@ -2156,7 +2156,7 @@ async function handleBankInvoiceRemaining(data, headers) {
 async function handleBankInvoiceAddon(data, headers) {
     try {
         const { orderId, description, amount } = data;
-        
+
         if (!orderId || !description || !amount) {
             return {
                 statusCode: 400,
@@ -2200,13 +2200,13 @@ async function handleBankInvoiceAddon(data, headers) {
                 DECLARE $invoice_number AS Utf8;
                 DECLARE $payment_method AS Utf8;
                 DECLARE $created_at AS Utf8;
-                
+
                 UPSERT INTO additional_invoices (id, order_id, description, amount, status, invoice_number, payment_method, created_at)
                 VALUES ($id, $order_id, $description, $amount, $status, $invoice_number, $payment_method, $created_at);
             `;
-            
+
             const preparedQuery = await session.prepareQuery(queryText);
-            
+
             await session.executeQuery(preparedQuery, {
                 '$id': TypedValues.utf8(invoiceId),
                 '$order_id': TypedValues.utf8(orderId),
@@ -2299,19 +2299,19 @@ function generateAdminToken() {
 
 function verifyAdminToken(token) {
     if (!token || typeof token !== 'string') return false;
-    
+
     const parts = token.split('.');
     if (parts.length !== 2) return false;
-    
+
     const [payloadBase64, signature] = parts;
-    
+
     // Verify signature
     const expectedSignature = crypto.createHmac('sha256', ADMIN_TOKEN_SECRET)
         .update(payloadBase64)
         .digest('base64url');
-    
+
     if (signature !== expectedSignature) return false;
-    
+
     // Verify expiry
     try {
         const payload = JSON.parse(Buffer.from(payloadBase64, 'base64url').toString());
@@ -2324,10 +2324,10 @@ function verifyAdminToken(token) {
 
 async function handleAdminLogin(data, headers) {
     const { email, password } = data;
-    
+
     const adminEmail = process.env.ADMIN_EMAIL;
     const adminPassword = process.env.ADMIN_PASSWORD;
-    
+
     if (!adminEmail || !adminPassword) {
         console.error('ADMIN_EMAIL or ADMIN_PASSWORD not configured');
         return {
@@ -2336,7 +2336,7 @@ async function handleAdminLogin(data, headers) {
             body: JSON.stringify({ success: false, message: 'Admin not configured' }),
         };
     }
-    
+
     // Constant-time comparison to prevent timing attacks
     const safeCompare = (a, b) => {
         if (!a || !b) return false;
@@ -2345,21 +2345,21 @@ async function handleAdminLogin(data, headers) {
         if (bufA.length !== bufB.length) return false;
         return crypto.timingSafeEqual(bufA, bufB);
     };
-    
+
     const emailMatch = safeCompare(email?.toLowerCase(), adminEmail?.toLowerCase());
     const passwordMatch = safeCompare(password, adminPassword);
-    
+
     if (emailMatch && passwordMatch) {
         const token = generateAdminToken();
         console.log('Admin login successful');
-        
+
         return {
             statusCode: 200,
             headers,
             body: JSON.stringify({ success: true, token }),
         };
     }
-    
+
     console.log('Admin login failed - invalid credentials');
     return {
         statusCode: 401,
@@ -2371,7 +2371,7 @@ async function handleAdminLogin(data, headers) {
 async function handleVerifyAdmin(data, headers) {
     const { token } = data;
     const valid = verifyAdminToken(token);
-    
+
     return {
         statusCode: 200,
         headers,
@@ -2383,7 +2383,7 @@ async function generateBankInvoicePDF(data) {
     return new Promise((resolve, reject) => {
         const chunks = [];
         const doc = new PDFDocument({ size: 'A4', margin: 40 });
-        
+
         doc.on('data', chunk => chunks.push(chunk));
         doc.on('end', () => resolve(Buffer.concat(chunks)));
         doc.on('error', reject);
@@ -2409,7 +2409,7 @@ async function generateBankInvoicePDF(data) {
         doc.text(`ИНН: 711612442203`);
         doc.text(`Адрес: 301766, Тульская обл., г. Донской, ул. Новая, 49`);
         doc.moveDown(0.5);
-        
+
         // Банковские реквизиты
         doc.font('Roboto-Bold').text('Банковские реквизиты:');
         doc.font('Roboto');
@@ -2440,7 +2440,7 @@ async function generateBankInvoicePDF(data) {
         const col2 = 350;
         const col3 = 420;
         const col4 = 490;
-        
+
         // Заголовок таблицы
         doc.font('Roboto-Bold').fontSize(9);
         doc.rect(col1, tableTop, 475, 20).stroke();
@@ -2453,7 +2453,7 @@ async function generateBankInvoicePDF(data) {
         const row1Top = tableTop + 20;
         const projectLabel = getProjectTypeName(data.projectType);
         const serviceName = `Разработка: ${projectLabel}${data.projectDescription ? ' (' + data.projectDescription.substring(0, 50) + ')' : ''}`;
-        
+
         doc.font('Roboto').fontSize(9);
         doc.rect(col1, row1Top, 475, 25).stroke();
         doc.text(serviceName, col1 + 5, row1Top + 8, { width: 300 });
@@ -2509,9 +2509,9 @@ function numberToWords(num) {
 
     const n = Math.floor(num);
     if (n === 0) return 'ноль рублей 00 копеек';
-    
+
     let result = '';
-    
+
     // Тысячи
     const th = Math.floor(n / 1000);
     if (th > 0 && th < 10) {
@@ -2530,12 +2530,12 @@ function numberToWords(num) {
             result += 'тысяч ';
         }
     }
-    
+
     // Сотни
     const remainder = n % 1000;
     const h = Math.floor(remainder / 100);
     if (h > 0) result += hundreds[h] + ' ';
-    
+
     // Десятки и единицы
     const t = remainder % 100;
     if (t < 20) {
@@ -2544,7 +2544,7 @@ function numberToWords(num) {
         result += tens[Math.floor(t / 10)] + ' ';
         if (t % 10 > 0) result += ones[t % 10] + ' ';
     }
-    
+
     // Склонение "рублей"
     const lastTwo = n % 100;
     const lastOne = n % 10;
@@ -2552,16 +2552,16 @@ function numberToWords(num) {
     if (lastTwo >= 11 && lastTwo <= 19) rubles = 'рублей';
     else if (lastOne === 1) rubles = 'рубль';
     else if (lastOne >= 2 && lastOne <= 4) rubles = 'рубля';
-    
+
     return result.trim() + ' ' + rubles + ' 00 копеек';
 }
 
 async function sendBankInvoiceEmail(orderData, pdfBuffer) {
     const formatPrice = (price) => new Intl.NumberFormat('ru-RU').format(price);
-    
+
     let invoiceType = 'Счёт на оплату (предоплата)';
     let actionText = 'После оплаты, пожалуйста, сообщите нам — мы начнём работу над вашим проектом.';
-    
+
     if (orderData.isRemaining) {
         invoiceType = 'Счёт на остаток оплаты';
         actionText = 'Проект завершён. После оплаты остатка вы получите Акт выполненных работ.';
@@ -2578,15 +2578,15 @@ async function sendBankInvoiceEmail(orderData, pdfBuffer) {
         <h2 style="color: #0891b2;">${invoiceType}</h2>
         <p>Здравствуйте, ${orderData.clientName}!</p>
         <p>Счёт на оплату для <strong>${orderData.companyName}</strong> прикреплён к этому письму.</p>
-        
+
         <div style="background: #f3f4f6; padding: 15px; border-radius: 8px; margin: 20px 0;">
             <p style="margin: 5px 0;"><strong>Счёт №:</strong> ${orderData.invoiceNumber}</p>
             <p style="margin: 5px 0;"><strong>Сумма:</strong> ${formatPrice(orderData.amount)} ₽</p>
             <p style="margin: 5px 0;"><strong>ID заказа:</strong> ${orderData.orderId}</p>
         </div>
-        
+
         <p>${actionText}</p>
-        
+
         <p style="margin-top: 30px; color: #6b7280;">С уважением,<br><strong>MP.WebStudio</strong><br>
         Телефон: +7 (953) 181-41-36<br>
         <a href="https://mp-webstudio.ru">mp-webstudio.ru</a></p>
@@ -2597,10 +2597,10 @@ async function sendBankInvoiceEmail(orderData, pdfBuffer) {
     const postboxAccessKey = process.env.POSTBOX_ACCESS_KEY_ID;
     const postboxSecretKey = process.env.POSTBOX_SECRET_ACCESS_KEY;
     const postboxFromEmail = process.env.POSTBOX_FROM_EMAIL;
-    
+
     if (postboxAccessKey && postboxSecretKey && postboxFromEmail) {
         console.log('Sending bank invoice email via Yandex Cloud Postbox, to:', orderData.clientEmail);
-        
+
         const sesClient = new SESv2Client({
             region: 'ru-central1',
             endpoint: 'https://postbox.cloud.yandex.net',
@@ -2609,13 +2609,13 @@ async function sendBankInvoiceEmail(orderData, pdfBuffer) {
                 secretAccessKey: postboxSecretKey,
             },
         });
-        
+
         const wrapBase64 = (base64) => base64.match(/.{1,76}/g).join('\r\n');
-        
+
         const boundary = '----=_Part_' + Date.now().toString(36);
         const pdfBase64 = wrapBase64(pdfBuffer.toString('base64'));
         const htmlBase64 = wrapBase64(Buffer.from(emailHtml).toString('base64'));
-        
+
         let subjectText = `Счёт на оплату №${orderData.invoiceNumber} - MP.WebStudio`;
         if (orderData.isRemaining) {
             subjectText = `Счёт на остаток №${orderData.invoiceNumber} - MP.WebStudio`;
@@ -2623,7 +2623,7 @@ async function sendBankInvoiceEmail(orderData, pdfBuffer) {
             subjectText = `Дополнительный счёт №${orderData.invoiceNumber} - MP.WebStudio`;
         }
         const fileName = `Invoice_${orderData.invoiceNumber}.pdf`;
-        
+
         const rawEmail = [
             `From: MP.WebStudio <${postboxFromEmail}>`,
             `To: ${orderData.clientEmail}`,
@@ -2646,7 +2646,7 @@ async function sendBankInvoiceEmail(orderData, pdfBuffer) {
             '',
             `--${boundary}--`,
         ].join('\r\n');
-        
+
         try {
             const command = new SendEmailCommand({
                 FromEmailAddress: postboxFromEmail,
@@ -2659,7 +2659,7 @@ async function sendBankInvoiceEmail(orderData, pdfBuffer) {
                     },
                 },
             });
-            
+
             const response = await sesClient.send(command);
             console.log('Bank invoice email sent via Yandex Cloud Postbox, MessageId:', response.MessageId);
             return;
@@ -2668,7 +2668,7 @@ async function sendBankInvoiceEmail(orderData, pdfBuffer) {
             throw new Error(`Email error: ${error.message}`);
         }
     }
-    
+
     // Fallback на SMTP (если Postbox не настроен)
     const smtpEmail = process.env.SMTP_EMAIL;
     const smtpPassword = process.env.SMTP_PASSWORD;
@@ -2705,7 +2705,7 @@ async function generateContractPDF(order) {
     return new Promise((resolve, reject) => {
         const chunks = [];
         const doc = new PDFDocument({ size: 'A4', margin: 50 });
-        
+
         doc.on('data', chunk => chunks.push(chunk));
         doc.on('end', () => resolve(Buffer.concat(chunks)));
         doc.on('error', reject);
@@ -2799,7 +2799,7 @@ async function generateCompletionActPDF(order, additionalInvoices = []) {
     return new Promise((resolve, reject) => {
         const chunks = [];
         const doc = new PDFDocument({ size: 'A4', margin: 50 });
-        
+
         doc.on('data', chunk => chunks.push(chunk));
         doc.on('end', () => resolve(Buffer.concat(chunks)));
         doc.on('error', reject);
@@ -2813,14 +2813,14 @@ async function generateCompletionActPDF(order, additionalInvoices = []) {
             return new Intl.NumberFormat('ru-RU').format(num);
         };
         const amount = parseFloat(order.amount) || 0;
-        
+
         // Расчет итоговой суммы: базовая + все оплаченные доп счеты
         let additionalAmount = 0;
         const paidAdditional = (additionalInvoices || []).filter(inv => inv.status === 'paid');
         paidAdditional.forEach(inv => {
             additionalAmount += parseFloat(inv.amount) || 0;
         });
-        
+
         const totalAmount = amount * 2 + additionalAmount;
         const projectTypeLabel = getProjectTypeName(order.projectType);
         const date = new Date().toLocaleDateString('ru-RU', {
@@ -2866,7 +2866,7 @@ async function generateCompletionActPDF(order, additionalInvoices = []) {
         doc.font('Roboto').text(`Базовая стоимость: ${formatPrice(amount * 2)} рублей`);
         doc.text(`Предоплата (50%): ${formatPrice(amount)} руб. - ОПЛАЧЕНО`);
         doc.text(`Остаток (50%): ${formatPrice(amount)} руб. - ОПЛАЧЕНО`);
-        
+
         // Раздел дополнительных работ
         if (paidAdditional.length > 0) {
             doc.moveDown(0.5);
@@ -2875,7 +2875,7 @@ async function generateCompletionActPDF(order, additionalInvoices = []) {
                 doc.font('Roboto').text(`• ${inv.description} - ${formatPrice(inv.amount)} руб. - ОПЛАЧЕНО`);
             });
         }
-        
+
         doc.moveDown(0.5);
         doc.font('Roboto-Bold').text(`ИТОГО: ${formatPrice(totalAmount)} рублей`);
         doc.font('Roboto').text('НДС не облагается (п. 8 ст. 2 ФЗ от 27.11.2018 N 422-ФЗ)');
@@ -2930,7 +2930,7 @@ async function sendContractEmail(order, pdfBuffer) {
     const amount = parseFloat(order.amount) || 0;
     const totalAmount = amount * 2;
     const prepayment = amount;
-    
+
     const emailHtml = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #0891b2;">Спасибо за заказ!</h2>
@@ -2950,15 +2950,15 @@ async function sendContractEmail(order, pdfBuffer) {
             </p>
         </div>
     `;
-    
+
     // Yandex Cloud Postbox через AWS SES-совместимый API
     const postboxAccessKey = process.env.POSTBOX_ACCESS_KEY_ID;
     const postboxSecretKey = process.env.POSTBOX_SECRET_ACCESS_KEY;
     const postboxFromEmail = process.env.POSTBOX_FROM_EMAIL;
-    
+
     if (postboxAccessKey && postboxSecretKey && postboxFromEmail) {
         console.log('Using Yandex Cloud Postbox (AWS SESv2), from:', postboxFromEmail);
-        
+
         // Создаём SESv2 клиент для Yandex Cloud Postbox
         const sesClient = new SESv2Client({
             region: 'ru-central1',
@@ -2968,15 +2968,15 @@ async function sendContractEmail(order, pdfBuffer) {
                 secretAccessKey: postboxSecretKey,
             },
         });
-        
+
         // Функция для разбиения base64 на строки по 76 символов (RFC 2045)
         const wrapBase64 = (base64) => base64.match(/.{1,76}/g).join('\r\n');
-        
+
         // Формируем raw email с вложением
         const boundary = '----=_Part_' + Date.now().toString(36);
         const pdfBase64 = wrapBase64(pdfBuffer.toString('base64'));
         const htmlBase64 = wrapBase64(Buffer.from(emailHtml).toString('base64'));
-        
+
         const rawEmail = [
             `From: MP.WebStudio <${postboxFromEmail}>`,
             `To: ${order.clientEmail}`,
@@ -2999,9 +2999,9 @@ async function sendContractEmail(order, pdfBuffer) {
             '',
             `--${boundary}--`,
         ].join('\r\n');
-        
+
         console.log('Sending email via Yandex Postbox AWS SESv2');
-        
+
         try {
             const command = new SendEmailCommand({
                 FromEmailAddress: postboxFromEmail,
@@ -3014,7 +3014,7 @@ async function sendContractEmail(order, pdfBuffer) {
                     },
                 },
             });
-            
+
             const response = await sesClient.send(command);
             console.log('Email sent via Yandex Cloud Postbox, MessageId:', response.MessageId);
             return;
@@ -3024,7 +3024,7 @@ async function sendContractEmail(order, pdfBuffer) {
             throw new Error(`Yandex Postbox error: ${error.message}`);
         }
     }
-    
+
     // Fallback на SMTP (Яндекс Почта)
     const smtpEmail = process.env.SMTP_EMAIL;
     const smtpPassword = process.env.SMTP_PASSWORD;
@@ -3067,7 +3067,7 @@ async function sendCompletionActEmail(order, pdfBuffer) {
     };
     const amount = parseFloat(order.amount) || 0;
     const totalAmount = amount * 2;
-    
+
     const emailHtml = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #10b981;">Проект завершён!</h2>
@@ -3093,14 +3093,14 @@ async function sendCompletionActEmail(order, pdfBuffer) {
             </p>
         </div>
     `;
-    
+
     const postboxAccessKey = process.env.POSTBOX_ACCESS_KEY_ID;
     const postboxSecretKey = process.env.POSTBOX_SECRET_ACCESS_KEY;
     const postboxFromEmail = process.env.POSTBOX_FROM_EMAIL;
-    
+
     if (postboxAccessKey && postboxSecretKey && postboxFromEmail) {
         console.log('Sending completion act via Yandex Cloud Postbox');
-        
+
         const sesClient = new SESv2Client({
             region: 'ru-central1',
             endpoint: 'https://postbox.cloud.yandex.net',
@@ -3109,12 +3109,12 @@ async function sendCompletionActEmail(order, pdfBuffer) {
                 secretAccessKey: postboxSecretKey,
             },
         });
-        
+
         const wrapBase64 = (base64) => base64.match(/.{1,76}/g).join('\r\n');
         const boundary = '----=_Part_' + Date.now().toString(36);
         const pdfBase64 = wrapBase64(pdfBuffer.toString('base64'));
         const htmlBase64 = wrapBase64(Buffer.from(emailHtml).toString('base64'));
-        
+
         const rawEmail = [
             `From: MP.WebStudio <${postboxFromEmail}>`,
             `To: ${order.clientEmail}`,
@@ -3137,14 +3137,14 @@ async function sendCompletionActEmail(order, pdfBuffer) {
             '',
             `--${boundary}--`,
         ].join('\r\n');
-        
+
         try {
             const command = new SendEmailCommand({
                 FromEmailAddress: postboxFromEmail,
                 Destination: { ToAddresses: [order.clientEmail] },
                 Content: { Raw: { Data: Buffer.from(rawEmail) } },
             });
-            
+
             const response = await sesClient.send(command);
             console.log('Completion act sent via Postbox, MessageId:', response.MessageId);
             return;
@@ -3153,7 +3153,7 @@ async function sendCompletionActEmail(order, pdfBuffer) {
             throw new Error(`Yandex Postbox error: ${error.message}`);
         }
     }
-    
+
     const smtpEmail = process.env.SMTP_EMAIL;
     const smtpPassword = process.env.SMTP_PASSWORD;
 
@@ -3191,42 +3191,42 @@ async function sendAdditionalInvoiceEmail(order, amount, invoiceId) {
         const num = parseFloat(price) || 0;
         return new Intl.NumberFormat('ru-RU').format(num);
     };
-    
+
     // Извлекаем описание из invoiceId если возможно (addinv_orderId_timestamp_desc)
     const parts = invoiceId.split('_');
     const description = parts.length >= 4 ? parts.slice(3).join('_') : 'Дополнительная услуга';
-    
+
     const emailHtml = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #3b82f6;">Платёж получен!</h2>
             <p>Здравствуйте, ${order.clientName || 'Уважаемый клиент'}!</p>
             <p>Спасибо! Ваш платёж за дополнительную услугу успешно получен.</p>
-            
+
             <div style="background: #f0f9ff; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #3b82f6;">
                 <h3 style="margin-top: 0; color: #1e40af;">Детали платежа</h3>
                 <p><strong>Сумма:</strong> <span style="font-size: 18px; color: #10b981;">${formatPrice(amount)} ₽</span></p>
                 <p><strong>Статус:</strong> <span style="color: #10b981;">Оплачено</span></p>
                 <p><strong>ID заказа:</strong> ${order.id}</p>
             </div>
-            
+
             <div style="background: #fef3c7; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #f59e0b;">
                 <p style="margin: 0;">Полный акт выполненных работ с учётом всех дополнительных услуг будет отправлен после оплаты остатка основного заказа.</p>
             </div>
-            
+
             <p style="color: #6b7280; font-size: 14px; margin-top: 30px;">
                 С уважением,<br>MP.WebStudio<br>
                 <a href="https://mp-webstudio.ru" style="color: #3b82f6;">mp-webstudio.ru</a>
             </p>
         </div>
     `;
-    
+
     const postboxAccessKey = process.env.POSTBOX_ACCESS_KEY_ID;
     const postboxSecretKey = process.env.POSTBOX_SECRET_ACCESS_KEY;
     const postboxFromEmail = process.env.POSTBOX_FROM_EMAIL;
-    
+
     if (postboxAccessKey && postboxSecretKey && postboxFromEmail) {
         console.log('Sending additional invoice email via Yandex Cloud Postbox');
-        
+
         const sesClient = new SESv2Client({
             region: 'ru-central1',
             endpoint: 'https://postbox.cloud.yandex.net',
@@ -3235,7 +3235,7 @@ async function sendAdditionalInvoiceEmail(order, amount, invoiceId) {
                 secretAccessKey: postboxSecretKey,
             },
         });
-        
+
         try {
             const command = new SendEmailCommand({
                 FromEmailAddress: postboxFromEmail,
@@ -3247,7 +3247,7 @@ async function sendAdditionalInvoiceEmail(order, amount, invoiceId) {
                     },
                 },
             });
-            
+
             const response = await sesClient.send(command);
             console.log('Additional invoice email sent via Postbox, MessageId:', response.MessageId);
             return;
@@ -3256,7 +3256,7 @@ async function sendAdditionalInvoiceEmail(order, amount, invoiceId) {
             throw new Error(`Yandex Postbox error: ${error.message}`);
         }
     }
-    
+
     const smtpEmail = process.env.SMTP_EMAIL;
     const smtpPassword = process.env.SMTP_PASSWORD;
 
@@ -3420,7 +3420,7 @@ async function loadGigaChatProto() {
     const tmpFile = '/tmp/gigachat.proto';
     const fs = require('fs');
     fs.writeFileSync(tmpFile, GIGACHAT_PROTO);
-    
+
     const packageDefinition = await protoLoader.load(tmpFile, {
         keepCase: true,
         longs: String,
@@ -3428,7 +3428,7 @@ async function loadGigaChatProto() {
         defaults: true,
         oneofs: true,
     });
-    
+
     return grpc.loadPackageDefinition(packageDefinition);
 }
 
@@ -3456,12 +3456,12 @@ function signAwsRequest(method, host, path, accessKey, secretKey, payload = '') 
     const now = new Date();
     const amzDate = now.toISOString().replace(/[:-]|\.\d{3}/g, '');
     const dateStamp = amzDate.slice(0, 8);
-    
+
     // Canonical request
     const canonicalHeaders = `host:${host}\nx-amz-content-sha256:UNSIGNED-PAYLOAD\nx-amz-date:${amzDate}\n`;
     const signedHeaders = 'host;x-amz-content-sha256;x-amz-date';
     const payloadHash = crypto.createHash('sha256').update(payload).digest('hex');
-    
+
     const canonicalRequest = [
         method,
         path,
@@ -3470,7 +3470,7 @@ function signAwsRequest(method, host, path, accessKey, secretKey, payload = '') 
         signedHeaders,
         payloadHash
     ].join('\n');
-    
+
     // String to sign
     const canonicalRequestHash = crypto.createHash('sha256').update(canonicalRequest).digest('hex');
     const credentialScope = `${dateStamp}/${region}/${service}/aws4_request`;
@@ -3480,16 +3480,16 @@ function signAwsRequest(method, host, path, accessKey, secretKey, payload = '') 
         credentialScope,
         canonicalRequestHash
     ].join('\n');
-    
+
     // Calculate signature
     const kDate = crypto.createHmac('sha256', `AWS4${secretKey}`).update(dateStamp).digest();
     const kRegion = crypto.createHmac('sha256', kDate).update(region).digest();
     const kService = crypto.createHmac('sha256', kRegion).update(service).digest();
     const kSigning = crypto.createHmac('sha256', kService).update('aws4_request').digest();
     const signature = crypto.createHmac('sha256', kSigning).update(stringToSign).digest('hex');
-    
+
     const authorizationHeader = `${algorithm} Credential=${accessKey}/${credentialScope}, SignedHeaders=${signedHeaders}, Signature=${signature}`;
-    
+
     return {
         'Authorization': authorizationHeader,
         'X-Amz-Date': amzDate,
@@ -3509,15 +3509,12 @@ async function loadKnowledgeBaseFromStorage() {
         
         const accessKey = process.env.YC_ACCESS_KEY;
         const secretKey = process.env.YC_SECRET_KEY;
-        const bucketName = process.env.YC_BUCKET_NAME || 'www.mp-webstudio.ru';
-        const keyPath = 'site-content.json';
         
         if (!accessKey || !secretKey) {
             console.log('[KB] No credentials provided, skipping KB load');
             return null;
         }
-        
-        // Create S3 client for Yandex Cloud Object Storage
+
         const s3Client = new S3Client({
             region: 'ru-central1',
             endpoint: 'https://storage.yandexcloud.net',
@@ -3527,21 +3524,23 @@ async function loadKnowledgeBaseFromStorage() {
             },
             forcePathStyle: true,
         });
-        
-        // Get the file from Object Storage
+
+        const bucketName = process.env.YC_BUCKET_NAME || 'www.mp-webstudio.ru';
+        const keyPath = 'site-content.json';
+
         const command = new GetObjectCommand({
             Bucket: bucketName,
             Key: keyPath,
         });
-        
+
         const response = await s3Client.send(command);
         const dataBuffer = await response.Body.transformToByteArray();
         const dataString = new TextDecoder().decode(dataBuffer);
-        
+
         const kbData = JSON.parse(dataString);
         cachedKB = kbData;
         cacheTime = now;
-        
+
         console.log('[KB] ✅ Knowledge base loaded successfully');
         return kbData;
     } catch (error) {
@@ -3552,10 +3551,10 @@ async function loadKnowledgeBaseFromStorage() {
 
 function findRelevantContext(kb, userMessage) {
     if (!kb) return '';
-    
+
     const lowerMessage = userMessage.toLowerCase();
     let context = '';
-    
+
     // Ищем совпадения по ключевым словам
     if (kb.keywords) {
         for (const [category, keywords] of Object.entries(kb.keywords)) {
@@ -3592,7 +3591,7 @@ function findRelevantContext(kb, userMessage) {
             }
         }
     }
-    
+
     // Если вопрос о FAQ - добавляем соответствующие ответы
     if (kb.faq && (lowerMessage.includes('вопрос') || lowerMessage.includes('как') || 
                   lowerMessage.includes('какой') || lowerMessage.includes('сколько'))) {
@@ -3601,14 +3600,14 @@ function findRelevantContext(kb, userMessage) {
             .join('\n\n');
         context += `Часто задаваемые вопросы:\n${faqText}\n\n`;
     }
-    
+
     // Если ничего не найдено - добавляем основную информацию о компании
     if (!context && kb.company) {
         context = `О компании ${kb.company.name}:\n${kb.company.description}\n\n`;
         if (kb.company.phone) context += `Телефон: ${kb.company.phone}\n`;
         if (kb.company.email) context += `Email: ${kb.company.email}\n`;
     }
-    
+
     return context;
 }
 
@@ -3616,21 +3615,21 @@ async function handleGigaChat(body, headers) {
     const handlerId = crypto.randomUUID().substring(0, 8);
     console.log(`\n\n=== GIGACHAT gRPC REQUEST START [${handlerId}] (Yandex Cloud) ===`);
     const startTime = Date.now();
-    
+
     try {
         let { message } = body;
         console.log(`[${handlerId}] 1️⃣ Received message (${message?.length || 0} chars)`);
-        
+
         // НОВОЕ: Загружаем Knowledge Base и обогащаем контекст
         console.log(`[${handlerId}] 1a️⃣ Loading knowledge base...`);
         const kb = await loadKnowledgeBaseFromStorage();
         const relevantContext = findRelevantContext(kb, message);
-        
+
         if (relevantContext) {
             console.log(`[${handlerId}] 1b️⃣ Context found (${relevantContext.length} chars), enriching message...`);
             message = `Контекст о компании:\n${relevantContext}\n---\n\nВопрос клиента: ${message}`;
         }
-        
+
         if (!message || typeof message !== 'string' || message.trim().length === 0) {
             return {
                 statusCode: 400,
@@ -3655,7 +3654,7 @@ async function handleGigaChat(body, headers) {
 
         const gigachatKey = process.env.GIGACHAT_KEY;
         const gigachatScope = process.env.GIGACHAT_SCOPE || 'GIGACHAT_API_PERS';
-        
+
         console.log(`[${handlerId}] 2️⃣ GIGACHAT_KEY exists: ${!!gigachatKey}`);
 
         if (!gigachatKey) {
@@ -3673,7 +3672,7 @@ async function handleGigaChat(body, headers) {
         console.log(`[${handlerId}] 3️⃣ Requesting OAuth token...`);
         const authBody = `scope=${encodeURIComponent(gigachatScope)}`;
         const authStartTime = Date.now();
-        
+
         let authResponse;
         try {
             authResponse = await httpsRequest('https://ngw.devices.sberbank.ru:9443/api/v2/oauth', {
@@ -3723,17 +3722,15 @@ async function handleGigaChat(body, headers) {
             'grpc.default_authority': 'gigachat.devices.sberbank.ru',
             'grpc.max_receive_message_length': 10 * 1024 * 1024,
             'grpc.max_send_message_length': 10 * 1024 * 1024,
-            'grpc.http2.keepalive_time': 10000,
-            'grpc.http2.keepalive_timeout': 20000,
-            'grpc.keepalive_permit_without_calls': true,
-            'grpc.http2.max_pings_without_data': 0,
+            'grpc.http2.keepalive_time': 30000,
+            'grpc.http2.keepalive_timeout': 10000,
         };
 
         const client = new ChatServiceClient('gigachat.devices.sberbank.ru:443', credentials, channelOptions);
 
         console.log(`[${handlerId}] 6️⃣ Sending chat request via gRPC...`);
         const chatStartTime = Date.now();
-        
+
         return new Promise((resolve) => {
             const chatRequest = {
                 model: 'GigaChat',
@@ -3751,7 +3748,7 @@ async function handleGigaChat(body, headers) {
 
             client.chat(chatRequest, metadata, (err, response) => {
                 const chatElapsed = Math.round((Date.now() - chatStartTime) / 1000);
-                
+
                 if (err) {
                     console.error(`[${handlerId}] ❌ gRPC error after ${chatElapsed}s: ${err.message}`);
                     client.close();
@@ -3766,7 +3763,7 @@ async function handleGigaChat(body, headers) {
                 }
 
                 console.log(`[${handlerId}] ✅ gRPC response received in ${chatElapsed}s`);
-                
+
                 const assistantMessage = response?.alternatives?.[0]?.message?.content || 'Нет ответа';
                 const totalTime = Math.round((Date.now() - startTime) / 1000);
 
@@ -3776,7 +3773,7 @@ async function handleGigaChat(body, headers) {
                 console.log(`=== GIGACHAT gRPC REQUEST END [${handlerId}] (SUCCESS) ===\n`);
 
                 client.close();
-                
+
                 resolve({
                     statusCode: 200,
                     headers,
@@ -3788,7 +3785,7 @@ async function handleGigaChat(body, headers) {
             });
 
             setTimeout(() => {
-                console.error(`[${handlerId}] ❌ gRPC request timeout (30s)`);
+                console.error(`[${handlerId}] ❌ gRPC request timeout (10s)`);
                 client.close();
                 resolve({
                     statusCode: 500,
@@ -3798,15 +3795,15 @@ async function handleGigaChat(body, headers) {
                         response: 'Timeout при соединении с GigaChat',
                     }),
                 });
-            }, 30000);
+            }, 10000);
         });
-        
+
     } catch (error) {
         const totalTime = Math.round((Date.now() - startTime) / 1000);
         const errorMsg = error instanceof Error ? error.message : String(error);
         console.error(`[${handlerId}] ❌ ERROR: ${errorMsg} (after ${totalTime}s)`);
         console.error(`=== GIGACHAT gRPC REQUEST END [${handlerId}] (FAILED) ===\n`);
-        
+
         return {
             statusCode: 500,
             headers,
