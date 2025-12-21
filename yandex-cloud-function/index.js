@@ -65,18 +65,30 @@ async function httpsRequest(urlString, options) {
     return new Promise((resolve, reject) => {
         const url = new URL(urlString);
         const startTime = Date.now();
+        const requestId = crypto.randomUUID().substring(0, 8);
         
-        console.log(`   [HTTPS] Starting request to ${url.hostname}:${url.port || 443}`);
+        console.log(`\n   [HTTPS-${requestId}] ========== HTTPS REQUEST START ==========`);
+        console.log(`   [HTTPS-${requestId}] URL: ${urlString}`);
+        console.log(`   [HTTPS-${requestId}] Method: ${options.method}`);
+        console.log(`   [HTTPS-${requestId}] Hostname: ${url.hostname}:${url.port || 443}`);
+        console.log(`   [HTTPS-${requestId}] Path: ${url.pathname}`);
+        
+        const bodySize = options.body ? Buffer.byteLength(options.body) : 0;
+        console.log(`   [HTTPS-${requestId}] Request body size: ${bodySize} bytes`);
+        console.log(`   [HTTPS-${requestId}] Headers: ${Object.keys(options.headers).join(', ')}`);
         
         // Timeout оптимизирован для Yandex Cloud Function (60 сек лимит)
-        const TIMEOUT_MS = 25000;
-        const SOCKET_TIMEOUT_MS = 28000;
+        const TIMEOUT_MS = 45000;
+        const SOCKET_TIMEOUT_MS = 50000;
         
         let socketTimeoutId = null;
         let requestTimeoutId = null;
         let hasResponded = false;
+        let receivedFirstByte = false;
+        let totalBytesReceived = 0;
         let socketConnected = false;
         let tlsConnected = false;
+        let requestEnded = false;
         
         const cleanup = () => {
             if (requestTimeoutId) clearTimeout(requestTimeoutId);
@@ -84,18 +96,25 @@ async function httpsRequest(urlString, options) {
         };
         
         const elapsed = () => Math.round(Date.now() - startTime);
+        const elapsedMs = () => Math.round(Date.now() - startTime);
+        
+        console.log(`   [HTTPS-${requestId}] Setting main timeout: ${TIMEOUT_MS}ms`);
         
         requestTimeoutId = setTimeout(() => {
             cleanup();
-            const debugInfo = {
+            const state = {
                 elapsed: elapsed() + 'ms',
                 hasResponded,
+                receivedFirstByte,
+                totalBytes: totalBytesReceived,
                 socketConnected,
-                tlsConnected
+                tlsConnected,
+                requestEnded
             };
-            console.log(`   [HTTPS] ⏱️ TIMEOUT after ${elapsed()}ms`, debugInfo);
+            console.error(`   [HTTPS-${requestId}] ❌ MAIN TIMEOUT after ${elapsed()}ms`);
+            console.error(`   [HTTPS-${requestId}] State:`, JSON.stringify(state));
             req.destroy();
-            reject(new Error(`Request timeout after ${elapsed()}ms (socket: ${socketConnected}, tls: ${tlsConnected})`));
+            reject(new Error(`Request timeout after ${elapsed()}ms`));
         }, TIMEOUT_MS);
         
         const reqOptions = {
@@ -103,92 +122,128 @@ async function httpsRequest(urlString, options) {
             headers: options.headers,
             rejectUnauthorized: false,
             timeout: SOCKET_TIMEOUT_MS,
-            connectTimeout: 10000,
+            connectTimeout: 15000,
         };
+        
+        console.log(`   [HTTPS-${requestId}] Creating HTTPS request with timeout: ${SOCKET_TIMEOUT_MS}ms`);
         
         const req = https.request(url, reqOptions, (res) => {
             hasResponded = true;
-            const tlsVersion = res.socket?.getProtocol?.() || 'unknown';
-            const cipher = res.socket?.getCipher?.()?.name || 'unknown';
-            console.log(`   [HTTPS] ✅ Response received after ${elapsed()}ms, status: ${res.statusCode}`);
-            console.log(`   [HTTPS]    TLS: ${tlsVersion}, Cipher: ${cipher}`);
+            console.log(`   [HTTPS-${requestId}] ✅ Response callback triggered after ${elapsedMs()}ms`);
+            console.log(`   [HTTPS-${requestId}] Status code: ${res.statusCode}`);
+            
+            try {
+                const tlsVersion = res.socket?.getProtocol?.() || 'unknown';
+                const cipher = res.socket?.getCipher?.()?.name || 'unknown';
+                console.log(`   [HTTPS-${requestId}] TLS: ${tlsVersion}, Cipher: ${cipher}`);
+                console.log(`   [HTTPS-${requestId}] Response headers: content-type=${res.headers['content-type']}, content-length=${res.headers['content-length']}`);
+            } catch (e) {
+                console.log(`   [HTTPS-${requestId}] Could not get TLS info:`, e.message);
+            }
             
             // Reset socket timeout on response start
             socketTimeoutId = setTimeout(() => {
                 cleanup();
+                console.error(`   [HTTPS-${requestId}] ❌ RESPONSE TIMEOUT after ${elapsed()}ms, received ${totalBytesReceived} bytes`);
                 req.destroy();
                 reject(new Error('Response timeout'));
             }, SOCKET_TIMEOUT_MS);
             
             let data = '';
             res.on('data', (chunk) => {
-                console.log(`   [HTTPS] 📦 Received ${chunk.length} bytes (total: ${data.length + chunk.length})`);
+                if (!receivedFirstByte) {
+                    receivedFirstByte = true;
+                    console.log(`   [HTTPS-${requestId}] 📦 First byte received after ${elapsedMs()}ms`);
+                }
+                
+                totalBytesReceived += chunk.length;
+                console.log(`   [HTTPS-${requestId}] 📥 Data chunk: ${chunk.length} bytes (total: ${totalBytesReceived})`);
+                
                 // Reset timeout on each data chunk
                 if (socketTimeoutId) clearTimeout(socketTimeoutId);
                 socketTimeoutId = setTimeout(() => {
                     cleanup();
+                    console.error(`   [HTTPS-${requestId}] ❌ DATA TIMEOUT after ${elapsed()}ms`);
                     req.destroy();
                     reject(new Error('Data timeout'));
                 }, SOCKET_TIMEOUT_MS);
                 
                 data += chunk;
             });
+            
             res.on('end', () => {
                 cleanup();
-                console.log(`   [HTTPS] ✨ Completed after ${elapsed()}ms, response size: ${data.length} bytes`);
+                console.log(`   [HTTPS-${requestId}] ✨ Response ended after ${elapsedMs()}ms`);
+                console.log(`   [HTTPS-${requestId}] Total response size: ${data.length} bytes`);
+                console.log(`   [HTTPS-${requestId}] ========== REQUEST SUCCESS ==========\n`);
                 resolve({ statusCode: res.statusCode || 500, data });
+            });
+            
+            res.on('error', (err) => {
+                console.error(`   [HTTPS-${requestId}] ❌ Response error:`, err.message);
             });
         });
         
         req.on('socket', (socket) => {
-            console.log(`   [HTTPS] 🔌 Socket created after ${elapsed()}ms`);
+            console.log(`   [HTTPS-${requestId}] 🔌 Socket created, fd: ${socket.fd || 'unknown'}`);
+            
+            socket.on('lookup', () => {
+                console.log(`   [HTTPS-${requestId}] 🔍 DNS lookup started`);
+            });
             
             socket.on('connect', () => {
                 socketConnected = true;
-                console.log(`   [HTTPS] 🌐 TCP connected after ${elapsed()}ms`);
+                console.log(`   [HTTPS-${requestId}] 🌐 TCP connected after ${elapsedMs()}ms`);
             });
             
             socket.on('secureConnect', () => {
                 tlsConnected = true;
-                const tlsVersion = socket.getProtocol?.();
-                const cipher = socket.getCipher?.()?.name;
-                console.log(`   [HTTPS] 🔐 TLS handshake complete after ${elapsed()}ms (${tlsVersion}, ${cipher})`);
+                console.log(`   [HTTPS-${requestId}] 🔒 TLS handshake complete after ${elapsedMs()}ms`);
             });
             
-            socket.on('lookup', () => {
-                console.log(`   [HTTPS] 🔍 DNS lookup started`);
+            socket.on('close', (hadError) => {
+                console.log(`   [HTTPS-${requestId}] ❌ Socket closed (hadError: ${hadError}) after ${elapsed()}ms`);
             });
             
-            socket.on('secureConnect', () => {
-                console.log(`   [HTTPS] 📡 Secure connection established after ${elapsed()}ms`);
+            socket.on('error', (err) => {
+                console.error(`   [HTTPS-${requestId}] ❌ Socket error:`, err.code, err.message);
             });
         });
         
         req.on('error', (err) => {
             cleanup();
-            console.error(`   [HTTPS] ❌ Error after ${elapsed()}ms:`);
-            console.error(`       Code: ${err.code}`);
-            console.error(`       Message: ${err.message}`);
-            console.error(`       Socket connected: ${socketConnected}, TLS connected: ${tlsConnected}`);
-            if (err.syscall) console.error(`       Syscall: ${err.syscall}`);
-            if (err.errno) console.error(`       Errno: ${err.errno}`);
+            console.error(`   [HTTPS-${requestId}] ❌ REQUEST ERROR after ${elapsed()}ms`);
+            console.error(`   [HTTPS-${requestId}] Error code: ${err.code}`);
+            console.error(`   [HTTPS-${requestId}] Error message: ${err.message}`);
+            console.error(`   [HTTPS-${requestId}] Syscall: ${err.syscall || 'none'}`);
+            console.error(`   [HTTPS-${requestId}] State: socket=${socketConnected}, tls=${tlsConnected}, firstByte=${receivedFirstByte}, totalBytes=${totalBytesReceived}`);
+            console.error(`   [HTTPS-${requestId}] ========== REQUEST FAILED ==========\n`);
             reject(err);
         });
         
         req.on('timeout', () => {
             cleanup();
-            console.log(`   [HTTPS] ⏱️ Socket timeout after ${elapsed()}ms`);
+            console.error(`   [HTTPS-${requestId}] ⏱️ REQUEST TIMEOUT EVENT after ${elapsed()}ms`);
+            console.error(`   [HTTPS-${requestId}] State: socket=${socketConnected}, tls=${tlsConnected}, firstByte=${receivedFirstByte}, totalBytes=${totalBytesReceived}`);
             req.destroy();
             reject(new Error('Socket timeout'));
         });
         
+        req.on('abort', () => {
+            console.log(`   [HTTPS-${requestId}] Request aborted after ${elapsed()}ms`);
+        });
+        
         if (options.body) {
-            console.log(`   [HTTPS] 📤 Writing body (${options.body.length} bytes)`);
+            const bodyPreview = options.body.substring(0, 100) + (options.body.length > 100 ? '...' : '');
+            console.log(`   [HTTPS-${requestId}] 📤 Writing body (${bodySize} bytes): ${bodyPreview}`);
             req.write(options.body);
+            console.log(`   [HTTPS-${requestId}] Body written successfully`);
         }
         
-        console.log(`   [HTTPS] 🚀 Request sent (${options.method} ${url.pathname})`);
+        console.log(`   [HTTPS-${requestId}] 🚀 Calling req.end()`);
+        requestEnded = true;
         req.end();
+        console.log(`   [HTTPS-${requestId}] Waiting for response...`);
     });
 }
 
@@ -3274,13 +3329,16 @@ async function sendTelegramNotification(message) {
 // ============ Giga Chat Handler ============
 
 async function handleGigaChat(body, headers) {
-    console.log("\n\n=== GIGACHAT REQUEST START (Yandex Cloud) ===");
+    const handlerId = crypto.randomUUID().substring(0, 8);
+    console.log(`\n\n=== GIGACHAT REQUEST START [${handlerId}] (Yandex Cloud Function) ===`);
+    const startTime = Date.now();
+    
     try {
         const { message } = body;
-        console.log("1️⃣ Received message:", message.substring(0, 50) + "...");
+        console.log(`[${handlerId}] 1️⃣ Received message (${message?.length || 0} chars): ${message?.substring(0, 50)}...`);
         
         if (!message || typeof message !== 'string' || message.trim().length === 0) {
-            console.log("❌ Message validation failed");
+            console.error(`[${handlerId}] ❌ Message validation failed`);
             return {
                 statusCode: 400,
                 headers,
@@ -3292,7 +3350,7 @@ async function handleGigaChat(body, headers) {
         }
 
         if (message.length > 2000) {
-            console.log("❌ Message too long");
+            console.error(`[${handlerId}] ❌ Message too long (${message.length} chars)`);
             return {
                 statusCode: 400,
                 headers,
@@ -3303,14 +3361,16 @@ async function handleGigaChat(body, headers) {
             };
         }
 
+        console.log(`[${handlerId}] ✅ Message validation passed (${message.length} chars)`);
+
         const gigachatKey = process.env.GIGACHAT_KEY;
         const gigachatScope = process.env.GIGACHAT_SCOPE || 'GIGACHAT_API_PERS';
         
-        console.log("2️⃣ GIGACHAT_KEY exists:", !!gigachatKey);
-        console.log("   Key length:", gigachatKey?.length);
+        console.log(`[${handlerId}] 2️⃣ GIGACHAT_KEY exists:`, !!gigachatKey);
+        console.log(`[${handlerId}]    Key length: ${gigachatKey?.length || 0}`);
 
         if (!gigachatKey) {
-            console.error('❌ GIGACHAT_KEY not configured');
+            console.error(`[${handlerId}] ❌ GIGACHAT_KEY not configured`);
             return {
                 statusCode: 500,
                 headers,
@@ -3321,11 +3381,15 @@ async function handleGigaChat(body, headers) {
             };
         }
 
-        // Получаем токен доступа используя правильный OAuth endpoint
+        // Получаем токен доступа
         const authBody = `scope=${encodeURIComponent(gigachatScope)}`;
         
-        console.log("3️⃣ Requesting OAuth token...");
+        console.log(`[${handlerId}] 3️⃣ Requesting OAuth token...`);
+        console.log(`[${handlerId}]    Scope: ${gigachatScope}`);
+        console.log(`[${handlerId}]    Auth URL: https://ngw.devices.sberbank.ru:9443/api/v2/oauth`);
+        
         let authResponse;
+        const authStartTime = Date.now();
         
         try {
             authResponse = await httpsRequest('https://ngw.devices.sberbank.ru:9443/api/v2/oauth', {
@@ -3338,17 +3402,21 @@ async function handleGigaChat(body, headers) {
                 },
                 body: authBody,
             });
+            const authElapsed = Math.round((Date.now() - authStartTime) / 1000);
+            console.log(`[${handlerId}] ✅ OAuth request completed in ${authElapsed}s`);
         } catch (fetchErr) {
+            const authElapsed = Math.round((Date.now() - authStartTime) / 1000);
             const errMsg = fetchErr instanceof Error ? fetchErr.message : String(fetchErr);
-            console.error('❌ OAuth failed:', errMsg);
+            console.error(`[${handlerId}] ❌ OAuth failed after ${authElapsed}s: ${errMsg}`);
             throw new Error(`OAuth network error: ${errMsg}`);
         }
 
-        console.log("4️⃣ Auth response status:", authResponse.statusCode);
+        console.log(`[${handlerId}] 4️⃣ Auth response status: ${authResponse.statusCode}`);
+        console.log(`[${handlerId}]    Response size: ${authResponse.data.length} bytes`);
 
         if (authResponse.statusCode !== 200) {
-            console.error('❌ Auth failed. Status:', authResponse.statusCode);
-            console.error('Response:', authResponse.data.substring(0, 500));
+            console.error(`[${handlerId}] ❌ Auth failed. Status: ${authResponse.statusCode}`);
+            console.error(`[${handlerId}]    Response: ${authResponse.data.substring(0, 500)}`);
             throw new Error(`Auth error: ${authResponse.statusCode} - ${authResponse.data.substring(0, 100)}`);
         }
 
@@ -3356,72 +3424,90 @@ async function handleGigaChat(body, headers) {
         try {
             authData = JSON.parse(authResponse.data);
         } catch (parseErr) {
-            console.error('❌ Failed to parse auth response');
+            console.error(`[${handlerId}] ❌ Failed to parse auth response`);
             throw new Error('Invalid auth response format');
         }
 
         const accessToken = authData.access_token;
-        console.log("5️⃣ Got access token. Length:", accessToken?.length);
+        console.log(`[${handlerId}] 5️⃣ Got access token`);
+        console.log(`[${handlerId}]    Token length: ${accessToken?.length || 0}`);
+        console.log(`[${handlerId}]    Token preview: ${accessToken?.substring(0, 20)}...`);
 
         if (!accessToken) {
-            console.error('❌ No access token in auth response');
+            console.error(`[${handlerId}] ❌ No access token in auth response`);
             throw new Error('No access token in response');
         }
 
         // Отправляем сообщение в Giga Chat
-        console.log("6️⃣ Sending chat request to GigaChat...");
-        console.log("   [INFO] Chat request timeout: 25 seconds (Yandex Cloud Function limit: 60 sec)");
-        console.log("   URL: https://gigachat.devices.sberbank.ru:9443/api/v1/chat/completions");
+        console.log(`[${handlerId}] 6️⃣ Sending chat request to GigaChat...`);
+        console.log(`[${handlerId}]    Chat URL: https://gigachat.devices.sberbank.ru:9443/api/v1/chat/completions`);
+        console.log(`[${handlerId}]    Model: GigaChat`);
+        console.log(`[${handlerId}]    Temperature: 0.7`);
+        console.log(`[${handlerId}]    Max tokens: 1000`);
+        console.log(`[${handlerId}]    Function timeout limit: 60s`);
+        
         let chatResponse;
+        const chatStartTime = Date.now();
         
         try {
-            const startTime = Date.now();
-            console.log("   ⏳ Waiting for chat response... (started at " + new Date().toISOString() + ")");
+            const chatBody = JSON.stringify({
+                model: 'GigaChat',
+                messages: [{ role: 'user', content: message }],
+                temperature: 0.7,
+                max_tokens: 1000,
+            });
+            console.log(`[${handlerId}]    Request body size: ${chatBody.length} bytes`);
+            console.log(`[${handlerId}] ⏳ Waiting for chat response... (started at ${new Date().toISOString()})`);
+            
             chatResponse = await httpsRequest('https://gigachat.devices.sberbank.ru:9443/api/v1/chat/completions', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${accessToken}`,
                 },
-                body: JSON.stringify({
-                    model: 'GigaChat',
-                    messages: [{ role: 'user', content: message }],
-                    temperature: 0.7,
-                    max_tokens: 1000,
-                }),
+                body: chatBody,
             });
-            const elapsed = Math.round((Date.now() - startTime) / 1000);
-            console.log("   ✅ HTTPS request succeeded, status:", chatResponse.statusCode, `(elapsed: ${elapsed}s)`);
+            
+            const chatElapsed = Math.round((Date.now() - chatStartTime) / 1000);
+            console.log(`[${handlerId}] ✅ Chat request completed in ${chatElapsed}s`);
+            console.log(`[${handlerId}]    Response status: ${chatResponse.statusCode}`);
+            console.log(`[${handlerId}]    Response size: ${chatResponse.data.length} bytes`);
         } catch (chatErr) {
+            const chatElapsed = Math.round((Date.now() - chatStartTime) / 1000);
             const errMsg = chatErr instanceof Error ? chatErr.message : String(chatErr);
-            console.error(`❌ Chat request failed: ${errMsg}`);
+            console.error(`[${handlerId}] ❌ Chat request failed after ${chatElapsed}s: ${errMsg}`);
             throw new Error(`Chat request error: ${errMsg}`);
         }
         
         if (!chatResponse) {
-            console.error('❌ No chat response');
+            console.error(`[${handlerId}] ❌ No chat response`);
             throw new Error('No response from GigaChat');
         }
 
-        console.log("7️⃣ Chat response status:", chatResponse.statusCode);
+        console.log(`[${handlerId}] 7️⃣ Chat response status: ${chatResponse.statusCode}`);
 
         if (chatResponse.statusCode !== 200) {
-            console.error('❌ Chat API error. Status:', chatResponse.statusCode);
-            console.error('Response:', chatResponse.data.substring(0, 500));
-            throw new Error(`Chat error: ${chatResponse.statusCode} - ${chatResponse.data.substring(0, 100)}`);
+            console.error(`[${handlerId}] ❌ Chat API error. Status: ${chatResponse.statusCode}`);
+            console.error(`[${handlerId}]    Response: ${chatResponse.data.substring(0, 500)}`);
+            throw new Error(`Chat error: ${chatResponse.statusCode}`);
         }
 
         let chatData;
         try {
             chatData = JSON.parse(chatResponse.data);
         } catch (parseErr) {
-            console.error('❌ Failed to parse chat response');
+            console.error(`[${handlerId}] ❌ Failed to parse chat response`);
+            console.error(`[${handlerId}]    Response preview: ${chatResponse.data.substring(0, 200)}`);
             throw new Error('Invalid chat response format');
         }
 
         const assistantMessage = chatData.choices?.[0]?.message?.content || 'Нет ответа';
-        console.log("8️⃣ Success! Response length:", assistantMessage.length);
-        console.log("=== GIGACHAT REQUEST END (SUCCESS) ===\n");
+        const totalTime = Math.round((Date.now() - startTime) / 1000);
+        
+        console.log(`[${handlerId}] 8️⃣ Success!`);
+        console.log(`[${handlerId}]    Response length: ${assistantMessage.length} chars`);
+        console.log(`[${handlerId}]    Total time: ${totalTime}s`);
+        console.log(`=== GIGACHAT REQUEST END [${handlerId}] (SUCCESS) ===\n`);
 
         return {
             statusCode: 200,
@@ -3432,9 +3518,11 @@ async function handleGigaChat(body, headers) {
             }),
         };
     } catch (error) {
+        const totalTime = Math.round((Date.now() - startTime) / 1000);
         const errorMsg = error instanceof Error ? error.message : String(error);
-        console.error("❌ ERROR:", errorMsg);
-        console.error("=== GIGACHAT REQUEST FAILED ===\n");
+        console.error(`[${handlerId}] ❌ ERROR: ${errorMsg}`);
+        console.error(`[${handlerId}] Total time before error: ${totalTime}s`);
+        console.error(`=== GIGACHAT REQUEST END [${handlerId}] (FAILED) ===\n`);
         
         return {
             statusCode: 500,
