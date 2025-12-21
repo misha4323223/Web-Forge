@@ -3381,13 +3381,18 @@ message Usage {
 `;
 
 async function loadGigaChatProto() {
-    const packageDefinition = await protoLoader.loadSync(Buffer.from(GIGACHAT_PROTO), {
+    const tmpFile = '/tmp/gigachat.proto';
+    const fs = require('fs');
+    fs.writeFileSync(tmpFile, GIGACHAT_PROTO);
+    
+    const packageDefinition = await protoLoader.load(tmpFile, {
         keepCase: true,
         longs: String,
         enums: String,
         defaults: true,
         oneofs: true,
     });
+    
     return grpc.loadPackageDefinition(packageDefinition);
 }
 
