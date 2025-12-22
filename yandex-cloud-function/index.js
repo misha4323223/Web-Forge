@@ -79,9 +79,9 @@ async function httpsRequest(urlString, options) {
         console.log(`   [HTTPS-${requestId}] Request body size: ${bodySize} bytes`);
         console.log(`   [HTTPS-${requestId}] Headers: ${Object.keys(options.headers).join(', ')}`);
 
-        // Timeout оптимизирован для Yandex Cloud Function (60 сек лимит)
-        const TIMEOUT_MS = 45000;
-        const SOCKET_TIMEOUT_MS = 50000;
+        // Timeout увеличен до 90 сек для стабильного GigaChat API
+        const TIMEOUT_MS = 90000;
+        const SOCKET_TIMEOUT_MS = 95000;
 
         let socketTimeoutId = null;
         let requestTimeoutId = null;
@@ -3841,7 +3841,47 @@ function findRelevantContext(kb, userMessage) {
 
 async function handleGigaChat(body, headers) {
     const handlerId = crypto.randomUUID().substring(0, 8);
-    console.log(`\n\n=== GIGACHAT gRPC REQUEST START [${handlerId}] (Yandex Cloud) ===`);
+    const MAX_RETRIES = 3;
+    
+    for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+        console.log(`\n\n=== GIGACHAT gRPC REQUEST START [${handlerId}] (Attempt ${attempt}/${MAX_RETRIES}) (Yandex Cloud) ===`);
+        const result = await attemptGigaChat(body, headers, handlerId);
+        
+        // Если успех - возвращаем результат
+        if (result.statusCode === 200) {
+            console.log(`[${handlerId}] ✅ Success on attempt ${attempt}`);
+            return result;
+        }
+        
+        // Если ошибка сети/timeout - пытаемся снова (кроме последней попытки)
+        if (attempt < MAX_RETRIES && isRetryableError(result)) {
+            const errorBody = JSON.parse(result.body);
+            console.warn(`[${handlerId}] ⚠️ Attempt ${attempt} failed with: ${errorBody.response || 'unknown error'}`);
+            console.log(`[${handlerId}] 🔄 Retrying in 2 seconds...`);
+            await new Promise(r => setTimeout(r, 2000));
+            continue;
+        }
+        
+        // Если не повторяемая ошибка или последняя попытка - возвращаем результат
+        return result;
+    }
+}
+
+function isRetryableError(result) {
+    if (result.statusCode !== 500) return false;
+    try {
+        const body = JSON.parse(result.body);
+        const response = body.response || '';
+        return response.includes('timeout') || 
+               response.includes('Timeout') || 
+               response.includes('error') ||
+               response.includes('failed');
+    } catch {
+        return true; // При ошибке парсинга - пытаемся снова
+    }
+}
+
+async function attemptGigaChat(body, headers, handlerId) {
     const startTime = Date.now();
 
     try {

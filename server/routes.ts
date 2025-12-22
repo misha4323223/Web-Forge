@@ -44,8 +44,8 @@ async function httpsRequest(
       console.log(`   [HTTPS-${requestId}]   ${key}: ${displayValue}`);
     });
     
-    const TIMEOUT_MS = 50000;
-    const SOCKET_TIMEOUT_MS = 55000;
+    const TIMEOUT_MS = 90000;  // Увеличен до 90 сек для GigaChat
+    const SOCKET_TIMEOUT_MS = 95000;
     
     let socketTimeoutId: NodeJS.Timeout | null = null;
     let requestTimeoutId: NodeJS.Timeout | null = null;
