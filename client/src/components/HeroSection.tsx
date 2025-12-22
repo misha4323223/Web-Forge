@@ -11,7 +11,20 @@ interface FlyingLetterProps {
 }
 
 function FlyingLetter({ letter, index, totalLetters, isGradient }: FlyingLetterProps) {
+  const isAndroid = useMemo(() => {
+    return /Android/i.test(navigator.userAgent);
+  }, []);
+
   const startPosition = useMemo(() => {
+    if (isAndroid) {
+      // Анимация "изнутри" для Android: зум и появление
+      return {
+        x: 0,
+        y: 0,
+        rotate: 0,
+        scale: 0.1,
+      };
+    }
     const angle = (index / totalLetters) * Math.PI * 2 + Math.random() * 0.5;
     const distance = 300 + Math.random() * 400;
     return {
@@ -20,7 +33,7 @@ function FlyingLetter({ letter, index, totalLetters, isGradient }: FlyingLetterP
       rotate: (Math.random() - 0.5) * 360,
       scale: 0.3 + Math.random() * 0.3,
     };
-  }, [index, totalLetters]);
+  }, [index, totalLetters, isAndroid]);
 
   const delay = 0.3 + index * 0.03;
 
@@ -37,7 +50,7 @@ function FlyingLetter({ letter, index, totalLetters, isGradient }: FlyingLetterP
         rotate: startPosition.rotate,
         scale: startPosition.scale,
         opacity: 0,
-        filter: "blur(8px)",
+        filter: isAndroid ? "blur(4px)" : "blur(8px)",
       }}
       animate={{
         x: 0,
@@ -47,7 +60,11 @@ function FlyingLetter({ letter, index, totalLetters, isGradient }: FlyingLetterP
         opacity: 1,
         filter: "blur(0px)",
       }}
-      transition={{
+      transition={isAndroid ? {
+        duration: 0.5,
+        delay: delay,
+        ease: "easeOut",
+      } : {
         duration: 0.8,
         delay: delay,
         type: "spring",
