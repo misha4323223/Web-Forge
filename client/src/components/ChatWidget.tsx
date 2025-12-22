@@ -222,29 +222,31 @@ export function ChatWidget() {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Форма ввода */}
-          <div className="bg-gradient-to-r from-cyan-400/5 via-purple-400/5 to-cyan-400/5 border-t-2 border-cyan-400/50 p-3 space-y-2">
-            <div className="flex gap-2">
-              <Input
-                data-testid="input-chat-message"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyPress={(e) => e.key === "Enter" && sendMessage()}
-                placeholder="Что вас интересует?"
-                disabled={isLoading}
-                className="bg-black border-cyan-400/30 focus:border-purple-400 text-cyan-400 placeholder-cyan-400/40 font-mono text-xs rounded-sm focus:ring-0 focus:outline-none transition-colors"
-              />
-              <Button
-                data-testid="button-send-chat"
-                onClick={sendMessage}
-                disabled={isLoading || !inputValue.trim()}
-                size="icon"
-                className="bg-black border-2 border-cyan-400 hover:border-purple-400 text-cyan-400 hover:text-purple-400 rounded-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <Send className="w-4 h-4" />
-              </Button>
+          {/* Форма ввода - только если прошли шаг ввода имени */}
+          {!isNameStep && (
+            <div className="bg-gradient-to-r from-cyan-400/5 via-purple-400/5 to-cyan-400/5 border-t-2 border-cyan-400/50 p-3 space-y-2">
+              <div className="flex gap-2">
+                <Input
+                  data-testid="input-chat-message"
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  onKeyPress={(e) => e.key === "Enter" && sendMessage()}
+                  placeholder="Что вас интересует?"
+                  disabled={isLoading}
+                  className="bg-black border-cyan-400/30 focus:border-purple-400 text-cyan-400 placeholder-cyan-400/40 font-mono text-xs rounded-sm focus:ring-0 focus:outline-none transition-colors"
+                />
+                <Button
+                  data-testid="button-send-chat"
+                  onClick={sendMessage}
+                  disabled={isLoading || !inputValue.trim()}
+                  size="icon"
+                  className="bg-black border-2 border-cyan-400 hover:border-purple-400 text-cyan-400 hover:text-purple-400 rounded-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Send className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
-          </div>
+          )}
         </DialogContent>
       </Dialog>
     </>
