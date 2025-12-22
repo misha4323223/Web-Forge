@@ -75,13 +75,13 @@ export function Navigation() {
           <span className="inline text-xl font-bold text-foreground">MP.WebStudio</span>
         </a>
 
-        <div className="hidden md:flex items-center gap-1">
+        <div className="hidden md:flex items-center gap-1 overflow-x-auto no-scrollbar">
           {navItems.map((item) => (
             <Button
               key={item.href}
               variant="ghost"
               onClick={() => scrollToSection(item.href)}
-              className="text-muted-foreground"
+              className="text-muted-foreground whitespace-nowrap"
               data-testid={`link-nav-${item.href.slice(1)}`}
             >
               {item.label}

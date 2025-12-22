@@ -390,9 +390,11 @@ export function CalculatorSection() {
               <span className="neon-badge-text">Расчёт стоимости / Контакты</span>
             </span>
           </motion.div>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 overflow-hidden">
             <AnimatedText text={line1} startIndex={0} isInView={isInView} />
-            <AnimatedText text={line2} startIndex={line1.length} isGradient isInView={isInView} />
+            <div className="block sm:inline">
+              <AnimatedText text={line2} startIndex={line1.length} isGradient isInView={isInView} />
+            </div>
           </h2>
           <motion.p
             initial={{ opacity: 0, y: 20 }}

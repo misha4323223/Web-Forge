@@ -95,7 +95,7 @@ export function ChatWidget() {
 
       {/* Модалка чата - NEO TERMINAL */}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="w-full max-w-md h-[600px] md:h-[500px] flex flex-col p-0 bg-black border-2 border-transparent bg-gradient-to-br from-cyan-400/20 via-purple-400/20 to-cyan-400/20 bg-clip-padding rounded-sm shadow-[0_0_30px_rgba(168,85,247,0.3),0_0_20px_rgba(34,211,238,0.3)] neo-terminal" description="AI чат помощник для ответов на вопросы">
+        <DialogContent className="w-[95vw] md:w-full max-w-md h-[80vh] md:h-[500px] flex flex-col p-0 bg-black border-2 border-transparent bg-gradient-to-br from-cyan-400/20 via-purple-400/20 to-cyan-400/20 bg-clip-padding rounded-sm shadow-[0_0_30px_rgba(168,85,247,0.3),0_0_20px_rgba(34,211,238,0.3)] neo-terminal" description="AI чат помощник для ответов на вопросы">
           
           {/* Шапка - NEO TERMINAL */}
           <DialogHeader className="bg-gradient-to-r from-cyan-400/10 via-purple-400/10 to-cyan-400/10 border-b-2 border-cyan-400/50 p-3 space-y-0">
