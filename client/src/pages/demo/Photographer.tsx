@@ -5,6 +5,7 @@ import { Camera, Mail, Phone, MapPin, Instagram, ArrowLeft, Play, ExternalLink }
 import { Link } from "wouter";
 import { useState, useEffect } from "react";
 import { useDocumentMeta } from "@/lib/useDocumentMeta";
+import { useBreadcrumbSchema } from "@/lib/useBreadcrumbSchema";
 import photographerHeroImg from "@assets/generated_images/photographer_workspace_studio_aesthetic.webp";
 import portraitWomanImg from "@assets/generated_images/professional_woman_portrait_photography.webp";
 import weddingSunsetImg from "@assets/generated_images/romantic_wedding_couple_sunset.webp";

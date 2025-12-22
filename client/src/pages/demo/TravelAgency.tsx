@@ -9,6 +9,7 @@ import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useDocumentMeta } from "@/lib/useDocumentMeta";
 import { useAggregateRatingSchema } from "@/lib/useAggregateRatingSchema";
+import { useBreadcrumbSchema } from "@/lib/useBreadcrumbSchema";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Check } from "lucide-react";

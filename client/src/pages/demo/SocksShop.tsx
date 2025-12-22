@@ -10,6 +10,7 @@ import { Link } from "wouter";
 import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useDocumentMeta } from "@/lib/useDocumentMeta";
+import { useBreadcrumbSchema } from "@/lib/useBreadcrumbSchema";
 
 import giftBoxImg from "@assets/generated_images/classic_socks_gift_box.webp";
 import businessImg from "@assets/generated_images/business_socks_gift_set.webp";
