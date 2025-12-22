@@ -3885,8 +3885,25 @@ async function attemptGigaChat(body, headers, handlerId) {
     const startTime = Date.now();
 
     try {
-        let { message } = body;
+        let { message, userName, isFirstMessage } = body;
         console.log(`[${handlerId}] 1️⃣ Received message (${message?.length || 0} chars)`);
+        if (userName) console.log(`[${handlerId}] User name: ${userName}`);
+        if (isFirstMessage) console.log(`[${handlerId}] First message: true`);
+
+        // Обработка первого сообщения - отправить приветствие
+        if (isFirstMessage && userName) {
+            console.log(`[${handlerId}] 1b️⃣ First message detected - sending greeting to ${userName}...`);
+            const greeting = `Привет, ${userName}! 👋 Я AI-ассистент компании MP.WebStudio. Я здесь, чтобы ответить на ваши вопросы о наших услугах, проектах и технологиях. Что вас интересует?`;
+            
+            return {
+                statusCode: 200,
+                headers,
+                body: JSON.stringify({
+                    success: true,
+                    response: greeting,
+                }),
+            };
+        }
 
         // НОВОЕ: Загружаем Knowledge Base и обогащаем контекст
         console.log(`[${handlerId}] 1a️⃣ Loading knowledge base...`);

@@ -886,8 +886,10 @@ export async function registerRoutes(
   app.post("/api/giga-chat", async (req, res) => {
     console.log("\n\n=== GIGACHAT REQUEST START ===");
     try {
-      const { message } = req.body;
+      const { message, userName, isFirstMessage } = req.body;
       console.log("1️⃣ Received message:", message.substring(0, 50) + "...");
+      if (userName) console.log("   User name:", userName);
+      if (isFirstMessage) console.log("   First message:", isFirstMessage);
       
       // Валидация сообщения
       if (!message || typeof message !== 'string' || message.trim().length === 0) {
