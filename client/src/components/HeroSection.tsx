@@ -85,19 +85,31 @@ interface AnimatedTextProps {
 }
 
 function AnimatedText({ text, startIndex, isGradient }: AnimatedTextProps) {
-  const letters = text.split("");
-  const totalLetters = letters.length + startIndex;
+  const words = text.split(" ");
+  let letterIndex = startIndex;
+  const totalLetters = text.length + startIndex;
 
   return (
     <>
-      {letters.map((letter, i) => (
-        <FlyingLetter
-          key={i}
-          letter={letter}
-          index={startIndex + i}
-          totalLetters={totalLetters + 15}
-          isGradient={isGradient}
-        />
+      {words.map((word, wordIdx) => (
+        <span key={wordIdx} className="inline-block whitespace-nowrap">
+          {word.split("").map((letter, letterIdx) => {
+            const currentIndex = letterIndex;
+            letterIndex++;
+            return (
+              <FlyingLetter
+                key={`${wordIdx}-${letterIdx}`}
+                letter={letter}
+                index={currentIndex}
+                totalLetters={totalLetters + 15}
+                isGradient={isGradient}
+              />
+            );
+          })}
+          {wordIdx < words.length - 1 && (
+            <span className="inline-block w-[0.3em]">&nbsp;</span>
+          )}
+        </span>
       ))}
     </>
   );
