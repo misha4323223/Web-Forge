@@ -72,7 +72,7 @@ export function Navigation() {
           data-testid="link-logo"
         >
           <img src={logoImg} alt="MP.WebStudio" className="w-10 h-10 rounded-md object-cover" />
-          <span className="hidden lg:inline text-xl font-bold text-foreground">MP.WebStudio</span>
+          <span className="inline text-xl font-bold text-foreground">MP.WebStudio</span>
         </a>
 
         <div className="hidden md:flex items-center gap-1">
