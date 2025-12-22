@@ -45,7 +45,10 @@ export function ParticleBackground() {
 
     const createParticles = () => {
       particles = [];
-      const particleCount = Math.floor((canvas.width * canvas.height) / 20000);
+      // Reduce particles by 30% on mobile devices for better performance
+      const isMobile = window.innerWidth < 768;
+      const divisor = isMobile ? 28571 : 20000; // 28571 = 20000 / 0.7 (30% reduction)
+      const particleCount = Math.floor((canvas.width * canvas.height) / divisor);
       for (let i = 0; i < particleCount; i++) {
         particles.push({
           x: Math.random() * canvas.width,
