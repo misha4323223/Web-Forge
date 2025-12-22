@@ -235,6 +235,7 @@ const features: Feature[] = [
   { id: "admin", label: "Админ-панель", price: 55000, description: "Управление товарами", availableFor: ["shop"] },
   { id: "telegram_shop", label: "Telegram-магазин", price: 50000, description: "Мини-приложение", availableFor: ["shop"] },
   { id: "delivery", label: "Интеграция доставки", price: 30000, description: "СДЭК, Boxberry", availableFor: ["shop"] },
+  { id: "ai_integration", label: "Интеграция ИИ", price: 60000, description: "Чат-бот, рекомендации товаров", availableFor: ["corporate", "shop"] },
   { id: "custom", label: "Другое / Индивидуальная функция", price: 0, description: "Обсудим отдельно", availableFor: ["bizcard", "landing", "corporate", "shop"] },
 ];
 
