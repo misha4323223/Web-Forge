@@ -131,7 +131,7 @@ function AnimatedText({ text, startIndex, isGradient, isInView }: AnimatedTextPr
   );
 }
 
-type ProjectType = "bizcard" | "landing" | "corporate" | "shop";
+type ProjectType = "bizcard" | "landing" | "corporate" | "shop" | "webapp";
 
 interface Feature {
   id: string;
@@ -205,6 +205,23 @@ const projectTypes: ProjectTypeConfig[] = [
       "Категории товаров",
     ],
   },
+  {
+    value: "webapp",
+    label: "Веб-приложение",
+    basePrice: 300000,
+    description: "Полнофункциональное приложение для сотрудников/клиентов",
+    includes: [
+      "React + TypeScript фронтенд",
+      "Node.js/Express бэкенд",
+      "PostgreSQL база данных",
+      "REST API с документацией",
+      "Система аутентификации (JWT/OAuth)",
+      "Yandex Cloud хостинг (масштабируемый)",
+      "SSL сертификат",
+      "Резервные копии БД",
+      "Техническая поддержка",
+    ],
+  },
 ];
 
 const features: Feature[] = [
@@ -236,7 +253,22 @@ const features: Feature[] = [
   { id: "telegram_shop", label: "Telegram-магазин", price: 50000, description: "Мини-приложение", availableFor: ["shop"] },
   { id: "delivery", label: "Интеграция доставки", price: 30000, description: "СДЭК, Boxberry", availableFor: ["shop"] },
   { id: "ai_integration", label: "Интеграция ИИ", price: 60000, description: "Чат-бот, рекомендации товаров", availableFor: ["corporate", "shop"] },
-  { id: "custom", label: "Другое / Индивидуальная функция", price: 0, description: "Обсудим отдельно", availableFor: ["bizcard", "landing", "corporate", "shop"] },
+  // Веб-приложение - специфичные опции
+  { id: "auth_advanced", label: "Расширенная аутентификация", price: 35000, description: "2FA, OAuth (Google, Yandex), SAML", availableFor: ["webapp"] },
+  { id: "websocket", label: "Реал-тайм синхронизация", price: 45000, description: "WebSocket, live обновления данных", availableFor: ["webapp"] },
+  { id: "redis_cache", label: "Кэширование Redis", price: 30000, description: "Высокопроизводительный кэш", availableFor: ["webapp"] },
+  { id: "monitoring", label: "Мониторинг и логирование", price: 40000, description: "Sentry, Grafana, аналитика ошибок", availableFor: ["webapp"] },
+  { id: "api_docs", label: "API документация и SDK", price: 25000, description: "Swagger/OpenAPI, клиентские SDK", availableFor: ["webapp"] },
+  { id: "cicd_pipeline", label: "CI/CD и автоматизация", price: 35000, description: "GitHub Actions, автотесты, деплой", availableFor: ["webapp"] },
+  { id: "mobile_api", label: "Мобильное приложение API", price: 50000, description: "iOS/Android интеграция", availableFor: ["webapp"] },
+  { id: "load_balancing", label: "Балансировка нагрузки", price: 60000, description: "Масштабирование на Kubernetes", availableFor: ["webapp"] },
+  { id: "analytics_advanced", label: "Продвинутая аналитика", price: 45000, description: "BI, дашборды, экспорт отчётов", availableFor: ["webapp"] },
+  { id: "payment_gateway", label: "Платёжные системы", price: 40000, description: "Robokassa, ЮKassa, Stripe", availableFor: ["webapp"] },
+  { id: "notification_system", label: "Система уведомлений", price: 35000, description: "Email, SMS, Push, Telegram", availableFor: ["webapp"] },
+  { id: "file_storage", label: "Облачное хранилище файлов", price: 30000, description: "S3, Yandex Object Storage", availableFor: ["webapp"] },
+  { id: "backup_disaster", label: "Резервная копия и disaster recovery", price: 50000, description: "Автоматические бэкапы, восстановление", availableFor: ["webapp"] },
+  { id: "crm_webapp", label: "CRM система", price: 80000, description: "Управление клиентами, сделками, аналитика", availableFor: ["webapp"] },
+  { id: "custom", label: "Другое / Индивидуальная функция", price: 0, description: "Обсудим отдельно", availableFor: ["bizcard", "landing", "corporate", "shop", "webapp"] },
 ];
 
 type CalculatorFormData = {
