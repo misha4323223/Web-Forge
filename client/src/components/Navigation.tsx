@@ -103,6 +103,17 @@ export function Navigation() {
         </div>
 
         <div className="hidden md:flex items-center gap-2">
+          <a href={orderPagePath}>
+            <Button
+              className="bg-gradient-to-r from-cyan-500 to-purple-500 text-white border-0"
+              data-testid="button-nav-cta"
+            >
+              Заказать сайт
+            </Button>
+          </a>
+        </div>
+
+        <div className="hidden lg:flex items-center gap-2">
           <Button
             onClick={() => scrollToSection("#calculator")}
             className="bg-gradient-to-r from-cyan-500 to-purple-500 text-white border-0"
