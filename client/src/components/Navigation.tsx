@@ -59,7 +59,7 @@ export function Navigation() {
           : "bg-transparent"
       }`}
     >
-      <nav className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
+      <nav className="px-6 py-4 flex items-center justify-between gap-4">
         <a
           href="/"
           onClick={(e) => {
