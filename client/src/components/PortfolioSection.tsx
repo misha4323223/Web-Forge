@@ -691,7 +691,7 @@ export function PortfolioSection() {
   };
 
   const line1 = "Галактика ";
-  const line2 = "наших работ";
+  const line2 = "наших проектов";
 
   return (
     <section id="portfolio" className="relative overflow-hidden" style={{ height: "100vh", minHeight: "800px" }}>
