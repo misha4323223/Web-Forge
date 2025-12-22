@@ -15,7 +15,19 @@ interface FlyingLetterProps {
 }
 
 function FlyingLetter({ letter, index, totalLetters, isGradient, isInView }: FlyingLetterProps) {
+  const isAndroid = useMemo(() => {
+    return /Android/i.test(navigator.userAgent);
+  }, []);
+
   const startPosition = useMemo(() => {
+    if (isAndroid) {
+      return {
+        x: 0,
+        y: 0,
+        rotate: 0,
+        scale: 0.2,
+      };
+    }
     const angle = (index / totalLetters) * Math.PI * 2 + Math.random() * 0.5;
     const distance = 200 + Math.random() * 300;
     return {
@@ -24,7 +36,7 @@ function FlyingLetter({ letter, index, totalLetters, isGradient, isInView }: Fly
       rotate: (Math.random() - 0.5) * 180,
       scale: 0.5 + Math.random() * 0.3,
     };
-  }, [index, totalLetters]);
+  }, [index, totalLetters, isAndroid]);
 
   const delay = index * 0.02;
 
@@ -41,7 +53,7 @@ function FlyingLetter({ letter, index, totalLetters, isGradient, isInView }: Fly
         rotate: startPosition.rotate,
         scale: startPosition.scale,
         opacity: 0,
-        filter: "blur(6px)",
+        filter: isAndroid ? "blur(2px)" : "blur(6px)",
       }}
       animate={isInView ? {
         x: 0,
@@ -51,7 +63,11 @@ function FlyingLetter({ letter, index, totalLetters, isGradient, isInView }: Fly
         opacity: 1,
         filter: "blur(0px)",
       } : {}}
-      transition={{
+      transition={isAndroid ? {
+        duration: 0.4,
+        delay: delay,
+        ease: "easeOut",
+      } : {
         duration: 0.6,
         delay: delay,
         type: "spring",

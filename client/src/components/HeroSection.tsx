@@ -161,10 +161,10 @@ export function HeroSection() {
 
         <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6 relative overflow-hidden">
           <GlowPulse />
-          <span className="text-foreground block sm:whitespace-nowrap">
+          <span className="text-foreground block">
             <AnimatedText text={line1} startIndex={0} />
           </span>
-          <span className="block mt-2 sm:whitespace-nowrap">
+          <span className="block mt-2">
             <AnimatedText text={line2} startIndex={line1.length} isGradient />
           </span>
         </h1>
