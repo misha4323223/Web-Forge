@@ -136,7 +136,7 @@ export function HeroSection() {
     }
   };
 
-  const line1 = "Это не реклама про нас.";
+  const line1 = "Это не лендинг про нас.";
   const line2 = "Это витрина для вас.";
 
   return (
