@@ -809,17 +809,6 @@ export function PortfolioSection() {
             />
           ))}
 
-          {/* Легенда */}
-          <div className="absolute bottom-4 left-4 flex items-center gap-6 text-xs text-white/60">
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)]" />
-              <span>Live проект</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.5)]" />
-              <span>Концепт</span>
-            </div>
-          </div>
         </div>
       </div>
 
