@@ -153,6 +153,7 @@ const features: Feature[] = [
   { id: "crm", label: "Интеграция CRM", price: 45000, description: "Синхронизация с CRM-системой", availableFor: ["landing", "corporate", "shop"] },
   { id: "filters", label: "Фильтры и сортировка", price: 20000, description: "По параметрам товаров", availableFor: ["shop"] },
   { id: "favorites", label: "Избранное", price: 10000, description: "Сохранение товаров", availableFor: ["shop"] },
+  { id: "customer_accounts", label: "Личные кабинеты клиентов", price: 20000, description: "История заказов, сохранённые адреса", availableFor: ["shop"] },
   { id: "telegram_shop", label: "Telegram-магазин", price: 50000, description: "Мини-приложение", availableFor: ["shop"] },
   { id: "delivery", label: "Интеграция доставки", price: 30000, description: "Служба логистики", availableFor: ["shop"] },
   { id: "ai_integration", label: "Интеграция ИИ", price: 60000, description: "Чат-бот, рекомендации товаров", availableFor: ["corporate", "shop"] },
