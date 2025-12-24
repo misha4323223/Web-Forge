@@ -54,7 +54,7 @@ const projectTypes: ProjectTypeConfig[] = [
   {
     value: "bizcard",
     label: "Сайт-визитка",
-    basePrice: 25000,
+    basePrice: 30000,
     description: "Компактный сайт о вас или компании",
     includes: [
       "Адаптивный дизайн",
@@ -63,12 +63,13 @@ const projectTypes: ProjectTypeConfig[] = [
       "Базовый дизайн",
       "SEO-основа",
       "Хостинг включён",
+      "Форма обратной связи",
     ],
   },
   {
     value: "landing",
     label: "Лендинг",
-    basePrice: 45000,
+    basePrice: 50000,
     description: "Одностраничный продающий сайт",
     includes: [
       "Адаптивный дизайн",
@@ -77,12 +78,13 @@ const projectTypes: ProjectTypeConfig[] = [
       "Базовые анимации",
       "SEO-основа",
       "Хостинг включён",
+      "Система аналитики",
     ],
   },
   {
     value: "corporate",
     label: "Корпоративный сайт",
-    basePrice: 90000,
+    basePrice: 95000,
     description: "Многостраничный сайт компании",
     includes: [
       "Всё из лендинга",
@@ -90,6 +92,7 @@ const projectTypes: ProjectTypeConfig[] = [
       "Навигация",
       "Единый шаблон",
       "Страница контактов",
+      "Система аналитики",
     ],
   },
   {
@@ -103,6 +106,8 @@ const projectTypes: ProjectTypeConfig[] = [
       "Карточки товаров",
       "Корзина",
       "Оформление заказа",
+      "Админ-панель",
+      "Система аналитики",
     ],
   },
   {
@@ -125,13 +130,11 @@ const projectTypes: ProjectTypeConfig[] = [
 ];
 
 const features: Feature[] = [
-  { id: "contact_form", label: "Форма обратной связи", price: 5000, description: "Отправка заявок", availableFor: ["bizcard"] },
   { id: "extra_pages_bizcard", label: "Доп. страницы (3 шт)", price: 8000, description: "Сверх базовых", availableFor: ["bizcard"] },
   { id: "map", label: "Карта с адресом", price: 5000, description: "Интерактивная карта", availableFor: ["bizcard"] },
   { id: "calculator", label: "Калькулятор стоимости", price: 12000, description: "Интерактивный расчёт", availableFor: ["landing", "corporate", "shop"] },
   { id: "gallery", label: "Галерея / Портфолио", price: 10000, description: "Слайдер с лайтбоксом", availableFor: ["bizcard", "landing", "corporate", "shop"] },
   { id: "messengers", label: "Виджеты мессенджеров", price: 7000, description: "WhatsApp, Telegram", availableFor: ["bizcard", "landing", "corporate", "shop"] },
-  { id: "analytics", label: "Система аналитики", price: 5000, description: "Отслеживание посещений", availableFor: ["bizcard", "landing", "corporate", "shop"] },
   { id: "email_notify", label: "Email-уведомления", price: 10000, description: "Письма о заявках", availableFor: ["landing", "corporate", "shop"] },
   { id: "telegram_notify", label: "Telegram-уведомления", price: 12000, description: "Заявки в Telegram-бот", availableFor: ["landing", "corporate", "shop"] },
   { id: "animations", label: "Продвинутые анимации", price: 20000, description: "Параллакс, 3D-эффекты", availableFor: ["bizcard", "landing", "corporate", "shop"] },
@@ -149,7 +152,6 @@ const features: Feature[] = [
   { id: "crm", label: "Интеграция CRM", price: 45000, description: "Синхронизация с CRM-системой", availableFor: ["landing", "corporate", "shop"] },
   { id: "filters", label: "Фильтры и сортировка", price: 20000, description: "По параметрам товаров", availableFor: ["shop"] },
   { id: "favorites", label: "Избранное", price: 10000, description: "Сохранение товаров", availableFor: ["shop"] },
-  { id: "admin", label: "Админ-панель", price: 55000, description: "Управление товарами", availableFor: ["shop"] },
   { id: "telegram_shop", label: "Telegram-магазин", price: 50000, description: "Мини-приложение", availableFor: ["shop"] },
   { id: "delivery", label: "Интеграция доставки", price: 30000, description: "Служба логистики", availableFor: ["shop"] },
   { id: "ai_integration", label: "Интеграция ИИ", price: 60000, description: "Чат-бот, рекомендации товаров", availableFor: ["corporate", "shop"] },
