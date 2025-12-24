@@ -10,14 +10,16 @@ import { useToast } from "@/hooks/use-toast";
 import { useDocumentMeta } from "@/lib/useDocumentMeta";
 import { useBreadcrumbSchema } from "@/lib/useBreadcrumbSchema";
 import { useAggregateRatingSchema } from "@/lib/useAggregateRatingSchema";
-import salonHeroImg from "@assets/generated_images/stylish_barbershop_interior.webp";
+import salonHeroImg from "@assets/generated_images/modern_luxury_beauty_salon_interior.png";
 import stylist1Img from "@assets/generated_images/professional_woman_portrait_photography.webp";
 import stylist2Img from "@assets/generated_images/russian_female_dentist_portrait.webp";
 import stylist3Img from "@assets/generated_images/professional_businessman_portrait_photo.webp";
-import galleryImg1 from "@assets/generated_images/luxury_perfume_bottle_product.webp";
-import galleryImg2 from "@assets/generated_images/before_after_renovation_comparison.webp";
-import galleryImg3 from "@assets/generated_images/modern_kitchen_renovation_result.webp";
-import galleryImg4 from "@assets/generated_images/modern_bathroom_renovation_result.webp";
+import galleryImg1 from "@assets/generated_images/professional_haircut_styling_result.png";
+import galleryImg2 from "@assets/generated_images/hair_coloring_dye_transformation.png";
+import galleryImg3 from "@assets/generated_images/professional_manicure_nail_art.png";
+import galleryImg4 from "@assets/generated_images/professional_pedicure_foot_care.png";
+import galleryImg5 from "@assets/generated_images/eyelash_extension_beauty_treatment.png";
+import galleryImg6 from "@assets/generated_images/spa_facial_massage_treatment.png";
 
 const services = [
   { id: 1, name: "Стрижка + укладка", duration: "60 мин", price: 2500, icon: Sparkles },
@@ -67,6 +69,8 @@ const gallery = [
   galleryImg2,
   galleryImg3,
   galleryImg4,
+  galleryImg5,
+  galleryImg6,
 ];
 
 export default function BeautySalon() {
