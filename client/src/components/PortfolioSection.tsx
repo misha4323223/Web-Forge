@@ -270,24 +270,26 @@ const portfolioItems = [
   {
     id: 12,
     title: "ТехноПро Сервис",
-    subtitle: "Автосервис и техническое обслуживание",
+    subtitle: "Автосервис",
     description: "Концепт сайта автосервиса. Услуги, запись на обслуживание, прайс-лист, команда мастеров, отзывы клиентов.",
     tags: ["React", "Booking", "Services", "Dark Theme"],
     image: autoServiceHeroImg,
     demoUrl: "/demo/auto-service",
     badgeType: "concept" as const,
     category: "Services",
+    featured: false,
   },
   {
     id: 13,
     title: "ЛюксПро",
-    subtitle: "Агенство недвижимости премиум-класса",
+    subtitle: "Агентство недвижимости",
     description: "Концепт сайта агенства недвижимости. Каталог объектов, профили агентов, система бронирования просмотров, портфолио сделок.",
     tags: ["React", "Real Estate", "Booking", "Premium"],
     image: realEstateHeroImg,
     demoUrl: "/demo/real-estate",
     badgeType: "concept" as const,
     category: "Services",
+    featured: false,
   },
 ];
 
