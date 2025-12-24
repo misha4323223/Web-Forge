@@ -11,14 +11,20 @@ import { useDocumentMeta } from "@/lib/useDocumentMeta";
 import { useBreadcrumbSchema } from "@/lib/useBreadcrumbSchema";
 import { useAggregateRatingSchema } from "@/lib/useAggregateRatingSchema";
 import autoServiceHeroImg from "@assets/generated_images/modern_auto_service_garage_workshop_interior.png";
+import serviceImg1 from "@assets/stock_images/car_maintenance_oil__4b172ef8.jpg";
+import serviceImg2 from "@assets/stock_images/car_maintenance_oil__4b172ef8.jpg";
+import serviceImg3 from "@assets/stock_images/car_maintenance_oil__4b172ef8.jpg";
+import serviceImg4 from "@assets/stock_images/brake_service_car_ma_a2d2851b.jpg";
+import serviceImg5 from "@assets/stock_images/vehicle_inspection_d_e60ea11c.jpg";
+import serviceImg6 from "@assets/stock_images/engine_repair_mechan_8ba73ef9.jpg";
 
 const services = [
-  { id: 1, name: "ТО 1 (5 000 км)", duration: "1.5 часа", price: 2500, icon: Wrench },
-  { id: 2, name: "ТО 2 (15 000 км)", duration: "2.5 часа", price: 4500, icon: Wrench },
-  { id: 3, name: "Замена масла", duration: "30 мин", price: 800, icon: Zap },
-  { id: 4, name: "Замена тормозных колодок", duration: "1.5 часа", price: 3500, icon: Wrench },
-  { id: 5, name: "Диагностика", duration: "1 час", price: 1500, popular: true, icon: Zap },
-  { id: 6, name: "Полная переборка двигателя", duration: "8 часов", price: 25000, icon: Wrench },
+  { id: 1, name: "ТО 1 (5 000 км)", duration: "1.5 часа", price: 2500, icon: Wrench, image: serviceImg1 },
+  { id: 2, name: "ТО 2 (15 000 км)", duration: "2.5 часа", price: 4500, icon: Wrench, image: serviceImg2 },
+  { id: 3, name: "Замена масла", duration: "30 мин", price: 800, icon: Zap, image: serviceImg3 },
+  { id: 4, name: "Замена тормозных колодок", duration: "1.5 часа", price: 3500, icon: Wrench, image: serviceImg4 },
+  { id: 5, name: "Диагностика", duration: "1 час", price: 1500, popular: true, icon: Zap, image: serviceImg5 },
+  { id: 6, name: "Полная переборка двигателя", duration: "8 часов", price: 25000, icon: Wrench, image: serviceImg6 },
 ];
 
 const mechanics = [
@@ -250,30 +256,38 @@ export default function AutoService() {
                 transition={{ delay: i * 0.1 }}
               >
                 <Card 
-                  className={`p-6 bg-neutral-800/50 border-neutral-700 hover-elevate cursor-pointer transition-all ${selectedService === service.id ? 'ring-2 ring-blue-500' : ''}`}
+                  className={`overflow-hidden bg-neutral-800/50 border-neutral-700 hover-elevate cursor-pointer transition-all ${selectedService === service.id ? 'ring-2 ring-blue-500' : ''}`}
                   onClick={() => handleServiceSelect(service.id)}
                   data-testid={`card-service-${service.id}`}
                 >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="w-12 h-12 rounded-lg bg-blue-500/20 flex items-center justify-center">
-                      <Wrench className="w-6 h-6 text-blue-400" />
-                    </div>
+                  <div className="h-40 relative overflow-hidden bg-neutral-700">
+                    <img 
+                      src={service.image} 
+                      alt={service.name}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 via-transparent to-transparent" />
                     {service.popular && (
-                      <Badge className="bg-blue-500 text-black border-0">Популярно</Badge>
+                      <div className="absolute top-3 right-3">
+                        <Badge className="bg-blue-500 text-black border-0">Популярно</Badge>
+                      </div>
                     )}
                   </div>
-                  <h3 className="text-lg font-semibold mb-2 text-white">{service.name}</h3>
-                  <div className="flex items-center gap-4 text-sm text-neutral-400 mb-4">
-                    <span className="flex items-center gap-1">
-                      <Clock className="w-4 h-4" />
-                      {service.duration}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-2xl font-bold text-blue-400">{formatPrice(service.price)} ₽</span>
-                    <Button size="sm" className="bg-blue-500/20 text-blue-400 hover:bg-blue-500/30" data-testid={`button-select-service-${service.id}`}>
-                      Выбрать
-                    </Button>
+                  <div className="p-6">
+                    <h3 className="text-lg font-semibold mb-2 text-white">{service.name}</h3>
+                    <div className="flex items-center gap-4 text-sm text-neutral-400 mb-4">
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-4 h-4" />
+                        {service.duration}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-2xl font-bold text-blue-400">{formatPrice(service.price)} ₽</span>
+                      <Button size="sm" className="bg-blue-500/20 text-blue-400 hover:bg-blue-500/30" data-testid={`button-select-service-${service.id}`}>
+                        Выбрать
+                      </Button>
+                    </div>
                   </div>
                 </Card>
               </motion.div>

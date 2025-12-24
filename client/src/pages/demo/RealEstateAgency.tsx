@@ -11,14 +11,20 @@ import { useDocumentMeta } from "@/lib/useDocumentMeta";
 import { useBreadcrumbSchema } from "@/lib/useBreadcrumbSchema";
 import { useAggregateRatingSchema } from "@/lib/useAggregateRatingSchema";
 import realEstateHeroImg from "@assets/generated_images/modern_luxury_real_estate_agency_office.png";
+import propertyImg1 from "@assets/stock_images/modern_luxury_apartm_809731f6.jpg";
+import propertyImg2 from "@assets/stock_images/modern_cottage_house_6a13294b.jpg";
+import propertyImg3 from "@assets/stock_images/modern_luxury_apartm_6adfb889.jpg";
+import propertyImg4 from "@assets/stock_images/luxury_penthouse_mod_559d0979.jpg";
+import propertyImg5 from "@assets/stock_images/luxury_modern_house__dc8a4a18.jpg";
+import propertyImg6 from "@assets/stock_images/modern_office_space__85033b15.jpg";
 
 const properties = [
-  { id: 1, name: "Апартаменты в центре", beds: 3, baths: 2, area: 120, price: 12500000, type: "Квартира" },
-  { id: 2, name: "Коттедж с участком", beds: 4, baths: 3, area: 250, price: 35000000, type: "Дом", popular: true },
-  { id: 3, name: "Студия на Арбате", beds: 1, baths: 1, area: 45, price: 5000000, type: "Квартира" },
-  { id: 4, name: "Пентхаус с панорамой", beds: 5, baths: 4, area: 300, price: 85000000, type: "Апартаменты" },
-  { id: 5, name: "Таунхаус у лесопарка", beds: 3, baths: 2, area: 180, price: 18000000, type: "Дом" },
-  { id: 6, name: "Офис класса А", beds: 0, baths: 2, area: 150, price: 25000000, type: "Коммерция" },
+  { id: 1, name: "Апартаменты в центре", beds: 3, baths: 2, area: 120, price: 12500000, type: "Квартира", image: propertyImg1 },
+  { id: 2, name: "Коттедж с участком", beds: 4, baths: 3, area: 250, price: 35000000, type: "Дом", popular: true, image: propertyImg2 },
+  { id: 3, name: "Студия на Арбате", beds: 1, baths: 1, area: 45, price: 5000000, type: "Квартира", image: propertyImg3 },
+  { id: 4, name: "Пентхаус с панорамой", beds: 5, baths: 4, area: 300, price: 85000000, type: "Апартаменты", image: propertyImg4 },
+  { id: 5, name: "Таунхаус у лесопарка", beds: 3, baths: 2, area: 180, price: 18000000, type: "Дом", image: propertyImg5 },
+  { id: 6, name: "Офис класса А", beds: 0, baths: 2, area: 150, price: 25000000, type: "Коммерция", image: propertyImg6 },
 ];
 
 const agents = [
@@ -253,38 +259,46 @@ export default function RealEstateAgency() {
                 transition={{ delay: i * 0.1 }}
               >
                 <Card 
-                  className={`p-6 bg-neutral-800/50 border-neutral-700 hover-elevate cursor-pointer transition-all ${selectedProperty === property.id ? 'ring-2 ring-emerald-500' : ''}`}
+                  className={`overflow-hidden bg-neutral-800/50 border-neutral-700 hover-elevate cursor-pointer transition-all ${selectedProperty === property.id ? 'ring-2 ring-emerald-500' : ''}`}
                   onClick={() => handlePropertySelect(property.id)}
                   data-testid={`card-property-${property.id}`}
                 >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="w-12 h-12 rounded-lg bg-emerald-500/20 flex items-center justify-center">
-                      <Home className="w-6 h-6 text-emerald-400" />
-                    </div>
+                  <div className="h-40 relative overflow-hidden bg-neutral-700">
+                    <img 
+                      src={property.image} 
+                      alt={property.name}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 via-transparent to-transparent" />
                     {property.popular && (
-                      <Badge className="bg-emerald-500 text-black border-0">Хит</Badge>
+                      <div className="absolute top-3 right-3">
+                        <Badge className="bg-emerald-500 text-black border-0">Хит</Badge>
+                      </div>
                     )}
                   </div>
-                  <h3 className="text-lg font-semibold mb-2 text-white">{property.name}</h3>
-                  <p className="text-sm text-neutral-400 mb-4">{property.type}</p>
-                  <div className="flex items-center gap-4 text-sm text-neutral-400 mb-4">
-                    {property.beds > 0 && (
+                  <div className="p-6">
+                    <h3 className="text-lg font-semibold mb-2 text-white">{property.name}</h3>
+                    <p className="text-sm text-neutral-400 mb-4">{property.type}</p>
+                    <div className="flex items-center gap-4 text-sm text-neutral-400 mb-4">
+                      {property.beds > 0 && (
+                        <span className="flex items-center gap-1">
+                          <Bed className="w-4 h-4" />
+                          {property.beds} спальн.
+                        </span>
+                      )}
                       <span className="flex items-center gap-1">
-                        <Bed className="w-4 h-4" />
-                        {property.beds} спальн.
+                        <Bath className="w-4 h-4" />
+                        {property.baths}
                       </span>
-                    )}
-                    <span className="flex items-center gap-1">
-                      <Bath className="w-4 h-4" />
-                      {property.baths}
-                    </span>
-                    <span>{property.area} м²</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-2xl font-bold text-emerald-400">{formatPrice(property.price)} ₽</span>
-                    <Button size="sm" className="bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30" data-testid={`button-select-property-${property.id}`}>
-                      Выбрать
-                    </Button>
+                      <span>{property.area} м²</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-2xl font-bold text-emerald-400">{formatPrice(property.price)} ₽</span>
+                      <Button size="sm" className="bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30" data-testid={`button-select-property-${property.id}`}>
+                        Выбрать
+                      </Button>
+                    </div>
                   </div>
                 </Card>
               </motion.div>
