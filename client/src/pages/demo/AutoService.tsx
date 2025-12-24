@@ -10,13 +10,13 @@ import { useToast } from "@/hooks/use-toast";
 import { useDocumentMeta } from "@/lib/useDocumentMeta";
 import { useBreadcrumbSchema } from "@/lib/useBreadcrumbSchema";
 import { useAggregateRatingSchema } from "@/lib/useAggregateRatingSchema";
-import autoServiceHeroImg from "@assets/generated_images/modern_auto_service_garage_workshop_interior.png";
-import serviceImg1 from "@assets/stock_images/car_maintenance_oil__4b172ef8.jpg";
-import serviceImg2 from "@assets/stock_images/car_maintenance_oil__4b172ef8.jpg";
-import serviceImg3 from "@assets/stock_images/car_maintenance_oil__4b172ef8.jpg";
-import serviceImg4 from "@assets/stock_images/brake_service_car_ma_a2d2851b.jpg";
-import serviceImg5 from "@assets/stock_images/vehicle_inspection_d_e60ea11c.jpg";
-import serviceImg6 from "@assets/stock_images/engine_repair_mechan_8ba73ef9.jpg";
+import autoServiceHeroImg from "@/assets/generated_images/modern_auto_service_garage_workshop_interior.webp";
+import serviceImg1 from "@/assets/stock_images/car_maintenance_oil__4b172ef8.webp";
+import serviceImg2 from "@/assets/stock_images/car_maintenance_oil__4b172ef8.webp";
+import serviceImg3 from "@/assets/stock_images/car_maintenance_oil__4b172ef8.webp";
+import serviceImg4 from "@/assets/stock_images/brake_service_car_ma_a2d2851b.webp";
+import serviceImg5 from "@/assets/stock_images/vehicle_inspection_d_e60ea11c.webp";
+import serviceImg6 from "@/assets/stock_images/engine_repair_mechan_8ba73ef9.webp";
 
 const services = [
   { id: 1, name: "ТО 1 (5 000 км)", duration: "1.5 часа", price: 2500, icon: Wrench, image: serviceImg1 },
