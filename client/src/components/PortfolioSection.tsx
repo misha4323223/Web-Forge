@@ -132,6 +132,7 @@ import mpWebstudioImg from "@assets/generated_images/web_studio_portfolio_showca
 import photographerHeroImg from "@assets/generated_images/photographer_workspace_studio_aesthetic.webp";
 import autoServiceHeroImg from "@assets/generated_images/modern_auto_service_garage_workshop_interior.png";
 import realEstateHeroImg from "@assets/generated_images/modern_luxury_real_estate_agency_office.png";
+import beautySalonHeroImg from "@assets/generated_images/stylish_barbershop_interior.webp";
 
 const portfolioItems = [
   {
@@ -291,6 +292,18 @@ const portfolioItems = [
     category: "Services",
     featured: false,
   },
+  {
+    id: 14,
+    title: "Лумина",
+    subtitle: "Салон красоты",
+    description: "Концепт сайта премиум салона красоты. Услуги (стрижка, окрашивание, маникюр), профили стилистов, онлайн-запись, галерея работ.",
+    tags: ["React", "Booking", "Beauty", "Light Theme"],
+    image: beautySalonHeroImg,
+    demoUrl: "/demo/beauty-salon",
+    badgeType: "concept" as const,
+    category: "Beauty",
+    featured: false,
+  },
 ];
 
 // Позиции звёзд в созвездии (в процентах)
@@ -309,6 +322,7 @@ const starPositions = [
   { x: 50, y: 85 },   // 11 - центр низ (Фотограф)
   { x: 35, y: 78 },   // 12 - ТехноПро Сервис (автосервис)
   { x: 65, y: 82 },   // 13 - ЛюксПро (агенство недвижимости)
+  { x: 45, y: 92 },   // 14 - Лумина (салон красоты)
 ];
 
 // Связи между проектами по категориям
@@ -321,6 +335,7 @@ const connections: [number, number][] = [
   [9, 11], [10, 11], // Фотограф связи с соседними
   [8, 12], [10, 12], // Автосервис связи (Services - Barbershop, Ремонтмастер)
   [12, 13], [11, 13], // ЛюксПро связи (рядом с Автосервисом и Фотографом)
+  [8, 14], [11, 14], // Лумина (салон красоты) связи - Booking сервисы
 ];
 
 function Nebulae() {
