@@ -18,6 +18,8 @@ import galleryImg1 from "@assets/generated_images/modern_undercut_fade_haircut.w
 import galleryImg2 from "@assets/generated_images/professional_beard_styling_result.webp";
 import galleryImg3 from "@assets/generated_images/classic_gentleman_side_part.webp";
 import galleryImg4 from "@assets/generated_images/trendy_textured_crop_fade.webp";
+import galleryImg5 from "@assets/generated_images/professional_haircut_styling_result.png";
+import galleryImg6 from "@assets/generated_images/hair_coloring_dye_transformation.png";
 
 const services = [
   { id: 1, name: "Мужская стрижка", duration: "45 мин", price: 1500, icon: Scissors },
@@ -67,6 +69,8 @@ const gallery = [
   galleryImg2,
   galleryImg3,
   galleryImg4,
+  galleryImg5,
+  galleryImg6,
 ];
 
 export default function BarberShop() {
