@@ -10,16 +10,16 @@ import { useToast } from "@/hooks/use-toast";
 import { useDocumentMeta } from "@/lib/useDocumentMeta";
 import { useBreadcrumbSchema } from "@/lib/useBreadcrumbSchema";
 import { useAggregateRatingSchema } from "@/lib/useAggregateRatingSchema";
-import salonHeroImg from "@assets/generated_images/modern_luxury_beauty_salon_interior.png";
+import salonHeroImg from "@assets/generated_images/luxury_beauty_salon_interior_4k.png";
 import stylist1Img from "@assets/generated_images/professional_woman_portrait_photography.webp";
 import stylist2Img from "@assets/generated_images/professional_woman_portrait_photography.webp";
 import stylist3Img from "@assets/generated_images/professional_woman_portrait_photography.webp";
-import galleryImg1 from "@assets/generated_images/professional_haircut_styling_result.png";
-import galleryImg2 from "@assets/generated_images/hair_coloring_dye_transformation.png";
-import galleryImg3 from "@assets/generated_images/professional_manicure_nail_art.png";
-import galleryImg4 from "@assets/generated_images/professional_pedicure_foot_care.png";
-import galleryImg5 from "@assets/generated_images/eyelash_extension_beauty_treatment.png";
-import galleryImg6 from "@assets/generated_images/spa_facial_massage_treatment.png";
+import galleryImg1 from "@assets/generated_images/hair_styling_transformation_close_up.png";
+import galleryImg2 from "@assets/generated_images/manicure_nail_art_close_up.png";
+import galleryImg3 from "@assets/generated_images/pedicure_spa_treatment_close_up.png";
+import galleryImg4 from "@assets/generated_images/eyelash_extension_treatment_detail.png";
+import galleryImg5 from "@assets/generated_images/spa_facial_massage_treatment.png";
+import galleryImg6 from "@assets/generated_images/modern_luxury_beauty_salon_interior.png";
 
 const services = [
   { id: 1, name: "Стрижка + укладка", duration: "60 мин", price: 2500, icon: Sparkles },
