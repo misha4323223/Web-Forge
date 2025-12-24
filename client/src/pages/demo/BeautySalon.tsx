@@ -20,14 +20,20 @@ import galleryImg3 from "@assets/generated_images/pedicure_spa_treatment_close_u
 import galleryImg4 from "@assets/generated_images/eyelash_extension_treatment_detail.png";
 import galleryImg5 from "@assets/generated_images/spa_facial_massage_treatment.png";
 import galleryImg6 from "@assets/generated_images/modern_luxury_beauty_salon_interior.png";
+import svcImg1 from "@assets/generated_images/haircut_service_card_icon.png";
+import svcImg2 from "@assets/generated_images/hair_coloring_service_card_icon.png";
+import svcImg3 from "@assets/generated_images/manicure_service_card_icon.png";
+import svcImg4 from "@assets/generated_images/pedicure_service_card_icon.png";
+import svcImg5 from "@assets/generated_images/eyelash_service_card_icon.png";
+import svcImg6 from "@assets/generated_images/facial_spa_service_card_icon.png";
 
 const services = [
-  { id: 1, name: "Стрижка + укладка", duration: "60 мин", price: 2500, icon: Sparkles },
-  { id: 2, name: "Окрашивание волос", duration: "120 мин", price: 4500, icon: Sparkles, popular: true },
-  { id: 3, name: "Маникюр", duration: "45 мин", price: 1800, icon: Sparkles },
-  { id: 4, name: "Педикюр", duration: "60 мин", price: 2200, icon: Sparkles },
-  { id: 5, name: "Наращивание ресниц", duration: "90 мин", price: 3500, icon: Sparkles },
-  { id: 6, name: "Массаж лица (SPA)", duration: "45 мин", price: 2800, icon: Zap },
+  { id: 1, name: "Стрижка + укладка", duration: "60 мин", price: 2500, icon: Sparkles, image: svcImg1 },
+  { id: 2, name: "Окрашивание волос", duration: "120 мин", price: 4500, icon: Sparkles, popular: true, image: svcImg2 },
+  { id: 3, name: "Маникюр", duration: "45 мин", price: 1800, icon: Sparkles, image: svcImg3 },
+  { id: 4, name: "Педикюр", duration: "60 мин", price: 2200, icon: Sparkles, image: svcImg4 },
+  { id: 5, name: "Наращивание ресниц", duration: "90 мин", price: 3500, icon: Sparkles, image: svcImg5 },
+  { id: 6, name: "Массаж лица (SPA)", duration: "45 мин", price: 2800, icon: Zap, image: svcImg6 },
 ];
 
 const stylists = [
@@ -271,30 +277,42 @@ export default function BeautySalon() {
                 transition={{ delay: i * 0.1 }}
               >
                 <Card 
-                  className={`p-6 bg-neutral-800/50 border-neutral-700 hover-elevate cursor-pointer transition-all ${selectedService === service.id ? 'ring-2 ring-pink-500' : ''}`}
+                  className={`group overflow-hidden bg-neutral-800/50 border-neutral-700 hover-elevate cursor-pointer transition-all ${selectedService === service.id ? 'ring-2 ring-pink-500' : ''}`}
                   onClick={() => handleServiceSelect(service.id)}
                   data-testid={`card-service-${service.id}`}
                 >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="w-12 h-12 rounded-lg bg-pink-500/20 flex items-center justify-center">
-                      <Sparkles className="w-6 h-6 text-pink-400" />
+                  <div className="aspect-video relative overflow-hidden">
+                    <img 
+                      src={(service as any).image} 
+                      alt={service.name}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 via-transparent to-transparent" />
+                    <div className="absolute top-4 right-4">
+                      {service.popular && (
+                        <Badge className="bg-pink-500 text-white border-0">ХИТ</Badge>
+                      )}
                     </div>
-                    {service.popular && (
-                      <Badge className="bg-pink-500 text-white border-0">ХИТ</Badge>
-                    )}
                   </div>
-                  <h3 className="text-lg font-semibold mb-2 text-white">{service.name}</h3>
-                  <div className="flex items-center gap-4 text-sm text-neutral-400 mb-4">
-                    <span className="flex items-center gap-1">
-                      <Clock className="w-4 h-4" />
-                      {service.duration}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-2xl font-bold text-pink-400">{formatPrice(service.price)} ₽</span>
-                    <Button size="sm" className="bg-pink-500/20 text-pink-400 hover:bg-pink-500/30" data-testid={`button-select-service-${service.id}`}>
-                      Выбрать
-                    </Button>
+                  <div className="p-6">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-8 h-8 rounded-lg bg-pink-500/20 flex items-center justify-center">
+                        <service.icon className="w-4 h-4 text-pink-400" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-white">{service.name}</h3>
+                    </div>
+                    <div className="flex items-center gap-4 text-sm text-neutral-400 mb-4">
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-4 h-4" />
+                        {service.duration}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-2xl font-bold text-pink-400">{formatPrice(service.price)} ₽</span>
+                      <Button size="sm" className="bg-pink-500/20 text-pink-400 hover:bg-pink-500/30" data-testid={`button-select-service-${service.id}`}>
+                        Выбрать
+                      </Button>
+                    </div>
                   </div>
                 </Card>
               </motion.div>
