@@ -54,7 +54,7 @@ const projectTypes: ProjectTypeConfig[] = [
   {
     value: "bizcard",
     label: "Сайт-визитка",
-    basePrice: 30000,
+    basePrice: 45000,
     description: "Компактный сайт о вас или компании",
     includes: [
       "Адаптивный дизайн",
@@ -152,6 +152,7 @@ const features: Feature[] = [
   { id: "delivery", label: "Интеграция доставки", price: 30000, description: "Служба логистики", availableFor: [] },
   { id: "ai_integration", label: "Интеграция ИИ", price: 60000, description: "Чат-бот, рекомендации товаров", availableFor: ["corporate", "shop"] },
   { id: "custom", label: "Другое / Индивидуальная функция", price: 0, description: "Обсудим отдельно", availableFor: ["bizcard", "landing", "corporate", "shop"] },
+  { id: "exclusive_design", label: "Эксклюзивный дизайн", price: 30000, description: "Уникальный кастомный дизайн", availableFor: ["bizcard", "landing", "corporate", "shop"] },
 ];
 
 type PaymentMethod = "card" | "invoice";
