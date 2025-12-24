@@ -131,6 +131,7 @@ import renovationHeroImg from "@assets/generated_images/modern_living_room_renov
 import mpWebstudioImg from "@assets/generated_images/web_studio_portfolio_showcase.webp";
 import photographerHeroImg from "@assets/generated_images/photographer_workspace_studio_aesthetic.webp";
 import autoServiceHeroImg from "@assets/generated_images/modern_auto_service_garage_workshop_interior.png";
+import realEstateHeroImg from "@assets/generated_images/modern_luxury_real_estate_agency_office.png";
 
 const portfolioItems = [
   {
@@ -277,6 +278,17 @@ const portfolioItems = [
     badgeType: "concept" as const,
     category: "Services",
   },
+  {
+    id: 13,
+    title: "ЛюксПро",
+    subtitle: "Агенство недвижимости премиум-класса",
+    description: "Концепт сайта агенства недвижимости. Каталог объектов, профили агентов, система бронирования просмотров, портфолио сделок.",
+    tags: ["React", "Real Estate", "Booking", "Premium"],
+    image: realEstateHeroImg,
+    demoUrl: "/demo/real-estate",
+    badgeType: "concept" as const,
+    category: "Services",
+  },
 ];
 
 // Позиции звёзд в созвездии (в процентах)
@@ -294,6 +306,7 @@ const starPositions = [
   { x: 68, y: 72 },   // 10 - правый низ
   { x: 50, y: 85 },   // 11 - центр низ (Фотограф)
   { x: 35, y: 78 },   // 12 - ТехноПро Сервис (автосервис)
+  { x: 65, y: 82 },   // 13 - ЛюксПро (агенство недвижимости)
 ];
 
 // Связи между проектами по категориям
@@ -305,6 +318,7 @@ const connections: [number, number][] = [
   [7, 8], // Booking связи (Дримтур, Barbershop)
   [9, 11], [10, 11], // Фотограф связи с соседними
   [8, 12], [10, 12], // Автосервис связи (Services - Barbershop, Ремонтмастер)
+  [12, 13], [11, 13], // ЛюксПро связи (рядом с Автосервисом и Фотографом)
 ];
 
 function Nebulae() {
