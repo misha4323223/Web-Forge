@@ -10,13 +10,13 @@ import { useToast } from "@/hooks/use-toast";
 import { useDocumentMeta } from "@/lib/useDocumentMeta";
 import { useBreadcrumbSchema } from "@/lib/useBreadcrumbSchema";
 import { useAggregateRatingSchema } from "@/lib/useAggregateRatingSchema";
-import realEstateHeroImg from "@/assets/generated_images/modern_luxury_real_estate_agency_office.webp";
-import propertyImg1 from "@/assets/generated_images/luxury_central_moscow_apartment_interior.webp";
-import propertyImg2 from "@/assets/generated_images/modern_luxury_cottage_with_garden_plot.webp";
-import propertyImg3 from "@/assets/generated_images/minimalist_compact_studio_apartment.webp";
-import propertyImg4 from "@/assets/generated_images/luxury_penthouse_with_panoramic_views.webp";
-import propertyImg5 from "@/assets/generated_images/modern_townhouse_near_forest_park.webp";
-import propertyImg6 from "@/assets/generated_images/class_a_premium_office_space_interior.webp";
+import realEstateHeroImg from "@/assets/generated_images/modern_luxury_real_estate_agency_office.png";
+import propertyImg1 from "@/assets/generated_images/luxury_central_moscow_apartment_interior.png";
+import propertyImg2 from "@/assets/generated_images/modern_luxury_cottage_with_garden_plot.png";
+import propertyImg3 from "@/assets/generated_images/minimalist_compact_studio_apartment.png";
+import propertyImg4 from "@/assets/generated_images/luxury_penthouse_with_panoramic_views.png";
+import propertyImg5 from "@/assets/generated_images/modern_townhouse_near_forest_park.png";
+import propertyImg6 from "@/assets/generated_images/class_a_premium_office_space_interior.png";
 
 const properties = [
   { id: 1, name: "Апартаменты в центре", beds: 3, baths: 2, area: 120, price: 12500000, type: "Квартира", image: propertyImg1 },
