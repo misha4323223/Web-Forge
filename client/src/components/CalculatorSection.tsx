@@ -168,7 +168,7 @@ const projectTypes: ProjectTypeConfig[] = [
   {
     value: "landing",
     label: "Лендинг",
-    basePrice: 50000,
+    basePrice: 75000,
     description: "Одностраничный продающий сайт",
     includes: [
       "Адаптивный дизайн (мобильный + ПК)",
@@ -178,6 +178,8 @@ const projectTypes: ProjectTypeConfig[] = [
       "SEO-основа",
       "Хостинг включён",
       "Система аналитики",
+      "Виджеты мессенджеров (WhatsApp, Telegram)",
+      "Email-уведомления",
     ],
   },
   {
@@ -227,8 +229,8 @@ const features: Feature[] = [
   { id: "map", label: "Карта с адресом", price: 5000, description: "Интерактивная карта", availableFor: ["bizcard"] },
   { id: "calculator", label: "Калькулятор стоимости", price: 12000, description: "Интерактивный расчёт", availableFor: ["landing", "corporate", "shop"] },
   { id: "gallery", label: "Галерея / Портфолио", price: 10000, description: "Слайдер с лайтбоксом", availableFor: ["bizcard", "landing", "shop"] },
-  { id: "messengers", label: "Виджеты мессенджеров", price: 7000, description: "WhatsApp, Telegram", availableFor: ["bizcard", "landing", "corporate", "shop"] },
-  { id: "email_notify", label: "Email-уведомления", price: 10000, description: "Письма о заявках", availableFor: ["landing", "corporate"] },
+  { id: "messengers", label: "Виджеты мессенджеров", price: 7000, description: "WhatsApp, Telegram", availableFor: ["bizcard", "corporate", "shop"] },
+  { id: "email_notify", label: "Email-уведомления", price: 10000, description: "Письма о заявках", availableFor: ["corporate"] },
   { id: "telegram_notify", label: "Telegram-уведомления", price: 12000, description: "Заявки в Telegram-бот", availableFor: ["landing", "corporate", "shop"] },
   { id: "animations", label: "Продвинутые анимации", price: 20000, description: "Параллакс, 3D-эффекты", availableFor: ["bizcard", "landing", "corporate", "shop"] },
   { id: "chat_widget", label: "Чат-виджет поддержки", price: 7000, description: "Онлайн-чат с клиентами", availableFor: ["bizcard", "landing", "corporate", "shop"] },
