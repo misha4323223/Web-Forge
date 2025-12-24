@@ -130,6 +130,7 @@ import dentalHeroImg from "@assets/generated_images/dental_clinic_modern_recepti
 import renovationHeroImg from "@assets/generated_images/modern_living_room_renovation.webp";
 import mpWebstudioImg from "@assets/generated_images/web_studio_portfolio_showcase.webp";
 import photographerHeroImg from "@assets/generated_images/photographer_workspace_studio_aesthetic.webp";
+import autoServiceHeroImg from "@assets/generated_images/modern_auto_service_garage_workshop_interior.png";
 
 const portfolioItems = [
   {
@@ -265,6 +266,17 @@ const portfolioItems = [
     badgeType: "concept" as const,
     category: "Portfolio",
   },
+  {
+    id: 12,
+    title: "ТехноПро Сервис",
+    subtitle: "Автосервис и техническое обслуживание",
+    description: "Концепт сайта автосервиса. Услуги, запись на обслуживание, прайс-лист, команда мастеров, отзывы клиентов.",
+    tags: ["React", "Booking", "Services", "Dark Theme"],
+    image: autoServiceHeroImg,
+    demoUrl: "/demo/auto-service",
+    badgeType: "concept" as const,
+    category: "Services",
+  },
 ];
 
 // Позиции звёзд в созвездии (в процентах)
@@ -281,6 +293,7 @@ const starPositions = [
   { x: 28, y: 68 },   // 9 - левый низ
   { x: 68, y: 72 },   // 10 - правый низ
   { x: 50, y: 85 },   // 11 - центр низ (Фотограф)
+  { x: 35, y: 78 },   // 12 - ТехноПро Сервис (автосервис)
 ];
 
 // Связи между проектами по категориям
@@ -291,6 +304,7 @@ const connections: [number, number][] = [
   [3, 5], [3, 8], // Dark Theme связи (Фитнес клуб, Streetwear, Barbershop)
   [7, 8], // Booking связи (Дримтур, Barbershop)
   [9, 11], [10, 11], // Фотограф связи с соседними
+  [8, 12], [10, 12], // Автосервис связи (Services - Barbershop, Ремонтмастер)
 ];
 
 function Nebulae() {
