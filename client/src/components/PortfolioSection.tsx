@@ -328,7 +328,9 @@ const starPositions = [
 // Связи между проектами по категориям
 const connections: [number, number][] = [
   [0, 1], [0, 3], // MP.WebStudio связи с ближайшими
-  [1, 4], [1, 5], [1, 6], // E-commerce связи (Сладкие наслаждения, Natura, Streetwear, Sockstyle)
+  [0, 2], // MP.WebStudio - Вкусдом (доставка еды)
+  [1, 2], [1, 4], [1, 5], [1, 6], // E-commerce связи (Вкусдом, Natura, Streetwear, Sockstyle)
+  [2, 4], // Вкусдом - Natura (соседи слева)
   [4, 5], [4, 6], [5, 6],
   [3, 5], [3, 8], // Dark Theme связи (Фитнес клуб, Streetwear, Barbershop)
   [7, 8], // Booking связи (Дримтур, Barbershop)
