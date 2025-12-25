@@ -130,9 +130,9 @@ import dentalHeroImg from "@assets/generated_images/dental_clinic_modern_recepti
 import renovationHeroImg from "@assets/generated_images/modern_living_room_renovation.webp";
 import mpWebstudioImg from "@assets/generated_images/web_studio_portfolio_showcase.webp";
 import photographerHeroImg from "@assets/generated_images/photographer_workspace_studio_aesthetic.webp";
-import autoServiceHeroImg from "@assets/generated_images/modern_auto_service_garage_workshop_interior.png";
-import realEstateHeroImg from "@assets/generated_images/modern_luxury_real_estate_agency_office.png";
-import beautySalonHeroImg from "@assets/generated_images/modern_luxury_beauty_salon_interior.png";
+import autoServiceHeroImg from "@assets/generated_images/modern_auto_service_garage_workshop_interior.webp";
+import realEstateHeroImg from "@assets/generated_images/modern_luxury_real_estate_agency_office.webp";
+import beautySalonHeroImg from "@assets/generated_images/modern_luxury_beauty_salon_interior.webp";
 
 const portfolioItems = [
   {
