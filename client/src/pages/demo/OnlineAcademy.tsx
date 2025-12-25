@@ -2,11 +2,15 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Star, Users, Clock, BookOpen, Code, Palette, TrendingUp, ArrowLeft, Play, CheckCircle2 } from "lucide-react";
+import { Star, Users, Clock, BookOpen, Code, Palette, TrendingUp, ArrowLeft, Play, CheckCircle2, X } from "lucide-react";
 import { Link } from "wouter";
 import { useState, useEffect, useRef } from "react";
+import { useToast } from "@/hooks/use-toast";
 import { useDocumentMeta } from "@/lib/useDocumentMeta";
 import { useBreadcrumbSchema } from "@/lib/useBreadcrumbSchema";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 import heroImg from "@assets/generated_images/online_course_platform_hero_image.png";
 import instructorImg from "@assets/generated_images/online_course_instructor_portrait.png";
@@ -114,8 +118,12 @@ const benefits = [
 ];
 
 export default function OnlineAcademy() {
-  const [selectedCourse, setSelectedCourse] = useState<number | null>(null);
+  const { toast } = useToast();
+  const [previewCourse, setPreviewCourse] = useState<number | null>(null);
+  const [enrollingCourse, setEnrollingCourse] = useState<number | null>(null);
   const [enrolledCourses, setEnrolledCourses] = useState<number[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [enrollForm, setEnrollForm] = useState({ name: "", email: "", phone: "" });
   const coursesRef = useRef<HTMLElement>(null);
 
   useDocumentMeta({
@@ -139,12 +147,43 @@ export default function OnlineAcademy() {
     window.scrollTo(0, 0);
   }, []);
 
-  const handleEnroll = (courseId: number) => {
-    setEnrolledCourses(prev => 
-      prev.includes(courseId) 
-        ? prev.filter(id => id !== courseId)
-        : [...prev, courseId]
-    );
+  const categories = ["all", "Web", "Design", "Data", "Marketing"];
+  
+  const filteredCourses = selectedCategory === "all" 
+    ? courses 
+    : courses.filter(c => c.tags.some(tag => tag.includes(selectedCategory)));
+
+  const handleEnrollClick = (courseId: number) => {
+    setEnrollingCourse(courseId);
+    setEnrollForm({ name: "", email: "", phone: "" });
+  };
+
+  const handleEnrollSubmit = () => {
+    if (!enrollForm.name || !enrollForm.email || !enrollForm.phone) {
+      toast({
+        title: "Ошибка",
+        description: "Пожалуйста, заполните все поля",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    if (enrollingCourse && !enrolledCourses.includes(enrollingCourse)) {
+      setEnrolledCourses(prev => [...prev, enrollingCourse]);
+      const course = courses.find(c => c.id === enrollingCourse);
+      toast({
+        title: "Успешно!",
+        description: `Вы записались на курс "${course?.title}"! На указанный email отправлено подтверждение.`,
+      });
+      setEnrollingCourse(null);
+    } else if (enrolledCourses.includes(enrollingCourse!)) {
+      setEnrolledCourses(prev => prev.filter(id => id !== enrollingCourse));
+      toast({
+        title: "Готово",
+        description: "Вы отписались от курса",
+      });
+      setEnrollingCourse(null);
+    }
   };
 
   const scrollToCourses = () => {
@@ -261,11 +300,25 @@ export default function OnlineAcademy() {
             className="mb-12"
           >
             <h2 className="text-4xl font-bold mb-4">Популярные курсы</h2>
-            <p className="text-lg text-muted-foreground">Выберите курс и начните обучение прямо сейчас</p>
+            <p className="text-lg text-muted-foreground mb-6">Выберите курс и начните обучение прямо сейчас</p>
+            
+            <div className="flex flex-wrap gap-2 mb-8">
+              {categories.map(cat => (
+                <Button
+                  key={cat}
+                  variant={selectedCategory === cat ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setSelectedCategory(cat)}
+                  data-testid={`filter-${cat}`}
+                >
+                  {cat === "all" ? "Все курсы" : cat}
+                </Button>
+              ))}
+            </div>
           </motion.div>
 
           <div className="grid md:grid-cols-2 gap-6">
-            {courses.map((course) => (
+            {filteredCourses.map((course) => (
               <motion.div
                 key={course.id}
                 initial={{ opacity: 0, y: 20 }}
@@ -288,7 +341,8 @@ export default function OnlineAcademy() {
                     <motion.button
                       whileHover={{ scale: 1.1 }}
                       className="absolute inset-0 flex items-center justify-center"
-                      onClick={() => setSelectedCourse(course.id)}
+                      onClick={() => setPreviewCourse(course.id)}
+                      data-testid={`button-play-${course.id}`}
                     >
                       <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center">
                         <Play className="w-6 h-6 text-blue-500 ml-1" />
@@ -336,7 +390,7 @@ export default function OnlineAcademy() {
                       <Button 
                         size="sm"
                         variant={enrolledCourses.includes(course.id) ? "secondary" : "default"}
-                        onClick={() => handleEnroll(course.id)}
+                        onClick={() => handleEnrollClick(course.id)}
                         data-testid={`button-enroll-${course.id}`}
                       >
                         {enrolledCourses.includes(course.id) ? "Отписаться" : "Записаться"}
@@ -461,6 +515,142 @@ export default function OnlineAcademy() {
           <p>© 2024 ОнлайнОкадемия. Все права защищены.</p>
         </div>
       </footer>
+
+      {/* Preview Course Modal */}
+      <Dialog open={previewCourse !== null} onOpenChange={(open) => !open && setPreviewCourse(null)}>
+        <DialogContent className="max-w-2xl" data-testid="dialog-preview-course">
+          <DialogHeader>
+            <DialogTitle>Предпросмотр курса</DialogTitle>
+          </DialogHeader>
+          {previewCourse && (() => {
+            const course = courses.find(c => c.id === previewCourse);
+            return course ? (
+              <div className="space-y-4">
+                <img src={course.image} alt={course.title} className="w-full h-64 object-cover rounded-lg" />
+                <div>
+                  <h3 className="text-2xl font-bold mb-2">{course.title}</h3>
+                  <p className="text-muted-foreground mb-4">{course.description}</p>
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Преподаватель</p>
+                      <p className="font-semibold">{course.instructor}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Длительность</p>
+                      <p className="font-semibold">{course.duration}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Уровень</p>
+                      <p className="font-semibold">{course.level}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Цена</p>
+                      <p className="font-semibold text-blue-600">{course.price}₽</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="default" 
+                      onClick={() => {
+                        setPreviewCourse(null);
+                        handleEnrollClick(course.id);
+                      }}
+                      data-testid="button-enroll-from-preview"
+                    >
+                      Записаться на курс
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setPreviewCourse(null)}
+                    >
+                      Закрыть
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ) : null;
+          })()}
+        </DialogContent>
+      </Dialog>
+
+      {/* Enroll Form Modal */}
+      <Dialog open={enrollingCourse !== null} onOpenChange={(open) => !open && setEnrollingCourse(null)}>
+        <DialogContent data-testid="dialog-enroll-form">
+          <DialogHeader>
+            <DialogTitle>
+              {enrolledCourses.includes(enrollingCourse!) ? "Отписаться от курса?" : "Записаться на курс"}
+            </DialogTitle>
+          </DialogHeader>
+          {enrollingCourse && (() => {
+            const course = courses.find(c => c.id === enrollingCourse);
+            const isEnrolled = enrolledCourses.includes(enrollingCourse);
+            return course ? (
+              <div className="space-y-4">
+                {!isEnrolled && (
+                  <>
+                    <p className="text-muted-foreground">
+                      Заполните форму, чтобы начать обучение на курсе <strong>{course.title}</strong>
+                    </p>
+                    <div className="space-y-3">
+                      <div>
+                        <Label htmlFor="name">Ваше имя</Label>
+                        <Input
+                          id="name"
+                          placeholder="Иван Петров"
+                          value={enrollForm.name}
+                          onChange={(e) => setEnrollForm({...enrollForm, name: e.target.value})}
+                          data-testid="input-name"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="email">Email</Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          placeholder="ivan@example.com"
+                          value={enrollForm.email}
+                          onChange={(e) => setEnrollForm({...enrollForm, email: e.target.value})}
+                          data-testid="input-email"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="phone">Телефон</Label>
+                        <Input
+                          id="phone"
+                          placeholder="+7 (999) 999-99-99"
+                          value={enrollForm.phone}
+                          onChange={(e) => setEnrollForm({...enrollForm, phone: e.target.value})}
+                          data-testid="input-phone"
+                        />
+                      </div>
+                    </div>
+                  </>
+                )}
+                {isEnrolled && (
+                  <p className="text-muted-foreground">
+                    Вы уже записаны на этот курс. Нажмите "Отписаться", если хотите удалить регистрацию.
+                  </p>
+                )}
+                <div className="flex gap-2 justify-end">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setEnrollingCourse(null)}
+                  >
+                    Отмена
+                  </Button>
+                  <Button 
+                    variant={isEnrolled ? "destructive" : "default"}
+                    onClick={handleEnrollSubmit}
+                    data-testid="button-submit-enroll"
+                  >
+                    {isEnrolled ? "Отписаться" : "Записаться"}
+                  </Button>
+                </div>
+              </div>
+            ) : null;
+          })()}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
