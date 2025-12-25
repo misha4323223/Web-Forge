@@ -159,6 +159,20 @@ export default function OnlineAcademy() {
   };
 
   const handleEnrollSubmit = () => {
+    const isAlreadyEnrolled = enrollingCourse && enrolledCourses.includes(enrollingCourse);
+    
+    // Отписка - без валидации
+    if (isAlreadyEnrolled) {
+      setEnrolledCourses(prev => prev.filter(id => id !== enrollingCourse));
+      toast({
+        title: "Готово",
+        description: "Вы отписались от курса",
+      });
+      setEnrollingCourse(null);
+      return;
+    }
+    
+    // Новая запись - требуется валидация
     if (!enrollForm.name || !enrollForm.email || !enrollForm.phone) {
       toast({
         title: "Ошибка",
@@ -168,19 +182,12 @@ export default function OnlineAcademy() {
       return;
     }
     
-    if (enrollingCourse && !enrolledCourses.includes(enrollingCourse)) {
+    if (enrollingCourse) {
       setEnrolledCourses(prev => [...prev, enrollingCourse]);
       const course = courses.find(c => c.id === enrollingCourse);
       toast({
         title: "Успешно!",
         description: `Вы записались на курс "${course?.title}"! На указанный email отправлено подтверждение.`,
-      });
-      setEnrollingCourse(null);
-    } else if (enrolledCourses.includes(enrollingCourse!)) {
-      setEnrolledCourses(prev => prev.filter(id => id !== enrollingCourse));
-      toast({
-        title: "Готово",
-        description: "Вы отписались от курса",
       });
       setEnrollingCourse(null);
     }
