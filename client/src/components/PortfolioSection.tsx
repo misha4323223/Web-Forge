@@ -133,6 +133,7 @@ import photographerHeroImg from "@assets/generated_images/photographer_workspace
 import autoServiceHeroImg from "@assets/generated_images/modern_auto_service_garage_workshop_interior.webp";
 import realEstateHeroImg from "@assets/generated_images/modern_luxury_real_estate_agency_office.webp";
 import beautySalonHeroImg from "@assets/generated_images/modern_luxury_beauty_salon_interior.webp";
+import onlineAcademyHeroImg from "@assets/generated_images/online_course_platform_hero_image.png";
 
 const portfolioItems = [
   {
@@ -304,6 +305,18 @@ const portfolioItems = [
     category: "Beauty",
     featured: false,
   },
+  {
+    id: 15,
+    title: "ОнлайнОкадемия",
+    subtitle: "Платформа онлайн-курсов",
+    description: "Концепт платформы для онлайн-обучения. Каталог курсов, профили инструкторов, система рейтинга, запись на курсы, сертификаты.",
+    tags: ["React", "Education", "E-learning", "Course Platform"],
+    image: onlineAcademyHeroImg,
+    demoUrl: "/demo/online-academy",
+    badgeType: "concept" as const,
+    category: "Education",
+    featured: false,
+  },
 ];
 
 // Позиции звёзд в созвездии (в процентах)
@@ -323,12 +336,14 @@ const starPositions = [
   { x: 35, y: 78 },   // 12 - ТехноПро Сервис (автосервис)
   { x: 71, y: 76 },   // 13 - ЛюксПро (агенство недвижимости)
   { x: 12, y: 22 },   // 14 - Лумина (салон красоты)
+  { x: 88, y: 62 },   // 15 - ОнлайнОкадемия (платформа курсов)
 ];
 
 // Связи между проектами по категориям
 const connections: [number, number][] = [
   [0, 1], [0, 3], // MP.WebStudio связи с ближайшими
   [0, 2], // MP.WebStudio - Вкусдом (доставка еды)
+  [0, 15], // MP.WebStudio - ОнлайнОкадемия (образование)
   [1, 2], [1, 4], [1, 5], [1, 6], // E-commerce связи (Вкусдом, Natura, Streetwear, Sockstyle)
   [2, 4], // Вкусдом - Natura (соседи слева)
   [4, 5], [4, 6], [5, 6],
@@ -338,6 +353,7 @@ const connections: [number, number][] = [
   [8, 12], [10, 12], // Автосервис связи (Services - Barbershop, Ремонтмастер)
   [12, 13], [11, 13], // ЛюксПро связи (рядом с Автосервисом и Фотографом)
   [8, 14], [11, 14], // Лумина (салон красоты) связи - Booking сервисы
+  [15, 3], [15, 12], // ОнлайнОкадемия связи (с сервисами и образованием)
 ];
 
 function Nebulae() {

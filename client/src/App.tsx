@@ -27,6 +27,7 @@ import Photographer from "@/pages/demo/Photographer";
 import AutoService from "@/pages/demo/AutoService";
 import RealEstateAgency from "@/pages/demo/RealEstateAgency";
 import BeautySalon from "@/pages/demo/BeautySalon";
+import OnlineAcademy from "@/pages/demo/OnlineAcademy";
 import TelegramApp from "@/pages/TelegramApp";
 
 const isTelegramMiniApp = () => {
@@ -59,6 +60,7 @@ function Router() {
       <Route path="/demo/auto-service" component={AutoService} />
       <Route path="/demo/real-estate" component={RealEstateAgency} />
       <Route path="/demo/beauty-salon" component={BeautySalon} />
+      <Route path="/demo/online-academy" component={OnlineAcademy} />
       <Route path="/tg-app" component={TelegramApp} />
       <Route component={NotFound} />
     </Switch>
