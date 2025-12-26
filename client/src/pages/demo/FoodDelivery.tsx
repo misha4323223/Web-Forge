@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Clock, MapPin, Phone, Star, Flame, Leaf, ChefHat, Truck, ArrowLeft, ShoppingCart, Plus, Minus, X, Check } from "lucide-react";
+import { Clock, MapPin, Phone, Star, Flame, Leaf, ChefHat, Truck, ArrowLeft, ShoppingCart, Plus, Minus, X, Check, CreditCard, Wallet, DollarSign } from "lucide-react";
 import { Link } from "wouter";
 import { useState, useEffect, useRef } from "react";
 import { useDocumentMeta } from "@/lib/useDocumentMeta";
@@ -16,6 +16,13 @@ import padThaiImg from "@assets/generated_images/pad_thai_chicken_noodles.webp";
 import greenCurryImg from "@assets/generated_images/green_curry_coconut_milk.webp";
 import springRollsImg from "@assets/generated_images/spring_rolls_crispy_vietnamese.webp";
 
+const categories = [
+  { id: "all", name: "Все блюда" },
+  { id: "soups", name: "Супы" },
+  { id: "noodles", name: "Лапша" },
+  { id: "vegan", name: "Веган" },
+];
+
 const menuItems = [
   {
     id: 1,
@@ -25,6 +32,7 @@ const menuItems = [
     image: tomYumImg,
     tags: ["острое", "хит"],
     calories: 280,
+    category: "soups",
   },
   {
     id: 2,
@@ -34,6 +42,7 @@ const menuItems = [
     image: padThaiImg,
     tags: ["популярное"],
     calories: 520,
+    category: "noodles",
   },
   {
     id: 3,
@@ -43,6 +52,7 @@ const menuItems = [
     image: greenCurryImg,
     tags: ["веган"],
     calories: 380,
+    category: "vegan",
   },
   {
     id: 4,
@@ -52,7 +62,38 @@ const menuItems = [
     image: springRollsImg,
     tags: ["веган", "лёгкое"],
     calories: 180,
+    category: "vegan",
   },
+];
+
+const reviews = [
+  {
+    id: 1,
+    name: "Мария К.",
+    rating: 5,
+    text: "Невероятно вкусная еда! Доставили за 25 минут. Всё очень свежее и горячее. Обязательно закажу ещё!",
+    avatar: "МК",
+  },
+  {
+    id: 2,
+    name: "Иван П.",
+    rating: 5,
+    text: "Том Ям просто восхитительный, как в настоящем тайском ресторане. Буду постоянным клиентом!",
+    avatar: "ИП",
+  },
+  {
+    id: 3,
+    name: "Анна М.",
+    rating: 5,
+    text: "Отличное меню для веганов. Спринг роллы получились хрустящими. Спасибо за быструю доставку!",
+    avatar: "АМ",
+  },
+];
+
+const paymentMethods = [
+  { icon: CreditCard, name: "Карта" },
+  { icon: Wallet, name: "Электронный кошелек" },
+  { icon: DollarSign, name: "Наличные" },
 ];
 
 const features = [
@@ -66,7 +107,12 @@ export default function FoodDelivery() {
   const [cartOpen, setCartOpen] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [orderForm, setOrderForm] = useState({ name: "", phone: "", address: "" });
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const menuRef = useRef<HTMLElement>(null);
+
+  const filteredItems = selectedCategory === "all" 
+    ? menuItems 
+    : menuItems.filter(item => item.category === selectedCategory);
 
   useDocumentMeta({
     title: "FoodFlow — Доставка тайской еды в Туле | Быстро и вкусно",
@@ -359,8 +405,27 @@ export default function FoodDelivery() {
             </p>
           </motion.div>
 
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="flex flex-wrap gap-2 justify-center mb-10"
+          >
+            {categories.map(cat => (
+              <Button
+                key={cat.id}
+                onClick={() => setSelectedCategory(cat.id)}
+                variant={selectedCategory === cat.id ? "default" : "outline"}
+                className={selectedCategory === cat.id ? "bg-orange-500 hover:bg-orange-600 border-0" : ""}
+                data-testid={`button-filter-${cat.id}`}
+              >
+                {cat.name}
+              </Button>
+            ))}
+          </motion.div>
+
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {menuItems.map((item, index) => (
+            {filteredItems.map((item, index) => (
               <motion.div
                 key={item.id}
                 initial={{ opacity: 0, y: 30 }}
@@ -421,6 +486,49 @@ export default function FoodDelivery() {
         </div>
       </section>
 
+      <section className="py-16 bg-gradient-to-b from-background to-orange-50 dark:from-neutral-950 dark:to-orange-950/20">
+        <div className="max-w-7xl mx-auto px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-2">Отзывы клиентов</h2>
+            <p className="text-muted-foreground">Вот что говорят наши постоянные клиенты</p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-3 gap-6 mb-12">
+            {reviews.map((review, idx) => (
+              <motion.div
+                key={review.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.1 }}
+              >
+                <Card className="h-full p-6 bg-white dark:bg-neutral-800 border-0 shadow-md hover-elevate">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center font-bold text-orange-600">
+                      {review.avatar}
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-semibold text-foreground text-sm">{review.name}</p>
+                      <div className="flex gap-0.5">
+                        {[...Array(review.rating)].map((_, i) => (
+                          <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{review.text}</p>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section className="py-16 bg-orange-500 dark:bg-orange-600">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-8">
@@ -442,35 +550,50 @@ export default function FoodDelivery() {
 
       <footer className="py-12 bg-neutral-900 text-white">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <Flame className="w-6 h-6 text-orange-500" />
                 <span className="text-xl font-bold">ВкусДом</span>
               </div>
-              <p className="text-neutral-400">Доставка азиатской кухни в вашем городе</p>
+              <p className="text-neutral-400 text-sm">Доставка азиатской кухни в вашем городе</p>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Контакты</h4>
-              <div className="space-y-2 text-neutral-400">
+              <h4 className="font-semibold mb-4 text-sm">Контакты</h4>
+              <div className="space-y-2 text-neutral-400 text-sm">
                 <a href="tel:+79991234567" className="flex items-center gap-2 hover:text-white transition-colors"><Phone className="w-4 h-4" /> +7 (999) 123-45-67</a>
                 <p className="flex items-center gap-2"><MapPin className="w-4 h-4" /> ул. Примерная, 1</p>
                 <p className="flex items-center gap-2"><Clock className="w-4 h-4" /> 10:00 - 23:00</p>
               </div>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Рейтинг</h4>
-              <div className="flex items-center gap-2">
-                <div className="flex">
+              <h4 className="font-semibold mb-4 text-sm">Рейтинг</h4>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="flex gap-0.5">
                   {[1,2,3,4,5].map(i => (
-                    <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                    <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                   ))}
                 </div>
-                <span className="text-neutral-400">4.9 / 5</span>
+                <span className="text-neutral-400 text-sm">4.9 / 5</span>
+              </div>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4 text-sm">Способы оплаты</h4>
+              <div className="flex gap-3">
+                {paymentMethods.map((method) => (
+                  <div
+                    key={method.name}
+                    className="w-10 h-10 rounded-full bg-neutral-800 hover:bg-orange-500/20 transition-colors flex items-center justify-center cursor-pointer group"
+                    title={method.name}
+                    data-testid={`payment-${method.name.toLowerCase().replace(/\s/g, '-')}`}
+                  >
+                    <method.icon className="w-5 h-5 text-neutral-400 group-hover:text-orange-500 transition-colors" />
+                  </div>
+                ))}
               </div>
             </div>
           </div>
-          <div className="border-t border-neutral-800 mt-8 pt-8 text-center text-neutral-500 text-sm">
+          <div className="border-t border-neutral-800 pt-8 text-center text-neutral-500 text-sm">
             Демо-сайт от WebStudio
           </div>
         </div>
