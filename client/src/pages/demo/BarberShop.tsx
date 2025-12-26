@@ -787,7 +787,7 @@ export default function BarberShop() {
             <DialogTitle className="text-3xl font-bold mb-4">Заказ принят!</DialogTitle>
           </DialogHeader>
           <div className="text-neutral-400 space-y-4 mb-8">
-            <p>Это демонстрация процесса покупки. В реальном магазине клиент был бы перенаправлен на страницу оплаты Robokassa.</p>
+            <p>Это демонстрация процесса покупки. В реальном магазине клиент был бы перенаправлен на страницу оплаты через защищенный шлюз.</p>
             <p className="text-sm border-l-2 border-amber-500 pl-4 italic text-left">
               Интеграция MP.WebStudio включает автоматическую отправку уведомлений в Telegram владельцу и Email-подтверждение клиенту.
             </p>
