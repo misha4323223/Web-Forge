@@ -1,11 +1,15 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Camera, Mail, Phone, MapPin, Instagram, ArrowLeft, Play, ExternalLink } from "lucide-react";
+import { Camera, Mail, Phone, MapPin, Instagram, ArrowLeft, Play, ExternalLink, X, Check, Send } from "lucide-react";
 import { Link } from "wouter";
 import { useState, useEffect } from "react";
 import { useDocumentMeta } from "@/lib/useDocumentMeta";
 import { useBreadcrumbSchema } from "@/lib/useBreadcrumbSchema";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
 import photographerHeroImg from "@assets/generated_images/photographer_workspace_studio_aesthetic.webp";
 import portraitWomanImg from "@assets/generated_images/professional_woman_portrait_photography.webp";
 import weddingSunsetImg from "@assets/generated_images/romantic_wedding_couple_sunset.webp";
@@ -36,6 +40,21 @@ const categories = ["Все", "Портреты", "Свадьбы", "Предм�
 export default function Photographer() {
   const [activeCategory, setActiveCategory] = useState("Все");
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState<string>("");
+  const { toast } = useToast();
+
+  const handleServiceClick = (serviceName: string) => {
+    setSelectedService(serviceName);
+    setIsOrderModalOpen(true);
+  };
+
+  const handleOrderSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsOrderModalOpen(false);
+    setIsSuccessModalOpen(true);
+  };
 
   useDocumentMeta({
     title: "Андрей Соколов — Фотограф в Туле | Свадьбы, портреты, предметка",
@@ -87,7 +106,7 @@ export default function Photographer() {
             <a href="#about" className="hover:text-white transition-colors">Обо мне</a>
             <a href="#contact" className="hover:text-white transition-colors">Контакты</a>
           </nav>
-          <Button size="sm" className="bg-amber-500 hover:bg-amber-600 text-black">
+          <Button size="sm" className="bg-amber-500 hover:bg-amber-600 text-black" onClick={() => setIsOrderModalOpen(true)}>
             Связаться
           </Button>
         </div>
@@ -121,7 +140,7 @@ export default function Photographer() {
             Создаю визуальные истории, которые остаются в памяти навсегда
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
-            <Button size="lg" className="bg-amber-500 hover:bg-amber-600 text-black gap-2">
+            <Button size="lg" className="bg-amber-500 hover:bg-amber-600 text-black gap-2" onClick={() => document.getElementById('portfolio')?.scrollIntoView({ behavior: 'smooth' })}>
               <Camera className="w-5 h-5" />
               Смотреть работы
             </Button>
@@ -220,13 +239,20 @@ export default function Photographer() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
+                onClick={() => handleServiceClick(service.name)}
+                className="cursor-pointer"
               >
-                <Card className="bg-neutral-900/80 border-white/5 p-6 hover:border-amber-500/30 transition-colors">
+                <Card className="bg-neutral-900/80 border-white/5 p-6 hover:border-amber-500/30 transition-colors group">
                   <div className="flex justify-between items-start mb-2">
-                    <h3 className="text-lg font-medium text-white">{service.name}</h3>
+                    <h3 className="text-lg font-medium text-white group-hover:text-amber-400 transition-colors">{service.name}</h3>
                     <span className="text-amber-400 font-medium">{service.price}</span>
                   </div>
-                  <p className="text-neutral-500 text-sm">{service.duration}</p>
+                  <div className="flex justify-between items-end">
+                    <p className="text-neutral-500 text-sm">{service.duration}</p>
+                    <Button size="sm" variant="ghost" className="text-amber-400 h-8 px-2 group-hover:bg-amber-400/10">
+                      Заказать
+                    </Button>
+                  </div>
                 </Card>
               </motion.div>
             ))}
@@ -320,8 +346,8 @@ export default function Photographer() {
               <Button size="icon" variant="outline" className="border-white/20 rounded-full">
                 <Instagram className="w-5 h-5" />
               </Button>
-              <Button size="lg" className="bg-amber-500 hover:bg-amber-600 text-black">
-                Написать в WhatsApp
+              <Button size="lg" className="bg-amber-500 hover:bg-amber-600 text-black" onClick={() => setIsOrderModalOpen(true)}>
+                Обсудить проект
               </Button>
             </div>
           </motion.div>
@@ -338,22 +364,105 @@ export default function Photographer() {
         </div>
       </footer>
 
-      {lightboxImage && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4 cursor-pointer"
-          onClick={() => setLightboxImage(null)}
-          data-testid="lightbox-overlay"
-        >
-          <img 
-            src={lightboxImage} 
-            alt="Preview"
-            className="max-w-full max-h-full object-contain rounded-lg"
-          />
-        </motion.div>
-      )}
+      <AnimatePresence>
+        {lightboxImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center p-4 cursor-pointer"
+            onClick={() => setLightboxImage(null)}
+            data-testid="lightbox-overlay"
+          >
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="absolute top-4 right-4 text-white hover:bg-white/10"
+              onClick={() => setLightboxImage(null)}
+            >
+              <X className="w-8 h-8" />
+            </Button>
+            <img 
+              src={lightboxImage} 
+              alt="Preview"
+              className="max-w-full max-h-full object-contain rounded-lg"
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Order Modal */}
+      <Dialog open={isOrderModalOpen} onOpenChange={setIsOrderModalOpen}>
+        <DialogContent className="bg-neutral-900 border-white/10 text-white max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-light">Забронировать съёмку</DialogTitle>
+            <DialogDescription className="text-neutral-400">
+              Оставьте заявку, и я свяжусь с вами в течение часа для обсуждения деталей.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleOrderSubmit} className="space-y-4 pt-4">
+            <div className="space-y-2">
+              <label className="text-sm text-neutral-400">Ваше имя</label>
+              <Input placeholder="Иван" className="bg-neutral-800 border-white/10 text-white focus:border-amber-500/50" required />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm text-neutral-400">Телефон</label>
+              <Input placeholder="+7 (___) ___-__-__" className="bg-neutral-800 border-white/10 text-white focus:border-amber-500/50" required />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm text-neutral-400">Услуга</label>
+              <Input 
+                value={selectedService} 
+                onChange={(e) => setSelectedService(e.target.value)}
+                placeholder="Выберите или введите услугу" 
+                className="bg-neutral-800 border-white/10 text-white focus:border-amber-500/50" 
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm text-neutral-400">Сообщение (необязательно)</label>
+              <Textarea placeholder="Расскажите о вашей идее" className="bg-neutral-800 border-white/10 text-white focus:border-amber-500/50 min-h-[100px]" />
+            </div>
+            <Button type="submit" className="w-full bg-amber-500 hover:bg-amber-600 text-black font-medium h-12">
+              Отправить заявку
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Success Modal (Demo) */}
+      <Dialog open={isSuccessModalOpen} onOpenChange={setIsSuccessModalOpen}>
+        <DialogContent className="bg-neutral-950 border-white/10 text-white text-center p-12">
+          <div className="w-20 h-20 bg-amber-500/20 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-6 ring-4 ring-amber-500/10">
+            <Check className="w-10 h-10" />
+          </div>
+          <DialogHeader>
+            <DialogTitle className="text-3xl font-light mb-4">Заявка отправлена!</DialogTitle>
+          </DialogHeader>
+          <div className="text-neutral-400 space-y-4 mb-8">
+            <p>Это демонстрация работы формы. В реальном проекте:</p>
+            <ul className="text-sm space-y-2 text-left bg-neutral-900/50 p-4 rounded-lg border border-white/5">
+              <li className="flex items-start gap-2">
+                <Send className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
+                <span>Данные мгновенно улетают в ваш Telegram</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <Check className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
+                <span>Клиент получает подтверждение на Email</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <Check className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
+                <span>Заявка сохраняется в CRM-панели</span>
+              </li>
+            </ul>
+          </div>
+          <Button 
+            className="w-full bg-white text-black hover:bg-neutral-200"
+            onClick={() => setIsSuccessModalOpen(false)}
+          >
+            Понятно
+          </Button>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
