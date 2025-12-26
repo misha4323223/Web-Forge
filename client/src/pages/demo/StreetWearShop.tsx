@@ -29,6 +29,7 @@ const products = [
     image: hoodieImg,
     tag: "SALE",
     sizes: ["S", "M", "L", "XL"],
+    category: "Худи и свитшоты",
   },
   {
     id: 2,
@@ -38,6 +39,7 @@ const products = [
     image: tshirtImg,
     tag: "Хит",
     sizes: ["M", "L", "XL"],
+    category: "Футболки",
   },
   {
     id: 3,
@@ -46,6 +48,7 @@ const products = [
     price: 6990,
     image: cargoImg,
     sizes: ["S", "M", "L"],
+    category: "Брюки",
   },
   {
     id: 4,
@@ -56,6 +59,7 @@ const products = [
     image: bomberImg,
     tag: "SALE",
     sizes: ["M", "L", "XL", "XXL"],
+    category: "Куртки",
   },
   {
     id: 5,
@@ -65,6 +69,7 @@ const products = [
     image: bagImg,
     tag: "New",
     sizes: ["ONE SIZE"],
+    category: "Аксессуары",
   },
   {
     id: 6,
@@ -73,6 +78,7 @@ const products = [
     price: 1490,
     image: beanieImg,
     sizes: ["ONE SIZE"],
+    category: "Аксессуары",
   },
 ];
 
@@ -95,6 +101,7 @@ const features = [
 
 export default function StreetWearShop() {
   const [activeCategory, setActiveCategory] = useState("Все");
+  const [activeBrand, setActiveBrand] = useState<string | null>(null);
   const [cart, setCart] = useState<Record<number, number>>({});
   const [favorites, setFavorites] = useState<number[]>([]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -167,10 +174,11 @@ export default function StreetWearShop() {
 
   const filteredProducts = products
     .filter(p => {
-      const matchesCategory = activeCategory === "Все" || p.sizes?.some(s => categories.some(c => c.name === activeCategory && c.name === activeCategory));
+      const matchesCategory = activeCategory === "Все" || p.category === activeCategory;
+      const matchesBrand = !activeBrand || p.brand === activeBrand;
       const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || p.brand.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesPrice = p.price >= minPrice && p.price <= maxPrice;
-      return matchesCategory && matchesSearch && matchesPrice;
+      return matchesCategory && matchesBrand && matchesSearch && matchesPrice;
     })
     .sort((a, b) => {
       switch (sortBy) {
@@ -528,11 +536,20 @@ export default function StreetWearShop() {
         <div className="max-w-7xl mx-auto px-6">
           <h3 className="text-sm font-bold text-neutral-500 uppercase tracking-wider mb-6">Бренды</h3>
           <div className="flex flex-wrap gap-3">
+            <Button
+              variant={!activeBrand ? "default" : "outline"}
+              className={!activeBrand ? "bg-amber-500 text-black font-bold" : "border-neutral-700 text-neutral-300 hover:border-amber-500 hover:text-amber-500"}
+              onClick={() => setActiveBrand(null)}
+              data-testid="button-brand-all"
+            >
+              Все
+            </Button>
             {brands.map(brand => (
               <Button
                 key={brand}
-                variant="outline"
-                className="border-neutral-700 text-neutral-300 hover:border-amber-500 hover:text-amber-500 rounded-md"
+                variant={activeBrand === brand ? "default" : "outline"}
+                className={activeBrand === brand ? "bg-amber-500 text-black font-bold" : "border-neutral-700 text-neutral-300 hover:border-amber-500 hover:text-amber-500"}
+                onClick={() => setActiveBrand(activeBrand === brand ? null : brand)}
                 data-testid={`button-brand-${brand.toLowerCase()}`}
               >
                 {brand}
