@@ -499,7 +499,7 @@ export default function StreetWearShop() {
               <Button size="lg" className="bg-amber-500 hover:bg-amber-600 text-black font-bold" onClick={scrollToProducts} data-testid="button-shop-now">
                 Смотреть каталог
               </Button>
-              <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10" data-testid="button-brands">
+              <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10" onClick={scrollToBrands} data-testid="button-brands">
                 Бренды
               </Button>
             </div>
