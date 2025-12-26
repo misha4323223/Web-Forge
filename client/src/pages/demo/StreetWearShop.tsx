@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ShoppingCart, Heart, Menu, Truck, CreditCard, RefreshCw, ArrowLeft, Plus, X, Minus, Check } from "lucide-react";
+import { ShoppingCart, Heart, Menu, Truck, CreditCard, RefreshCw, ArrowLeft, Plus, X, Minus, Check, Search, ChevronDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -101,6 +101,11 @@ export default function StreetWearShop() {
   const [cartOpen, setCartOpen] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [orderForm, setOrderForm] = useState({ name: "", phone: "", email: "" });
+  const [selectedProduct, setSelectedProduct] = useState<typeof products[0] | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(15000);
+  const [sortBy, setSortBy] = useState<"name" | "price-asc" | "price-desc" | "new">("name");
   const { toast } = useToast();
   const productsRef = useRef<HTMLElement>(null);
   const brandsRef = useRef<HTMLElement>(null);
@@ -160,6 +165,26 @@ export default function StreetWearShop() {
   const cartTotal = cartItems.reduce((sum, { product, quantity }) => sum + product.price * quantity, 0);
   const cartCount = Object.values(cart).reduce((a, b) => a + b, 0);
 
+  const filteredProducts = products
+    .filter(p => {
+      const matchesCategory = activeCategory === "Все" || p.sizes?.some(s => categories.some(c => c.name === activeCategory && c.name === activeCategory));
+      const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || p.brand.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesPrice = p.price >= minPrice && p.price <= maxPrice;
+      return matchesCategory && matchesSearch && matchesPrice;
+    })
+    .sort((a, b) => {
+      switch (sortBy) {
+        case "price-asc":
+          return a.price - b.price;
+        case "price-desc":
+          return b.price - a.price;
+        case "new":
+          return b.id - a.id;
+        default:
+          return a.name.localeCompare(b.name);
+      }
+    });
+
   const scrollToProducts = () => productsRef.current?.scrollIntoView({ behavior: "smooth" });
   const scrollToBrands = () => brandsRef.current?.scrollIntoView({ behavior: "smooth" });
   const scrollToFooter = () => footerRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -200,6 +225,76 @@ export default function StreetWearShop() {
           Назад
         </Button>
       </Link>
+
+      <Dialog open={!!selectedProduct} onOpenChange={() => setSelectedProduct(null)}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-neutral-900 border-neutral-800">
+          {selectedProduct && (
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <img
+                  src={selectedProduct.image}
+                  alt={selectedProduct.name}
+                  className="w-full rounded-md aspect-[3/4] object-cover"
+                />
+              </div>
+              <div>
+                <DialogTitle className="text-white text-2xl font-black mb-2">{selectedProduct.name}</DialogTitle>
+                <p className="text-amber-500 font-bold uppercase tracking-wider mb-4">{selectedProduct.brand}</p>
+                
+                <div className="flex items-center gap-3 mb-6">
+                  <span className="text-3xl font-bold text-white">{selectedProduct.price.toLocaleString()} р</span>
+                  {selectedProduct.oldPrice && (
+                    <span className="text-lg text-neutral-500 line-through">{selectedProduct.oldPrice.toLocaleString()} р</span>
+                  )}
+                </div>
+
+                <div className="mb-6">
+                  <h4 className="text-white font-bold mb-3">Размеры</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedProduct.sizes.map(size => (
+                      <Button
+                        key={size}
+                        variant="outline"
+                        className="border-neutral-700 text-neutral-300 hover:border-amber-500 hover:text-amber-500"
+                      >
+                        {size}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mb-6">
+                  <h4 className="text-white font-bold mb-2">Описание</h4>
+                  <p className="text-neutral-400 text-sm">
+                    Качественная вещь от бренда {selectedProduct.brand}. {selectedProduct.tag === "SALE" ? "Со скидкой! " : ""}
+                    Хороший выбор для стрита и повседневного образа.
+                  </p>
+                </div>
+
+                <Button
+                  className="w-full bg-amber-500 hover:bg-amber-600 text-black font-bold mb-3"
+                  onClick={() => {
+                    addToCart(selectedProduct.id);
+                    setSelectedProduct(null);
+                    toast({ title: "Добавлено в корзину!" });
+                  }}
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Добавить в корзину
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full border-neutral-700 text-neutral-300 hover:border-amber-500"
+                  onClick={() => toggleFavorite(selectedProduct.id)}
+                >
+                  <Heart className={`w-4 h-4 mr-2 ${favorites.includes(selectedProduct.id) ? "fill-current text-red-500" : ""}`} />
+                  {favorites.includes(selectedProduct.id) ? "В избранном" : "Добавить в избранное"}
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={cartOpen} onOpenChange={setCartOpen}>
         <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto bg-neutral-900 border-neutral-800">
@@ -450,37 +545,95 @@ export default function StreetWearShop() {
       <section ref={productsRef} className="py-16">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col lg:flex-row gap-8">
-            <aside className="lg:w-64 flex-shrink-0">
-              <h3 className="text-sm font-bold text-neutral-500 uppercase tracking-wider mb-4">Категории</h3>
-              <div className="flex flex-row lg:flex-col flex-wrap gap-2">
-                {categories.map(cat => (
-                  <button
-                    key={cat.name}
-                    onClick={() => setActiveCategory(cat.name)}
-                    className={`text-left px-4 py-2 rounded-md transition-colors ${
-                      activeCategory === cat.name
-                        ? "bg-amber-500 text-black font-bold"
-                        : "text-neutral-400 hover:text-white hover:bg-neutral-800"
-                    }`}
-                    data-testid={`button-category-${cat.name.toLowerCase()}`}
-                  >
-                    <span>{cat.name}</span>
-                    <span className="ml-2 text-xs opacity-60">({cat.count})</span>
-                  </button>
-                ))}
+            <aside className="lg:w-64 flex-shrink-0 space-y-6">
+              <div>
+                <h3 className="text-sm font-bold text-neutral-500 uppercase tracking-wider mb-4">Категории</h3>
+                <div className="flex flex-row lg:flex-col flex-wrap gap-2">
+                  {categories.map(cat => (
+                    <button
+                      key={cat.name}
+                      onClick={() => setActiveCategory(cat.name)}
+                      className={`text-left px-4 py-2 rounded-md transition-colors ${
+                        activeCategory === cat.name
+                          ? "bg-amber-500 text-black font-bold"
+                          : "text-neutral-400 hover:text-white hover:bg-neutral-800"
+                      }`}
+                      data-testid={`button-category-${cat.name.toLowerCase()}`}
+                    >
+                      <span>{cat.name}</span>
+                      <span className="ml-2 text-xs opacity-60">({cat.count})</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-sm font-bold text-neutral-500 uppercase tracking-wider mb-4">Цена</h3>
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-xs text-neutral-400 block mb-2">От {minPrice.toLocaleString()} р</label>
+                    <input
+                      type="range"
+                      min="0"
+                      max="15000"
+                      step="500"
+                      value={minPrice}
+                      onChange={(e) => setMinPrice(Math.min(Number(e.target.value), maxPrice))}
+                      className="w-full h-2 bg-neutral-800 rounded-lg appearance-none cursor-pointer"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-neutral-400 block mb-2">До {maxPrice.toLocaleString()} р</label>
+                    <input
+                      type="range"
+                      min="0"
+                      max="15000"
+                      step="500"
+                      value={maxPrice}
+                      onChange={(e) => setMaxPrice(Math.max(Number(e.target.value), minPrice))}
+                      className="w-full h-2 bg-neutral-800 rounded-lg appearance-none cursor-pointer"
+                    />
+                  </div>
+                </div>
               </div>
             </aside>
 
             <div className="flex-1">
-              <div className="flex items-center justify-between gap-4 mb-8">
-                <h2 className="text-2xl font-black">
-                  {activeCategory === "Все" ? "Все товары" : activeCategory}
-                </h2>
-                <span className="text-sm text-neutral-500">{products.length} товаров</span>
+              <div className="mb-8 space-y-4">
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <div className="flex-1 relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
+                    <Input
+                      placeholder="Поиск товаров..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-10 bg-neutral-800 border-neutral-700 text-white"
+                      data-testid="input-search"
+                    />
+                  </div>
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+                    className="px-4 py-2 rounded-md bg-neutral-800 border border-neutral-700 text-neutral-300 cursor-pointer"
+                    data-testid="select-sort"
+                  >
+                    <option value="name">По названию</option>
+                    <option value="price-asc">Цена: по возрастанию</option>
+                    <option value="price-desc">Цена: по убыванию</option>
+                    <option value="new">Новинки</option>
+                  </select>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <h2 className="text-2xl font-black">
+                    {activeCategory === "Все" ? "Все товары" : activeCategory}
+                  </h2>
+                  <span className="text-sm text-neutral-500">{filteredProducts.length} из {products.length}</span>
+                </div>
               </div>
 
               <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
-                {products.map((product, index) => (
+                {filteredProducts.map((product, index) => (
                   <motion.div
                     key={product.id}
                     initial={{ opacity: 0, y: 30 }}
@@ -488,7 +641,7 @@ export default function StreetWearShop() {
                     viewport={{ once: true }}
                     transition={{ delay: index * 0.05 }}
                   >
-                    <Card className="group overflow-hidden border-0 bg-neutral-900 hover:bg-neutral-800 transition-colors" data-testid={`card-product-${product.id}`}>
+                    <Card className="group overflow-hidden border-0 bg-neutral-900 hover:bg-neutral-800 transition-colors cursor-pointer" data-testid={`card-product-${product.id}`} onClick={() => setSelectedProduct(product)}>
                       <div className="relative aspect-[3/4] overflow-hidden bg-neutral-800">
                         <img
                           src={product.image}
@@ -508,7 +661,7 @@ export default function StreetWearShop() {
                           variant="ghost"
                           size="icon"
                           className={`absolute top-3 right-3 bg-black/50 backdrop-blur-sm rounded-md ${favorites.includes(product.id) ? 'text-red-500' : 'text-white'}`}
-                          onClick={() => toggleFavorite(product.id)}
+                          onClick={(e) => { e.stopPropagation(); toggleFavorite(product.id); }}
                           data-testid={`button-favorite-${product.id}`}
                         >
                           <Heart className={`w-4 h-4 ${favorites.includes(product.id) ? 'fill-current' : ''}`} />
@@ -516,7 +669,7 @@ export default function StreetWearShop() {
                         <div className="absolute inset-x-0 bottom-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity">
                           <Button
                             className="w-full bg-amber-500 hover:bg-amber-600 text-black font-bold"
-                            onClick={() => addToCart(product.id)}
+                            onClick={(e) => { e.stopPropagation(); addToCart(product.id); }}
                             data-testid={`button-add-cart-${product.id}`}
                           >
                             <Plus className="w-4 h-4 mr-2" />
