@@ -362,7 +362,7 @@ export default function FoodDelivery() {
         </div>
       </header>
 
-      <section className="py-12 -mt-8 relative z-20">
+      <section className="py-12 -mt-8 relative z-20 bg-gradient-to-b from-orange-500/15 to-white dark:from-orange-900/20 dark:to-neutral-950">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid md:grid-cols-3 gap-4">
             {features.map((feature, index) => (
@@ -389,7 +389,7 @@ export default function FoodDelivery() {
         </div>
       </section>
 
-      <section ref={menuRef} className="py-16 md:py-24">
+      <section ref={menuRef} className="py-16 md:py-24 bg-gradient-to-b from-white to-orange-50 dark:from-neutral-950 dark:to-orange-950/20">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0 }}
@@ -486,7 +486,7 @@ export default function FoodDelivery() {
         </div>
       </section>
 
-      <section className="py-16 bg-gradient-to-b from-background to-orange-50 dark:from-neutral-950 dark:to-orange-950/20">
+      <section className="py-16 bg-gradient-to-b from-orange-50 to-orange-100 dark:from-orange-950/30 dark:to-orange-950/10">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -529,7 +529,7 @@ export default function FoodDelivery() {
         </div>
       </section>
 
-      <section className="py-16 bg-orange-500 dark:bg-orange-600">
+      <section className="py-16 bg-gradient-to-b from-orange-500 to-orange-600 dark:from-orange-600 dark:to-orange-700">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-8">
             <div className="text-center md:text-left">
@@ -548,7 +548,7 @@ export default function FoodDelivery() {
         </div>
       </section>
 
-      <footer className="py-12 bg-neutral-900 text-white">
+      <footer className="py-12 bg-gradient-to-b from-neutral-900 to-neutral-950 text-white">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 mb-8">
             <div className="col-span-2 sm:col-span-1">
