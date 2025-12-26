@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ShoppingCart, Scissors, Clock, MapPin, Phone, Star, Calendar, User, Check, ArrowLeft, Instagram } from "lucide-react";
+import { ShoppingCart, Scissors, Clock, MapPin, Phone, Star, Calendar, User, Check, ArrowLeft, Instagram, X, Plus, Minus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Link } from "wouter";
 import { useState, useEffect, useRef } from "react";
@@ -10,6 +10,15 @@ import { useToast } from "@/hooks/use-toast";
 import { useDocumentMeta } from "@/lib/useDocumentMeta";
 import { useBreadcrumbSchema } from "@/lib/useBreadcrumbSchema";
 import { useAggregateRatingSchema } from "@/lib/useAggregateRatingSchema";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+
+interface CartItem {
+  id: number;
+  name: string;
+  price: number;
+  image: string;
+  quantity: number;
+}
 import barberHeroImg from "@assets/generated_images/stylish_barbershop_interior.webp";
 import alexeyImg from "@assets/generated_images/russian_barber_alexey_portrait.webp";
 import dmitryImg from "@assets/generated_images/russian_barber_dmitry_portrait.webp";
@@ -105,7 +114,37 @@ export default function BarberShop() {
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [step, setStep] = useState(1);
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const { toast } = useToast();
+  
+  const addToCart = (product: any) => {
+    setCart(prev => {
+      const existing = prev.find(item => item.id === product.id);
+      if (existing) {
+        return prev.map(item => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item);
+      }
+      return [...prev, { ...product, quantity: 1 }];
+    });
+    toast({
+      title: "Добавлено в корзину",
+      description: `${product.name} теперь в вашей корзине`,
+    });
+  };
+
+  const updateQuantity = (id: number, delta: number) => {
+    setCart(prev => prev.map(item => {
+      if (item.id === id) {
+        const newQty = Math.max(0, item.quantity + delta);
+        return newQty === 0 ? null : { ...item, quantity: newQty };
+      }
+      return item;
+    }).filter((item): item is CartItem => item !== null));
+  };
+
+  const cartTotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
   const servicesRef = useRef<HTMLElement>(null);
   const barbersRef = useRef<HTMLElement>(null);
   const bookingRef = useRef<HTMLElement>(null);
@@ -225,9 +264,25 @@ export default function BarberShop() {
             <button onClick={scrollToBooking} className="hover:text-amber-400 transition-colors cursor-pointer">Запись</button>
             <button onClick={scrollToContact} className="hover:text-amber-400 transition-colors cursor-pointer">Контакты</button>
           </div>
-          <Button className="bg-amber-500 hover:bg-amber-600 text-black font-semibold" data-testid="button-book-header">
-            Записаться
-          </Button>
+          <div className="flex items-center gap-3">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="relative text-neutral-300 hover:text-amber-400"
+              onClick={() => setIsCartOpen(true)}
+              data-testid="button-cart"
+            >
+              <ShoppingCart className="w-5 h-5" />
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-amber-500 text-black text-[10px] font-bold rounded-full flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
+            </Button>
+            <Button className="bg-amber-500 hover:bg-amber-600 text-black font-semibold" data-testid="button-book-header" onClick={scrollToBooking}>
+              Записаться
+            </Button>
+          </div>
         </nav>
 
         <div className="relative z-10 max-w-7xl mx-auto px-6 py-32">
@@ -435,7 +490,10 @@ export default function BarberShop() {
                     <p className="text-neutral-400 text-sm mb-6 line-clamp-2">{product.description}</p>
                     <div className="flex items-center justify-between">
                       <span className="text-2xl font-bold text-white">{product.price} ₽</span>
-                      <Button className="bg-amber-500 hover:bg-amber-600 text-black font-semibold">
+                      <Button 
+                        className="bg-amber-500 hover:bg-amber-600 text-black font-semibold"
+                        onClick={() => addToCart(product)}
+                      >
                         <ShoppingCart className="w-4 h-4 mr-2" />
                         Купить
                       </Button>
@@ -649,6 +707,102 @@ export default function BarberShop() {
           </div>
         </div>
       </footer>
+
+      {/* Cart Dialog */}
+      <Dialog open={isCartOpen} onOpenChange={setIsCartOpen}>
+        <DialogContent className="bg-neutral-900 border-neutral-800 text-white max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-amber-400 flex items-center gap-2">
+              <ShoppingCart className="w-6 h-6" />
+              Корзина
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            {cart.length === 0 ? (
+              <div className="text-center py-8 text-neutral-500">
+                Корзина пуста
+              </div>
+            ) : (
+              <>
+                <div className="space-y-4 max-h-[400px] overflow-auto pr-2">
+                  {cart.map((item) => (
+                    <div key={item.id} className="flex items-center gap-4 bg-neutral-800/50 p-3 rounded-lg border border-neutral-700">
+                      <img src={item.image} alt={item.name} className="w-16 h-16 rounded object-cover" />
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-semibold truncate">{item.name}</h4>
+                        <p className="text-amber-400 text-sm font-bold">{item.price} ₽</p>
+                      </div>
+                      <div className="flex items-center gap-2 bg-neutral-900 rounded-md p-1 border border-neutral-700">
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="w-8 h-8 text-neutral-400 hover:text-white"
+                          onClick={() => updateQuantity(item.id, -1)}
+                        >
+                          <Minus className="w-3 h-3" />
+                        </Button>
+                        <span className="w-4 text-center text-sm font-bold">{item.quantity}</span>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="w-8 h-8 text-neutral-400 hover:text-white"
+                          onClick={() => updateQuantity(item.id, 1)}
+                        >
+                          <Plus className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="pt-4 border-t border-neutral-800">
+                  <div className="flex justify-between items-center mb-6">
+                    <span className="text-neutral-400">Итого:</span>
+                    <span className="text-2xl font-bold text-amber-400">{cartTotal} ₽</span>
+                  </div>
+                  <Button 
+                    className="w-full bg-amber-500 hover:bg-amber-600 text-black font-bold h-12"
+                    onClick={() => {
+                      setIsCartOpen(false);
+                      setIsCheckoutOpen(true);
+                    }}
+                  >
+                    Оформить заказ
+                  </Button>
+                </div>
+              </>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Checkout Success Dialog (Demo) */}
+      <Dialog open={isCheckoutOpen} onOpenChange={setIsCheckoutOpen}>
+        <DialogContent className="bg-neutral-950 border-neutral-800 text-white text-center p-12">
+          <div className="w-20 h-20 bg-amber-500/20 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-6 ring-4 ring-amber-500/10">
+            <Check className="w-10 h-10" />
+          </div>
+          <DialogHeader>
+            <DialogTitle className="text-3xl font-bold mb-4">Заказ принят!</DialogTitle>
+          </DialogHeader>
+          <div className="text-neutral-400 space-y-4 mb-8">
+            <p>Это демонстрация процесса покупки. В реальном магазине клиент был бы перенаправлен на страницу оплаты Robokassa.</p>
+            <p className="text-sm border-l-2 border-amber-500 pl-4 italic text-left">
+              Интеграция MP.WebStudio включает автоматическую отправку уведомлений в Telegram владельцу и Email-подтверждение клиенту.
+            </p>
+          </div>
+          <Button 
+            className="w-full bg-white text-black hover:bg-neutral-200"
+            onClick={() => {
+              setIsCheckoutOpen(false);
+              setCart([]);
+            }}
+          >
+            Понятно
+          </Button>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
