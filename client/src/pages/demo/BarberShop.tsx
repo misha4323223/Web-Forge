@@ -18,6 +18,9 @@ import galleryImg1 from "@assets/generated_images/modern_undercut_fade_haircut.w
 import galleryImg2 from "@assets/generated_images/professional_beard_styling_result.webp";
 import galleryImg3 from "@assets/generated_images/classic_gentleman_side_part.webp";
 import galleryImg4 from "@assets/generated_images/trendy_textured_crop_fade.webp";
+import pomadeImg from "@assets/generated_images/premium_hair_pomade_product_photography.png";
+import beardOilImg from "@assets/generated_images/luxury_beard_oil_product_photography.png";
+import shampooImg from "@assets/generated_images/premium_beard_shampoo_product_photography.png";
 
 const products = [
   {
@@ -25,7 +28,7 @@ const products = [
     name: "Помада для укладки",
     brand: "Kings Grooming",
     price: 1800,
-    image: "https://images.unsplash.com/photo-1590159413247-4979ba518883?auto=format&fit=crop&q=80&w=400",
+    image: pomadeImg,
     description: "Сильная фиксация, матовый финиш"
   },
   {
@@ -33,7 +36,7 @@ const products = [
     name: "Масло для бороды",
     brand: "Kings Grooming",
     price: 1200,
-    image: "https://images.unsplash.com/photo-1626285861696-9f0bf5a49c6d?auto=format&fit=crop&q=80&w=400",
+    image: beardOilImg,
     description: "Питает и смягчает даже самую жесткую бороду"
   },
   {
@@ -41,7 +44,7 @@ const products = [
     name: "Шампунь для бороды",
     brand: "Kings Grooming",
     price: 1500,
-    image: "https://images.unsplash.com/photo-1621605815841-aa8970482027?auto=format&fit=crop&q=80&w=400",
+    image: shampooImg,
     description: "Глубокое очищение и свежесть"
   }
 ];
