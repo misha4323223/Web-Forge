@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Scissors, Clock, MapPin, Phone, Star, Calendar, User, Check, ArrowLeft, Instagram } from "lucide-react";
+import { ShoppingCart, Scissors, Clock, MapPin, Phone, Star, Calendar, User, Check, ArrowLeft, Instagram } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Link } from "wouter";
 import { useState, useEffect, useRef } from "react";
@@ -20,6 +20,33 @@ import galleryImg3 from "@assets/generated_images/classic_gentleman_side_part.we
 import galleryImg4 from "@assets/generated_images/trendy_textured_crop_fade.webp";
 import galleryImg5 from "@assets/generated_images/professional_haircut_styling_result.png";
 import galleryImg6 from "@assets/generated_images/hair_coloring_dye_transformation.png";
+
+const products = [
+  {
+    id: 1,
+    name: "Помада для укладки",
+    brand: "Kings Grooming",
+    price: 1800,
+    image: "https://images.unsplash.com/photo-1590159413247-4979ba518883?auto=format&fit=crop&q=80&w=400",
+    description: "Сильная фиксация, матовый финиш"
+  },
+  {
+    id: 2,
+    name: "Масло для бороды",
+    brand: "Kings Grooming",
+    price: 1200,
+    image: "https://images.unsplash.com/photo-1626285861696-9f0bf5a49c6d?auto=format&fit=crop&q=80&w=400",
+    description: "Питает и смягчает даже самую жесткую бороду"
+  },
+  {
+    id: 3,
+    name: "Шампунь для бороды",
+    brand: "Kings Grooming",
+    price: 1500,
+    image: "https://images.unsplash.com/photo-1621605815841-aa8970482027?auto=format&fit=crop&q=80&w=400",
+    description: "Глубокое очищение и свежесть"
+  }
+];
 
 const services = [
   { id: 1, name: "Мужская стрижка", duration: "45 мин", price: 1500, icon: Scissors },
@@ -120,6 +147,8 @@ export default function BarberShop() {
 
   const scrollToServices = () => servicesRef.current?.scrollIntoView({ behavior: "smooth" });
   const scrollToBarbers = () => barbersRef.current?.scrollIntoView({ behavior: "smooth" });
+  const shopRef = useRef<HTMLElement>(null);
+  const scrollToShop = () => shopRef.current?.scrollIntoView({ behavior: "smooth" });
   const scrollToBooking = () => bookingRef.current?.scrollIntoView({ behavior: "smooth" });
   const scrollToContact = () => contactRef.current?.scrollIntoView({ behavior: "smooth" });
 
@@ -193,6 +222,7 @@ export default function BarberShop() {
           <div className="hidden md:flex items-center gap-8 text-sm text-neutral-300">
             <button onClick={scrollToServices} className="hover:text-amber-400 transition-colors cursor-pointer">Услуги</button>
             <button onClick={scrollToBarbers} className="hover:text-amber-400 transition-colors cursor-pointer">Мастера</button>
+            <button onClick={scrollToShop} className="hover:text-amber-400 transition-colors cursor-pointer">Магазин</button>
             <button onClick={scrollToBooking} className="hover:text-amber-400 transition-colors cursor-pointer">Запись</button>
             <button onClick={scrollToContact} className="hover:text-amber-400 transition-colors cursor-pointer">Контакты</button>
           </div>
@@ -355,6 +385,60 @@ export default function BarberShop() {
                       <span className="text-sm text-neutral-400">Опыт: {barber.experience}</span>
                       <Button size="sm" className="bg-amber-500/20 text-amber-400 hover:bg-amber-500/30" data-testid={`button-select-barber-${barber.id}`}>
                         Выбрать
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section ref={shopRef} id="shop" className="py-20">
+        <div className="max-w-7xl mx-auto px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Магазин косметики</h2>
+            <p className="text-neutral-400 max-w-xl mx-auto">
+              Профессиональные средства для ухода, которые мы используем в работе
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {products.map((product, i) => (
+              <motion.div
+                key={product.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+              >
+                <Card className="overflow-hidden bg-neutral-800/50 border-neutral-700 hover-elevate group">
+                  <div className="aspect-square relative overflow-hidden bg-neutral-900">
+                    <img 
+                      src={product.image} 
+                      alt={product.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  </div>
+                  <div className="p-6">
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <p className="text-amber-400 text-xs font-semibold uppercase tracking-wider mb-1">{product.brand}</p>
+                        <h3 className="text-xl font-bold">{product.name}</h3>
+                      </div>
+                    </div>
+                    <p className="text-neutral-400 text-sm mb-6 line-clamp-2">{product.description}</p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-2xl font-bold text-white">{product.price} ₽</span>
+                      <Button className="bg-amber-500 hover:bg-amber-600 text-black font-semibold">
+                        <ShoppingCart className="w-4 h-4 mr-2" />
+                        Купить
                       </Button>
                     </div>
                   </div>
@@ -532,7 +616,7 @@ export default function BarberShop() {
                 <li>Мужские стрижки</li>
                 <li>Моделирование бороды</li>
                 <li>Королевское бритьё</li>
-                <li>Уход за волосами</li>
+                <li>Магазин косметики</li>
               </ul>
             </div>
             <div>
