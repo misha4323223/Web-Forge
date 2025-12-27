@@ -185,14 +185,14 @@ export default function FoodDelivery() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-orange-50 to-amber-50 dark:from-neutral-950 dark:to-neutral-900">
-      <Link href="/#portfolio">
-        <Button
-          variant="ghost"
-          className="fixed top-2 left-4 z-50 bg-white/80 dark:bg-black/80 backdrop-blur-sm"
+      <Link href="/#portfolio" className="fixed top-4 left-4 z-[100]">
+        <Button 
+          variant="ghost" 
+          size="icon"
+          className="bg-white/70 dark:bg-black/70 backdrop-blur-sm border border-orange-300/30 dark:border-white/20 hover:bg-white/90 dark:hover:bg-black/90"
           data-testid="button-back-home"
         >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Назад
+          <ArrowLeft className="w-5 h-5" />
         </Button>
       </Link>
 
@@ -316,7 +316,7 @@ export default function FoodDelivery() {
         />
         
         <nav className="relative z-50 max-w-7xl mx-auto px-6 py-4 flex items-center justify-between gap-4 pointer-events-auto">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 pl-12">
             <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center">
               <Flame className="w-6 h-6 text-orange-500" />
             </div>
