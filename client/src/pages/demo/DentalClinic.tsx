@@ -172,17 +172,6 @@ export default function DentalClinic() {
 
   return (
     <div className="min-h-screen bg-white text-gray-900">
-      <Link href="/#portfolio">
-        <Button
-          variant="ghost"
-          className="fixed top-2 left-4 z-50 bg-white/90 backdrop-blur-sm text-gray-900 hover:bg-gray-100"
-          data-testid="button-back-home"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Назад
-        </Button>
-      </Link>
-
       <Dialog open={bookingOpen} onOpenChange={setBookingOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
@@ -249,8 +238,18 @@ export default function DentalClinic() {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent pointer-events-none" />
         
-        <nav className="absolute top-0 left-0 right-0 z-50 max-w-7xl mx-auto px-6 py-6 flex items-center justify-between gap-4 pointer-events-auto">
+        <nav className="absolute top-0 left-0 right-0 z-50 max-w-7xl mx-auto px-6 py-4 flex items-center justify-between gap-4 pointer-events-auto">
           <div className="flex items-center gap-3">
+            <Link href="/#portfolio">
+              <Button 
+                variant="ghost" 
+                size="icon"
+                className="bg-teal-100/60 border border-teal-200 hover:bg-teal-100/80"
+                data-testid="button-back-home"
+              >
+                <ArrowLeft className="w-5 h-5 text-teal-600" />
+              </Button>
+            </Link>
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-teal-400 to-cyan-500 flex items-center justify-center">
               <Heart className="w-5 h-5 text-white" />
             </div>
