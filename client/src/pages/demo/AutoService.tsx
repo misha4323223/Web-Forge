@@ -152,24 +152,23 @@ export default function AutoService() {
 
   return (
     <div className="min-h-screen bg-neutral-950 text-white">
-      <Link href="/#portfolio">
-        <Button
-          variant="ghost"
-          className="fixed top-2 left-4 z-50 bg-black/80 backdrop-blur-sm text-white hover:text-white hover:bg-white/10"
-          data-testid="button-back-home"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Назад
-        </Button>
-      </Link>
-
       <header className="relative min-h-screen flex items-center overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-900/40 via-neutral-950 to-neutral-950 pointer-events-none" />
         <div className="absolute inset-0 bg-cover bg-center opacity-30 pointer-events-none" style={{ backgroundImage: `url(${autoServiceHeroImg})` }} />
         <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-transparent to-transparent pointer-events-none" />
         
-        <nav className="absolute top-0 left-0 right-0 z-50 max-w-7xl mx-auto px-6 py-6 flex items-center justify-between gap-4 pointer-events-auto">
+        <nav className="absolute top-0 left-0 right-0 z-50 max-w-7xl mx-auto px-6 py-4 flex items-center justify-between gap-4 pointer-events-auto">
           <div className="flex items-center gap-3">
+            <Link href="/#portfolio">
+              <Button 
+                variant="ghost" 
+                size="icon"
+                className="bg-white/10 border border-white/20 hover:bg-white/20"
+                data-testid="button-back-home"
+              >
+                <ArrowLeft className="w-5 h-5 text-white" />
+              </Button>
+            </Link>
             <div className="w-10 h-10 rounded-md bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center">
               <Wrench className="w-5 h-5 text-white" />
             </div>
