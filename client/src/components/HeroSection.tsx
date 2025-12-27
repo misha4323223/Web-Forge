@@ -198,7 +198,6 @@ export function HeroSection() {
         >
           <a href="/order">
             <Button
-              size="lg"
               className="bg-gradient-to-r from-cyan-500 to-purple-500 text-white border-0 shadow-lg shadow-cyan-500/25"
               data-testid="button-hero-cta"
             >
@@ -206,7 +205,6 @@ export function HeroSection() {
             </Button>
           </a>
           <Button
-            size="lg"
             variant="outline"
             onClick={scrollToPortfolio}
             className="backdrop-blur-sm"

@@ -75,11 +75,12 @@ export function Navigation() {
           <span className="inline text-xl font-bold text-foreground">MP.WebStudio</span>
         </a>
 
-        <div className="hidden md:flex items-center gap-1 overflow-x-auto no-scrollbar">
+        <div className="hidden md:flex items-center gap-1 flex-wrap">
           {navItems.map((item) => (
             <Button
               key={item.href}
               variant="ghost"
+              size="sm"
               onClick={() => scrollToSection(item.href)}
               className="text-muted-foreground whitespace-nowrap"
               data-testid={`link-nav-${item.href.slice(1)}`}
@@ -92,6 +93,7 @@ export function Navigation() {
               <a key={link.href} href={link.href}>
                 <Button
                   variant="ghost"
+                  size="sm"
                   className="text-muted-foreground text-xs"
                   data-testid={`link-nav-legal-${link.href.slice(1)}`}
                 >
@@ -104,6 +106,7 @@ export function Navigation() {
 
         <div className="hidden lg:flex items-center gap-2">
           <Button
+            size="sm"
             onClick={() => scrollToSection("#calculator")}
             className="bg-gradient-to-r from-cyan-500 to-purple-500 text-white border-0"
             data-testid="button-nav-send-request"
@@ -112,6 +115,7 @@ export function Navigation() {
           </Button>
           <a href={orderPagePath}>
             <Button
+              size="sm"
               className="bg-gradient-to-r from-cyan-500 to-purple-500 text-white border-0"
               data-testid="button-nav-cta"
             >
