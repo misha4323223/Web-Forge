@@ -348,7 +348,7 @@ export default function ApartmentRenovation() {
             </div>
           </motion.div>
         </div>
-      </header>
+      </div>
 
       {/* Advantages */}
       <section className="py-16 bg-gradient-to-b from-white to-gray-50">

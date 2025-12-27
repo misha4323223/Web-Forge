@@ -234,17 +234,6 @@ export default function BarberShop() {
 
   return (
     <div className="min-h-screen bg-neutral-950 text-white">
-      <Link href="/#portfolio">
-        <Button
-          variant="ghost"
-          className="fixed top-2 left-4 z-50 bg-black/80 backdrop-blur-sm text-white hover:text-white hover:bg-white/10"
-          data-testid="button-back-home"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Назад
-        </Button>
-      </Link>
-
       <header className="fixed top-0 left-0 right-0 z-40 bg-neutral-950/80 backdrop-blur-md border-b border-white/5">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
@@ -346,7 +335,7 @@ export default function BarberShop() {
             </div>
           </motion.div>
         </div>
-      </header>
+      </div>
 
       <section ref={servicesRef} id="services" className="py-20 bg-neutral-900">
         <div className="max-w-7xl mx-auto px-6">
