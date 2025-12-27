@@ -393,56 +393,54 @@ export default function StreetWearShop() {
         </DialogContent>
       </Dialog>
 
-      <header className="sticky top-0 z-40 bg-black/90 backdrop-blur-md border-b border-neutral-800">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-8">
-              <h1 className="text-2xl font-black tracking-tight">
-                <span className="text-white">STREET</span>
-                <span className="text-amber-500">WEAR</span>
-              </h1>
-              
-              <nav className="hidden lg:flex items-center gap-6">
-                {["Каталог", "Бренды", "SALE", "О нас"].map(item => (
-                  <button
-                    key={item}
-                    onClick={() => handleNavClick(item)}
-                    className={`text-sm font-medium transition-colors cursor-pointer ${item === "SALE" ? "text-red-500 hover:text-red-400" : "text-neutral-400 hover:text-white"}`}
-                    data-testid={`link-nav-${item.toLowerCase()}`}
-                  >
-                    {item}
-                  </button>
-                ))}
-              </nav>
-            </div>
+      <header className="fixed top-0 left-0 right-0 z-40 bg-neutral-950/80 backdrop-blur-md border-b border-white/5">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-8">
+            <h1 className="text-2xl font-black tracking-tight">
+              <span className="text-white">STREET</span>
+              <span className="text-amber-500">WEAR</span>
+            </h1>
+            
+            <nav className="hidden lg:flex items-center gap-6">
+              {["Каталог", "Бренды", "SALE", "О нас"].map(item => (
+                <button
+                  key={item}
+                  onClick={() => handleNavClick(item)}
+                  className={`text-sm font-medium transition-colors cursor-pointer ${item === "SALE" ? "text-red-500 hover:text-red-400" : "text-neutral-400 hover:text-white"}`}
+                  data-testid={`link-nav-${item.toLowerCase()}`}
+                >
+                  {item}
+                </button>
+              ))}
+            </nav>
+          </div>
 
-            <div className="flex items-center gap-3">
-              <Button variant="ghost" size="icon" className="relative text-neutral-400 hover:text-white" data-testid="button-favorites">
-                <Heart className="w-5 h-5" />
-                {favorites.length > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-amber-500 text-black text-xs font-bold flex items-center justify-center">
-                    {favorites.length}
-                  </span>
-                )}
-              </Button>
-              <Button variant="ghost" size="icon" className="relative text-neutral-400 hover:text-white" onClick={() => setCartOpen(true)} data-testid="button-cart">
-                <ShoppingCart className="w-5 h-5" />
-                {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-amber-500 text-black text-xs font-bold flex items-center justify-center">
-                    {cartCount}
-                  </span>
-                )}
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="lg:hidden text-neutral-400"
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                data-testid="button-mobile-menu"
-              >
-                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-              </Button>
-            </div>
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="icon" className="relative text-neutral-400 hover:text-white" data-testid="button-favorites">
+              <Heart className="w-5 h-5" />
+              {favorites.length > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-amber-500 text-black text-xs font-bold flex items-center justify-center">
+                  {favorites.length}
+                </span>
+              )}
+            </Button>
+            <Button variant="ghost" size="icon" className="relative text-neutral-400 hover:text-white" onClick={() => setCartOpen(true)} data-testid="button-cart">
+              <ShoppingCart className="w-5 h-5" />
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-amber-500 text-black text-xs font-bold flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="lg:hidden text-neutral-400"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              data-testid="button-mobile-menu"
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </Button>
           </div>
         </div>
 
@@ -451,9 +449,9 @@ export default function StreetWearShop() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden border-t border-neutral-800 bg-black"
+            className="lg:hidden border-t border-neutral-800 bg-black/95 backdrop-blur-xl"
           >
-            <div className="px-4 py-4 flex flex-col gap-3">
+            <div className="px-6 py-4 flex flex-col gap-3">
               {["Каталог", "Бренды", "SALE", "О нас"].map(item => (
                 <button
                   key={item}
