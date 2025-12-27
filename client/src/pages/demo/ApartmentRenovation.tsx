@@ -188,17 +188,6 @@ export default function ApartmentRenovation() {
 
   return (
     <div className="min-h-screen bg-white text-gray-900">
-      <Link href="/#portfolio">
-        <Button
-          variant="ghost"
-          className="fixed top-2 left-4 z-50 bg-white/90 backdrop-blur-sm text-gray-900 hover:bg-gray-100"
-          data-testid="button-back-home"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Назад
-        </Button>
-      </Link>
-
       <Dialog open={callbackOpen} onOpenChange={setCallbackOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
@@ -247,33 +236,49 @@ export default function ApartmentRenovation() {
         </DialogContent>
       </Dialog>
 
-      {/* Hero Section */}
-      <header className="relative min-h-screen flex items-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-amber-50 via-white to-orange-50 pointer-events-none" />
-        <div 
-          className="absolute inset-0 bg-cover bg-center opacity-30 pointer-events-none" 
-          style={{ backgroundImage: `url(${livingRoomImg})` }} 
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent pointer-events-none" />
-        
-        <nav className="absolute top-0 left-0 right-0 z-50 max-w-7xl mx-auto px-6 py-6 flex items-center justify-between gap-4 pointer-events-auto">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-md bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center">
-              <Hammer className="w-5 h-5 text-white" />
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <Link href="/#portfolio">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="bg-gray-100 hover:bg-gray-200 text-gray-900 border border-gray-200"
+                data-testid="button-back-home"
+              >
+                <ArrowLeft className="w-4 h-4" />
+              </Button>
+            </Link>
+
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-md bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center">
+                <Hammer className="w-4 h-4 text-white" />
+              </div>
+              <span className="text-xl font-bold text-amber-700">РемонтПро</span>
             </div>
-            <span className="text-xl font-bold text-amber-700">РемонтПро</span>
           </div>
+
           <div className="hidden md:flex items-center gap-8 text-sm text-gray-600">
             <button onClick={scrollToServices} className="hover:text-amber-600 transition-colors cursor-pointer">Услуги</button>
             <button onClick={scrollToPortfolio} className="hover:text-amber-600 transition-colors cursor-pointer">Портфолио</button>
             <button onClick={scrollToProcess} className="hover:text-amber-600 transition-colors cursor-pointer">Как мы работаем</button>
             <button onClick={scrollToContact} className="hover:text-amber-600 transition-colors cursor-pointer">Контакты</button>
           </div>
-          <Button className="bg-amber-500 hover:bg-amber-600 text-white" onClick={() => setCallbackOpen(true)} data-testid="button-call-header">
+
+          <Button size="sm" className="bg-amber-500 hover:bg-amber-600 text-white" onClick={() => setCallbackOpen(true)} data-testid="button-call-header">
             <Phone className="w-4 h-4 mr-2" />
             Вызвать замерщика
           </Button>
-        </nav>
+        </div>
+      </header>
+
+      <div className="relative min-h-screen flex items-center overflow-hidden pt-20">
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-50 via-white to-orange-50 pointer-events-none" />
+        <div 
+          className="absolute inset-0 bg-cover bg-center opacity-30 pointer-events-none" 
+          style={{ backgroundImage: `url(${livingRoomImg})` }} 
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent pointer-events-none" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-6 py-32 grid lg:grid-cols-2 gap-12 items-center">
           <motion.div

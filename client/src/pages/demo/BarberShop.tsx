@@ -245,18 +245,28 @@ export default function BarberShop() {
         </Button>
       </Link>
 
-      <header className="relative min-h-screen flex items-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-amber-900/40 via-neutral-950 to-neutral-950 pointer-events-none" />
-        <div className="absolute inset-0 bg-cover bg-center opacity-30 pointer-events-none" style={{ backgroundImage: `url(${barberHeroImg})` }} />
-        <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-transparent to-transparent pointer-events-none" />
-        
-        <nav className="absolute top-0 left-0 right-0 z-50 max-w-7xl mx-auto px-6 py-6 flex items-center justify-between gap-4 pointer-events-auto">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-md bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center">
-              <Scissors className="w-5 h-5 text-white" />
+      <header className="fixed top-0 left-0 right-0 z-40 bg-neutral-950/80 backdrop-blur-md border-b border-white/5">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <Link href="/#portfolio">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="bg-white/5 hover:bg-white/10 text-white border border-white/10"
+                data-testid="button-back-home"
+              >
+                <ArrowLeft className="w-4 h-4" />
+              </Button>
+            </Link>
+
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-md bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center">
+                <Scissors className="w-4 h-4 text-white" />
+              </div>
+              <span className="text-xl font-bold tracking-wider">BLADE</span>
             </div>
-            <span className="text-xl font-bold tracking-wider">BLADE</span>
           </div>
+
           <div className="hidden md:flex items-center gap-8 text-sm text-neutral-300">
             <button onClick={scrollToServices} className="hover:text-amber-400 transition-colors cursor-pointer">Услуги</button>
             <button onClick={scrollToBarbers} className="hover:text-amber-400 transition-colors cursor-pointer">Мастера</button>
@@ -264,6 +274,7 @@ export default function BarberShop() {
             <button onClick={scrollToBooking} className="hover:text-amber-400 transition-colors cursor-pointer">Запись</button>
             <button onClick={scrollToContact} className="hover:text-amber-400 transition-colors cursor-pointer">Контакты</button>
           </div>
+
           <div className="flex items-center gap-3">
             <Button 
               variant="ghost" 
@@ -279,11 +290,17 @@ export default function BarberShop() {
                 </span>
               )}
             </Button>
-            <Button className="bg-amber-500 hover:bg-amber-600 text-black font-semibold" data-testid="button-book-header" onClick={scrollToBooking}>
+            <Button size="sm" className="bg-amber-500 hover:bg-amber-600 text-black font-semibold" data-testid="button-book-header" onClick={scrollToBooking}>
               Записаться
             </Button>
           </div>
-        </nav>
+        </div>
+      </header>
+
+      <div className="relative min-h-screen flex items-center overflow-hidden pt-20">
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-900/40 via-neutral-950 to-neutral-950 pointer-events-none" />
+        <div className="absolute inset-0 bg-cover bg-center opacity-30 pointer-events-none" style={{ backgroundImage: `url(${barberHeroImg})` }} />
+        <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-transparent to-transparent pointer-events-none" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-6 py-32">
           <motion.div
