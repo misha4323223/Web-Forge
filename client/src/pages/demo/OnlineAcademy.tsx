@@ -200,7 +200,7 @@ export default function OnlineAcademy() {
   return (
     <div className="min-h-screen bg-white dark:bg-neutral-950">
       {/* Hero */}
-      <header className="relative overflow-hidden bg-gradient-to-b from-blue-50 to-white dark:from-neutral-900 dark:to-neutral-950 pt-20">
+      <header className="relative overflow-hidden bg-gradient-to-b from-blue-50 to-white dark:from-neutral-900 dark:to-neutral-950">
         <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/5 to-transparent pointer-events-none" />
         <img 
           src={heroImg} 
@@ -208,7 +208,7 @@ export default function OnlineAcademy() {
           className="absolute top-0 right-0 w-1/2 h-full object-cover opacity-20 pointer-events-none"
         />
         
-        <nav className="relative z-50 max-w-7xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
+        <nav className="relative z-50 max-w-7xl mx-auto px-6 py-2 flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <Link href="/#portfolio">
               <Button 
@@ -227,7 +227,7 @@ export default function OnlineAcademy() {
           </div>
         </nav>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-6 py-20 md:py-32">
+        <div className="relative z-10 max-w-7xl mx-auto px-6 pt-20 pb-20 md:pb-32">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}

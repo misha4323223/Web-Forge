@@ -194,16 +194,6 @@ export default function TravelAgency() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
-      <Link href="/#portfolio">
-        <Button
-          variant="ghost"
-          className="fixed top-2 left-4 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm shadow-lg"
-          data-testid="button-back-home"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Назад
-        </Button>
-      </Link>
 
       {favorites.length > 0 && (
         <div className="fixed bottom-4 right-4 z-50">
@@ -288,8 +278,18 @@ export default function TravelAgency() {
         <div className="absolute inset-0 bg-cover bg-center mix-blend-overlay opacity-40 pointer-events-none" style={{ backgroundImage: `url(${travelHeroImg})` }} />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none" />
         
-        <nav className="absolute top-0 left-0 right-0 z-50 max-w-7xl mx-auto px-6 py-6 flex items-center justify-between gap-4 pointer-events-auto">
+        <nav className="absolute top-0 left-0 right-0 z-50 max-w-7xl mx-auto px-6 py-4 flex items-center justify-between gap-4 pointer-events-auto">
           <div className="flex items-center gap-3">
+            <Link href="/#portfolio">
+              <Button 
+                variant="ghost" 
+                size="icon"
+                className="bg-white/20 border border-white/30 hover:bg-white/30"
+                data-testid="button-back-home"
+              >
+                <ArrowLeft className="w-5 h-5 text-white" />
+              </Button>
+            </Link>
             <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
               <Plane className="w-5 h-5 text-white" />
             </div>
