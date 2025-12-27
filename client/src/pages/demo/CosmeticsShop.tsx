@@ -314,7 +314,7 @@ export default function CosmeticsShop() {
       <header className="sticky top-0 z-40 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-md border-b border-stone-200 dark:border-neutral-800">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between gap-4">
-            <h1 className="text-2xl font-light tracking-widest text-stone-800 dark:text-white">
+            <h1 className="text-2xl font-light tracking-widest text-stone-800 dark:text-white pl-12">
               NATURA
             </h1>
             
