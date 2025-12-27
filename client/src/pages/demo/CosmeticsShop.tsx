@@ -203,14 +203,14 @@ export default function CosmeticsShop() {
 
   return (
     <div className="min-h-screen bg-stone-50 dark:bg-neutral-950">
-      <Link href="/#portfolio">
-        <Button
-          variant="ghost"
-          className="fixed top-2 left-4 z-50 bg-white/80 dark:bg-black/80 backdrop-blur-sm"
+      <Link href="/#portfolio" className="fixed top-4 left-4 z-[100]">
+        <Button 
+          variant="ghost" 
+          size="icon"
+          className="bg-white/70 dark:bg-black/70 backdrop-blur-sm border border-stone-300 dark:border-white/20 hover:bg-white/90 dark:hover:bg-black/90"
           data-testid="button-back-home"
         >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Назад
+          <ArrowLeft className="w-5 h-5" />
         </Button>
       </Link>
 
