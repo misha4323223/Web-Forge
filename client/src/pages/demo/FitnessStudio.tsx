@@ -115,17 +115,6 @@ export default function FitnessStudio() {
 
   return (
     <div className="min-h-screen bg-neutral-950 text-white">
-      <Link href="/#portfolio">
-        <Button
-          variant="ghost"
-          className="fixed top-2 left-4 z-50 bg-black/80 backdrop-blur-sm text-white hover:text-white hover:bg-white/10"
-          data-testid="button-back-home"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Назад
-        </Button>
-      </Link>
-
       {bookedClasses.length > 0 && (
         <div className="fixed bottom-4 right-4 z-50">
           <Badge className="bg-violet-500 text-white border-0 px-4 py-2 text-sm">
@@ -188,21 +177,38 @@ export default function FitnessStudio() {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-transparent to-transparent pointer-events-none" />
         
-        <nav className="absolute top-0 left-0 right-0 z-50 max-w-7xl mx-auto px-6 py-6 flex items-center justify-between gap-4 pointer-events-auto">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center">
-              <Zap className="w-5 h-5 text-white" />
+        <nav className="fixed top-0 left-0 right-0 z-50 bg-neutral-950/80 backdrop-blur-md border-b border-white/5">
+          <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <Link href="/#portfolio">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="bg-white/5 hover:bg-white/10 text-white border border-white/10"
+                  data-testid="button-back-home"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                </Button>
+              </Link>
+
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center">
+                  <Zap className="w-4 h-4 text-white" />
+                </div>
+                <span className="text-xl font-bold tracking-tight">ФОРМА</span>
+              </div>
             </div>
-            <span className="text-xl font-bold">ФОРМА</span>
+
+            <div className="hidden md:flex items-center gap-8 text-sm text-neutral-300">
+              <button onClick={scrollToSchedule} className="hover:text-white transition-colors cursor-pointer">Расписание</button>
+              <button onClick={scrollToPricing} className="hover:text-white transition-colors cursor-pointer">Абонементы</button>
+              <button onClick={scrollToContact} className="hover:text-white transition-colors cursor-pointer">Контакты</button>
+            </div>
+
+            <Button size="sm" className="bg-violet-600 hover:bg-violet-700" onClick={() => setTrialOpen(true)} data-testid="button-trial">
+              Пробное занятие
+            </Button>
           </div>
-          <div className="hidden md:flex items-center gap-8 text-sm text-neutral-300">
-            <button onClick={scrollToSchedule} className="hover:text-white transition-colors cursor-pointer">Расписание</button>
-            <button onClick={scrollToPricing} className="hover:text-white transition-colors cursor-pointer">Абонементы</button>
-            <button onClick={scrollToContact} className="hover:text-white transition-colors cursor-pointer">Контакты</button>
-          </div>
-          <Button className="bg-violet-600 hover:bg-violet-700" onClick={() => setTrialOpen(true)} data-testid="button-trial">
-            Пробное занятие
-          </Button>
         </nav>
 
         <div className="relative z-10 max-w-7xl mx-auto px-6 py-32">
