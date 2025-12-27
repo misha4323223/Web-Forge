@@ -223,17 +223,6 @@ export default function StreetWearShop() {
 
   return (
     <div className="min-h-screen bg-neutral-950 text-white">
-      <Link href="/#portfolio">
-        <Button
-          variant="ghost"
-          className="fixed top-2 left-4 z-50 bg-black/80 backdrop-blur-sm text-white"
-          data-testid="button-back-home"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Назад
-        </Button>
-      </Link>
-
       <Dialog open={!!selectedProduct} onOpenChange={() => setSelectedProduct(null)}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-neutral-900 border-neutral-800">
           {selectedProduct && (
@@ -394,9 +383,20 @@ export default function StreetWearShop() {
       </Dialog>
 
       <header className="fixed top-0 left-0 right-0 z-40 bg-neutral-950/80 backdrop-blur-md border-b border-white/5">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-8">
-            <h1 className="text-2xl font-black tracking-tight">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <Link href="/#portfolio">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="bg-white/5 hover:bg-white/10 text-white border border-white/10"
+                data-testid="button-back-home"
+              >
+                <ArrowLeft className="w-4 h-4" />
+              </Button>
+            </Link>
+            
+            <h1 className="text-xl md:text-2xl font-black tracking-tight shrink-0">
               <span className="text-white">STREET</span>
               <span className="text-amber-500">WEAR</span>
             </h1>
