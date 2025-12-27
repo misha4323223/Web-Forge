@@ -199,17 +199,6 @@ export default function OnlineAcademy() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-neutral-950">
-      <Link href="/#portfolio" className="fixed top-4 left-4 z-[100]">
-        <Button 
-          variant="ghost" 
-          size="icon"
-          className="bg-white/70 dark:bg-black/70 backdrop-blur-sm border border-gray-200 dark:border-white/20 hover:bg-white/90 dark:hover:bg-black/90"
-          data-testid="button-back-home"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </Button>
-      </Link>
-
       {/* Hero */}
       <header className="relative overflow-hidden bg-gradient-to-b from-blue-50 to-white dark:from-neutral-900 dark:to-neutral-950 pt-20">
         <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/5 to-transparent pointer-events-none" />
@@ -219,8 +208,18 @@ export default function OnlineAcademy() {
           className="absolute top-0 right-0 w-1/2 h-full object-cover opacity-20 pointer-events-none"
         />
         
-        <nav className="relative z-50 max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
+        <nav className="relative z-50 max-w-7xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <Link href="/#portfolio">
+              <Button 
+                variant="ghost" 
+                size="icon"
+                className="bg-blue-100/60 dark:bg-white/10 border border-blue-200 dark:border-white/20 hover:bg-blue-100/80 dark:hover:bg-white/20"
+                data-testid="button-back-home"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
+            </Link>
             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center">
               <BookOpen className="w-6 h-6 text-white" />
             </div>
