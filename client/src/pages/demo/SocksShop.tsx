@@ -224,17 +224,6 @@ export default function SocksShop() {
 
   return (
     <div className="min-h-screen bg-white text-neutral-900">
-      <Link href="/#portfolio">
-        <Button
-          variant="ghost"
-          className="fixed top-2 left-4 z-50 bg-white/90 backdrop-blur-sm shadow-md"
-          data-testid="button-back-home"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Назад
-        </Button>
-      </Link>
-
       <Dialog open={cartOpen} onOpenChange={setCartOpen}>
         <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader>
@@ -323,12 +312,24 @@ export default function SocksShop() {
       </Dialog>
 
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-neutral-200">
-        <div className="max-w-6xl mx-auto px-4 py-4">
+        <div className="max-w-6xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between gap-4">
-            <h1 className="text-2xl font-black tracking-tight">
-              <span className="text-rose-500">SOCK</span>
-              <span className="text-neutral-900">STYLE</span>
-            </h1>
+            <div className="flex items-center gap-2">
+              <Link href="/#portfolio">
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  className="bg-rose-100/60 border border-rose-200 hover:bg-rose-100/80"
+                  data-testid="button-back-home"
+                >
+                  <ArrowLeft className="w-5 h-5 text-rose-600" />
+                </Button>
+              </Link>
+              <h1 className="text-2xl font-black tracking-tight">
+                <span className="text-rose-500">SOCK</span>
+                <span className="text-neutral-900">STYLE</span>
+              </h1>
+            </div>
             
             <nav className="hidden md:flex items-center gap-6">
               {["Каталог", "Наборы", "SALE", "Доставка"].map(item => (
